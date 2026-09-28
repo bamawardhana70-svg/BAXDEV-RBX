@@ -101,6 +101,21 @@ select:focus{border-color:rgba(190,222,226,.55)}
     </div>
 
     <div class="card">
+      <div class="toolbar" style="margin-bottom:10px">
+        <label style="margin:0">Mode maintenance <span class="badge off" id="mtBadge">Nonaktif</span></label>
+      </div>
+      <label for="mtText">Teks yang tampil di pop-up</label>
+      <textarea id="mtText" class="codebox" maxlength="500" placeholder="Contoh: Kami sedang memperbarui sistem. Coba lagi sekitar 30 menit."></textarea>
+      <div class="note" id="mtCount" style="margin-top:4px">0/500</div>
+      <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn primary" id="mtOn" type="button">Aktifkan maintenance</button>
+        <button class="btn" id="mtOff" type="button">Matikan</button>
+      </div>
+      <div class="msg" id="mtMsg" role="status"></div>
+      <p class="note" style="margin-top:10px">Saat aktif, semua pengunjung melihat pop-up ini dan tidak bisa memakai situs. Halaman /owner tetap bisa dibuka. Kalau kamu login Google sebagai owner di situs utama, ada tombol untuk melewati pop-up. Teks dikosongkan = pakai teks bawaan.</p>
+    </div>
+
+    <div class="card">
       <label style="margin-bottom:10px">Pesanan menunggu verifikasi</label>
       <div id="orders"></div>
       <div class="msg" id="orderMsg" role="status"></div>
@@ -154,6 +169,16 @@ select:focus{border-color:rgba(190,222,226,.55)}
     </div>
 
     <div class="card">
+      <div class="toolbar">
+        <label for="upSearch" style="margin:0">Riwayat upload</label>
+        <input id="upSearch" placeholder="Cari nama / email / ID">
+      </div>
+      <div class="note" id="upSummary" style="margin-bottom:6px"></div>
+      <div id="uploads"></div>
+      <div class="msg" id="upMsg" role="status"></div>
+    </div>
+
+    <div class="card">
       <label style="margin-bottom:10px">Ganti password owner</label>
       <div class="row">
         <div><label for="pwCur">Password sekarang</label><input id="pwCur" type="password" autocomplete="current-password" placeholder="Password sekarang"></div>
@@ -181,7 +206,7 @@ window.BAXDEV_FIREBASE = {
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-import { getDatabase, ref, onValue, get, set, update, remove, forceLongPolling } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
+import { getDatabase, ref, onValue, get, set, update, remove, query, limitToLast, forceLongPolling } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
 
 const $ = (id) => document.getElementById(id);
 const DAY_MS = 86400000;
@@ -205,7 +230,7 @@ if (!configured) {
   $("loginBtn").disabled = true;
 }
 
-let auth, db, vipMap = {}, orderMap = {}, codeMap = {}, redeemMap = {}, unsubs = [];
+let auth, db, vipMap = {}, orderMap = {}, codeMap = {}, redeemMap = {}, uploadMap = {}, unsubs = [];
 if (configured) {
   const app = initializeApp(cfg);
   auth = getAuth(app);
@@ -239,6 +264,32 @@ function renderVip(){
       '<div class="meta">'+esc(v.note||"Tanpa catatan")+(v.addedAt?" · "+esc(fmtDate(v.addedAt)):"")+'</div></div>'+
       '<button class="btn danger" type="button" data-remove="'+esc(v.id)+'">Hapus</button></div>';
   }).join("");
+}
+
+function fmtSize(b){b=Number(b)||0;return b>=1048576?(b/1048576).toFixed(1)+" MB":Math.max(1,Math.round(b/1024))+" KB"}
+function renderUploads(){
+  const q=$("upSearch").value.trim().toLowerCase();
+  const all=Object.entries(uploadMap).map(([k,v])=>Object.assign({key:k},v)).filter(v=>v&&v.at).sort((a,b)=>b.at-a.at);
+  const people=new Set(all.map(v=>v.googleUid)).size;
+  $("upSummary").textContent=all.length?all.length+" upload dari "+people+" orang (200 terbaru)":"";
+  const shown=all.filter(v=>!q||[v.name,v.filename,v.googleEmail,v.robloxId,v.assetId].some(x=>String(x==null?"":x).toLowerCase().indexOf(q)>-1));
+  if(!shown.length){$("uploads").innerHTML='<div class="empty">'+(all.length?"Tidak ada yang cocok.":"Belum ada riwayat upload.")+"</div>";return}
+  $("uploads").innerHTML=shown.slice(0,100).map(v=>{
+    const done=v.status==="done";
+    const badge=done?'<span class="badge ok">Berhasil</span>':'<span class="badge off">Gagal</span>';
+    const who=(v.googleEmail?esc(v.googleEmail)+" · ":"")+"Roblox #"+esc(v.robloxId);
+    const line2=done&&v.assetId?'<div class="meta mono">rbxassetid://'+esc(v.assetId)+'</div>':(v.error?'<div class="meta">'+esc(v.error)+'</div>':"");
+    return '<div class="item"><div><div class="id">'+esc(v.name)+badge+'</div>'+
+      '<div class="meta">'+who+'</div>'+
+      '<div class="meta">'+esc(v.filename||"")+(v.size?" · "+esc(fmtSize(v.size)):"")+" · "+esc(fmtTime(v.at))+'</div>'+line2+'</div>'+
+      '<div class="actions">'+(done&&v.assetId?'<button class="btn small" type="button" data-upcopy="'+esc(v.assetId)+'">Salin ID</button>':'')+
+      '<button class="btn danger" type="button" data-updel="'+esc(v.key)+'">Hapus</button></div></div>';
+  }).join("");
+}
+async function removeUpload(key){
+  if(!confirm("Hapus catatan upload ini dari riwayat?"))return;
+  try{ await remove(ref(db,"uploads/"+key)); say($("upMsg"),"Catatan dihapus.","ok"); }
+  catch(e){ fail($("upMsg"),e); }
 }
 
 function hoursLabel(h){return h>=24&&h%24===0?(h/24)+" hari":h+" jam"}
@@ -303,6 +354,27 @@ async function removeVip(id){
   catch(e){ fail($("addMsg"),e); }
 }
 
+/* ── Maintenance ── */
+let mtState = { enabled:false, message:"" };
+function renderMaint(){
+  const b = $("mtBadge");
+  b.textContent = mtState.enabled ? "Aktif" : "Nonaktif";
+  b.className = "badge " + (mtState.enabled ? "ok" : "off");
+  const t = $("mtText");
+  if (document.activeElement !== t) t.value = mtState.message || "";
+  $("mtCount").textContent = t.value.length + "/500";
+}
+async function saveMaint(enabled){
+  const msg = $("mtText").value.trim().slice(0,500);
+  const btn = enabled ? $("mtOn") : $("mtOff");
+  btn.disabled = true;
+  try{
+    await set(ref(db,"maintenance"),{ enabled:enabled, message:msg, updatedAt:Date.now() });
+    say($("mtMsg"), enabled ? "Maintenance AKTIF. Pengunjung sekarang melihat pop-up." : "Maintenance dimatikan. Situs kembali normal.", "ok");
+  }catch(e){ fail($("mtMsg"),e); }
+  finally{ btn.disabled = false; }
+}
+
 function makeCode(){
   const b = new Uint8Array(12);
   crypto.getRandomValues(b);
@@ -338,14 +410,16 @@ async function removeCode(code){
 }
 
 /* ── Auth ── */
-function stopListening(){ unsubs.forEach(f=>f()); unsubs=[]; vipMap={}; orderMap={}; codeMap={}; redeemMap={}; }
+function stopListening(){ unsubs.forEach(f=>f()); unsubs=[]; vipMap={}; orderMap={}; codeMap={}; redeemMap={}; uploadMap={}; }
 function listen(){
   stopListening();
   const onErr = (e)=>say($("orderMsg"),"Gagal membaca data: "+(e&&e.message||e),"err");
   unsubs.push(onValue(ref(db,"vip"),s=>{vipMap=s.val()||{};renderVip()},onErr));
+  unsubs.push(onValue(ref(db,"maintenance"),s=>{mtState=s.val()||{enabled:false,message:""};renderMaint()},onErr));
   unsubs.push(onValue(ref(db,"orders"),s=>{orderMap=s.val()||{};renderOrders()},onErr));
   unsubs.push(onValue(ref(db,"codes"),s=>{codeMap=s.val()||{};renderCodes()},onErr));
   unsubs.push(onValue(ref(db,"redeems"),s=>{redeemMap=s.val()||{};renderCodes()},onErr));
+  unsubs.push(onValue(query(ref(db,"uploads"),limitToLast(200)),s=>{uploadMap=s.val()||{};renderUploads()},onErr));
 }
 function showLogin(){
   stopListening();
@@ -425,11 +499,19 @@ $("pwNew2").addEventListener("keydown",e=>{if(e.key==="Enter")changePw()});
 $("addBtn").addEventListener("click",add);
 $("uid").addEventListener("keydown",e=>{if(e.key==="Enter")add()});
 $("search").addEventListener("input",renderVip);
+$("upSearch").addEventListener("input",renderUploads);
+$("uploads").addEventListener("click",e=>{
+  const c=e.target.closest("button[data-upcopy]");if(c){copyText("rbxassetid://"+c.dataset.upcopy,$("upMsg"),"Asset ID disalin.");return}
+  const d=e.target.closest("button[data-updel]");if(d)removeUpload(d.dataset.updel);
+});
 $("orders").addEventListener("click",e=>{
   const a=e.target.closest("button[data-approve]");if(a){approve(a.dataset.approve);return}
   const r=e.target.closest("button[data-reject]");if(r)reject(r.dataset.reject);
 });
 $("codeBtn").addEventListener("click",createCode);
+$("mtOn").addEventListener("click",()=>saveMaint(true));
+$("mtOff").addEventListener("click",()=>saveMaint(false));
+$("mtText").addEventListener("input",()=>{$("mtCount").textContent=$("mtText").value.length+"/500"});
 $("codeText").addEventListener("keydown",e=>{if(e.key==="Enter")createCode()});
 $("codeList").addEventListener("click",e=>{
   const c=e.target.closest("button[data-copy]");if(c){copyText(c.dataset.copy,$("codeMsg"),"Kode "+c.dataset.copy+" disalin.");return}

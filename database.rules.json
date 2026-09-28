@@ -91,6 +91,23 @@
         }
       }
     },
+    "maintenance": {
+      ".read": true,
+      ".write": "auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')",
+      ".validate": "newData.hasChildren(['enabled', 'message', 'updatedAt'])",
+      "enabled": {
+        ".validate": "newData.isBoolean()"
+      },
+      "message": {
+        ".validate": "newData.isString() && newData.val().length <= 500"
+      },
+      "updatedAt": {
+        ".validate": "newData.isNumber()"
+      },
+      "$other": {
+        ".validate": false
+      }
+    },
     "isAdmin": {
       ".read": "auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')"
     },
@@ -111,6 +128,49 @@
           "$other": {
             ".validate": false
           }
+        }
+      }
+    },
+    "uploads": {
+      ".read": "auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')",
+      "$id": {
+        ".write": "(auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')) || (auth != null && !data.exists() && newData.exists() && newData.child('googleUid').val() === auth.uid)",
+        ".validate": "newData.hasChildren(['googleUid', 'robloxId', 'name', 'status', 'at'])",
+        "googleUid": {
+          ".validate": "newData.isString() && newData.val().length <= 128"
+        },
+        "googleEmail": {
+          ".validate": "newData.isString() && newData.val().length <= 254"
+        },
+        "robloxId": {
+          ".validate": "newData.isString() && newData.val().matches(/^[0-9]{1,20}$/)"
+        },
+        "name": {
+          ".validate": "newData.isString() && newData.val().length <= 100"
+        },
+        "filename": {
+          ".validate": "newData.isString() && newData.val().length <= 160"
+        },
+        "size": {
+          ".validate": "newData.isNumber()"
+        },
+        "assetId": {
+          ".validate": "newData.isString() && newData.val().length <= 30"
+        },
+        "status": {
+          ".validate": "newData.isString() && (newData.val() === 'done' || newData.val() === 'fail')"
+        },
+        "speed": {
+          ".validate": "newData.isNumber()"
+        },
+        "error": {
+          ".validate": "newData.isString() && newData.val().length <= 160"
+        },
+        "at": {
+          ".validate": "newData.isNumber()"
+        },
+        "$other": {
+          ".validate": false
         }
       }
     }

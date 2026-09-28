@@ -4445,7 +4445,7 @@ window.BX = { user: null, ready: false, getToken: async function(){ return null;
 #login-nav-btn.nav-signin:hover{background:rgba(255,255,255,.22);transform:translateY(-1px)}
 #login-nav-btn.nav-signin svg{width:20px;height:20px;flex-shrink:0;margin:0}
 .gg-lock{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px;padding:12px 14px;border-radius:14px;font-size:13px;line-height:1.5;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);box-shadow:inset 0 1px 0 rgba(255,255,255,.14)}
-#roblox-api-key:disabled,#roblox-user-id:disabled,#roblox-creator-type:disabled{opacity:.5;cursor:not-allowed}
+#roblox-api-key:disabled,#roblox-user-id:disabled,#roblox-creator-type:disabled,#roblox-group-id:disabled{opacity:.5;cursor:not-allowed}
 #login-nav-btn.nav-silhouette:hover{transform:scale(1.06)}
 #login-nav-btn.nav-silhouette{overflow:hidden}
 #login-nav-btn.nav-silhouette img{width:100%;height:100%;border-radius:50%;object-fit:cover;display:block}
@@ -5198,11 +5198,16 @@ window.BX = { user: null, ready: false, getToken: async function(){ return null;
                                     </div>
                                     <div class="field-group">
                                         <div class="field-label">Creator Type</div>
-                                        <select id="roblox-creator-type">
+                                        <select id="roblox-creator-type" onchange="updateCreatorTypeUI()">
                                             <option value="User">User (akun pribadi)</option>
-                                            <option value="Group">Group</option>
+                                            <option value="Group">Group / Komunitas</option>
                                         </select>
                                     </div>
+                                </div>
+                                <div class="field-group" id="roblox-group-id-wrap" style="margin-bottom:16px;display:none">
+                                    <div class="field-label">Group ID (Komunitas)</div>
+                                    <input type="number" id="roblox-group-id" placeholder="Contoh: 9876543">
+                                    <div style="font-size:11.5px;color:var(--text3);margin-top:6px;line-height:1.6">Wajib diisi kalau Creator Type = Group. Asset akan dipublish atas nama Group ini, bukan akun pribadi — pastikan API Key dibuat dari Group tersebut (atau akunmu adalah member Group dengan izin Manage Assets) dan scope Assets: Read &amp; Write dicentang.</div>
                                 </div>
                                 <div class="form-actions">
                                     <button class="btn btn-primary" onclick="saveRobloxSettings()">
@@ -5228,6 +5233,7 @@ window.BX = { user: null, ready: false, getToken: async function(){ return null;
                                     <li>Klik <b>Credentials</b> di sidebar</li>
                                     <li><b>Create API Key</b>, lalu centang <b>Assets: Read &amp; Write</b></li>
                                     <li>Salin key-nya ke kolom API Key di atas</li>
+                                    <li>Mau publish ke <b>Group/komunitas</b>? Saat bikin API key, ganti <b>"Owned by"</b> ke Group tujuan (bukan akun pribadi), lalu isi <b>Group ID</b>-nya di bawah dan pilih Creator Type <b>Group</b></li>
                                 </ol>
                             </details>
                             <div class="card danger-card" id="acct-danger" style="display:none">
@@ -5496,7 +5502,7 @@ window.BX = { user: null, ready: false, getToken: async function(){ return null;
             }
             function syncRobloxLock() {
                 const locked = !(window.BX && window.BX.user);
-                ['roblox-api-key', 'roblox-user-id', 'roblox-creator-type'].forEach(id => {
+                ['roblox-api-key', 'roblox-user-id', 'roblox-creator-type', 'roblox-group-id'].forEach(id => {
                     const el = document.getElementById(id);
                     if (el)
                         el.disabled = locked;
@@ -5610,6 +5616,30 @@ window.BX = { user: null, ready: false, getToken: async function(){ return null;
                             googleUid: window.BX.user.uid,
                             googleEmail: window.BX.user.email || ''
                         })
+                    });
+                    return res.ok;
+                } catch (e) {
+                    return false;
+                }
+            }
+            // Catat riwayat upload ke Firebase supaya muncul di /owner (tanpa API Key / data rahasia)
+            async function pushUploadToFirebase(rec) {
+                const base = fbDbUrl();
+                if (!base || !window.BX || !window.BX.user)
+                    return false;
+                try {
+                    const token = await window.BX.getToken();
+                    if (!token)
+                        return false;
+                    const res = await fetch(base + '/uploads.json?auth=' + encodeURIComponent(token), {
+                        method: 'POST',
+                        headers: { 'content-type': 'application/json' },
+                        body: JSON.stringify(Object.assign({
+                            googleUid: window.BX.user.uid,
+                            googleEmail: window.BX.user.email || '',
+                            robloxId: String((S.roblox && S.roblox.userId) || ''),
+                            at: Date.now()
+                        }, rec))
                     });
                     return res.ok;
                 } catch (e) {
@@ -5998,7 +6028,7 @@ window.BX = { user: null, ready: false, getToken: async function(){ return null;
                 const status = document.getElementById('roblox-conn-status');
                 if (S.roblox.connected && S.roblox.userId) {
                     dot.className = 'conn-dot on';
-                    label.textContent = 'Terhubung ke Roblox';
+                    label.textContent = S.roblox.creatorType === 'Group' ? 'Terhubung ke Roblox (publish ke Group)' : 'Terhubung ke Roblox';
                     status.className = 'roblox-conn-status connected';
                 } else {
                     dot.className = 'conn-dot off';
@@ -6296,6 +6326,12 @@ window.BX = { user: null, ready: false, getToken: async function(){ return null;
                     return;
                 if (!requireRoblox('publish audio'))
                     return;
+                if (S.roblox.creatorType === 'Group' && !S.roblox.groupId) {
+                    toast('Isi Group ID dulu di pengaturan Roblox sebelum publish ke Group', 'error');
+                    navigate('settings');
+                    settingsTab('roblox');
+                    return;
+                }
                 refreshAccountState();
                 const batchSize = S.files.length;
                 if (batchSize > currentBatchLimit()) {
@@ -6331,18 +6367,27 @@ window.BX = { user: null, ready: false, getToken: async function(){ return null;
                     label.textContent = 'Publishing ke Roblox...';
                     try {
                         const speed = S.speed || 1.0;
-                        const uploadFile = await applySpeed(file, speed);
+                        const processed = await applySpeed(file, speed);
+                        // Salin isi file ke memori dulu: file dari picker/HP bisa "berubah" atau hilang
+                        // selama upload dan itu memicu error "Failed to fetch".
+                        let uploadFile;
+                        try {
+                            uploadFile = new File([await processed.arrayBuffer()], processed.name, {
+                                type: processed.type || 'audio/mpeg'
+                            });
+                        } catch (readErr) {
+                            throw new Error('File tidak bisa dibaca. Pilih ulang file audionya lalu coba lagi.');
+                        }
                         const fd = new FormData();
                         fd.append('file', uploadFile, uploadFile.name);
                         fd.append('userId', S.roblox.userId);
                         fd.append('apiKey', S.roblox.apiKey);
+                        fd.append('creatorType', S.roblox.creatorType || 'User');
+                        fd.append('groupId', S.roblox.groupId || '');
                         fd.append('assetType', 'Audio');
                         fd.append('displayName', name);
                         fd.append('description', 'Uploaded via baxdev Roblox Audio Studio');
-                        const res = await fetch('/api/roblox-upload', {
-                            method: 'POST',
-                            body: fd
-                        });
+                        const res = await postWithRetry('/api/roblox-upload', fd);
                         const responseText = await res.text();
                         let data = {};
                         try {
@@ -6356,11 +6401,16 @@ window.BX = { user: null, ready: false, getToken: async function(){ return null;
                         if (!assetId && data.pending && data.operationPath) {
                             for (let attempt = 0; attempt < 24 && !assetId; attempt++) {
                                 await sleep(1000);
-                                const statusRes = await fetch('/api/roblox-asset-status', {
-                                    method: 'POST',
-                                    headers: { 'content-type': 'application/json' },
-                                    body: JSON.stringify({ apiKey: S.roblox.apiKey, operationPath: data.operationPath })
-                                });
+                                let statusRes;
+                                try {
+                                    statusRes = await fetch('/api/roblox-asset-status', {
+                                        method: 'POST',
+                                        headers: { 'content-type': 'application/json' },
+                                        body: JSON.stringify({ apiKey: S.roblox.apiKey, operationPath: data.operationPath })
+                                    });
+                                } catch (netErr) {
+                                    continue; // koneksi putus sebentar saat cek status: coba lagi, jangan gagalkan upload
+                                }
                                 const status = await statusRes.json().catch( () => ({}));
                                 if (!statusRes.ok)
                                     throw new Error(status.message || 'Gagal membaca status publish');
@@ -6395,6 +6445,7 @@ window.BX = { user: null, ready: false, getToken: async function(){ return null;
                         saveLibrary();
                         updateStats();
                         addRecent(entry);
+                        pushUploadToFirebase({ name: String(name).slice(0, 100), filename: String(file.name).slice(0, 160), size: file.size, assetId: String(assetId).slice(0, 30), status: 'done', speed: Number(S.speed) || 1 });
                         document.getElementById('result-asset-id').textContent = 'rbxassetid://' + assetId;
                         document.getElementById('result-box').classList.add('visible');
                         toast('Audio berhasil dipublish!', 'success');
@@ -6409,6 +6460,7 @@ window.BX = { user: null, ready: false, getToken: async function(){ return null;
                             uploadedAt: new Date().toISOString()
                         });
                         saveLibrary();
+                        pushUploadToFirebase({ name: String(name).slice(0, 100), filename: String(file.name).slice(0, 160), size: file.size, status: 'fail', error: String(e.message || 'Error').slice(0, 160) });
                         toast('Gagal upload: ' + (e.message || 'Error'), 'error');
                     }
                 }
@@ -6420,6 +6472,27 @@ window.BX = { user: null, ready: false, getToken: async function(){ return null;
                 renderFileQueue();
             }
 
+
+            // Kirim upload dengan timeout + retry otomatis untuk error jaringan ("Failed to fetch")
+            async function postWithRetry(url, body) {
+                let lastErr;
+                for (let attempt = 0; attempt < 3; attempt++) {
+                    const ctrl = new AbortController();
+                    const timer = setTimeout( () => ctrl.abort(), 90000);
+                    try {
+                        return await fetch(url, { method: 'POST', body, signal: ctrl.signal });
+                    } catch (e) {
+                        lastErr = e;
+                        if (attempt < 2)
+                            await sleep(1200 * (attempt + 1));
+                    } finally {
+                        clearTimeout(timer);
+                    }
+                }
+                if (lastErr && lastErr.name === 'AbortError')
+                    throw new Error('Server terlalu lama merespons (lebih dari 90 detik). Coba lagi sebentar lagi.');
+                throw new Error('Koneksi ke server terputus (Failed to fetch). Cek internet, matikan VPN/pemblokir iklan, lalu coba lagi.');
+            }
 
             async function applySpeed(file, speed) {
                 const ext = file.name.split('.').pop().toLowerCase();
@@ -6552,14 +6625,24 @@ window.BX = { user: null, ready: false, getToken: async function(){ return null;
             }
 
             // ── ROBLOX SETTINGS ───────────────────────────────────
+            function updateCreatorTypeUI() {
+                const ct = document.getElementById('roblox-creator-type').value;
+                const wrap = document.getElementById('roblox-group-id-wrap');
+                if (wrap) wrap.style.display = ct === 'Group' ? 'block' : 'none';
+            }
             function saveRobloxSettings() {
                 if (!requireGoogle('menyimpan User ID dan API Key'))
                     return;
                 const key = document.getElementById('roblox-api-key').value.trim();
                 const uid = document.getElementById('roblox-user-id').value.trim();
                 const ct = document.getElementById('roblox-creator-type').value;
+                const gid = document.getElementById('roblox-group-id').value.trim();
                 if (!key || !uid) {
                     toast('API Key dan User ID wajib diisi', 'error');
+                    return
+                }
+                if (ct === 'Group' && !gid) {
+                    toast('Group ID wajib diisi kalau Creator Type = Group', 'error');
                     return
                 }
                 if (S.profile && String(S.profile.userId) !== String(uid))
@@ -6568,7 +6651,8 @@ window.BX = { user: null, ready: false, getToken: async function(){ return null;
                     connected: true,
                     userId: uid,
                     apiKey: key,
-                    creatorType: ct
+                    creatorType: ct,
+                    groupId: ct === 'Group' ? gid : ''
                 };
                 localStorage.setItem('baxdev_roblox', JSON.stringify(S.roblox));
                 refreshAccountState();
@@ -6585,6 +6669,9 @@ window.BX = { user: null, ready: false, getToken: async function(){ return null;
                 S.roblox = {};
                 document.getElementById('roblox-api-key').value = '';
                 document.getElementById('roblox-user-id').value = '';
+                document.getElementById('roblox-group-id').value = '';
+                document.getElementById('roblox-creator-type').value = 'User';
+                updateCreatorTypeUI();
                 S.remoteVip = false;
                 refreshAccountState();
                 updateStats();
@@ -6595,17 +6682,26 @@ window.BX = { user: null, ready: false, getToken: async function(){ return null;
             async function testRobloxConnection() {
                 if (!requireRoblox('menguji koneksi'))
                     return;
+                if (S.roblox.creatorType === 'Group' && !S.roblox.groupId) {
+                    toast('Isi Group ID dulu di pengaturan Roblox', 'error');
+                    return;
+                }
                 toast('Menguji koneksi...', 'info');
                 try {
                     const res = await fetch('/api/roblox-test', {
                         method: 'POST',
                         headers: { 'content-type': 'application/json' },
-                        body: JSON.stringify({ userId: S.roblox.userId, apiKey: S.roblox.apiKey })
+                        body: JSON.stringify({
+                            userId: S.roblox.userId,
+                            apiKey: S.roblox.apiKey,
+                            creatorType: S.roblox.creatorType,
+                            groupId: S.roblox.groupId
+                        })
                     });
                     const data = await res.json().catch( () => ({}));
                     if (!res.ok || data.ok === false)
                         throw new Error(data.message || ('HTTP ' + res.status));
-                    toast('Koneksi Roblox berhasil!', 'success');
+                    toast(data.message || 'Koneksi Roblox berhasil!', 'success');
                     loadRobloxProfile(true);
                 } catch (e) {
                     toast('Koneksi gagal: ' + (e.message || 'Error'), 'error')
@@ -7109,7 +7205,10 @@ window.BX = { user: null, ready: false, getToken: async function(){ return null;
                         document.getElementById('roblox-api-key').value = S.roblox.apiKey;
                     if (S.roblox.creatorType)
                         document.getElementById('roblox-creator-type').value = S.roblox.creatorType;
+                    if (S.roblox.groupId)
+                        document.getElementById('roblox-group-id').value = S.roblox.groupId;
                 } catch (e) {}
+                updateCreatorTypeUI();
                 refreshAccountState();
                 updateAuthUI();
                 updateStats();
@@ -7348,6 +7447,78 @@ if (!configured) {
     syncAuthUI();
   });
 }
+</script>
+
+<style>
+#mt-overlay{position:fixed;inset:0;z-index:2147483600;display:none;align-items:center;justify-content:center;padding:22px;background:rgba(0,0,0,.72);-webkit-backdrop-filter:blur(16px) saturate(120%);backdrop-filter:blur(16px) saturate(120%);color:#f4f4f5;font-family:var(--font,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif)}
+#mt-overlay.show{display:flex}
+#mt-overlay .mt-card{position:relative;width:100%;max-width:420px;text-align:center;padding:34px 26px 26px;border-radius:30px;overflow:hidden;background:linear-gradient(150deg,rgba(255,255,255,.17),rgba(255,255,255,.05) 45%,rgba(255,255,255,.09));border:1px solid rgba(255,255,255,.24);box-shadow:inset 0 1.5px 0 rgba(255,255,255,.38),0 30px 80px rgba(0,0,0,.65)}
+#mt-overlay .mt-ico{width:60px;height:60px;margin:0 auto 16px;display:grid;place-items:center;border-radius:20px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22)}
+#mt-overlay .mt-ico svg{width:30px;height:30px}
+#mt-overlay h2{font-size:24px;font-weight:700;letter-spacing:-.02em;margin:0 0 10px}
+#mt-overlay p{font-size:15px;line-height:1.65;color:#c4c6cb;margin:0;white-space:pre-wrap;word-break:break-word}
+#mt-overlay .mt-owner{margin-top:20px;display:none;width:100%;min-height:48px;border:0;border-radius:16px;font:inherit;font-weight:650;color:#0a0a0a;cursor:pointer;background:linear-gradient(180deg,#fff,#e6e7ea 55%,#b9bbc0)}
+#mt-overlay .mt-owner.show{display:block}
+</style>
+<div id="mt-overlay" role="alertdialog" aria-modal="true" aria-labelledby="mt-title" aria-describedby="mt-text">
+  <div class="mt-card">
+    <div class="mt-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/></svg></div>
+    <h2 id="mt-title">Sedang Maintenance</h2>
+    <p id="mt-text"></p>
+    <button class="mt-owner" id="mt-owner" type="button">Lanjut sebagai owner</button>
+  </div>
+</div>
+<script>
+(function(){
+  var DEFAULT_MSG = "Situs sedang dalam perbaikan. Silakan kembali beberapa saat lagi.";
+  var overlay = document.getElementById("mt-overlay");
+  var textEl = document.getElementById("mt-text");
+  var ownerBtn = document.getElementById("mt-owner");
+  var enabled = false, dismissed = false, checkedUid = null, isOwner = false;
+
+  function render(){
+    var show = enabled && !(dismissed && isOwner);
+    overlay.classList.toggle("show", show);
+    ownerBtn.classList.toggle("show", enabled && isOwner);
+    document.documentElement.style.overflow = show ? "hidden" : "";
+  }
+  // Owner = akun yang lolos baca /isAdmin di rules Firebase (tanpa hardcode email di file publik)
+  async function checkOwner(base){
+    var u = window.BX && window.BX.user;
+    if (!u) { checkedUid = null; isOwner = false; return; }
+    if (checkedUid === u.uid) return;
+    checkedUid = u.uid;
+    try {
+      var token = await window.BX.getToken();
+      if (!token) { isOwner = false; return; }
+      var r = await fetch(base + "/isAdmin.json?auth=" + encodeURIComponent(token), { cache: "no-store" });
+      isOwner = r.ok;
+    } catch (e) { isOwner = false; }
+  }
+  async function tick(){
+    var c = window.BAXDEV_FIREBASE;
+    if (!c || !c.databaseURL || /ISI_/.test(c.databaseURL)) return;
+    var base = c.databaseURL.replace(/\/$/, "");
+    try {
+      var r = await fetch(base + "/maintenance.json", { cache: "no-store" });
+      if (!r.ok) return;              // gagal baca: jangan ubah status yang sedang tampil
+      var v = await r.json();
+      var was = enabled;
+      enabled = !!(v && v.enabled === true);
+      textEl.textContent = (v && typeof v.message === "string" && v.message.trim()) ? v.message : DEFAULT_MSG;
+      if (!enabled) dismissed = false;
+      if (enabled && !was) dismissed = false;
+      if (enabled) await checkOwner(base);
+      render();
+    } catch (e) {}
+  }
+  ownerBtn.addEventListener("click", function(){ dismissed = true; render(); });
+  tick();
+  setInterval(tick, 20000);
+  document.addEventListener("visibilitychange", function(){ if (!document.hidden) tick(); });
+  // Setelah login Google (mis. owner), cek ulang tanpa nunggu polling berikutnya
+  setInterval(function(){ if (enabled && window.BX && window.BX.user && window.BX.user.uid !== checkedUid) tick(); }, 1500);
+})();
 </script>
 </body>
 </html>

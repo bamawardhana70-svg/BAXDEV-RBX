@@ -99,6 +99,11 @@ Keamanan: yang bisa baca daftar VIP/pesanan/kode dan menulis VIP secara bebas ha
 Publik cuma bisa membaca satu `vip/<userId>` (kalau tahu ID-nya) dan membuat pesanan baru berstatus pending.
 Tidak ada environment variable, KV, atau secret di Cloudflare: Project ID Firebase (`baxdev-rbx`) ditulis di `functions/_lib/auth.js`. Kalau ganti project Firebase, ubah konstanta `FIREBASE_PROJECT_ID` di file itu dan `firebase-config.js`.
 
+### Riwayat upload
+Setiap upload (berhasil atau gagal) dicatat ke `uploads/` di Realtime Database: nama, file, ukuran, Asset ID, email Google, dan Roblox User ID.
+API Key Roblox tidak ikut dikirim. Owner melihatnya di kartu **Riwayat upload** di /owner (200 terbaru, bisa dicari dan dihapus).
+Setelah update, publish ulang `database.rules.json`.
+
 ### Kode akses premium
 - Owner: `/owner` → kartu **Kode akses premium**. Isi teks kode sendiri (4–24 karakter: huruf, angka, tanda hubung; kosongkan untuk kode acak), durasi premium (jam atau hari, maks 365 hari), dan **maks. pemakai**. Tersimpan di `codes/<kode>`.
 - Pengguna: Pengaturan → Akun → **Tukar kode**. Butuh login Google dan Roblox User ID terhubung. Masa aktif ditambahkan ke `vip/<userId>`; kalau sudah VIP, masa aktifnya diperpanjang, dan VIP permanen tidak diubah.
@@ -108,3 +113,9 @@ Tidak ada environment variable, KV, atau secret di Cloudflare: Project ID Fireba
 - Jam perangkat yang meleset lebih dari sekitar 5 menit bisa membuat penukaran ditolak.
 
 Konfigurasi harga/paket ada di objek `PAYMENT` di `index.html` (`plans`, `adminWhatsapp`).
+
+### Mode maintenance
+- Owner: `/owner` → kartu **Mode maintenance**. Isi teks pop-up (maks. 500 karakter), lalu **Aktifkan maintenance** atau **Matikan**. Tersimpan di `maintenance/` (`enabled`, `message`, `updatedAt`).
+- Pengunjung: situs mengecek `maintenance.json` tiap 20 detik dan saat tab dibuka lagi, jadi pop-up muncul/hilang tanpa reload manual.
+- Owner yang login Google di situs utama mendapat tombol **Lanjut sebagai owner** untuk melewati pop-up (dicek lewat akses baca `isAdmin` di rules). Halaman `/owner` tidak terpengaruh.
+- Setelah update, publish ulang `database.rules.json` (node `maintenance` bisa dibaca publik, hanya owner yang bisa menulis).

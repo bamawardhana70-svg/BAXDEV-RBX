@@ -46,6 +46,15 @@ async function pollOperation(operationPath, apiKey) {
 }
 
 export async function onRequestPost(context) {
+  // Bungkus semua error tak terduga jadi JSON supaya klien dapat pesan jelas (bukan halaman HTML 500).
+  try {
+    return await handleUpload(context);
+  } catch (err) {
+    return json({ ok: false, message: "Kesalahan server saat upload: " + (err && err.message ? err.message : "tidak diketahui") }, 500);
+  }
+}
+
+async function handleUpload(context) {
   const { request } = context;
 
   const denied = await requireUser(request);
@@ -61,6 +70,8 @@ export async function onRequestPost(context) {
   const file = form.get("file");
   const userId = String(form.get("userId") || "").trim();
   const apiKey = String(form.get("apiKey") || "").trim();
+  const creatorType = String(form.get("creatorType") || "User").trim();
+  const groupId = String(form.get("groupId") || "").trim();
   const assetType = String(form.get("assetType") || "Audio");
   // Clamped to 30 chars here too (not just client-side) so this endpoint is
   // safe even if something else calls it directly.
@@ -73,6 +84,9 @@ export async function onRequestPost(context) {
   if (!userId || !apiKey) {
     return json({ ok: false, message: "userId dan apiKey wajib diisi." }, 400);
   }
+  if (creatorType === "Group" && !groupId) {
+    return json({ ok: false, message: "groupId wajib diisi kalau creatorType = Group." }, 400);
+  }
   if (file.size === 0) {
     return json({ ok: false, message: "File audio kosong (0 byte) — coba upload ulang dari halaman Upload." }, 400);
   }
@@ -81,11 +95,17 @@ export async function onRequestPost(context) {
     return json({ ok: false, message: "File audio melebihi batas 20MB." }, 400);
   }
 
+  // Publish target: personal account (userId) by default, or a Group/community
+  // (groupId) when the user picked "Group" as Creator Type in Settings. Roblox's
+  // Open Cloud Assets API keys creationContext.creator by whichever one is set —
+  // sending userId when the intent is Group silently publishes to the wrong
+  // owner instead of failing, so the branch has to be explicit here.
+  const creator = creatorType === "Group" ? { groupId } : { userId };
   const requestPayload = {
     assetType,
     displayName,
     description,
-    creationContext: { creator: { userId } }
+    creationContext: { creator }
   };
 
   const upstream = new FormData();
@@ -117,7 +137,10 @@ export async function onRequestPost(context) {
 
   if (!res.ok) {
     const detail = data.message || bodyText.slice(0, 200) || `HTTP ${res.status}`;
-    return json({ ok: false, message: `Roblox menolak upload (HTTP ${res.status}): ${detail}` });
+    const hint = creatorType === "Group" && (res.status === 401 || res.status === 403)
+      ? " Pastikan API key dibuat dari Group ini (atau kamu punya izin Manage Assets di Group), dan Group ID sudah benar."
+      : "";
+    return json({ ok: false, message: `Roblox menolak upload (HTTP ${res.status}): ${detail}${hint}` });
   }
 
   const operationPath = data.path || null;
