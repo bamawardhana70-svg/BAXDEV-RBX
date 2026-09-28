@@ -1,6 +1,7 @@
-# baxdev — Roblox Audio Studio
+# baxdev — Roblox Music Uploader
 
-Satu file `index.html` + Cloudflare Pages Functions di `functions/api/`.
+Platform upload musik ke Roblox. Satu file `index.html` + Cloudflare Pages Functions di `functions/api/`.
+Tema hitam · putih · silver dengan gaya liquid glass.
 Tanpa build step, tanpa login. Semua data (API Key, User ID, library, VIP, kuota)
 disimpan di localStorage browser masing-masing.
 
@@ -10,18 +11,20 @@ disimpan di localStorage browser masing-masing.
 index.html                       Aplikasi utama
 _headers                         Security header untuk file statis
 _routes.json                     Function cuma jalan untuk /api/* (file statis gak makan kuota Functions)
-admin.html                       Admin panel VIP + pesanan (buka di /admin.html, pakai localStorage)
-logo.png                         Logo untuk admin.html
+owner.html                       Owner panel VIP + pesanan (buka di /owner, login Firebase Auth)
+firebase-config.js               Config web Firebase (isi sendiri)
+database.rules.json              Security Rules Realtime Database (paste di Firebase Console)
+_redirects                       /admin dan /admin.html diarahkan ke /owner
+logo.png                         Logo untuk owner.html
 qris.jpg                         Gambar QRIS untuk tombol Buy VIP
+functions/_lib/auth.js            Verifikasi token login Google (dipakai semua endpoint /api/*; Project ID ditulis di file ini)
 functions/api/
   roblox-upload.js               Upload audio ke Roblox Open Cloud
   roblox-test.js                 Cek koneksi API Key + User ID
   roblox-asset-status.js         Cek status upload yang masih diproses
-  roblox-profile.js              Nama + avatar Roblox (belum dipakai di UI)
+  roblox-profile.js              Nama + avatar Roblox (avatar di pojok kanan atas dan Settings)
   youtube-download.js            Convert link YouTube ke MP3
   youtube-title.js               Ambil judul asli video (oEmbed YouTube)
-  vip-check.js                   Cek apakah User ID termasuk VIP (baca KV)
-  admin-vip.js                   Tambah/hapus/list VIP (butuh password admin)
 ```
 
 ## Deploy ke Cloudflare Pages
@@ -56,28 +59,46 @@ Build command dikosongkan, output directory diisi `/`.
 - Ganti nama domain: Pages → project → Custom domains.
 - Kalau `/api/*` membalas HTML atau 404, berarti folder `functions/` tidak ikut ter-upload atau project dibuat sebagai Workers.
 
-## Buy VIP (QRIS) dan Admin Panel — mode sementara (localStorage)
+## Buy VIP (QRIS) dan Owner Panel (Firebase)
 
-Alur:
-1. Pengguna klik **Buy VIP** (harus sudah mengisi Roblox User ID), pilih paket (7 hari Rp25.000 atau
-   1 bulan Rp50.000). Muncul QRIS dan nominal unik (harga paket + 1–99 rupiah) supaya pembayaran
-   bisa dicocokkan dengan mutasi.
-2. Setelah bayar, pengguna klik **Saya sudah bayar**. Pesanan berstatus menunggu dan tombol
-   **Hubungi admin** membuka WhatsApp dengan pesan konfirmasi (User ID, kode, paket, nominal).
-3. Admin cek mutasi di aplikasi merchant, lalu di `/admin.html` klik **Aktifkan** pada pesanan
-   (atau tambah VIP manual lewat User ID). Masa aktif mengikuti paket yang dipilih (7 atau 30 hari).
+Owner panel ada di `https://<nama-project>.pages.dev/owner`. Login pakai **Firebase Authentication**
+(email + password), data VIP dan pesanan disimpan di **Firebase Realtime Database**.
+Firebase Storage dan Firestore tidak dipakai.
 
-Konfigurasi ada di objek `PAYMENT` di `index.html`: `plans` (hari, label, harga) dan
-`adminWhatsapp` (nomor admin format internasional tanpa +).
+### Setup Firebase (sekali saja)
+1. console.firebase.google.com → buat project → **Add app → Web** → salin `firebaseConfig`.
+2. `firebase-config.js` sudah terisi untuk project `baxdev-rbx`. Cek `databaseURL` sama dengan yang tampil di tab Data Realtime Database (region non-US punya URL berbeda).
+3. **Build → Authentication → Sign-in method** → aktifkan **Google** (login pengguna, wajib) dan **Email/Password** (login owner). Tab Users → **Add user**
+   dengan email `baxdev@owner.id` dan password pilihanmu. Buat akun ini SEGERA setelah mengaktifkan Email/Password (lihat catatan keamanan di bawah).
+4. **Build → Realtime Database → Create database**. Tab **Rules** → paste isi `database.rules.json` → Publish.
+5. Tidak perlu node `admins`: owner dikenali dari email akun yang ditulis di `database.rules.json` (`auth.token.email`). Ganti owner = ganti email itu di rules lalu Publish.
+6. **Authentication → Settings → Authorized domains** → tambahkan domain `xxx.pages.dev` (dan domain custom).
+7. Deploy ulang ke Cloudflare Pages.
 
-Batasan mode sementara:
-- Semua data ada di localStorage browser (`baxdev_vip`, `baxdev_orders`). VIP yang diaktifkan di
-  admin.html hanya berlaku di browser yang sama, bukan di perangkat pengguna lain.
-- Pesanan hanya muncul di admin.html kalau dibuat di browser yang sama dengan panel.
-- Password admin (`baxdev_owner_hash`) hanya pintu di sisi klien, bukan keamanan sungguhan.
-- QRIS statis tidak terverifikasi otomatis.
+### Login Google wajib
+Situs bisa dibuka tanpa login, tapi kolom Roblox User ID dan API Key terkunci sampai login Google. Pojok kanan atas menampilkan tombol "Sign in" (ikon orang) sampai login Google
+terhubung. Kalau baru login Google, ikon berganti foto akun Google. Begitu Roblox terhubung, berganti avatar Roblox, dan gambar avatarnya disimpan otomatis di perangkat (dihapus hanya saat Hapus data Roblox / logout Roblox). Saat pengguna belum login Google lalu mencoba
+upload musik (klik/drop area upload) atau convert YouTube ke MP3, muncul pesan "Harus login..." dan
+pindah ke halaman login Google. Token Firebase otomatis dikirim ke setiap panggilan `/api/*` dan diverifikasi
+di server, jadi tidak bisa dilewati dengan memanggil API langsung. Pesanan VIP juga mencatat email Google pembelinya.
+Tombol **Keluar Google** ada di header Pengaturan.
 
-Supaya VIP berlaku lintas perangkat, pakai Cloudflare KV: `functions/api/vip-check.js` dan
-`functions/api/admin-vip.js` sudah ada. Binding `VIP_KV` dan secret `ADMIN_PASSWORD` di Pages
-(Settings → Bindings / Variables and Secrets), lalu admin.html perlu disambungkan kembali ke
-`/api/admin-vip`. Situs mengecek `/api/vip-check` tiap dibuka dan tiap User ID disimpan.
+### Alur
+1. Pengguna klik **Buy VIP**, pilih paket, bayar QRIS dengan nominal unik, lalu klik **Saya sudah bayar**.
+   Pesanan otomatis dikirim ke Firebase (`orders/<kode>`) dan muncul real-time di /owner.
+2. Owner cek mutasi, lalu klik **Aktifkan** (atau tambah VIP manual lewat User ID). Ini menulis `vip/<userId>`.
+3. Situs mengecek `vip/<userId>` di Firebase tiap dibuka, jadi VIP berlaku lintas perangkat.
+
+Keamanan: yang bisa baca daftar VIP/pesanan/kode dan menulis VIP secara bebas hanya akun dengan email owner di rules. Karena pengecekannya berdasarkan email, akun `baxdev@owner.id` harus dibuat lebih dulu oleh owner; kalau tidak, orang lain bisa mendaftarkan email itu lewat API Firebase. Kalau ada opsi menonaktifkan sign-up di Authentication → Settings → User actions, matikan. Pengguna hanya bisa menulis VIP lewat penukaran kode yang valid.
+Publik cuma bisa membaca satu `vip/<userId>` (kalau tahu ID-nya) dan membuat pesanan baru berstatus pending.
+Tidak ada environment variable, KV, atau secret di Cloudflare: Project ID Firebase (`baxdev-rbx`) ditulis di `functions/_lib/auth.js`. Kalau ganti project Firebase, ubah konstanta `FIREBASE_PROJECT_ID` di file itu dan `firebase-config.js`.
+
+### Kode akses premium
+- Owner: `/owner` → kartu **Kode akses premium**. Isi teks kode sendiri (4–24 karakter: huruf, angka, tanda hubung; kosongkan untuk kode acak), durasi premium (jam atau hari, maks 365 hari), dan **maks. pemakai**. Tersimpan di `codes/<kode>`.
+- Pengguna: Pengaturan → Akun → **Tukar kode**. Butuh login Google dan Roblox User ID terhubung. Masa aktif ditambahkan ke `vip/<userId>`; kalau sudah VIP, masa aktifnya diperpanjang, dan VIP permanen tidak diubah.
+- Tiap akun Google hanya bisa memakai satu kode satu kali (`redeems/<kode>/<uid>`). Kalau pemakai sudah mencapai batas, kode otomatis habis.
+- Penambahan hitungan pemakai, pencatatan pemakai, dan pemberian VIP ditulis dalam satu update atomik, dan **Security Rules** yang memvalidasinya. Setelah mengubah rules, publish ulang `database.rules.json`.
+- Kode kustom lebih mudah ditebak daripada kode acak. Untuk kode yang bernilai, pakai kode acak dan batasi jumlah pemakainya.
+- Jam perangkat yang meleset lebih dari sekitar 5 menit bisa membuat penukaran ditolak.
+
+Konfigurasi harga/paket ada di objek `PAYMENT` di `index.html` (`plans`, `adminWhatsapp`).

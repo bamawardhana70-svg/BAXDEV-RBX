@@ -1,3 +1,5 @@
+import { requireUser } from "../_lib/auth.js";
+
 // Cloudflare Pages Function — POST /api/youtube-title
 //
 // Sumber nama asset YouTube yang dulu dipakai (field "title" dari respons
@@ -10,6 +12,9 @@
 
 export async function onRequestPost(context) {
   const { request } = context;
+
+  const denied = await requireUser(request);
+  if (denied) return denied;
 
   let body;
   try {

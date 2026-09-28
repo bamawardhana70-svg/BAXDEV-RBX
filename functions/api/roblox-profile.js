@@ -1,18 +1,20 @@
+import { requireUser } from "../_lib/auth.js";
+
 // Cloudflare Pages Function — POST /api/roblox-profile
 //
-// Same rationale as roblox-test.js / roblox-upload.js: proxies Roblox calls
-// server-side so the browser never has to talk to Roblox's APIs directly.
-// The account-icon avatar previously called thumbnails.roblox.com straight
-// from the browser via fetch() — Roblox doesn't send CORS headers back for
-// that, so the fetch always failed and silently fell back to a legacy
-// "headshot-thumbnail" image endpoint that Roblox retired, which is why the
-// avatar never showed up. Routing both the username lookup and the avatar
-// lookup through this one Function (in parallel) fixes that at the root and
-// also gives the dashboard's welcome card a single place to pull name +
-// avatar from. Nothing here is logged or persisted.
+// Mengambil nama + avatar Roblox lewat server supaya browser tidak kena CORS
+// (thumbnails.roblox.com tidak mengirim header CORS ke browser).
+// Dipakai untuk avatar di pojok kanan atas dan kartu profil di Settings.
+//
+// Nama diambil dari users.roblox.com (publik, tanpa API key). Kalau gagal,
+// dicoba lewat Open Cloud (butuh API key dengan scope Users). Avatar diambil
+// dari Thumbnails API (publik). Tidak ada yang dicatat atau disimpan di server.
 
 export async function onRequestPost(context) {
   const { request } = context;
+
+  const denied = await requireUser(request);
+  if (denied) return denied;
 
   let body;
   try {
@@ -23,45 +25,55 @@ export async function onRequestPost(context) {
 
   const userId = String((body && body.userId) || "").trim();
   const apiKey = String((body && body.apiKey) || "").trim();
-  if (!userId || !apiKey) {
-    return json({ ok: false, message: "Isi Roblox User ID dan API Key dulu." });
+  if (!/^\d{1,20}$/.test(userId)) {
+    return json({ ok: false, message: "Roblox User ID tidak valid." });
   }
 
-  const [userResult, avatarResult] = await Promise.allSettled([
-    fetch(`https://apis.roblox.com/cloud/v2/users/${encodeURIComponent(userId)}`, {
-      headers: { "x-api-key": apiKey }
-    }),
-    // Thumbnails API tidak butuh API key, publik — tapi tetap lewat sini
-    // supaya satu request saja dan tidak kena CORS dari browser.
-    fetch(`https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=${encodeURIComponent(userId)}&size=150x150&format=Png&isCircular=true`)
+  const [publicResult, avatarResult, cloudResult] = await Promise.allSettled([
+    fetch(`https://users.roblox.com/v1/users/${userId}`),
+    fetch(`https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=${userId}&size=150x150&format=Png&isCircular=true`),
+    apiKey
+      ? fetch(`https://apis.roblox.com/cloud/v2/users/${userId}`, { headers: { "x-api-key": apiKey } })
+      : Promise.reject(new Error("no key"))
   ]);
 
-  if (userResult.status !== "fulfilled") {
-    return json({ ok: false, message: "Gagal menghubungi Roblox dari server: " + (userResult.reason && userResult.reason.message ? userResult.reason.message : "network error") });
+  let username = null;
+  let displayName = null;
+
+  if (publicResult.status === "fulfilled" && publicResult.value.ok) {
+    const d = await publicResult.value.json().catch(() => ({}));
+    username = d.name || null;
+    displayName = d.displayName || d.name || null;
   }
-  const userRes = userResult.value;
-  if (!userRes.ok) {
-    if (userRes.status === 401 || userRes.status === 403) {
-      return json({ ok: false, message: `API key ditolak (HTTP ${userRes.status}). Cek API key dan pastikan scope Users API sudah dicentang.` });
-    }
-    return json({ ok: false, message: `Roblox membalas HTTP ${userRes.status}.` });
+
+  if (!username && cloudResult.status === "fulfilled" && cloudResult.value.ok) {
+    const d = await cloudResult.value.json().catch(() => ({}));
+    username = d.name || null;
+    displayName = d.displayName || d.name || null;
   }
-  const userData = await userRes.json().catch(() => ({}));
 
   let avatarUrl = null;
   if (avatarResult.status === "fulfilled" && avatarResult.value.ok) {
-    const avatarData = await avatarResult.value.json().catch(() => null);
-    const entry = avatarData && avatarData.data && avatarData.data[0];
-    // state "Completed" berarti gambar beneran siap; kalau masih diproses
-    // Roblox tetap ngasih imageUrl (kadang placeholder), jadi cek dulu.
-    if (entry && entry.imageUrl && entry.state !== "Error") avatarUrl = entry.imageUrl;
+    const d = await avatarResult.value.json().catch(() => null);
+    const entry = d && d.data && d.data[0];
+    // "Completed" = gambar siap; state lain kadang cuma placeholder.
+    if (entry && entry.imageUrl && entry.state === "Completed") avatarUrl = entry.imageUrl;
   }
+
+  if (!username && !avatarUrl) {
+    return json({ ok: false, message: "Profil Roblox tidak ditemukan. Cek User ID kamu." });
+  }
+
+  // Gambar avatar dikirim langsung (data URL) supaya client bisa menyimpannya dan tetap tampil
+  // walau URL CDN Roblox berubah/kedaluwarsa.
+  const avatarData = avatarUrl ? await toDataUrl(avatarUrl) : null;
 
   return json({
     ok: true,
-    username: userData.name || null,
-    displayName: userData.displayName || userData.name || userId,
-    avatarUrl
+    username,
+    displayName: displayName || username || userId,
+    avatarUrl,
+    avatarData
   });
 }
 
@@ -74,4 +86,20 @@ function json(obj, status) {
     status: status || 200,
     headers: { "content-type": "application/json" }
   });
+}
+
+async function toDataUrl(url) {
+  try {
+    const res = await fetch(url);
+    if (!res.ok) return null;
+    const type = (res.headers.get("content-type") || "").split(";")[0];
+    if (!type.startsWith("image/")) return null;
+    const buf = new Uint8Array(await res.arrayBuffer());
+    if (!buf.length || buf.length > 200000) return null;
+    let bin = "";
+    for (let i = 0; i < buf.length; i += 0x8000) bin += String.fromCharCode.apply(null, buf.subarray(i, i + 0x8000));
+    return "data:" + type + ";base64," + btoa(bin);
+  } catch {
+    return null;
+  }
 }

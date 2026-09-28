@@ -1,3 +1,5 @@
+import { requireUser } from "../_lib/auth.js";
+
 // Cloudflare Pages Function — POST /api/roblox-test
 //
 // Same rationale as roblox-upload.js: proxies a call to Roblox's Open Cloud
@@ -6,6 +8,9 @@
 
 export async function onRequestPost(context) {
   const { request } = context;
+
+  const denied = await requireUser(request);
+  if (denied) return denied;
 
   let body;
   try {

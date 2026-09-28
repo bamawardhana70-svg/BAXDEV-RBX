@@ -1,3 +1,5 @@
+import { requireUser } from "../_lib/auth.js";
+
 // Cloudflare Pages Function — POST /api/roblox-upload
 //
 // Runs server-side (Cloudflare's edge), so unlike a fetch() from the app
@@ -45,6 +47,9 @@ async function pollOperation(operationPath, apiKey) {
 
 export async function onRequestPost(context) {
   const { request } = context;
+
+  const denied = await requireUser(request);
+  if (denied) return denied;
 
   let form;
   try {

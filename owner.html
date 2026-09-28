@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>baxdev — Owner Panel</title>
+<style>
+:root{--bg:#050505;--bg2:#0d0d0e;--glass:rgba(255,255,255,.055);--line:rgba(255,255,255,.10);--text:#f0f0f0;--text2:#a4a6ab;--danger:#ff5a5a;--ok:#44ff88;--warn:#ffaa44}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%}
+body{background:radial-gradient(1200px 600px at 70% -10%,#2b2b2e 0,transparent 60%),var(--bg);color:var(--text);font:15px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
+.wrap{max-width:720px;margin:0 auto;padding:22px 18px 60px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:22px}
+header img{height:44px;width:auto;filter:brightness(0) invert(1)}
+.tag{font-size:11px;letter-spacing:.18em;color:var(--text2);text-transform:uppercase}
+h1{font-size:26px;letter-spacing:-.02em;margin:4px 0 2px}
+.sub{color:var(--text2);font-size:13px;margin-bottom:20px}
+.card{background:var(--glass);border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:16px;backdrop-filter:blur(14px)}
+label{display:block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--text2);margin:0 0 6px}
+input{width:100%;background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:12px;color:var(--text);padding:12px 14px;font:inherit;outline:none}
+input:focus{border-color:rgba(190,222,226,.55)}
+.row{display:grid;grid-template-columns:1fr;gap:12px}
+@media(min-width:560px){.row.two{grid-template-columns:1fr 1.4fr}}
+.btn{border:1px solid var(--line);background:rgba(255,255,255,.07);color:var(--text);border-radius:12px;padding:11px 18px;font:inherit;font-weight:600;cursor:pointer}
+.btn:hover{background:rgba(255,255,255,.12)}
+.btn.primary{background:linear-gradient(180deg,#ffffff,#dfe0e3 50%,#aeb0b5);color:#060606;border-color:transparent}
+.btn.danger{color:var(--danger);border-color:rgba(255,90,90,.35);background:rgba(255,90,90,.08);padding:8px 14px;font-size:13px}
+.btn:disabled{opacity:.5;cursor:default}
+.stats{display:flex;gap:12px;margin-bottom:16px}
+.stat{flex:1;background:var(--glass);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
+.stat b{display:block;font-size:24px;line-height:1.2}#statLast{font-size:17px;line-height:2}
+.stat span{font-size:12px;color:var(--text2)}
+.msg{font-size:13px;margin-top:10px;min-height:1.2em}
+.msg.err{color:var(--danger)}.msg.ok{color:var(--ok)}
+.item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+.item:first-child{border-top:none}
+.item .id{font-weight:600;word-break:break-all}
+.item .meta{font-size:12px;color:var(--text2)}
+.empty{color:var(--text2);font-size:13px;padding:6px 0}
+.toolbar{display:flex;gap:10px;align-items:center;justify-content:space-between;margin-bottom:12px}
+.toolbar input{max-width:230px;padding:9px 12px}
+.hide{display:none!important}
+.note{font-size:12px;color:var(--text2);line-height:1.7}
+.note code{background:rgba(0,0,0,.3);padding:1px 6px;border-radius:6px}
+select{width:100%;background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:12px;color:var(--text);padding:12px 14px;font:inherit;outline:none}
+select:focus{border-color:rgba(190,222,226,.55)}
+.btn.small{padding:8px 14px;font-size:13px}
+.actions{display:flex;gap:8px;flex-shrink:0}
+.badge{display:inline-block;font-size:11px;padding:1px 8px;border-radius:999px;border:1px solid var(--line);color:var(--text2);margin-left:6px;vertical-align:middle}
+.badge.ok{color:var(--ok);border-color:rgba(68,255,136,.35)}
+.badge.off{color:var(--warn);border-color:rgba(255,170,68,.35)}
+.warn{font-size:12px;color:var(--warn);line-height:1.7;margin-bottom:16px}
+.row.three{grid-template-columns:1fr}
+@media(min-width:560px){.row.three{grid-template-columns:1fr 1.2fr 1fr}}
+
+.codebox{width:100%;min-height:96px;resize:vertical;background:rgba(0,0,0,.3);border:1px solid var(--line);border-radius:12px;color:var(--text);padding:10px 12px;font:12px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace;outline:none}
+.item .id.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px}
+.linkbtn{background:none;border:none;color:var(--text2);font:inherit;font-size:12px;text-decoration:underline;cursor:pointer;margin-left:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <img src="logo.png" alt="baxdev">
+    <button class="btn hide" id="logoutBtn" type="button">Keluar</button>
+  </header>
+
+  <!-- LOGIN -->
+  <section id="loginView">
+    <div class="tag">Owner Panel</div>
+    <h1>Masuk</h1>
+    <p class="sub">Login pakai akun Firebase Authentication milik owner.</p>
+    <div class="card">
+      <label for="email">Email</label>
+      <input id="email" type="email" autocomplete="username" placeholder="baxdev@owner.id">
+      <label for="pw" style="margin-top:12px">Password</label>
+      <input id="pw" type="password" autocomplete="current-password" placeholder="Password">
+      <div style="margin-top:14px;display:flex;align-items:center">
+        <button class="btn primary" id="loginBtn" type="button">Masuk</button>
+        <button class="linkbtn" id="resetBtn" type="button">Lupa password?</button>
+      </div>
+      <div class="msg" id="loginMsg" role="status"></div>
+          </div>
+  </section>
+
+  <!-- PANEL -->
+  <section id="panelView" class="hide">
+    <div class="tag">Owner Panel</div>
+    <h1>Kelola VIP</h1>
+    <p class="sub" id="who"></p>
+
+    <div class="stats">
+      <div class="stat"><b id="statActive">0</b><span>VIP aktif</span></div>
+      <div class="stat"><b id="statPending">0</b><span>Menunggu verifikasi</span></div>
+      <div class="stat"><b id="statCodes">0</b><span>Kode tersedia</span></div>
+    </div>
+
+    <div class="card">
+      <label style="margin-bottom:10px">Pesanan menunggu verifikasi</label>
+      <div id="orders"></div>
+      <div class="msg" id="orderMsg" role="status"></div>
+    </div>
+
+    <div class="card">
+      <div class="row three">
+        <div><label for="uid">Roblox User ID</label><input id="uid" inputmode="numeric" placeholder="Contoh: 123456789"></div>
+        <div><label for="note">Catatan (opsional)</label><input id="note" maxlength="80" placeholder="Nama / keterangan"></div>
+        <div><label for="days">Masa aktif</label>
+          <select id="days">
+            <option value="7">7 hari</option>
+            <option value="30">30 hari</option>
+            <option value="0">Permanen</option>
+          </select>
+        </div>
+      </div>
+      <div style="margin-top:14px"><button class="btn primary" id="addBtn" type="button">Tambah ke VIP</button></div>
+      <div class="msg" id="addMsg" role="status"></div>
+    </div>
+
+    <div class="card">
+      <label style="margin-bottom:10px">Kode akses premium</label>
+      <div class="row">
+        <div><label for="codeText">Kode (kosongkan untuk kode acak)</label>
+          <input id="codeText" maxlength="24" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Contoh: PROMO7">
+        </div>
+      </div>
+      <div class="row three" style="margin-top:12px">
+        <div><label for="codeDur">Durasi premium</label><input id="codeDur" type="number" inputmode="numeric" min="1" value="24"></div>
+        <div><label for="codeUnit">Satuan</label>
+          <select id="codeUnit">
+            <option value="1">Jam</option>
+            <option value="24">Hari</option>
+          </select>
+        </div>
+        <div><label for="codeMax">Maks. pemakai</label><input id="codeMax" type="number" inputmode="numeric" min="1" value="1"></div>
+      </div>
+      <div style="margin-top:14px"><button class="btn primary" id="codeBtn" type="button">Buat kode</button></div>
+      <div class="msg" id="codeMsg" role="status"></div>
+      <div id="codeList" style="margin-top:8px"></div>
+      <p class="note" style="margin-top:10px">Tiap akun Google hanya bisa memakai satu kode satu kali. Setelah kuota pemakai habis, kode otomatis tidak bisa dipakai lagi. Masa premium ditambahkan ke Roblox User ID pemakai.</p>
+    </div>
+
+    <div class="card">
+      <div class="toolbar">
+        <label for="search" style="margin:0">Daftar VIP</label>
+        <input id="search" placeholder="Cari ID / catatan">
+      </div>
+      <div id="list"></div>
+    </div>
+
+    <p class="note">Data tersimpan di Firebase Realtime Database, jadi VIP berlaku di semua perangkat dan pesanan dari pengguna muncul otomatis di sini. Pembayaran QRIS statis tidak terverifikasi otomatis: cek dulu mutasi di aplikasi merchant sebelum menekan Aktifkan.</p>
+  </section>
+</div>
+
+<script src="firebase-config.js"></script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import { getDatabase, ref, onValue, get, set, update, remove } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
+
+const $ = (id) => document.getElementById(id);
+const DAY_MS = 86400000;
+const CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // 32 karakter, tanpa I/O/0/1
+const MAX_CODE_HOURS = 8760;
+const MAX_CODE_USES = 100000;
+const REDEEMERS_SHOWN = 5;
+const cfg = window.BAXDEV_FIREBASE || {};
+const configured = cfg.apiKey && cfg.databaseURL && !/ISI_/.test(cfg.apiKey + cfg.databaseURL);
+
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function say(el,text,kind){el.textContent=text||"";el.className="msg"+(kind?" "+kind:"")}
+function fmtDate(ms){return new Date(ms).toLocaleDateString("id-ID",{day:"numeric",month:"short",year:"numeric"})}
+function fmtTime(ms){return new Date(ms).toLocaleString("id-ID",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})}
+function rupiah(n){return "Rp"+Number(n).toLocaleString("id-ID")}
+function isActive(v){return !v.expiresAt||v.expiresAt>Date.now()}
+
+if (!configured) {
+  say($("loginMsg"),"Firebase belum dikonfigurasi. Isi firebase-config.js dulu.","err");
+  $("loginBtn").disabled = true;
+}
+
+let auth, db, vipMap = {}, orderMap = {}, codeMap = {}, redeemMap = {}, unsubs = [];
+if (configured) {
+  const app = initializeApp(cfg);
+  auth = getAuth(app);
+  db = getDatabase(app);
+}
+
+/* ── Render ── */
+function renderOrders(){
+  const pending = Object.values(orderMap).filter(o=>o&&o.status==="pending").sort((a,b)=>b.createdAt-a.createdAt);
+  $("statPending").textContent = pending.length;
+  if(!pending.length){$("orders").innerHTML='<div class="empty">Belum ada pesanan yang menunggu.</div>';return}
+  $("orders").innerHTML = pending.map(o=>
+    '<div class="item"><div><div class="id">#'+esc(o.userId)+' · '+esc(rupiah(o.amount))+'</div>'+
+    '<div class="meta">'+esc(o.code)+' · '+esc(o.days)+' hari · '+esc(fmtTime(o.paidAt||o.createdAt))+(o.googleEmail?' · '+esc(o.googleEmail):'')+'</div></div>'+
+    '<div class="actions"><button class="btn small primary" type="button" data-approve="'+esc(o.code)+'">Aktifkan</button>'+
+    '<button class="btn danger" type="button" data-reject="'+esc(o.code)+'">Tolak</button></div></div>').join("");
+}
+function renderVip(){
+  const q = $("search").value.trim().toLowerCase();
+  const all = Object.entries(vipMap).map(([id,v])=>Object.assign({id},v)).sort((a,b)=>(b.addedAt||0)-(a.addedAt||0));
+  $("statActive").textContent = all.filter(isActive).length;
+  const shown = all.filter(v=>!q||v.id.indexOf(q)>-1||(v.note||"").toLowerCase().indexOf(q)>-1);
+  if(!shown.length){$("list").innerHTML='<div class="empty">'+(all.length?"Tidak ada yang cocok.":"Belum ada VIP.")+"</div>";return}
+  $("list").innerHTML = shown.map(v=>{
+    let st;
+    if(!v.expiresAt) st='<span class="badge ok">Permanen</span>';
+    else if(isActive(v)) st='<span class="badge ok">Sampai '+esc(fmtDate(v.expiresAt))+'</span>';
+    else st='<span class="badge off">Kedaluwarsa</span>';
+    return '<div class="item"><div><div class="id">#'+esc(v.id)+st+'</div>'+
+      '<div class="meta">'+esc(v.note||"Tanpa catatan")+(v.addedAt?" · "+esc(fmtDate(v.addedAt)):"")+'</div></div>'+
+      '<button class="btn danger" type="button" data-remove="'+esc(v.id)+'">Hapus</button></div>';
+  }).join("");
+}
+
+function hoursLabel(h){return h>=24&&h%24===0?(h/24)+" hari":h+" jam"}
+function renderCodes(){
+  const all = Object.values(codeMap).filter(Boolean).sort((a,b)=>b.createdAt-a.createdAt);
+  $("statCodes").textContent = all.filter(c=>c.uses<c.maxUses).length;
+  if(!all.length){$("codeList").innerHTML='<div class="empty">Belum ada kode.</div>';return}
+  $("codeList").innerHTML = all.map(c=>{
+    const full = c.uses>=c.maxUses;
+    const users = Object.values(redeemMap[c.code]||{}).map(x=>"#"+x.roblox);
+    const who = users.length?" · "+users.slice(0,REDEEMERS_SHOWN).join(", ")+(users.length>REDEEMERS_SHOWN?" +"+(users.length-REDEEMERS_SHOWN):""):"";
+    return '<div class="item"><div><div class="id mono">'+esc(c.code)+
+      '<span class="badge '+(full?'off':'ok')+'">'+esc(c.uses)+'/'+esc(c.maxUses)+' dipakai</span>'+
+      '<span class="badge">'+esc(hoursLabel(c.hours))+'</span></div>'+
+      '<div class="meta">Dibuat '+esc(fmtTime(c.createdAt))+esc(who)+'</div></div>'+
+      '<div class="actions"><button class="btn small" type="button" data-copy="'+esc(c.code)+'">Salin</button>'+
+      '<button class="btn danger" type="button" data-delcode="'+esc(c.code)+'">Hapus</button></div></div>';
+  }).join("");
+}
+
+/* ── Data ── */
+function vipEntry(id, days, note){
+  const cur = vipMap[id];
+  const entry = { addedAt: (cur&&cur.addedAt)||Date.now(), note: note!=null&&note!==""?note:((cur&&cur.note)||"") };
+  if(days===0) entry.expiresAt = 0;
+  else if(cur && !cur.expiresAt) entry.expiresAt = 0;           // sudah permanen, tetap permanen
+  else entry.expiresAt = Math.max(Date.now(),(cur&&cur.expiresAt)||0)+days*DAY_MS;
+  return entry;
+}
+function fail(el,e){
+  say(el, e && e.code==="PERMISSION_DENIED" || /permission/i.test(String(e&&e.message)) ? "Ditolak Firebase: akun ini bukan admin." : "Gagal menyimpan: "+(e&&e.message||e), "err");
+}
+async function approve(code){
+  const o = orderMap[code];
+  if(!o||o.status!=="pending"){return}
+  const updates = {};
+  updates["vip/"+o.userId] = vipEntry(String(o.userId), Number(o.days), "");
+  updates["orders/"+code+"/status"] = "approved";
+  updates["orders/"+code+"/handledAt"] = Date.now();
+  try{ await update(ref(db),updates); say($("orderMsg"),"Roblox #"+o.userId+" sekarang VIP "+o.days+" hari.","ok"); }
+  catch(e){ fail($("orderMsg"),e); }
+}
+async function reject(code){
+  const o = orderMap[code];
+  if(!o||o.status!=="pending"||!confirm("Tolak pesanan "+code+"?"))return;
+  try{ await update(ref(db,"orders/"+code),{status:"rejected",handledAt:Date.now()}); say($("orderMsg"),"Pesanan "+code+" ditolak.","ok"); }
+  catch(e){ fail($("orderMsg"),e); }
+}
+async function add(){
+  const id = $("uid").value.trim();
+  if(!/^\d{1,20}$/.test(id)){say($("addMsg"),"User ID harus berupa angka (maks 20 digit).","err");return}
+  const days = Number($("days").value);
+  try{
+    await update(ref(db,"vip"),{[id]:vipEntry(id,days,$("note").value.trim().slice(0,80))});
+    $("uid").value="";$("note").value="";
+    say($("addMsg"),"Roblox #"+id+" sekarang VIP"+(days?" "+days+" hari.":" permanen."),"ok");
+  }catch(e){ fail($("addMsg"),e); }
+}
+async function removeVip(id){
+  if(!confirm("Hapus VIP Roblox #"+id+"?"))return;
+  try{ await remove(ref(db,"vip/"+id)); say($("addMsg"),"VIP Roblox #"+id+" dihapus.","ok"); }
+  catch(e){ fail($("addMsg"),e); }
+}
+
+function makeCode(){
+  const b = new Uint8Array(12);
+  crypto.getRandomValues(b);
+  let out = "BX";
+  for(let i=0;i<b.length;i++){ if(i%4===0) out+="-"; out+=CODE_ALPHABET[b[i]%CODE_ALPHABET.length]; }
+  return out;
+}
+async function createCode(){
+  const typed = $("codeText").value.replace(/\s+/g,"").toUpperCase();
+  const code = typed || makeCode();
+  const hours = Number($("codeDur").value) * Number($("codeUnit").value);
+  const maxUses = Number($("codeMax").value);
+  if(!/^[A-Z0-9-]{4,24}$/.test(code)){say($("codeMsg"),"Kode 4–24 karakter: huruf, angka, atau tanda hubung.","err");return}
+  if(codeMap[code]){say($("codeMsg"),"Kode "+code+" sudah ada.","err");return}
+  if(!Number.isInteger(hours)||hours<1||hours>MAX_CODE_HOURS){say($("codeMsg"),"Durasi harus 1 jam sampai "+(MAX_CODE_HOURS/24)+" hari (bilangan bulat).","err");return}
+  if(!Number.isInteger(maxUses)||maxUses<1||maxUses>MAX_CODE_USES){say($("codeMsg"),"Maks. pemakai harus 1 sampai "+MAX_CODE_USES+".","err");return}
+  $("codeBtn").disabled = true; say($("codeMsg"),"Membuat kode...");
+  try{
+    await set(ref(db,"codes/"+code),{ code, hours, maxUses, uses: 0, createdAt: Date.now() });
+    $("codeText").value = "";
+    say($("codeMsg"),"Kode "+code+" dibuat: "+hoursLabel(hours)+", maks. "+maxUses+" pemakai.","ok");
+  }catch(e){ fail($("codeMsg"),e); }
+  finally{ $("codeBtn").disabled = false; }
+}
+async function copyText(text, el, okText){
+  try{ await navigator.clipboard.writeText(text); say(el,okText,"ok"); }
+  catch(e){ say(el,"Gagal menyalin otomatis. Blok dan salin manual.","err"); }
+}
+async function removeCode(code){
+  if(!confirm("Hapus kode "+code+"? Riwayat pemakainya ikut dihapus, VIP yang sudah diberikan tidak dicabut."))return;
+  try{ await update(ref(db),{["codes/"+code]:null,["redeems/"+code]:null}); say($("codeMsg"),"Kode "+code+" dihapus.","ok"); }
+  catch(e){ fail($("codeMsg"),e); }
+}
+
+/* ── Auth ── */
+function stopListening(){ unsubs.forEach(f=>f()); unsubs=[]; vipMap={}; orderMap={}; codeMap={}; redeemMap={}; }
+function listen(){
+  stopListening();
+  const onErr = (e)=>say($("orderMsg"),"Gagal membaca data: "+(e&&e.message||e),"err");
+  unsubs.push(onValue(ref(db,"vip"),s=>{vipMap=s.val()||{};renderVip()},onErr));
+  unsubs.push(onValue(ref(db,"orders"),s=>{orderMap=s.val()||{};renderOrders()},onErr));
+  unsubs.push(onValue(ref(db,"codes"),s=>{codeMap=s.val()||{};renderCodes()},onErr));
+  unsubs.push(onValue(ref(db,"redeems"),s=>{redeemMap=s.val()||{};renderCodes()},onErr));
+}
+function showLogin(){
+  stopListening();
+  $("panelView").classList.add("hide");$("logoutBtn").classList.add("hide");$("loginView").classList.remove("hide");
+}
+async function enter(user){
+  let isAdmin=false;
+  try{ await get(ref(db,"isAdmin")); isAdmin=true; }catch(e){}   // hanya lolos kalau rules Firebase mengenali akun ini sebagai owner
+  if(!isAdmin){
+    showLogin();
+    say($("loginMsg"),"Akun ini bukan owner. Login dengan email owner yang terdaftar di Firebase Authentication.","err");
+    await signOut(auth);
+    return;
+  }
+  say($("loginMsg"),"");
+  $("who").textContent=user.email||"";
+  $("loginView").classList.add("hide");$("panelView").classList.remove("hide");$("logoutBtn").classList.remove("hide");
+  listen();
+}
+async function login(){
+  const email=$("email").value.trim(), pw=$("pw").value;
+  if(!email||!pw){say($("loginMsg"),"Isi email dan password.","err");return}
+  $("loginBtn").disabled=true;say($("loginMsg"),"Memeriksa...");
+  try{ await signInWithEmailAndPassword(auth,email,pw); }
+  catch(e){
+    const bad=["auth/invalid-credential","auth/wrong-password","auth/user-not-found","auth/invalid-email"];
+    say($("loginMsg"),bad.indexOf(e.code)>-1?"Email atau password salah.":e.code==="auth/too-many-requests"?"Terlalu banyak percobaan. Coba lagi nanti.":"Gagal masuk: "+(e.code||e.message),"err");
+  }finally{ $("loginBtn").disabled=false; }
+}
+async function resetPw(){
+  const email=$("email").value.trim();
+  if(!email){say($("loginMsg"),"Isi email dulu, lalu klik Lupa password.","err");return}
+  try{ await sendPasswordResetEmail(auth,email); say($("loginMsg"),"Link reset password dikirim ke email itu (kalau terdaftar).","ok"); }
+  catch(e){ say($("loginMsg"),"Gagal kirim reset: "+(e.code||e.message),"err"); }
+}
+
+$("loginBtn").addEventListener("click",login);
+$("pw").addEventListener("keydown",e=>{if(e.key==="Enter")login()});
+$("resetBtn").addEventListener("click",()=>{if(configured)resetPw()});
+$("logoutBtn").addEventListener("click",()=>signOut(auth));
+$("addBtn").addEventListener("click",add);
+$("uid").addEventListener("keydown",e=>{if(e.key==="Enter")add()});
+$("search").addEventListener("input",renderVip);
+$("orders").addEventListener("click",e=>{
+  const a=e.target.closest("button[data-approve]");if(a){approve(a.dataset.approve);return}
+  const r=e.target.closest("button[data-reject]");if(r)reject(r.dataset.reject);
+});
+$("codeBtn").addEventListener("click",createCode);
+$("codeText").addEventListener("keydown",e=>{if(e.key==="Enter")createCode()});
+$("codeList").addEventListener("click",e=>{
+  const c=e.target.closest("button[data-copy]");if(c){copyText(c.dataset.copy,$("codeMsg"),"Kode "+c.dataset.copy+" disalin.");return}
+  const d=e.target.closest("button[data-delcode]");if(d)removeCode(d.dataset.delcode);
+});
+$("list").addEventListener("click",e=>{const b=e.target.closest("button[data-remove]");if(b)removeVip(b.dataset.remove)});
+
+if(configured){
+  onAuthStateChanged(auth,user=>{ if(user)enter(user); else showLogin(); });
+}
+</script>
+</body>
+</html>

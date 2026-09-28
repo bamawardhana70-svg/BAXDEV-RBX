@@ -1,3 +1,5 @@
+import { requireUser } from "../_lib/auth.js";
+
 // Cloudflare Pages Function — POST /api/youtube-download
 //
 // Proxy convert YouTube -> MP3 lewat api.theresav.eu, dipanggil dari server
@@ -23,6 +25,9 @@ const API_KEY = "U8LwW";
 
 export async function onRequestPost(context) {
   const { request } = context;
+
+  const denied = await requireUser(request);
+  if (denied) return denied;
 
   let body;
   try {
