@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>baxdev — Admin Panel</title>
+<style>
+:root{--bg:#14191e;--bg2:#1b2128;--glass:rgba(255,255,255,.055);--line:rgba(255,255,255,.10);--text:#f0f0f0;--text2:#8b96a0;--danger:#ff5a5a;--ok:#44ff88;--warn:#ffaa44}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%}
+body{background:radial-gradient(1200px 600px at 70% -10%,#1d3a44 0,transparent 60%),var(--bg);color:var(--text);font:15px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
+.wrap{max-width:720px;margin:0 auto;padding:22px 18px 60px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:22px}
+header img{height:44px;width:auto;filter:brightness(0) invert(1)}
+.tag{font-size:11px;letter-spacing:.18em;color:var(--text2);text-transform:uppercase}
+h1{font-size:26px;letter-spacing:-.02em;margin:4px 0 2px}
+.sub{color:var(--text2);font-size:13px;margin-bottom:20px}
+.card{background:var(--glass);border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:16px;backdrop-filter:blur(14px)}
+label{display:block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--text2);margin:0 0 6px}
+input{width:100%;background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:12px;color:var(--text);padding:12px 14px;font:inherit;outline:none}
+input:focus{border-color:rgba(190,222,226,.55)}
+.row{display:grid;grid-template-columns:1fr;gap:12px}
+@media(min-width:560px){.row.two{grid-template-columns:1fr 1.4fr}}
+.btn{border:1px solid var(--line);background:rgba(255,255,255,.07);color:var(--text);border-radius:12px;padding:11px 18px;font:inherit;font-weight:600;cursor:pointer}
+.btn:hover{background:rgba(255,255,255,.12)}
+.btn.primary{background:linear-gradient(135deg,#eafafa,#b9d9de);color:#12232a;border-color:transparent}
+.btn.danger{color:var(--danger);border-color:rgba(255,90,90,.35);background:rgba(255,90,90,.08);padding:8px 14px;font-size:13px}
+.btn:disabled{opacity:.5;cursor:default}
+.stats{display:flex;gap:12px;margin-bottom:16px}
+.stat{flex:1;background:var(--glass);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
+.stat b{display:block;font-size:24px;line-height:1.2}#statLast{font-size:17px;line-height:2}
+.stat span{font-size:12px;color:var(--text2)}
+.msg{font-size:13px;margin-top:10px;min-height:1.2em}
+.msg.err{color:var(--danger)}.msg.ok{color:var(--ok)}
+.item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+.item:first-child{border-top:none}
+.item .id{font-weight:600;word-break:break-all}
+.item .meta{font-size:12px;color:var(--text2)}
+.empty{color:var(--text2);font-size:13px;padding:6px 0}
+.toolbar{display:flex;gap:10px;align-items:center;justify-content:space-between;margin-bottom:12px}
+.toolbar input{max-width:230px;padding:9px 12px}
+.hide{display:none!important}
+.note{font-size:12px;color:var(--text2);line-height:1.7}
+.note code{background:rgba(0,0,0,.3);padding:1px 6px;border-radius:6px}
+select{width:100%;background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:12px;color:var(--text);padding:12px 14px;font:inherit;outline:none}
+select:focus{border-color:rgba(190,222,226,.55)}
+.btn.small{padding:8px 14px;font-size:13px}
+.actions{display:flex;gap:8px;flex-shrink:0}
+.badge{display:inline-block;font-size:11px;padding:1px 8px;border-radius:999px;border:1px solid var(--line);color:var(--text2);margin-left:6px;vertical-align:middle}
+.badge.ok{color:var(--ok);border-color:rgba(68,255,136,.35)}
+.badge.off{color:var(--warn);border-color:rgba(255,170,68,.35)}
+.warn{font-size:12px;color:var(--warn);line-height:1.7;margin-bottom:16px}
+.row.three{grid-template-columns:1fr}
+@media(min-width:560px){.row.three{grid-template-columns:1fr 1.2fr 1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <img src="logo.png" alt="baxdev">
+    <button class="btn hide" id="logoutBtn" type="button">Keluar</button>
+  </header>
+
+  <!-- LOGIN -->
+  <section id="loginView">
+    <div class="tag">Admin Panel</div>
+    <h1 id="loginTitle">Masuk</h1>
+    <p class="sub" id="loginSub">Masukkan password admin untuk browser ini.</p>
+    <div class="card">
+      <label for="pw">Password admin</label>
+      <input id="pw" type="password" autocomplete="current-password" placeholder="Minimal 4 karakter">
+      <div style="margin-top:14px"><button class="btn primary" id="loginBtn" type="button">Masuk</button></div>
+      <div class="msg" id="loginMsg" role="status"></div>
+    </div>
+  </section>
+
+  <!-- PANEL -->
+  <section id="panelView" class="hide">
+    <div class="tag">Admin Panel</div>
+    <h1>Kelola VIP</h1>
+    <p class="warn">Mode sementara: data disimpan di localStorage browser ini saja. VIP yang kamu aktifkan di sini hanya berlaku di browser ini, belum di perangkat pengguna lain.</p>
+
+    <div class="stats">
+      <div class="stat"><b id="statActive">0</b><span>VIP aktif</span></div>
+      <div class="stat"><b id="statPending">0</b><span>Menunggu verifikasi</span></div>
+    </div>
+
+    <div class="card">
+      <label style="margin-bottom:10px">Pesanan menunggu verifikasi</label>
+      <div id="orders"></div>
+      <div class="msg" id="orderMsg" role="status"></div>
+    </div>
+
+    <div class="card">
+      <div class="row three">
+        <div><label for="uid">Roblox User ID</label><input id="uid" inputmode="numeric" placeholder="Contoh: 123456789"></div>
+        <div><label for="note">Catatan (opsional)</label><input id="note" maxlength="80" placeholder="Nama / keterangan"></div>
+        <div><label for="days">Masa aktif</label>
+          <select id="days">
+            <option value="7">7 hari</option>
+            <option value="30">30 hari</option>
+            <option value="0">Permanen</option>
+          </select>
+        </div>
+      </div>
+      <div style="margin-top:14px"><button class="btn primary" id="addBtn" type="button">Tambah ke VIP</button></div>
+      <div class="msg" id="addMsg" role="status"></div>
+    </div>
+
+    <div class="card">
+      <div class="toolbar">
+        <label for="search" style="margin:0">Daftar VIP</label>
+        <input id="search" placeholder="Cari ID / catatan">
+      </div>
+      <div id="list"></div>
+    </div>
+
+    <p class="note">Pesanan dibuat dari tombol Buy VIP di situs dan hanya muncul kalau dibuat di browser yang sama dengan panel ini. Pembayaran QRIS statis tidak terverifikasi otomatis: cek dulu mutasi di aplikasi merchant sebelum menekan Aktifkan.</p>
+  </section>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var KEYS = {vip:"baxdev_vip", orders:"baxdev_orders", hash:"baxdev_owner_hash", session:"bx_admin_ok"};
+  var MIN_PASSWORD = 4;
+  var DAY_MS = 86400000;
+  var $ = function(id){return document.getElementById(id)};
+  var vipItems = [];
+  var orderItems = [];
+
+  function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+  function say(el,text,kind){el.textContent=text||"";el.className="msg"+(kind?" "+kind:"")}
+  function fmtDate(ms){return new Date(ms).toLocaleDateString("id-ID",{day:"numeric",month:"short",year:"numeric"})}
+  function fmtTime(ms){return new Date(ms).toLocaleString("id-ID",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})}
+  function rupiah(n){return "Rp" + Number(n).toLocaleString("id-ID")}
+
+  function readList(key){
+    try{var v=JSON.parse(localStorage.getItem(key)||"[]");return Array.isArray(v)?v:[]}catch(e){return []}
+  }
+  function writeList(key,list){
+    try{localStorage.setItem(key,JSON.stringify(list));return true}catch(e){return false}
+  }
+  async function sha256(text){
+    var buf=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(text));
+    return Array.from(new Uint8Array(buf)).map(function(b){return b.toString(16).padStart(2,"0")}).join("");
+  }
+  function isActive(v){return !v.expiresAt||v.expiresAt>Date.now()}
+
+  /* ── Data ── */
+  function reload(){
+    vipItems=readList(KEYS.vip);
+    orderItems=readList(KEYS.orders);
+  }
+
+  // days = 0 -> permanen. Kalau sudah VIP, masa aktif diperpanjang dari sisa waktunya.
+  function grant(id,days,note){
+    var list=readList(KEYS.vip);
+    var entry=list.find(function(v){return String(v.id)===id});
+    var isNew=!entry;
+    if(isNew){entry={id:id,addedAt:new Date().toLocaleDateString("id-ID")};list.push(entry)}
+    if(note)entry.note=note;
+    if(days===0)delete entry.expiresAt;
+    else if(isNew||entry.expiresAt)entry.expiresAt=Math.max(Date.now(),entry.expiresAt||0)+days*DAY_MS;
+    return writeList(KEYS.vip,list);
+  }
+
+  /* ── Render ── */
+  function renderOrders(){
+    var pending=orderItems.filter(function(o){return o.status==="pending"}).sort(function(a,b){return b.createdAt-a.createdAt});
+    $("statPending").textContent=pending.length;
+    if(!pending.length){$("orders").innerHTML='<div class="empty">Belum ada pesanan yang menunggu.</div>';return}
+    $("orders").innerHTML=pending.map(function(o){
+      return '<div class="item"><div><div class="id">#'+esc(o.userId)+' · '+esc(rupiah(o.amount))+'</div>'+
+        '<div class="meta">'+esc(o.code)+' · '+esc(o.days)+' hari · '+esc(fmtTime(o.createdAt))+'</div></div>'+
+        '<div class="actions"><button class="btn small primary" type="button" data-approve="'+esc(o.code)+'">Aktifkan</button>'+
+        '<button class="btn danger" type="button" data-reject="'+esc(o.code)+'">Tolak</button></div></div>';
+    }).join("");
+  }
+
+  function renderVip(){
+    var q=$("search").value.trim().toLowerCase();
+    var active=vipItems.filter(isActive).length;
+    $("statActive").textContent=active;
+    var shown=vipItems.map(function(v,i){return {v:v,i:i}}).filter(function(x){
+      return !q||String(x.v.id).indexOf(q)>-1||(x.v.note||"").toLowerCase().indexOf(q)>-1;
+    }).reverse();
+    if(!shown.length){$("list").innerHTML='<div class="empty">'+(vipItems.length?"Tidak ada yang cocok.":"Belum ada VIP.")+"</div>";return}
+    $("list").innerHTML=shown.map(function(x){
+      var v=x.v,status;
+      if(!v.expiresAt)status='<span class="badge ok">Permanen</span>';
+      else if(isActive(v))status='<span class="badge ok">Sampai '+esc(fmtDate(v.expiresAt))+'</span>';
+      else status='<span class="badge off">Kedaluwarsa</span>';
+      return '<div class="item"><div><div class="id">#'+esc(v.id)+status+'</div>'+
+        '<div class="meta">'+esc(v.note||"Tanpa catatan")+(v.addedAt?" · "+esc(v.addedAt):"")+'</div></div>'+
+        '<button class="btn danger" type="button" data-remove="'+esc(v.id)+'">Hapus</button></div>';
+    }).join("");
+  }
+
+  function render(){reload();renderOrders();renderVip()}
+
+  /* ── Actions ── */
+  function approve(code){
+    var orders=readList(KEYS.orders);
+    var order=orders.find(function(o){return o.code===code});
+    if(!order||order.status!=="pending"){render();return}
+    if(!grant(String(order.userId),order.days)){say($("orderMsg"),"Gagal menyimpan. Penyimpanan browser penuh atau diblokir.","err");return}
+    order.status="approved";order.handledAt=Date.now();
+    if(!writeList(KEYS.orders,orders)){say($("orderMsg"),"VIP aktif, tapi status pesanan gagal disimpan.","err");render();return}
+    say($("orderMsg"),"Roblox #"+order.userId+" sekarang VIP "+order.days+" hari.","ok");
+    render();
+  }
+
+  function reject(code){
+    var orders=readList(KEYS.orders);
+    var order=orders.find(function(o){return o.code===code});
+    if(!order||order.status!=="pending"){render();return}
+    if(!confirm("Tolak pesanan "+code+"?"))return;
+    order.status="rejected";order.handledAt=Date.now();
+    if(!writeList(KEYS.orders,orders)){say($("orderMsg"),"Gagal menyimpan perubahan.","err");return}
+    say($("orderMsg"),"Pesanan "+code+" ditolak.","ok");
+    render();
+  }
+
+  function add(){
+    var id=$("uid").value.trim();
+    if(!/^\d{1,20}$/.test(id)){say($("addMsg"),"User ID harus berupa angka (maks 20 digit).","err");return}
+    var days=Number($("days").value);
+    if(!grant(id,days,$("note").value.trim().slice(0,80))){say($("addMsg"),"Gagal menyimpan. Penyimpanan browser penuh atau diblokir.","err");return}
+    $("uid").value="";$("note").value="";
+    say($("addMsg"),"Roblox #"+id+" sekarang VIP"+(days?" "+days+" hari.":" permanen."),"ok");
+    render();
+  }
+
+  function remove(id){
+    if(!confirm("Hapus VIP Roblox #"+id+"?"))return;
+    var list=readList(KEYS.vip).filter(function(v){return String(v.id)!==id});
+    if(!writeList(KEYS.vip,list)){say($("addMsg"),"Gagal menyimpan perubahan.","err");return}
+    say($("addMsg"),"VIP Roblox #"+id+" dihapus.","ok");
+    render();
+  }
+
+  /* ── Login (password lokal, hash dibagi dengan Admin Panel di index.html) ── */
+  function showPanel(){
+    $("loginView").classList.add("hide");$("panelView").classList.remove("hide");$("logoutBtn").classList.remove("hide");
+    render();
+  }
+  function logout(){
+    try{sessionStorage.removeItem(KEYS.session)}catch(e){}
+    $("panelView").classList.add("hide");$("logoutBtn").classList.add("hide");$("loginView").classList.remove("hide");$("pw").value="";
+  }
+  function setupLoginView(){
+    var first=!localStorage.getItem(KEYS.hash);
+    $("loginTitle").textContent=first?"Buat password":"Masuk";
+    $("loginSub").textContent=first?"Belum ada password admin di browser ini. Password yang kamu ketik sekarang akan disimpan (dalam bentuk hash).":"Masukkan password admin untuk browser ini.";
+    $("loginBtn").textContent=first?"Simpan dan masuk":"Masuk";
+  }
+  async function login(){
+    var pw=$("pw").value;
+    if(pw.length<MIN_PASSWORD){say($("loginMsg"),"Password minimal "+MIN_PASSWORD+" karakter.","err");return}
+    $("loginBtn").disabled=true;say($("loginMsg"),"Memeriksa...");
+    try{
+      var hash=await sha256(pw);
+      var stored=localStorage.getItem(KEYS.hash);
+      if(!stored)localStorage.setItem(KEYS.hash,hash);
+      else if(hash!==stored){say($("loginMsg"),"Password salah.","err");return}
+      try{sessionStorage.setItem(KEYS.session,"1")}catch(e){}
+      say($("loginMsg"),"");showPanel();
+    }catch(e){
+      say($("loginMsg"),"Tidak bisa memeriksa password. Buka lewat HTTPS atau localhost.","err");
+    }finally{
+      $("loginBtn").disabled=false;
+    }
+  }
+
+  $("loginBtn").addEventListener("click",login);
+  $("pw").addEventListener("keydown",function(e){if(e.key==="Enter")login()});
+  $("addBtn").addEventListener("click",add);
+  $("uid").addEventListener("keydown",function(e){if(e.key==="Enter")add()});
+  $("search").addEventListener("input",renderVip);
+  $("logoutBtn").addEventListener("click",logout);
+  $("orders").addEventListener("click",function(e){
+    var a=e.target.closest("button[data-approve]");if(a){approve(a.dataset.approve);return}
+    var r=e.target.closest("button[data-reject]");if(r)reject(r.dataset.reject);
+  });
+  $("list").addEventListener("click",function(e){var b=e.target.closest("button[data-remove]");if(b)remove(b.dataset.remove)});
+  // Pesanan baru dari tab situs yang terbuka di browser yang sama
+  window.addEventListener("storage",function(e){
+    if(!$("panelView").classList.contains("hide")&&(e.key===KEYS.orders||e.key===KEYS.vip))render();
+  });
+
+  setupLoginView();
+  var unlocked=false;
+  try{unlocked=sessionStorage.getItem(KEYS.session)==="1"&&!!localStorage.getItem(KEYS.hash)}catch(e){}
+  if(unlocked)showPanel();
+})();
+</script>
+</body>
+</html>
