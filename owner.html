@@ -153,6 +153,18 @@ select:focus{border-color:rgba(190,222,226,.55)}
       <div id="list"></div>
     </div>
 
+    <div class="card">
+      <label style="margin-bottom:10px">Ganti password owner</label>
+      <div class="row">
+        <div><label for="pwCur">Password sekarang</label><input id="pwCur" type="password" autocomplete="current-password" placeholder="Password sekarang"></div>
+        <div><label for="pwNew">Password baru</label><input id="pwNew" type="password" autocomplete="new-password" placeholder="Minimal 6 karakter"></div>
+        <div><label for="pwNew2">Ulangi password baru</label><input id="pwNew2" type="password" autocomplete="new-password" placeholder="Ulangi password baru"></div>
+      </div>
+      <div style="margin-top:14px"><button class="btn primary" id="pwBtn" type="button">Simpan password</button></div>
+      <div class="msg" id="pwMsg" role="status"></div>
+      <p class="note" style="margin-top:10px">Password tersimpan di Firebase Authentication untuk akun yang sedang login, jadi berlaku di semua perangkat.</p>
+    </div>
+
     <p class="note">Data tersimpan di Firebase Realtime Database, jadi VIP berlaku di semua perangkat dan pesanan dari pengguna muncul otomatis di sini. Pembayaran QRIS statis tidak terverifikasi otomatis: cek dulu mutasi di aplikasi merchant sebelum menekan Aktifkan.</p>
   </section>
 </div>
@@ -160,7 +172,7 @@ select:focus{border-color:rgba(190,222,226,.55)}
 <script src="firebase-config.js"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 import { getDatabase, ref, onValue, get, set, update, remove } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
 
 const $ = (id) => document.getElementById(id);
@@ -178,6 +190,7 @@ function fmtDate(ms){return new Date(ms).toLocaleDateString("id-ID",{day:"numeri
 function fmtTime(ms){return new Date(ms).toLocaleString("id-ID",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})}
 function rupiah(n){return "Rp"+Number(n).toLocaleString("id-ID")}
 function isActive(v){return !v.expiresAt||v.expiresAt>Date.now()}
+function withTimeout(p,ms){return new Promise((res,rej)=>{const t=setTimeout(()=>rej(Object.assign(new Error("timeout"),{code:"timeout"})),ms);p.then(v=>{clearTimeout(t);res(v)},e=>{clearTimeout(t);rej(e)})})}
 
 if (!configured) {
   say($("loginMsg"),"Firebase belum dikonfigurasi. Isi firebase-config.js dulu.","err");
@@ -329,29 +342,63 @@ function showLogin(){
   stopListening();
   $("panelView").classList.add("hide");$("logoutBtn").classList.add("hide");$("loginView").classList.remove("hide");
 }
+let entering=false;
 async function enter(user){
-  let isAdmin=false;
-  try{ await get(ref(db,"isAdmin")); isAdmin=true; }catch(e){}   // hanya lolos kalau rules Firebase mengenali akun ini sebagai owner
-  if(!isAdmin){
-    showLogin();
-    say($("loginMsg"),"Akun ini bukan owner. Login dengan email owner yang terdaftar di Firebase Authentication.","err");
-    await signOut(auth);
-    return;
-  }
-  say($("loginMsg"),"");
-  $("who").textContent=user.email||"";
-  $("loginView").classList.add("hide");$("panelView").classList.remove("hide");$("logoutBtn").classList.remove("hide");
-  listen();
+  if(entering)return;
+  entering=true;
+  try{
+    let isAdmin=false, netErr=false;
+    try{ await withTimeout(get(ref(db,"isAdmin")),12000); isAdmin=true; }   // hanya lolos kalau rules Firebase mengenali akun ini sebagai owner
+    catch(e){
+      const denied = (e&&e.code==="PERMISSION_DENIED") || /permission/i.test(String(e&&e.message));
+      if(!denied) netErr=true;
+    }
+    if(netErr){
+      showLogin();
+      say($("loginMsg"),"Login berhasil, tapi database Firebase tidak merespons. Cek databaseURL di firebase-config.js (region non-US punya URL berbeda), pastikan Realtime Database sudah dibuat dan rules sudah dipublish.","err");
+      await signOut(auth);
+      return;
+    }
+    if(!isAdmin){
+      showLogin();
+      say($("loginMsg"),"Akun ini bukan owner. Login dengan email owner yang terdaftar di rules Firebase.","err");
+      await signOut(auth);
+      return;
+    }
+    say($("loginMsg"),"");
+    $("who").textContent=user.email||"";
+    $("loginView").classList.add("hide");$("panelView").classList.remove("hide");$("logoutBtn").classList.remove("hide");
+    listen();
+  }finally{ entering=false; }
 }
 async function login(){
   const email=$("email").value.trim(), pw=$("pw").value;
   if(!email||!pw){say($("loginMsg"),"Isi email dan password.","err");return}
   $("loginBtn").disabled=true;say($("loginMsg"),"Memeriksa...");
-  try{ await signInWithEmailAndPassword(auth,email,pw); }
+  try{ await withTimeout(signInWithEmailAndPassword(auth,email,pw),15000); }
   catch(e){
     const bad=["auth/invalid-credential","auth/wrong-password","auth/user-not-found","auth/invalid-email"];
-    say($("loginMsg"),bad.indexOf(e.code)>-1?"Email atau password salah.":e.code==="auth/too-many-requests"?"Terlalu banyak percobaan. Coba lagi nanti.":"Gagal masuk: "+(e.code||e.message),"err");
+    say($("loginMsg"),bad.indexOf(e.code)>-1?"Email atau password salah.":e.code==="auth/too-many-requests"?"Terlalu banyak percobaan. Coba lagi nanti.":e.code==="timeout"||e.code==="auth/network-request-failed"?"Server login tidak merespons. Cek koneksi internet lalu coba lagi.":"Gagal masuk: "+(e.code||e.message),"err");
   }finally{ $("loginBtn").disabled=false; }
+}
+async function changePw(){
+  const el=$("pwMsg"), user=auth&&auth.currentUser;
+  const cur=$("pwCur").value, n1=$("pwNew").value, n2=$("pwNew2").value;
+  if(!user||!user.email){say(el,"Belum login.","err");return}
+  if(!cur||!n1||!n2){say(el,"Isi semua kolom.","err");return}
+  if(n1.length<6){say(el,"Password baru minimal 6 karakter.","err");return}
+  if(n1!==n2){say(el,"Konfirmasi password tidak sama.","err");return}
+  if(n1===cur){say(el,"Password baru harus beda dari yang sekarang.","err");return}
+  $("pwBtn").disabled=true;say(el,"Menyimpan...");
+  try{
+    await reauthenticateWithCredential(user,EmailAuthProvider.credential(user.email,cur));
+    await updatePassword(user,n1);
+    $("pwCur").value="";$("pwNew").value="";$("pwNew2").value="";
+    say(el,"Password berhasil diganti dan tersimpan.","ok");
+  }catch(e){
+    const c=e&&e.code;
+    say(el,c==="auth/invalid-credential"||c==="auth/wrong-password"?"Password sekarang salah.":c==="auth/weak-password"?"Password baru terlalu lemah.":c==="auth/too-many-requests"?"Terlalu banyak percobaan. Coba lagi nanti.":"Gagal mengganti password: "+(c||(e&&e.message)||e),"err");
+  }finally{ $("pwBtn").disabled=false; }
 }
 async function resetPw(){
   const email=$("email").value.trim();
@@ -364,6 +411,8 @@ $("loginBtn").addEventListener("click",login);
 $("pw").addEventListener("keydown",e=>{if(e.key==="Enter")login()});
 $("resetBtn").addEventListener("click",()=>{if(configured)resetPw()});
 $("logoutBtn").addEventListener("click",()=>signOut(auth));
+$("pwBtn").addEventListener("click",changePw);
+$("pwNew2").addEventListener("keydown",e=>{if(e.key==="Enter")changePw()});
 $("addBtn").addEventListener("click",add);
 $("uid").addEventListener("keydown",e=>{if(e.key==="Enter")add()});
 $("search").addEventListener("input",renderVip);

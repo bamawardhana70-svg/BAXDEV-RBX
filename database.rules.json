@@ -3,10 +3,10 @@
     ".read": false,
     ".write": false,
     "vip": {
-      ".read": "auth != null && auth.token.email === 'baxdev@owner.id'",
+      ".read": "auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')",
       "$userId": {
         ".read": true,
-        ".write": "(auth != null && auth.token.email === 'baxdev@owner.id') || (auth != null && newData.child('code').isString() && root.child('codes').child(newData.child('code').val()).child('hours').isNumber() && root.child('codes').child(newData.child('code').val()).child('uses').val() < root.child('codes').child(newData.child('code').val()).child('maxUses').val() && !root.child('redeems').child(newData.child('code').val()).child(auth.uid).exists() && newData.parent().parent().child('codes').child(newData.child('code').val()).child('uses').val() === root.child('codes').child(newData.child('code').val()).child('uses').val() + 1 && newData.parent().parent().child('redeems').child(newData.child('code').val()).child(auth.uid).child('roblox').val() === $userId && !(data.exists() && data.child('expiresAt').val() === 0) && newData.child('expiresAt').val() > 0 && newData.child('expiresAt').val() <= (data.exists() && data.child('expiresAt').val() > now ? data.child('expiresAt').val() : now) + root.child('codes').child(newData.child('code').val()).child('hours').val() * 3600000 + 300000)",
+        ".write": "(auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')) || (auth != null && newData.child('code').isString() && root.child('codes').child(newData.child('code').val()).child('hours').isNumber() && root.child('codes').child(newData.child('code').val()).child('uses').val() < root.child('codes').child(newData.child('code').val()).child('maxUses').val() && !root.child('redeems').child(newData.child('code').val()).child(auth.uid).exists() && newData.parent().parent().child('codes').child(newData.child('code').val()).child('uses').val() === root.child('codes').child(newData.child('code').val()).child('uses').val() + 1 && newData.parent().parent().child('redeems').child(newData.child('code').val()).child(auth.uid).child('roblox').val() === $userId && !(data.exists() && data.child('expiresAt').val() === 0) && newData.child('expiresAt').val() > 0 && newData.child('expiresAt').val() <= (data.exists() && data.child('expiresAt').val() > now ? data.child('expiresAt').val() : now) + root.child('codes').child(newData.child('code').val()).child('hours').val() * 3600000 + 300000)",
         ".validate": "$userId.matches(/^[0-9]{1,20}$/) && newData.hasChildren(['addedAt', 'expiresAt'])",
         "addedAt": {
           ".validate": "newData.isNumber()"
@@ -26,9 +26,9 @@
       }
     },
     "orders": {
-      ".read": "auth != null && auth.token.email === 'baxdev@owner.id'",
+      ".read": "auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')",
       "$code": {
-        ".write": "(auth != null && auth.token.email === 'baxdev@owner.id') || (auth != null && !data.exists() && newData.exists() && newData.child('status').val() === 'pending' && newData.child('googleUid').val() === auth.uid)",
+        ".write": "(auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')) || (auth != null && !data.exists() && newData.exists() && newData.child('status').val() === 'pending' && newData.child('googleUid').val() === auth.uid)",
         ".validate": "$code.matches(/^BX-[A-Z0-9]{4}$/) && newData.hasChildren(['code', 'userId', 'amount', 'days', 'status', 'createdAt', 'googleUid'])",
         "code": {
           ".validate": "newData.val() === $code"
@@ -66,10 +66,10 @@
       }
     },
     "codes": {
-      ".read": "auth != null && auth.token.email === 'baxdev@owner.id'",
+      ".read": "auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')",
       "$code": {
         ".read": "auth != null",
-        ".write": "(auth != null && auth.token.email === 'baxdev@owner.id') || (auth != null && data.exists() && newData.child('uses').val() === data.child('uses').val() + 1 && newData.child('hours').val() === data.child('hours').val() && newData.child('maxUses').val() === data.child('maxUses').val() && newData.child('createdAt').val() === data.child('createdAt').val() && !root.child('redeems').child($code).child(auth.uid).exists() && newData.parent().parent().child('redeems').child($code).child(auth.uid).exists())",
+        ".write": "(auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')) || (auth != null && data.exists() && newData.child('uses').val() === data.child('uses').val() + 1 && newData.child('hours').val() === data.child('hours').val() && newData.child('maxUses').val() === data.child('maxUses').val() && newData.child('createdAt').val() === data.child('createdAt').val() && !root.child('redeems').child($code).child(auth.uid).exists() && newData.parent().parent().child('redeems').child($code).child(auth.uid).exists())",
         ".validate": "$code.matches(/^[A-Z0-9-]{4,24}$/) && newData.hasChildren(['code', 'hours', 'maxUses', 'uses', 'createdAt'])",
         "code": {
           ".validate": "newData.val() === $code"
@@ -92,11 +92,11 @@
       }
     },
     "isAdmin": {
-      ".read": "auth != null && auth.token.email === 'baxdev@owner.id'"
+      ".read": "auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')"
     },
     "redeems": {
-      ".read": "auth != null && auth.token.email === 'baxdev@owner.id'",
-      ".write": "auth != null && auth.token.email === 'baxdev@owner.id'",
+      ".read": "auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')",
+      ".write": "auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')",
       "$code": {
         "$uid": {
           ".read": "auth != null && auth.uid === $uid",

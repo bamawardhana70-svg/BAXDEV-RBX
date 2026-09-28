@@ -75,6 +75,12 @@ Firebase Storage dan Firestore tidak dipakai.
 6. **Authentication → Settings → Authorized domains** → tambahkan domain `xxx.pages.dev` (dan domain custom).
 7. Deploy ulang ke Cloudflare Pages.
 
+### Owner cadangan
+`database.rules.json` mengenali dua email owner: `baxdev@owner.id` dan `bamawardhana70@gmail.com`.
+Buat akun cadangan di **Authentication → Users → Add user** (email + password), lalu Publish ulang rules.
+Password sengaja tidak ditulis di kode karena `owner.html` bisa dibaca siapa saja. Ganti password lewat
+kartu **Ganti password owner** di /owner (tersimpan di Firebase Authentication).
+
 ### Login Google wajib
 Situs bisa dibuka tanpa login, tapi kolom Roblox User ID dan API Key terkunci sampai login Google. Pojok kanan atas menampilkan tombol "Sign in" (ikon orang) sampai login Google
 terhubung. Kalau baru login Google, ikon berganti foto akun Google. Begitu Roblox terhubung, berganti avatar Roblox, dan gambar avatarnya disimpan otomatis di perangkat (dihapus hanya saat Hapus data Roblox / logout Roblox). Saat pengguna belum login Google lalu mencoba
