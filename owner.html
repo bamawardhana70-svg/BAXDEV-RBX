@@ -169,11 +169,19 @@ select:focus{border-color:rgba(190,222,226,.55)}
   </section>
 </div>
 
-<script src="firebase-config.js"></script>
+<script>
+window.BAXDEV_FIREBASE = {
+  apiKey: "AIzaSyCvXzZonMjmwK5Vme9Dpt_icE-WvdD8WDM",
+  authDomain: "baxdev-rbx.firebaseapp.com",
+  databaseURL: "https://baxdev-rbx-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "baxdev-rbx",
+  appId: "1:351043270831:web:fb5c719ab25bbe62dc7c5a"
+};
+</script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-import { getDatabase, ref, onValue, get, set, update, remove } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
+import { getDatabase, ref, onValue, get, set, update, remove, forceLongPolling } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
 
 const $ = (id) => document.getElementById(id);
 const DAY_MS = 86400000;
@@ -201,6 +209,7 @@ let auth, db, vipMap = {}, orderMap = {}, codeMap = {}, redeemMap = {}, unsubs =
 if (configured) {
   const app = initializeApp(cfg);
   auth = getAuth(app);
+  try{ forceLongPolling(); }catch(e){}
   db = getDatabase(app);
 }
 
@@ -348,14 +357,14 @@ async function enter(user){
   entering=true;
   try{
     let isAdmin=false, netErr=false;
-    try{ await withTimeout(get(ref(db,"isAdmin")),12000); isAdmin=true; }   // hanya lolos kalau rules Firebase mengenali akun ini sebagai owner
+    try{ await withTimeout(get(ref(db,"isAdmin")),20000); isAdmin=true; }   // hanya lolos kalau rules Firebase mengenali akun ini sebagai owner
     catch(e){
       const denied = (e&&e.code==="PERMISSION_DENIED") || /permission/i.test(String(e&&e.message));
       if(!denied) netErr=true;
     }
     if(netErr){
       showLogin();
-      say($("loginMsg"),"Login berhasil, tapi database Firebase tidak merespons. Cek databaseURL di firebase-config.js (region non-US punya URL berbeda), pastikan Realtime Database sudah dibuat dan rules sudah dipublish.","err");
+      say($("loginMsg"),"Login berhasil, tapi database Firebase tidak merespons. URL yang terbaca: "+cfg.databaseURL+" . Kalau URL ini bukan asia-southeast1, deploy belum terupdate (tekan Ctrl+F5). Kalau sudah benar, cek jaringan/antivirus dan pastikan Realtime Database sudah dibuat.","err");
       await signOut(auth);
       return;
     }
