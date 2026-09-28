@@ -67,7 +67,7 @@ Firebase Storage dan Firestore tidak dipakai.
 
 ### Setup Firebase (sekali saja)
 1. console.firebase.google.com → buat project → **Add app → Web** → salin `firebaseConfig`.
-2. `firebase-config.js` sudah terisi untuk project `baxdev-rbx`. Cek `databaseURL` sama dengan yang tampil di tab Data Realtime Database (region non-US punya URL berbeda).
+2. `firebase-config.js` sudah terisi untuk project `baxdev-rbx` (database region asia-southeast1). Cek `databaseURL` sama dengan yang tampil di tab Data Realtime Database (region non-US punya URL berbeda).
 3. **Build → Authentication → Sign-in method** → aktifkan **Google** (login pengguna, wajib) dan **Email/Password** (login owner). Tab Users → **Add user**
    dengan email `baxdev@owner.id` dan password pilihanmu. Buat akun ini SEGERA setelah mengaktifkan Email/Password (lihat catatan keamanan di bawah).
 4. **Build → Realtime Database → Create database**. Tab **Rules** → paste isi `database.rules.json` → Publish.

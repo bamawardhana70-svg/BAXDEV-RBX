@@ -4,7 +4,7 @@
 window.BAXDEV_FIREBASE = {
   apiKey: "AIzaSyCvXzZonMjmwK5Vme9Dpt_icE-WvdD8WDM",
   authDomain: "baxdev-rbx.firebaseapp.com",
-  databaseURL: "https://baxdev-rbx-default-rtdb.firebaseio.com",
+  databaseURL: "https://baxdev-rbx-default-rtdb.asia-southeast1.firebasedatabase.app",
   projectId: "baxdev-rbx",
   appId: "1:351043270831:web:fb5c719ab25bbe62dc7c5a"
 };
