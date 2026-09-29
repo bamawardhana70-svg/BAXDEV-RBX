@@ -4811,8 +4811,6 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
 .install-actions .btn { flex: 1; min-height: 44px; justify-content: center; }
 @media (prefers-reduced-motion: reduce) { .install-sheet { transition: none; } }
 
-/* Tab sumber upload: 4 tab dibuat 2x2 di layar sempit */
-@media (max-width: 480px) { .source-switch { display: grid; grid-template-columns: 1fr 1fr; } }
 </style>
 <style>
 /* ── Toolbox ── */
@@ -4836,6 +4834,54 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
 @keyframes tb-pulse{50%{opacity:.45}}
 .tb-more{display:flex;justify-content:center;margin:18px 0 6px}
 @media (max-width:640px){.tb-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}}
+</style>
+<style id="liquid-glass-clear">
+/* ═══ LIQUID GLASS BENING — panel melayang tembus pandang + blur, bukan abu-abu solid ═══ */
+:root {
+  --lg-fill: linear-gradient(135deg, rgba(255,255,255,.17), rgba(255,255,255,.05) 45%, rgba(255,255,255,.10));
+  --lg-border: rgba(255,255,255,.30);
+  --lg-blur: blur(24px) saturate(190%) brightness(1.06);
+  --lg-shadow: inset 0 1px 0 rgba(255,255,255,.50), inset 0 -1px 0 rgba(255,255,255,.10), inset 0 0 24px rgba(255,255,255,.06), 0 18px 54px rgba(0,0,0,.38);
+}
+html #mobile-menu,
+html #profile-dropdown,
+html #player-bar,
+html .subscription-card,
+html .developer-card,
+html .login-card,
+html .toast-item,
+html .install-card {
+  background: var(--lg-fill) !important;
+  border: 1px solid var(--lg-border) !important;
+  -webkit-backdrop-filter: var(--lg-blur) !important;
+  backdrop-filter: var(--lg-blur) !important;
+  box-shadow: var(--lg-shadow) !important;
+}
+html #mobile-menu { border-radius: 26px; padding: 8px; }
+html #mobile-menu .m-link { background: transparent; color: var(--text); transition: background .2s ease, box-shadow .2s ease; }
+html #mobile-menu .m-link:hover,
+html #mobile-menu .m-link.active {
+  background: linear-gradient(135deg, rgba(255,255,255,.24), rgba(255,255,255,.07)) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.42), inset 0 0 0 1px rgba(255,255,255,.16);
+}
+/* layar redup di belakang modal dibuat ringan supaya blur terlihat */
+html .subscription-overlay, html #login-overlay { background: rgba(0,0,0,.34) !important; -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }
+/* kotak pilihan sumber upload */
+.source-switch:not(.tb-cats) {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+  justify-items: stretch;
+  background: var(--lg-fill);
+  border: 1px solid var(--lg-border);
+  -webkit-backdrop-filter: var(--lg-blur);
+  backdrop-filter: var(--lg-blur);
+  box-shadow: var(--lg-shadow);
+}
+.source-switch:not(.tb-cats) .source-tab { min-width: 0; padding: 8px 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center; }
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  html #mobile-menu, html #profile-dropdown, html .subscription-card, html .toast-item, html .login-card, html .install-card { background: rgba(28,28,30,.92) !important; }
+}
 </style>
 </head>
     <body class="intro-playing">
@@ -7713,20 +7759,15 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                     label: '1 bulan',
                     price: 50000
                 }],
-                qris: {
-                    7: null,
-                    15: null,
-                    30: null
-                },
-                qrisLegacy: null,
+                qris: null,
                 adminWhatsapp: '6283172657811',
                 orderTtlMs: 24 * 60 * 60 * 1000
             };
             const QRIS_DATA_URL = /^data:image\/(jpeg|png|webp);base64,/;
 
-            // QRIS tiap paket berbeda: foto khusus paket > foto lama (satu untuk semua) > qris.jpg bawaan
+            // Satu QRIS untuk semua paket: foto dari owner > qris.jpg bawaan
             function qrisFor(days) {
-                return PAYMENT.qris[days] || PAYMENT.qrisLegacy || 'qris.jpg';
+                return PAYMENT.qris || 'qris.jpg';
             }
 
             // Harga VIP + foto QRIS diatur owner (Firebase config/payment). Gagal baca = pakai nilai bawaan.
@@ -7740,16 +7781,16 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                     clearTimeout(timer);
                     if (!res.ok) return false;
                     const c = await res.json();
-                    const snapshot = () => JSON.stringify([PAYMENT.plans.map(p => p.price), PAYMENT.qris, PAYMENT.qrisLegacy]);
+                    const snapshot = () => JSON.stringify([PAYMENT.plans.map(p => p.price), PAYMENT.qris]);
                     const before = snapshot();
                     const priceKey = {7: 'p7', 15: 'p15', 30: 'p30'};
                     PAYMENT.plans.forEach(plan => {
                         const v = c && Number(c[priceKey[plan.days]]);
                         if (Number.isFinite(v) && v >= 1000) plan.price = v;
-                        const img = c && c['qris' + plan.days];
-                        PAYMENT.qris[plan.days] = typeof img === 'string' && QRIS_DATA_URL.test(img) ? img : null;
                     });
-                    PAYMENT.qrisLegacy = c && typeof c.qris === 'string' && QRIS_DATA_URL.test(c.qris) ? c.qris : null;
+                    // satu QRIS; kalau owner lama masih menyimpan foto per paket, pakai yang pertama tersedia
+                    const img = c && [c.qris, c.qris30, c.qris7, c.qris15].find(v => typeof v === 'string' && QRIS_DATA_URL.test(v));
+                    PAYMENT.qris = img || null;
                     return before !== snapshot();
                 } catch (e) {
                     return false;

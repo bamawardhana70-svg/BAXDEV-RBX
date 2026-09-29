@@ -246,15 +246,6 @@
         "qris": {
           ".validate": "newData.isString() && newData.val().matches(/^data:image\\/(jpeg|png|webp);base64,/) && newData.val().length <= 700000"
         },
-        "qris7": {
-          ".validate": "newData.isString() && newData.val().matches(/^data:image\\/(jpeg|png|webp);base64,/) && newData.val().length <= 700000"
-        },
-        "qris15": {
-          ".validate": "newData.isString() && newData.val().matches(/^data:image\\/(jpeg|png|webp);base64,/) && newData.val().length <= 700000"
-        },
-        "qris30": {
-          ".validate": "newData.isString() && newData.val().matches(/^data:image\\/(jpeg|png|webp);base64,/) && newData.val().length <= 700000"
-        },
         "updatedAt": {
           ".validate": "newData.isNumber()"
         },
