@@ -16,7 +16,7 @@ firebase-config.js               Config web Firebase (isi sendiri)
 database.rules.json              Security Rules Realtime Database (paste di Firebase Console)
 _redirects                       /admin dan /admin.html diarahkan ke /owner
 logo.png                         Logo untuk owner.html
-qris.jpg                         Gambar QRIS untuk tombol Buy VIP
+qris.jpg                         Gambar QRIS bawaan (dipakai kalau owner belum upload foto sendiri)
 functions/_lib/auth.js            Verifikasi token login Google (dipakai semua endpoint /api/*; Project ID ditulis di file ini)
 functions/api/
   roblox-upload.js               Upload audio ke Roblox Open Cloud
@@ -119,3 +119,22 @@ Konfigurasi harga/paket ada di objek `PAYMENT` di `index.html` (`plans`, `adminW
 - Pengunjung: situs mengecek `maintenance.json` tiap 20 detik dan saat tab dibuka lagi, jadi pop-up muncul/hilang tanpa reload manual.
 - Owner yang login Google di situs utama mendapat tombol **Lanjut sebagai owner** untuk melewati pop-up (dicek lewat akses baca `isAdmin` di rules). Halaman `/owner` tidak terpengaruh.
 - Setelah update, publish ulang `database.rules.json` (node `maintenance` bisa dibaca publik, hanya owner yang bisa menulis).
+
+### Maintenance terjadwal harian
+Setiap hari **00.00 – 05.00 WIB** situs menampilkan pop-up maintenance otomatis (tanpa perlu diaktifkan owner) dan semua endpoint `/api/*` membalas HTTP 503 dengan teks yang sama, jadi tidak bisa dilewati lewat pemanggilan API langsung. Owner (lolos `/isAdmin`) tetap bisa memakai layanan. Jam dihitung dari UTC+7 tetap, bukan jam perangkat pengguna di server. Logikanya ada di `functions/_lib/auth.js` (`isScheduledMaintenance`) dan skrip overlay di akhir `index.html`.
+
+### Tes koneksi & scope API key
+API key Roblox cukup memakai scope **Assets (Read + Write)**. Tombol Cek Koneksi (dan otomatis setelah Simpan) membaca scope key lewat introspeksi Roblox, lalu cadangannya mengetes endpoint Assets. Kalau scope Assets tidak ada, muncul peringatan yang menyebut scope yang dibutuhkan. Kalau key punya scope tambahan, tes tetap lolos dengan catatan agar cukup Assets saja. User ID / Group ID dicek lewat API publik Roblox.
+
+## PWA
+`manifest.webmanifest` + `sw.js` (didaftarkan di akhir `index.html`). Situs bisa di-install ke layar utama (Chrome/Edge: ikon install di address bar; Android: menu ⋮ → Install app; iOS Safari: Bagikan → Add to Home Screen). Service worker memakai *network-first* untuk halaman (jadi update dan maintenance selalu terbaru) dan tidak pernah meng-cache `/api/*`, Firebase, maupun `/owner`. Kalau mengubah aset statis, naikkan `CACHE` di `sw.js`.
+
+## Ubah durasi VIP dan pengguna & ban (di /owner)
+- **Ubah durasi VIP**: isi Roblox ID + jumlah jam/hari, lalu Tambah atau Kurangi. Tombol "Durasi" di daftar VIP mengisi ID otomatis.
+- **Pengguna**: daftar scroll semua akun Google yang pernah login (`users/<uid>`, ditulis otomatis saat login) plus akun lama dari riwayat upload. Tombol **Ban** menulis `bans/<uid>`: pop-up "Akun Diblokir" tampil di situs dan semua `/api/*` membalas 403 (dicek di `functions/_lib/auth.js`). **Unban** menghapusnya.
+- **Wajib publish ulang `database.rules.json`** di Firebase Console → Realtime Database → Rules.
+
+## Atur harga VIP & QRIS
+Buka `/owner` → kartu **Harga VIP & QRIS**. Isi harga paket 7 hari dan 1 bulan, upload foto QRIS baru (otomatis dikecilkan), lalu Simpan.
+Data disimpan di Firebase `config/payment` dan langsung dipakai tombol Buy VIP. Kalau belum diatur, dipakai harga 25.000 / 50.000 dan `qris.jpg`.
+**Wajib:** paste ulang `database.rules.json` di Firebase Console → Realtime Database → Rules → Publish, supaya node `config` bisa dibaca publik dan ditulis owner saja.

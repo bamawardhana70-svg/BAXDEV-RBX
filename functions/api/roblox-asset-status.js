@@ -51,12 +51,13 @@ export async function onRequestPost(context) {
     return json({ ok: true, done: false, message: "Masih diproses Roblox." });
   }
   if (op.error) {
-    return json({ ok: true, done: true, error: true, message: `Roblox menolak asset ini: ${op.error.message || "diblokir moderasi."}` });
+    return json({ ok: true, done: true, error: true, rejected: true, message: `Roblox menolak asset ini: ${op.error.message || "diblokir moderasi."}` });
   }
 
   const assetId = op.response && op.response.assetId ? String(op.response.assetId) : null;
   const moderationState = op.response && op.response.moderationResult ? op.response.moderationResult.moderationState : null;
-  return json({ ok: true, done: true, assetId, moderationState: moderationState || null });
+  const rejected = String(moderationState || "").toLowerCase().includes("reject");
+  return json({ ok: true, done: true, assetId, rejected, moderationState: moderationState || null });
 }
 
 export async function onRequestGet() {

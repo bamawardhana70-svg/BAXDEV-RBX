@@ -10,6 +10,11 @@
         <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
         <link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png">
         <link rel="apple-touch-icon" href="apple-touch-icon.png">
+        <link rel="manifest" href="manifest.webmanifest">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-title" content="baxdev">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
         <title>baxdev — Roblox Music Uploader</title>
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -4408,6 +4413,133 @@
             /* Kartu Publishing: hilang di semua perangkat */
             .hero-mock { display: none !important; }
         </style>
+
+        <style id="clean-ui">
+            /* ═══ CLEAN UI — tanpa border kotak, lebih rapi, animasi halus ═══ */
+            :root { --ease: cubic-bezier(.22,.8,.26,1); --surf: rgba(255,255,255,.045); --surf-hi: rgba(255,255,255,.075); }
+
+            /* 1. Hapus kotak/ring di sekitar hero (dari style VIP) */
+            .studio-hero, .premium-user .studio-hero, .hero-copy {
+                border: 0 !important; outline: 0 !important; box-shadow: none !important; background: none !important;
+                -webkit-backdrop-filter: none; backdrop-filter: none;
+            }
+            .studio-hero::before, .studio-hero::after { content: none !important; }
+            .studio-hero { min-height: 0; padding: 28px 0 24px; }
+            .workspace-heading { margin-bottom: 4px; }
+
+            /* 2. Kartu: flat, tanpa garis gradien di tepi */
+            .card, .card-sm, .stat-card, .qa-btn, .lib-card, .file-item, .empty-lib, .plan-card, .plan-card.premium {
+                background: var(--surf) !important;
+                border: 1px solid transparent !important;
+                box-shadow: none !important;
+                -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
+                border-radius: 20px;
+            }
+            .card::before, .card-sm::before, .stat-card::before, .qa-btn::before, .lib-card::before, .file-item::before, .empty-lib::before { content: none !important; display: none !important; }
+            .qa-btn:hover, .stat-card:hover, .lib-card:hover { background: var(--surf-hi) !important; border-color: transparent !important; box-shadow: none !important; }
+
+            /* 3. Hero: tipografi & chip lebih tenang */
+            .hero-eyebrow { font-size: 10px; letter-spacing: .16em; margin-bottom: 12px; }
+            .studio-hero h1 span { animation: none; }
+            .hero-description { line-height: 1.7; max-width: 440px; }
+            .hero-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+            .format-strip {
+                flex-wrap: nowrap; overflow-x: auto; gap: 6px; margin-top: 20px;
+                scrollbar-width: none; -webkit-overflow-scrolling: touch; scroll-snap-type: x proximity;
+                mask-image: linear-gradient(90deg,#000 88%,transparent); -webkit-mask-image: linear-gradient(90deg,#000 88%,transparent);
+            }
+            .format-strip::-webkit-scrollbar { display: none; }
+            .format-chip { flex: 0 0 auto; border: 0; background: var(--surf); backdrop-filter: none; -webkit-backdrop-filter: none; padding: 7px 12px; font-size: 10px; scroll-snap-align: start; }
+
+            /* 4. Stat & paket */
+            .stats-grid { grid-template-columns: repeat(3, minmax(0,1fr)); gap: 8px; margin-bottom: 14px; }
+            .stat-card { padding: 14px 12px; min-width: 0; }
+            .stat-icon { width: 30px; height: 30px; margin-bottom: 12px; background: var(--surf-hi); border: 0; }
+            .stat-val { font-size: clamp(20px, 6vw, 28px); line-height: 1.1; overflow-wrap: anywhere; }
+            #stat-roblox { font-size: clamp(13px, 3.8vw, 18px); letter-spacing: -.02em; }
+            .stat-label { font-size: 11px; color: var(--text3); margin-top: 4px; }
+            .plan-card { padding: 18px 20px; gap: 14px; margin-bottom: 28px; }
+            .section-heading { margin: 30px 0 12px; }
+
+            /* 5. Dashboard: Aktivitas terbaru = baris kecil geser ke kanan (±3 kartu terlihat) */
+            #recent-list {
+                display: flex !important; gap: 8px; padding: 0 !important; min-height: 0 !important;
+                background: none !important; overflow-x: auto; scroll-snap-type: x mandatory;
+                -webkit-overflow-scrolling: touch; scrollbar-width: none; border-radius: 0 !important;
+            }
+            #recent-list::-webkit-scrollbar { display: none; }
+            #recent-list .recent-item {
+                flex: 0 0 calc((100% - 16px) / 3); min-width: 0; scroll-snap-align: start;
+                flex-direction: column; align-items: flex-start; gap: 10px;
+                padding: 12px !important; border: 0 !important; border-radius: 16px;
+                background: var(--surf); transition: background .25s var(--ease), transform .25s var(--ease);
+            }
+            #recent-list .recent-item:only-child { flex-basis: 100%; flex-direction: row; align-items: center; }
+            #recent-list .recent-thumb { width: 34px; height: 34px; border: 0; border-radius: 11px; background: var(--surf-hi); }
+            #recent-list .recent-info { width: 100%; min-width: 0; }
+            #recent-list .recent-name, #recent-list .recent-meta { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+            #recent-list .recent-name { font-size: 12px; }
+            #recent-list .recent-meta { font-size: 10.5px; }
+            #recent-list .recent-badge { display: none; }
+
+            /* 6. Library: kartu kecil, 3 kolom */
+            .library-toolbar { margin-bottom: 14px; }
+            .library-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 8px; align-items: stretch; }
+            .library-grid .empty-lib { grid-column: 1 / -1; padding: 56px 20px; }
+            .lib-card { padding: 10px; gap: 8px; border-radius: 16px; min-width: 0; }
+            .lib-wave { height: 34px; border: 0; border-radius: 10px; background: var(--surf-hi); gap: 2px; }
+            .lib-wave span { width: 2px; }
+            .lib-body { min-width: 0; }
+            .lib-name { font-size: 12px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+            .lib-meta { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; font-size: 10px; margin-top: 3px; color: var(--text3); }
+            .lib-meta .recent-badge { font-size: 9px; padding: 2px 6px; }
+            .lib-id { font-size: 10px; color: var(--text3); font-family: monospace; margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+            .lib-actions { display: flex; gap: 6px; margin-top: auto; }
+            .lib-act { flex: 1; min-height: 32px; padding: 0; border: 0; border-radius: 10px; background: var(--surf-hi); display: grid; place-items: center; transition: background .2s var(--ease), transform .2s var(--ease); }
+            .lib-act svg { width: 14px; height: 14px; margin: 0; }
+            .lib-lbl { display: none; }
+            @media (min-width: 640px) {
+                .library-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+                #recent-list .recent-item { flex-basis: calc((100% - 16px) / 3); }
+            }
+            @media (max-width: 330px) { .library-grid { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+
+            /* 7. Animasi halus */
+            .btn, .qa-btn, .stat-card, .lib-card, .nav-link, .format-chip, .lib-act, .recent-item {
+                transition: transform .3s var(--ease), background .3s var(--ease), opacity .3s var(--ease), filter .3s var(--ease);
+            }
+            .btn:active, .qa-btn:active, .lib-card:active, .lib-act:active, .stat-card:active { transform: scale(.97); }
+            .btn:hover, .qa-btn:hover, .lib-card:hover { transform: translateY(-1px); }
+            .page.active { animation: cleanIn .45s var(--ease) both; }
+            @keyframes cleanIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+            .page.active .stats-grid > *, .page.active .library-grid > *, .page.active .steps-grid > *, .page.active .quick-actions > * {
+                animation: cleanItem .5s var(--ease) both;
+            }
+            .page.active :is(.stats-grid, .library-grid, .steps-grid, .quick-actions) > :nth-child(2) { animation-delay: .05s; }
+            .page.active :is(.stats-grid, .library-grid, .steps-grid, .quick-actions) > :nth-child(3) { animation-delay: .10s; }
+            .page.active :is(.stats-grid, .library-grid) > :nth-child(n+4) { animation-delay: .14s; }
+            @keyframes cleanItem { from { opacity: 0; transform: translateY(8px) scale(.985); } to { opacity: 1; transform: none; } }
+            html { scroll-behavior: smooth; }
+            @media (prefers-reduced-motion: reduce) {
+                *, *::before, *::after { animation-duration: .01ms !important; animation-delay: 0s !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+            }
+        </style>
+
+        <style id="feature-ui">
+            .q-chip { display: inline-block; margin-left: 6px; padding: 2px 8px; border-radius: 999px; font-size: 10px; background: rgba(255,255,255,.08); color: var(--text2); transition: background .3s, color .3s; }
+            .q-chip.is-run { background: rgba(255,255,255,.16); color: #fff; animation: qpulse 1.2s ease-in-out infinite; }
+            .q-chip.is-ok { background: rgba(80,200,140,.16); color: #7fe0ae; }
+            .q-chip.is-bad { background: rgba(255,110,110,.16); color: #ff9a9a; }
+            @keyframes qpulse { 50% { opacity: .55; } }
+            .lib-note { font-size: 11.5px; line-height: 1.6; color: var(--text2); background: rgba(255,255,255,.045); border-radius: 14px; padding: 10px 14px; margin-bottom: 12px; }
+            .lib-note b { color: var(--text); font-weight: 600; }
+            .lib-note button { background: none; border: 0; padding: 0; color: var(--text); text-decoration: underline; cursor: pointer; font: inherit; }
+            .badge-arch { background: rgba(255,255,255,.10); color: var(--text2); }
+            .lib-card.is-archived { opacity: .6; }
+            .lib-reason { font-size: 10px; color: var(--text3); margin-top: 4px; line-height: 1.4; }
+        </style>
+
+
     <script>
 window.BAXDEV_FIREBASE = {
   apiKey: "AIzaSyCvXzZonMjmwK5Vme9Dpt_icE-WvdD8WDM",
@@ -4723,6 +4855,12 @@ window.BX = { user: null, ready: false, getToken: async function(){ return null;
                                     <path d="M5 12h14M13 6l6 6-6 6"/>
                                 </svg>
                             </button>
+                            <a class="btn btn-outline" id="home-contact-owner" href="https://wa.me/6283172657811?text=Halo%20owner%20baxdev%2C%20saya%20mau%20bertanya." target="_blank" rel="noopener noreferrer" style="text-decoration:none">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+                                    <path d="M21 11.5a8.5 8.5 0 0 1-12.6 7.4L3 20.5l1.7-5.2A8.5 8.5 0 1 1 21 11.5z"/>
+                                </svg>
+                                Hubungi Owner
+                            </a>
                         </div>
                         <div class="format-strip" aria-label="Sumber dan format yang didukung">
                             <span class="format-chip">MP3</span>
@@ -4929,6 +5067,7 @@ window.BX = { user: null, ready: false, getToken: async function(){ return null;
                     </div>
                 </div>
                 <div class="file-queue" id="file-queue"></div>
+                <div class="youtube-hint" style="margin:-6px 0 16px">Audio yang ditolak moderasi Roblox otomatis masuk Arsip di Library dan tetap dihitung sebagai kuota publish.</div>
                 <div class="card" style="margin-bottom:18px">
                     <div class="section-title" style="margin-bottom:16px">Pengaturan Upload</div>
                     <div class="settings-panel">
@@ -5021,9 +5160,12 @@ window.BX = { user: null, ready: false, getToken: async function(){ return null;
                     <select id="lib-filter" onchange="filterLibrary()" style="width:auto">
                         <option value="all">Semua</option>
                         <option value="done">Published</option>
+                        <option value="proc">Dimoderasi</option>
+                        <option value="archived">Arsip</option>
                         <option value="fail">Gagal</option>
                     </select>
                 </div>
+                <div class="lib-note" id="lib-note" role="status"></div>
                 <div class="library-grid" id="library-grid">
                     <div class="empty-lib">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -5716,8 +5858,10 @@ window.BX = { user: null, ready: false, getToken: async function(){ return null;
                     nls[idx].classList.add('active');
                 if (mls[idx])
                     mls[idx].classList.add('active');
-                if (page === 'library')
+                if (page === 'library') {
                     renderLibrary();
+                    checkPendingLibrary();
+                }
                 if (page === 'home')
                     updateStats();
                 closeProfileDropdown();
@@ -6247,13 +6391,41 @@ window.BX = { user: null, ready: false, getToken: async function(){ return null;
                         sel.value = detected;
                 }
             }
+            const QSTAT = { wait: ['Menunggu', ''], run: ['Diproses', 'is-run'], ok: ['Selesai', 'is-ok'], proc: ['Dimoderasi', 'is-run'], rej: ['Ditolak', 'is-bad'], fail: ['Gagal', 'is-bad'] };
+            function fmtDur(t) {
+                t = Math.max(0, Math.round(t || 0));
+                return Math.floor(t / 60) + ':' + String(t % 60).padStart(2, '0');
+            }
+            function probeDuration(f) {
+                if (f._dur !== undefined) return;
+                f._dur = 0;
+                const a = new Audio();
+                const url = URL.createObjectURL(f);
+                a.preload = 'metadata';
+                a.onloadedmetadata = () => {
+                    f._dur = isFinite(a.duration) ? a.duration : 0;
+                    URL.revokeObjectURL(url);
+                    renderFileQueue();
+                };
+                a.onerror = () => URL.revokeObjectURL(url);
+                a.src = url;
+            }
             function renderFileQueue() {
-                document.getElementById('file-queue').innerHTML = S.files.map( (f, i) => `
+                document.getElementById('file-queue').innerHTML = S.files.map( (f, i) => {
+                    probeDuration(f);
+                    const st = QSTAT[f._st || 'wait'];
+                    return `
     <div class="file-item">
       <div class="file-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>
-      <div class="file-details"><div class="file-name">${escapeHtml(f.name)}</div><div class="file-size">${fmtSize(f.size)}</div><input class="batch-name-input" type="text" value="${escapeHtml(S.assetNames[i] || defaultAssetName(f.name))}" maxlength="50" aria-label="Nama asset ${i + 1}" oninput="setAssetName(${i},this.value)"></div>
+      <div class="file-details"><div class="file-name">${escapeHtml(f.name)}</div><div class="file-size">${fmtSize(f.size)}${f._dur ? ' · ' + fmtDur(f._dur) : ''} <span class="q-chip ${st[1]}">${st[0]}</span></div><input class="batch-name-input" type="text" value="${escapeHtml(S.assetNames[i] || defaultAssetName(f.name))}" maxlength="50" aria-label="Nama asset ${i + 1}" oninput="setAssetName(${i},this.value)">
+      </div>
       <button class="file-rm" onclick="removeFile(${i})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-    </div>`).join('');
+    </div>`;
+                }).join('');
+            }
+            function setQStatus(f, st) {
+                f._st = st;
+                renderFileQueue();
             }
             function defaultAssetName(filename) {
                 return String(filename || 'Audio').replace(/\.[^.]+$/, '').trim().slice(0, 50) || 'Audio'
@@ -6358,7 +6530,8 @@ window.BX = { user: null, ready: false, getToken: async function(){ return null;
                 for (let i = 0; i < S.files.length; i++) {
                     const file = S.files[i];
                     const name = S.assetNames[i] || defaultAssetName(file.name);
-                    label.textContent = `Mengupload ${file.name}...`;
+                    setQStatus(file, 'run');
+                    label.textContent = `Mengupload ${i + 1}/${S.files.length}: ${file.name}`;
                     for (let p = 0; p <= 85; p += 15) {
                         fill.style.width = p + '%';
                         pct.textContent = p + '%';
@@ -6398,72 +6571,81 @@ window.BX = { user: null, ready: false, getToken: async function(){ return null;
                         if (!res.ok || data.ok === false)
                             throw new Error(data.message || 'Upload gagal');
                         let assetId = data.assetId;
-                        if (!assetId && data.pending && data.operationPath) {
-                            for (let attempt = 0; attempt < 24 && !assetId; attempt++) {
-                                await sleep(1000);
+                        let rejectedReason = data.rejected ? (data.message || 'Ditolak moderasi Roblox') : null;
+                        const opPath = data.operationPath || null;
+                        if (!rejectedReason && !assetId && data.pending && opPath) {
+                            for (let attempt = 0; attempt < 10 && !assetId && !rejectedReason; attempt++) {
+                                await sleep(1500);
                                 let statusRes;
                                 try {
                                     statusRes = await fetch('/api/roblox-asset-status', {
                                         method: 'POST',
                                         headers: { 'content-type': 'application/json' },
-                                        body: JSON.stringify({ apiKey: S.roblox.apiKey, operationPath: data.operationPath })
+                                        body: JSON.stringify({ apiKey: S.roblox.apiKey, operationPath: opPath })
                                     });
                                 } catch (netErr) {
-                                    continue; // koneksi putus sebentar saat cek status: coba lagi, jangan gagalkan upload
+                                    continue;
                                 }
                                 const status = await statusRes.json().catch( () => ({}));
                                 if (!statusRes.ok)
                                     throw new Error(status.message || 'Gagal membaca status publish');
                                 if (status.done) {
-                                    if (!status.ok)
+                                    if (status.rejected)
+                                        rejectedReason = status.message || 'Ditolak moderasi Roblox';
+                                    else if (status.ok === false)
                                         throw new Error(status.message || 'Roblox menolak audio ini');
-                                    assetId = status.assetId;
+                                    else
+                                        assetId = status.assetId;
                                 }
                                 fill.style.width = Math.min(98, 86 + attempt) + '%';
                                 pct.textContent = Math.min(98, 86 + attempt) + '%';
                             }
                         }
-                        if (!assetId)
-                            throw new Error('Roblox belum selesai memproses audio. Coba cek lagi beberapa saat.');
                         fill.style.width = '100%';
                         pct.textContent = '100%';
-                        if (!S.account.unlimited) {
-                            incrementQuota();
-                            refreshAccountState();
+                        const base = { id: Date.now() + i, name, filename: file.name, size: file.size, uploadedAt: new Date().toISOString(), speed: S.speed };
+                        if (rejectedReason) {
+                            // Tidak lolos moderasi -> otomatis masuk Arsip (tetap memakai kuota)
+                            if (!S.account.unlimited) {
+                                incrementQuota();
+                                refreshAccountState();
+                            }
+                            addLibEntry(Object.assign(base, { assetId: null, status: 'archived', reason: rejectedReason, archivedAt: new Date().toISOString() }),
+                                { status: 'fail', error: 'Ditolak moderasi: ' + rejectedReason });
+                            setQStatus(file, 'rej');
+                            toast('Ditolak moderasi Roblox, dipindah ke Arsip', 'error');
+                        } else if (!assetId && opPath) {
+                            // Masih direview Roblox -> simpan sebagai "Dimoderasi", dicek otomatis di Library
+                            if (!S.account.unlimited) {
+                                incrementQuota();
+                                refreshAccountState();
+                            }
+                            addLibEntry(Object.assign(base, { assetId: null, status: 'proc', operationPath: opPath }), null);
+                            setQStatus(file, 'proc');
+                            toast('Terkirim. Roblox masih memoderasi audio ini, statusnya dicek otomatis di Library', 'info');
+                        } else if (!assetId) {
+                            throw new Error('Roblox belum mengembalikan Asset ID. Coba upload lagi.');
+                        } else {
+                            if (!S.account.unlimited) {
+                                incrementQuota();
+                                refreshAccountState();
+                            }
+                            const entry = Object.assign(base, { assetId, status: 'done' });
+                            addLibEntry(entry, { name: String(name).slice(0, 100), filename: String(file.name).slice(0, 160), size: file.size, assetId: String(assetId).slice(0, 30), status: 'done', speed: Number(S.speed) || 1 });
+                            document.getElementById('result-asset-id').textContent = 'rbxassetid://' + assetId;
+                            document.getElementById('result-box').classList.add('visible');
+                            setQStatus(file, 'ok');
+                            toast('Audio berhasil dipublish!', 'success');
                         }
-                        const entry = {
-                            id: Date.now(),
-                            assetId,
-                            name,
-                            filename: file.name,
-                            size: file.size,
-                            status: 'done',
-                            uploadedAt: new Date().toISOString(),
-                            speed: S.speed
-                        };
-                        S.library.unshift(entry);
-                        saveLibrary();
-                        updateStats();
-                        addRecent(entry);
-                        pushUploadToFirebase({ name: String(name).slice(0, 100), filename: String(file.name).slice(0, 160), size: file.size, assetId: String(assetId).slice(0, 30), status: 'done', speed: Number(S.speed) || 1 });
-                        document.getElementById('result-asset-id').textContent = 'rbxassetid://' + assetId;
-                        document.getElementById('result-box').classList.add('visible');
-                        toast('Audio berhasil dipublish!', 'success');
                     } catch (e) {
-                        S.library.unshift({
-                            id: Date.now(),
-                            assetId: null,
-                            name,
-                            filename: file.name,
-                            size: file.size,
-                            status: 'fail',
-                            uploadedAt: new Date().toISOString()
-                        });
-                        saveLibrary();
-                        pushUploadToFirebase({ name: String(name).slice(0, 100), filename: String(file.name).slice(0, 160), size: file.size, status: 'fail', error: String(e.message || 'Error').slice(0, 160) });
+                        addLibEntry({ id: Date.now() + i, assetId: null, name, filename: file.name, size: file.size, status: 'fail', uploadedAt: new Date().toISOString() },
+                            { name: String(name).slice(0, 100), filename: String(file.name).slice(0, 160), size: file.size, status: 'fail', error: String(e.message || 'Error').slice(0, 160) });
+                        setQStatus(file, 'fail');
                         toast('Gagal upload: ' + (e.message || 'Error'), 'error');
                     }
+                    label.textContent = `Selesai ${i + 1}/${S.files.length}`;
                 }
+                await sleep(900);
                 wrap.style.display = 'none';
                 btn.disabled = false;
                 S.files = [];
@@ -6565,27 +6747,40 @@ window.BX = { user: null, ready: false, getToken: async function(){ return null;
                 const grid = document.getElementById('library-grid');
                 const q = document.getElementById('lib-search').value.toLowerCase();
                 const filter = document.getElementById('lib-filter').value;
-                const items = S.library.filter(i => (i.name || '').toLowerCase().includes(q) && (filter === 'all' || i.status === filter));
+                const archivedCount = S.library.filter(i => i.status === 'archived').length;
+                const procCount = S.library.filter(i => i.status === 'proc').length;
+                const note = document.getElementById('lib-note');
+                if (note) {
+                    const parts = [];
+                    if (procCount) parts.push(`<b>${procCount}</b> audio sedang dimoderasi Roblox, dicek otomatis tiap 20 detik.`);
+                    if (archivedCount) parts.push(`<b>${archivedCount}</b> audio diarsip otomatis karena tidak lolos moderasi Roblox. <button type="button" onclick="document.getElementById('lib-filter').value='archived';renderLibrary()">Lihat Arsip</button>`);
+                    if (!parts.length) parts.push('Audio yang ditolak moderasi Roblox otomatis masuk ke <b>Arsip</b>.');
+                    note.innerHTML = parts.join(' ');
+                }
+                const items = S.library.filter(i => (i.name || '').toLowerCase().includes(q) && (filter === 'all' ? i.status !== 'archived' : i.status === filter));
                 if (!items.length) {
                     grid.innerHTML = `<div class="empty-lib"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg><p>${S.library.length ? 'Tidak ada hasil' : 'Library kosong'}</p><span>${S.library.length ? 'Coba kata kunci lain' : 'Upload audio pertama kamu'}</span></div>`;
                     return;
                 }
                 grid.innerHTML = items.map(i => `
-    <div class="lib-card">
+    <div class="lib-card ${i.status === 'archived' ? 'is-archived' : ''}">
       <div class="lib-wave">${Array(7).fill('<span style="height:6px"></span>').join('')}</div>
-      <div>
-        <div class="lib-name">${escapeHtml(i.name || 'Tanpa nama')}</div>
+      <div class="lib-body">
+        <div class="lib-name" title="${escapeHtml(i.name || 'Tanpa nama')}">${escapeHtml(i.name || 'Tanpa nama')}</div>
         <div class="lib-meta">
-          <span>${fmtSize(i.size || 0)}</span>
-          <span class="recent-badge ${i.status === 'done' ? 'badge-done' : i.status === 'proc' ? 'badge-proc' : 'badge-fail'}">${i.status === 'done' ? 'Published' : i.status === 'proc' ? 'Processing' : 'Gagal'}</span>
+          <span class="lib-size">${fmtSize(i.size || 0)}</span>
+          <span class="recent-badge ${i.status === 'done' ? 'badge-done' : i.status === 'proc' ? 'badge-proc' : i.status === 'archived' ? 'badge-arch' : 'badge-fail'}">${i.status === 'done' ? 'Published' : i.status === 'proc' ? 'Dimoderasi' : i.status === 'archived' ? 'Diarsip' : 'Gagal'}</span>
         </div>
-        ${i.assetId ? `<div style="font-size:10.5px;color:var(--text3);font-family:monospace;margin-top:4px">${i.assetId}</div>` : ''}
+        ${i.assetId ? `<div class="lib-id">${i.assetId}</div>` : ''}
+        ${i.status === 'archived' ? `<div class="lib-reason" title="${escapeHtml(i.reason || '')}">Tidak lolos moderasi Roblox</div>` : ''}
+        ${i.status === 'proc' ? '<div class="lib-reason">Menunggu hasil review Roblox</div>' : ''}
       </div>
       <div class="lib-actions">
-        ${i.assetId ? `<button class="lib-act" onclick="copyLib('${i.assetId}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Salin ID</button>` : ''}
-        <button class="lib-act" onclick="deleteLib(${i.id})" style="color:var(--danger)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>Hapus</button>
+        ${i.assetId ? `<button class="lib-act" aria-label="Salin ID" onclick="copyLib('${i.assetId}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span class="lib-lbl">Salin ID</span></button>` : ''}
+        <button class="lib-act lib-del" aria-label="Hapus" onclick="deleteLib(${i.id})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg><span class="lib-lbl">Hapus</span></button>
       </div>
     </div>`).join('');
+                renderRecentFromLibrary();
             }
             function filterLibrary() {
                 renderLibrary()
@@ -6601,8 +6796,67 @@ window.BX = { user: null, ready: false, getToken: async function(){ return null;
                 updateStats();
                 toast('Dihapus', 'info')
             }
+
+            function renderRecentFromLibrary() {
+                const list = document.getElementById('recent-list');
+                if (!list) return;
+                const items = S.library.filter(i => i.status !== 'archived').slice(0, 8);
+                if (!items.length) {
+                    list.innerHTML = '<div class="recent-item"><div class="recent-thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div><div class="recent-info"><div class="recent-name">Belum ada aktivitas</div><div class="recent-meta">Upload audio pertama kamu</div></div></div>';
+                    return;
+                }
+                list.innerHTML = items.map(i => `<div class="recent-item"><div class="recent-thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div><div class="recent-info"><div class="recent-name">${escapeHtml(i.name || 'Tanpa nama')}</div><div class="recent-meta">${i.assetId ? 'ID ' + escapeHtml(String(i.assetId)) : 'Gagal'}</div></div></div>`).join('');
+            }
+
+            function addLibEntry(entry, remote) {
+                S.library.unshift(entry);
+                saveLibrary();
+                updateStats();
+                if (remote) pushUploadToFirebase(remote);
+            }
+            let _modBusy = false;
+            async function checkPendingLibrary() {
+                if (_modBusy || !S.roblox || !S.roblox.apiKey) return;
+                const pending = S.library.filter(i => i.status === 'proc' && i.operationPath);
+                if (!pending.length) return;
+                _modBusy = true;
+                let changed = false;
+                for (const it of pending) {
+                    try {
+                        const r = await fetch('/api/roblox-asset-status', {
+                            method: 'POST',
+                            headers: { 'content-type': 'application/json' },
+                            body: JSON.stringify({ apiKey: S.roblox.apiKey, operationPath: it.operationPath })
+                        });
+                        const d = await r.json().catch( () => ({}));
+                        if (!r.ok || !d.done) continue;
+                        if (d.rejected) {
+                            it.status = 'archived';
+                            it.reason = d.message || 'Ditolak moderasi Roblox';
+                            it.archivedAt = new Date().toISOString();
+                            toast('"' + (it.name || 'Audio') + '" ditolak moderasi dan dipindah ke Arsip', 'error');
+                        } else if (d.assetId) {
+                            it.status = 'done';
+                            it.assetId = d.assetId;
+                            toast('"' + (it.name || 'Audio') + '" lolos moderasi', 'success');
+                        } else if (d.ok === false) {
+                            it.status = 'fail';
+                        } else continue;
+                        delete it.operationPath;
+                        changed = true;
+                    } catch (e) {}
+                }
+                _modBusy = false;
+                if (changed) {
+                    saveLibrary();
+                    updateStats();
+                    renderLibrary();
+                }
+            }
+            setInterval(checkPendingLibrary, 20000);
             function saveLibrary() {
-                localStorage.setItem('baxdev_lib', JSON.stringify(S.library))
+                localStorage.setItem('baxdev_lib', JSON.stringify(S.library));
+                renderRecentFromLibrary()
             }
 
             // ── STATS ─────────────────────────────────────────────
@@ -6662,6 +6916,9 @@ window.BX = { user: null, ready: false, getToken: async function(){ return null;
                 S.remoteVip = false;
                 checkRemoteVip();
                 toast('Pengaturan Roblox disimpan di perangkat ini', 'success');
+                // Langsung cek API key + scope supaya salah scope ketahuan sejak awal
+                if (window.BX && window.BX.user)
+                    setTimeout(testRobloxConnection, 600);
             }
             function deleteRobloxSettings() {
                 localStorage.removeItem('baxdev_roblox');
@@ -6699,8 +6956,16 @@ window.BX = { user: null, ready: false, getToken: async function(){ return null;
                         })
                     });
                     const data = await res.json().catch( () => ({}));
-                    if (!res.ok || data.ok === false)
-                        throw new Error(data.message || ('HTTP ' + res.status));
+                    if (!res.ok || data.ok === false) {
+                        const msg = data.message || ('HTTP ' + res.status);
+                        if (data.code === 'missing_scope') {
+                            // Scope API key salah: tampilkan peringatan yang jelas
+                            alert(msg);
+                            toast('Scope API key tidak sesuai — butuh Assets (Read + Write)', 'error');
+                            return;
+                        }
+                        throw new Error(msg);
+                    }
                     toast(data.message || 'Koneksi Roblox berhasil!', 'success');
                     loadRobloxProfile(true);
                 } catch (e) {
@@ -6853,9 +7118,32 @@ window.BX = { user: null, ready: false, getToken: async function(){ return null;
                     label: '1 bulan',
                     price: 50000
                 }],
+                qris: null,
                 adminWhatsapp: '6283172657811',
                 orderTtlMs: 24 * 60 * 60 * 1000
             };
+
+            // Harga VIP + foto QRIS diatur owner (Firebase config/payment). Gagal baca = pakai nilai bawaan.
+            async function loadPaymentConfig() {
+                const base = fbDbUrl();
+                if (!base) return false;
+                try {
+                    const ctrl = new AbortController();
+                    const timer = setTimeout( () => ctrl.abort(), 4000);
+                    const res = await fetch(base + '/config/payment.json', { cache: 'no-store', signal: ctrl.signal });
+                    clearTimeout(timer);
+                    if (!res.ok) return false;
+                    const c = await res.json();
+                    const p7 = c && Number(c.p7), p30 = c && Number(c.p30);
+                    const before = JSON.stringify([PAYMENT.plans.map(p => p.price), PAYMENT.qris]);
+                    if (Number.isFinite(p7) && p7 >= 1000) PAYMENT.plans.find(p => p.days === 7).price = p7;
+                    if (Number.isFinite(p30) && p30 >= 1000) PAYMENT.plans.find(p => p.days === 30).price = p30;
+                    PAYMENT.qris = c && typeof c.qris === 'string' && /^data:image\/(jpeg|png|webp);base64,/.test(c.qris) ? c.qris : null;
+                    return before !== JSON.stringify([PAYMENT.plans.map(p => p.price), PAYMENT.qris]);
+                } catch (e) {
+                    return false;
+                }
+            }
             function currentUserId() {
                 return String((S.roblox && S.roblox.userId) || '').trim();
             }
@@ -6949,9 +7237,9 @@ window.BX = { user: null, ready: false, getToken: async function(){ return null;
                         <div class="pay-meta">Bayar tepat sesuai nominal ini, termasuk dua digit terakhir, supaya admin bisa mencocokkan pembayaranmu.</div>
                     </div>
                     <div class="pay-qris">
-                        <img src="qris.jpg" width="900" height="1267" alt="Kode QRIS Toko Bama Store">
+                        <img src="${escapeHtml(PAYMENT.qris || 'qris.jpg')}" alt="Kode QRIS pembayaran VIP">
                     </div>
-                    <a class="pay-save" href="qris.jpg" download="qris-baxdev.jpg">Simpan gambar QRIS</a>
+                    <a class="pay-save" href="${escapeHtml(PAYMENT.qris || 'qris.jpg')}" download="qris-baxdev.jpg">Simpan gambar QRIS</a>
                     <ol class="pay-steps">
                         <li>Buka aplikasi bank atau e-wallet berlogo QRIS, lalu scan kode di atas.</li>
                         <li>Masukkan nominal ${amount} dan selesaikan pembayaran.</li>
@@ -7082,11 +7370,17 @@ window.BX = { user: null, ready: false, getToken: async function(){ return null;
                     return;
                 }
                 const order = findActiveOrder(uid);
-                if (order)
-                    renderPayment(order);
-                else
-                    renderPlanChoice();
+                const draw = () => {
+                    const o = findActiveOrder(uid);
+                    if (o) renderPayment(o);
+                    else renderPlanChoice();
+                };
+                draw();
                 document.getElementById('subscription-overlay').classList.add('visible');
+                // ambil harga/QRIS terbaru dari owner, gambar ulang kalau berubah
+                loadPaymentConfig().then(changed => {
+                    if (changed && document.getElementById('subscription-overlay').classList.contains('visible')) draw();
+                });
             }
             function choosePlan(days) {
                 const plan = PAYMENT.plans.find(p => p.days === days);
@@ -7219,8 +7513,27 @@ window.BX = { user: null, ready: false, getToken: async function(){ return null;
                 checkRemoteVip();
             }
 
+            (function undoLegacyArchive() {
+                // v10 sempat memindahkan semua "Gagal" lama ke Arsip. Arsip hanya untuk yang ditolak moderasi Roblox, jadi kembalikan.
+                let n = 0;
+                S.library.forEach(i => {
+                    if (i.legacy) {
+                        i.status = 'fail';
+                        delete i.legacy;
+                        delete i.reason;
+                        delete i.archivedAt;
+                        n++;
+                    }
+                });
+                if (n) {
+                    try { localStorage.setItem('baxdev_lib', JSON.stringify(S.library)); } catch (e) {}
+                }
+            })();
+            loadPaymentConfig();
             initIntro();
             loadLocalState();
+            renderRecentFromLibrary();
+            setTimeout(checkPendingLibrary, 2500);
         </script>
         <script id="ambient-visuals">
             // Independent decoration: no application state, endpoints, or intro logic are changed.
@@ -7471,15 +7784,25 @@ if (!configured) {
 <script>
 (function(){
   var DEFAULT_MSG = "Situs sedang dalam perbaikan. Silakan kembali beberapa saat lagi.";
+  // Maintenance terjadwal: setiap hari 00.00 - 05.00 WIB (UTC+7)
+  var SCHEDULED_MSG = "Saat ini layanan sedang dalam proses pemeliharaan.\nLayanan akan kembali tersedia nanti pagi.\n\nMohon maaf atas ketidaknyamanannya. Terima kasih atas pengertiannya.";
+  function isScheduled(){
+    var h = new Date(Date.now() + 7 * 3600e3).getUTCHours();
+    return h >= 0 && h < 5;
+  }
   var overlay = document.getElementById("mt-overlay");
   var textEl = document.getElementById("mt-text");
   var ownerBtn = document.getElementById("mt-owner");
-  var enabled = false, dismissed = false, checkedUid = null, isOwner = false;
+  var enabled = false, manualMsg = "", dismissed = false, checkedUid = null, isOwner = false;
 
+  function active(){ return enabled || isScheduled(); }
   function render(){
-    var show = enabled && !(dismissed && isOwner);
+    var on = active();
+    var show = on && !(dismissed && isOwner);
+    // Maintenance manual dari owner punya teks sendiri; kalau tidak ada, pakai teks jadwal harian
+    textEl.textContent = enabled ? (manualMsg || DEFAULT_MSG) : SCHEDULED_MSG;
     overlay.classList.toggle("show", show);
-    ownerBtn.classList.toggle("show", enabled && isOwner);
+    ownerBtn.classList.toggle("show", on && isOwner);
     document.documentElement.style.overflow = show ? "hidden" : "";
   }
   // Owner = akun yang lolos baca /isAdmin di rules Firebase (tanpa hardcode email di file publik)
@@ -7497,27 +7820,100 @@ if (!configured) {
   }
   async function tick(){
     var c = window.BAXDEV_FIREBASE;
-    if (!c || !c.databaseURL || /ISI_/.test(c.databaseURL)) return;
-    var base = c.databaseURL.replace(/\/$/, "");
-    try {
-      var r = await fetch(base + "/maintenance.json", { cache: "no-store" });
-      if (!r.ok) return;              // gagal baca: jangan ubah status yang sedang tampil
-      var v = await r.json();
-      var was = enabled;
-      enabled = !!(v && v.enabled === true);
-      textEl.textContent = (v && typeof v.message === "string" && v.message.trim()) ? v.message : DEFAULT_MSG;
-      if (!enabled) dismissed = false;
-      if (enabled && !was) dismissed = false;
-      if (enabled) await checkOwner(base);
-      render();
-    } catch (e) {}
+    var base = (c && c.databaseURL && !/ISI_/.test(c.databaseURL)) ? c.databaseURL.replace(/\/$/, "") : "";
+    if (base) {
+      try {
+        var r = await fetch(base + "/maintenance.json", { cache: "no-store" });
+        if (r.ok) {                 // gagal baca: jangan ubah status yang sedang tampil
+          var v = await r.json();
+          var was = enabled;
+          enabled = !!(v && v.enabled === true);
+          manualMsg = (v && typeof v.message === "string") ? v.message.trim() : "";
+          if (!enabled) dismissed = false;
+          if (enabled && !was) dismissed = false;
+        }
+      } catch (e) {}
+    }
+    if (base && active()) await checkOwner(base);
+    render();
   }
   ownerBtn.addEventListener("click", function(){ dismissed = true; render(); });
   tick();
   setInterval(tick, 20000);
+  setInterval(render, 30000);   // jadwal harian dihitung lokal, tidak butuh jaringan
   document.addEventListener("visibilitychange", function(){ if (!document.hidden) tick(); });
   // Setelah login Google (mis. owner), cek ulang tanpa nunggu polling berikutnya
   setInterval(function(){ if (enabled && window.BX && window.BX.user && window.BX.user.uid !== checkedUid) tick(); }, 1500);
+})();
+</script>
+<style>
+#ban-overlay{position:fixed;inset:0;z-index:2147483640;display:none;align-items:center;justify-content:center;padding:22px;background:rgba(0,0,0,.86);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);color:#f4f4f5;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+#ban-overlay.show{display:flex}
+#ban-overlay .bo-card{max-width:420px;width:100%;text-align:center;padding:32px 24px;border-radius:28px;background:linear-gradient(150deg,rgba(255,255,255,.15),rgba(255,255,255,.05));border:1px solid rgba(255,255,255,.22)}
+#ban-overlay h2{margin:0 0 10px;font-size:23px}
+#ban-overlay p{margin:0;font-size:15px;line-height:1.65;color:#c4c6cb;white-space:pre-wrap;word-break:break-word}
+</style>
+<div id="ban-overlay" role="alertdialog" aria-modal="true"><div class="bo-card"><h2>Akun Diblokir</h2><p id="bo-text"></p></div></div>
+<script>
+(function(){
+  var cfg = window.BAXDEV_FIREBASE || {};
+  var base = (cfg.databaseURL && !/ISI_/.test(cfg.databaseURL)) ? cfg.databaseURL.replace(/\/$/, "") : "";
+  var lastUid = null;
+  function $(id){ return document.getElementById(id); }
+    async function rest(path, opt){
+    var token = await window.BX.getToken();
+    if (!token) throw new Error("no token");
+    opt = opt || {};
+    var r = await fetch(base + "/" + path + (path.indexOf("?")>-1 ? "&" : "?") + "auth=" + encodeURIComponent(token), {
+      method: opt.method || "GET", cache: "no-store",
+      headers: opt.body ? { "content-type": "application/json" } : undefined,
+      body: opt.body ? JSON.stringify(opt.body) : undefined
+    });
+    if (!r.ok) { var e = new Error("HTTP " + r.status); e.status = r.status; throw e; }
+    return r.json();
+  }
+  // ── Ban ──
+  async function checkBan(){
+    var u = window.BX && window.BX.user;
+    if (!u || !base) { $("ban-overlay").classList.remove("show"); return; }
+    try {
+      var r = await fetch(base + "/bans/" + encodeURIComponent(u.uid) + ".json", { cache: "no-store" });
+      if (!r.ok) return;
+      var b = await r.json();
+      $("bo-text").textContent = b ? ("Akun kamu diblokir dari layanan ini." + (b.reason ? "\nAlasan: " + b.reason : "") + "\n\nHubungi admin bila ini keliru.") : "";
+      $("ban-overlay").classList.toggle("show", !!b);
+      document.documentElement.style.overflow = b ? "hidden" : "";
+    } catch (e) {}
+  }
+  // ── Catat pengguna (untuk daftar di panel owner) ──
+  async function touchUser(){
+    var u = window.BX.user; if (!u || !base) return;
+    var rid = ""; try { rid = String((JSON.parse(localStorage.getItem("baxdev_roblox")||"{}")).userId || ""); } catch (e) {}
+    if (!/^\d{1,20}$/.test(rid)) rid = "";
+    try {
+      var cur = await rest("users/" + encodeURIComponent(u.uid) + ".json");
+      var body = { email: u.email || "", name: (u.name || "").slice(0,100), robloxId: rid, lastSeen: Date.now() };
+      if (!cur || !cur.firstSeen) body.firstSeen = Date.now();
+      await rest("users/" + encodeURIComponent(u.uid) + ".json", { method: "PATCH", body: body });
+    } catch (e) {}
+  }
+  // ── Sinkron saat login berubah ──
+  function tick(){
+    var u = window.BX && window.BX.user; var uid = u ? u.uid : null;
+    if (uid !== lastUid) {
+      lastUid = uid;
+      checkBan();
+      if (uid) touchUser();
+    }
+  }
+  setInterval(tick, 1500);
+  setInterval(checkBan, 60000);
+  document.addEventListener("visibilitychange", function(){ if (!document.hidden) { checkBan(); } });
+
+  // ── PWA ──
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function(){ navigator.serviceWorker.register("/sw.js").catch(function(){}); });
+  }
 })();
 </script>
 </body>

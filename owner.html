@@ -55,12 +55,17 @@ select:focus{border-color:rgba(190,222,226,.55)}
 .badge.ok{color:var(--ok);border-color:rgba(68,255,136,.35)}
 .badge.off{color:var(--warn);border-color:rgba(255,170,68,.35)}
 .warn{font-size:12px;color:var(--warn);line-height:1.7;margin-bottom:16px}
+.qris-box{display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap}
+.qris-box img{width:150px;max-width:44vw;height:auto;border-radius:12px;background:#fff;border:1px solid var(--line)}
+.qris-side{display:flex;flex-direction:column;gap:8px;align-items:flex-start;flex:1;min-width:150px}
 .row.three{grid-template-columns:1fr}
 @media(min-width:560px){.row.three{grid-template-columns:1fr 1.2fr 1fr}}
 
 .codebox{width:100%;min-height:96px;resize:vertical;background:rgba(0,0,0,.3);border:1px solid var(--line);border-radius:12px;color:var(--text);padding:10px 12px;font:12px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace;outline:none}
 .item .id.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px}
 .linkbtn{background:none;border:none;color:var(--text2);font:inherit;font-size:12px;text-decoration:underline;cursor:pointer;margin-left:12px}
+.scrollbox{max-height:380px;overflow-y:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:14px;padding:0 10px;background:rgba(0,0,0,.18)}
+.item .btns{display:flex;gap:6px;flex-wrap:wrap}
 </style>
 </head>
 <body>
@@ -116,6 +121,27 @@ select:focus{border-color:rgba(190,222,226,.55)}
     </div>
 
     <div class="card">
+      <label style="margin-bottom:10px">Harga VIP &amp; QRIS <span class="badge off" id="payBadge">Bawaan</span></label>
+      <div class="row two" style="grid-template-columns:1fr 1fr">
+        <div><label for="price7">VIP 7 hari (Rp)</label><input id="price7" type="number" inputmode="numeric" min="1000" max="9900000" step="500" value="25000"></div>
+        <div><label for="price30">VIP 1 bulan (Rp)</label><input id="price30" type="number" inputmode="numeric" min="1000" max="9900000" step="500" value="50000"></div>
+      </div>
+      <label style="margin-top:14px">Foto QRIS</label>
+      <div class="qris-box">
+        <img id="qrisPrev" alt="Pratinjau QRIS" src="qris.jpg">
+        <div class="qris-side">
+          <input id="qrisFile" type="file" accept="image/*" class="hide">
+          <button class="btn small" id="qrisPick" type="button">Ganti foto QRIS</button>
+          <button class="btn small danger" id="qrisReset" type="button">Pakai bawaan</button>
+          <div class="note" id="qrisInfo">Memakai qris.jpg bawaan.</div>
+        </div>
+      </div>
+      <div style="margin-top:14px"><button class="btn primary" id="paySave" type="button">Simpan harga &amp; QRIS</button></div>
+      <div class="msg" id="payMsg" role="status"></div>
+      <p class="note" style="margin-top:10px">Perubahan langsung berlaku untuk pembeli berikutnya. Pesanan yang sudah dibuat tetap memakai nominal lamanya. Foto otomatis dikecilkan supaya ringan; pakai foto QRIS yang jelas dan tidak terpotong.</p>
+    </div>
+
+    <div class="card">
       <label style="margin-bottom:10px">Pesanan menunggu verifikasi</label>
       <div id="orders"></div>
       <div class="msg" id="orderMsg" role="status"></div>
@@ -161,6 +187,32 @@ select:focus{border-color:rgba(190,222,226,.55)}
     </div>
 
     <div class="card">
+      <label style="margin-bottom:10px">Ubah durasi VIP</label>
+      <div class="row three">
+        <div><label for="dUid">Roblox User ID</label><input id="dUid" inputmode="numeric" placeholder="Contoh: 123456789"></div>
+        <div><label for="dAmt">Jumlah</label><input id="dAmt" type="number" inputmode="numeric" min="1" value="1"></div>
+        <div><label for="dUnit">Satuan</label>
+          <select id="dUnit"><option value="1">Jam</option><option value="24" selected>Hari</option></select></div>
+      </div>
+      <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn primary" id="dAdd" type="button">+ Tambah durasi</button>
+        <button class="btn danger" id="dSub" type="button">− Kurangi durasi</button>
+      </div>
+      <div class="msg" id="dMsg" role="status"></div>
+      <p class="note" style="margin-top:10px">Tambah: memperpanjang dari sisa masa aktif (atau dari sekarang kalau sudah habis / belum VIP). Kurangi: kalau hasilnya lewat dari sekarang, VIP langsung berakhir. VIP permanen tidak bisa dikurangi, hapus saja lewat daftar VIP.</p>
+    </div>
+
+    <div class="card">
+      <div class="toolbar">
+        <label for="usSearch" style="margin:0">Pengguna <span class="badge off" id="usCount">0</span></label>
+        <input id="usSearch" placeholder="Cari nama / email / Roblox ID">
+      </div>
+      <div id="users" class="scrollbox"></div>
+      <div class="msg" id="usMsg" role="status"></div>
+      <p class="note" style="margin-top:10px">Pengguna tercatat saat login Google di situs (dan dari riwayat upload lama). Ban memblokir akun Google itu dari seluruh layanan, termasuk lewat API langsung. Unban kapan saja.</p>
+    </div>
+
+    <div class="card">
       <div class="toolbar">
         <label for="search" style="margin:0">Daftar VIP</label>
         <input id="search" placeholder="Cari ID / catatan">
@@ -174,7 +226,7 @@ select:focus{border-color:rgba(190,222,226,.55)}
         <input id="upSearch" placeholder="Cari nama / email / ID">
       </div>
       <div class="note" id="upSummary" style="margin-bottom:6px"></div>
-      <div id="uploads"></div>
+      <div id="uploads" class="scrollbox"></div>
       <div class="msg" id="upMsg" role="status"></div>
     </div>
 
@@ -230,7 +282,7 @@ if (!configured) {
   $("loginBtn").disabled = true;
 }
 
-let auth, db, vipMap = {}, orderMap = {}, codeMap = {}, redeemMap = {}, uploadMap = {}, unsubs = [];
+let auth, db, vipMap = {}, orderMap = {}, codeMap = {}, redeemMap = {}, uploadMap = {}, userMap = {}, banMap = {}, unsubs = [];
 if (configured) {
   const app = initializeApp(cfg);
   auth = getAuth(app);
@@ -262,7 +314,7 @@ function renderVip(){
     else st='<span class="badge off">Kedaluwarsa</span>';
     return '<div class="item"><div><div class="id">#'+esc(v.id)+st+'</div>'+
       '<div class="meta">'+esc(v.note||"Tanpa catatan")+(v.addedAt?" · "+esc(fmtDate(v.addedAt)):"")+'</div></div>'+
-      '<button class="btn danger" type="button" data-remove="'+esc(v.id)+'">Hapus</button></div>';
+      '<div class="btns"><button class="btn small" type="button" data-dur="'+esc(v.id)+'">Durasi</button><button class="btn danger" type="button" data-remove="'+esc(v.id)+'">Hapus</button></div></div>';
   }).join("");
 }
 
@@ -375,6 +427,86 @@ async function saveMaint(enabled){
   finally{ btn.disabled = false; }
 }
 
+
+/* ── Harga VIP & QRIS ── */
+let payState = null;      // isi node config/payment (null = bawaan)
+let qrisDraft = undefined; // undefined = tidak diubah, null = reset ke bawaan, string = data URL baru
+const DEF_P7 = 25000, DEF_P30 = 50000;
+function renderPay(){
+  const s = payState || {};
+  const badge = $("payBadge");
+  badge.textContent = payState ? "Kustom" : "Bawaan";
+  badge.className = "badge " + (payState ? "ok" : "off");
+  if(document.activeElement !== $("price7")) $("price7").value = s.p7 || DEF_P7;
+  if(document.activeElement !== $("price30")) $("price30").value = s.p30 || DEF_P30;
+  if(qrisDraft === undefined){
+    $("qrisPrev").src = s.qris || "qris.jpg";
+    $("qrisInfo").textContent = s.qris ? "Memakai foto QRIS yang kamu upload." : "Memakai qris.jpg bawaan.";
+  }
+}
+function readImage(file){
+  return new Promise((res,rej)=>{
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = ()=>{ URL.revokeObjectURL(url); res(img); };
+    img.onerror = ()=>{ URL.revokeObjectURL(url); rej(new Error("File bukan gambar yang valid.")); };
+    img.src = url;
+  });
+}
+async function compressQris(file){
+  if(!/^image\//.test(file.type)) throw new Error("Pilih file gambar (JPG/PNG).");
+  if(file.size > 15*1048576) throw new Error("Foto terlalu besar (maks 15 MB).");
+  const img = await readImage(file);
+  const maxSide = 1000;
+  const k = Math.min(1, maxSide / Math.max(img.naturalWidth, img.naturalHeight));
+  const w = Math.max(1, Math.round(img.naturalWidth * k)), h = Math.max(1, Math.round(img.naturalHeight * k));
+  const c = document.createElement("canvas");
+  c.width = w; c.height = h;
+  const g = c.getContext("2d");
+  g.fillStyle = "#fff"; g.fillRect(0,0,w,h);
+  g.drawImage(img,0,0,w,h);
+  let q = 0.9, out = c.toDataURL("image/jpeg", q);
+  while(out.length > 600000 && q > 0.4){ q -= 0.1; out = c.toDataURL("image/jpeg", q); }
+  if(out.length > 600000) throw new Error("Foto masih terlalu besar setelah dikecilkan. Coba foto yang lebih sederhana.");
+  return out;
+}
+async function pickQris(ev){
+  const f = ev.target.files && ev.target.files[0];
+  ev.target.value = "";
+  if(!f) return;
+  try{
+    const data = await compressQris(f);
+    qrisDraft = data;
+    $("qrisPrev").src = data;
+    $("qrisInfo").textContent = "Foto baru siap (" + Math.round(data.length/1024) + " KB). Tekan Simpan untuk menerapkan.";
+    say($("payMsg"),"");
+  }catch(e){ say($("payMsg"), e.message || "Gagal membaca foto.", "err"); }
+}
+function resetQris(){
+  qrisDraft = null;
+  $("qrisPrev").src = "qris.jpg";
+  $("qrisInfo").textContent = "Akan kembali ke qris.jpg bawaan setelah disimpan.";
+}
+async function savePay(){
+  const p7 = Math.round(Number($("price7").value)), p30 = Math.round(Number($("price30").value));
+  const ok = (n)=>Number.isFinite(n) && n >= 1000 && n <= 9900000;
+  if(!ok(p7) || !ok(p30)){ say($("payMsg"),"Harga harus antara Rp1.000 dan Rp9.900.000.","err"); return; }
+  const cur = payState || {};
+  let qris = cur.qris || null;
+  if(qrisDraft === null) qris = null;
+  else if(typeof qrisDraft === "string") qris = qrisDraft;
+  const data = { p7, p30, updatedAt: Date.now() };
+  if(qris) data.qris = qris;
+  const btn = $("paySave");
+  btn.disabled = true;
+  try{
+    await set(ref(db,"config/payment"), data);
+    qrisDraft = undefined;
+    say($("payMsg"),"Tersimpan. Harga dan QRIS baru langsung dipakai.","ok");
+  }catch(e){ fail($("payMsg"),e); }
+  finally{ btn.disabled = false; }
+}
+
 function makeCode(){
   const b = new Uint8Array(12);
   crypto.getRandomValues(b);
@@ -410,16 +542,19 @@ async function removeCode(code){
 }
 
 /* ── Auth ── */
-function stopListening(){ unsubs.forEach(f=>f()); unsubs=[]; vipMap={}; orderMap={}; codeMap={}; redeemMap={}; uploadMap={}; }
+function stopListening(){ unsubs.forEach(f=>f()); unsubs=[]; vipMap={}; orderMap={}; codeMap={}; redeemMap={}; uploadMap={}; userMap={}; banMap={}; }
 function listen(){
   stopListening();
   const onErr = (e)=>say($("orderMsg"),"Gagal membaca data: "+(e&&e.message||e),"err");
   unsubs.push(onValue(ref(db,"vip"),s=>{vipMap=s.val()||{};renderVip()},onErr));
   unsubs.push(onValue(ref(db,"maintenance"),s=>{mtState=s.val()||{enabled:false,message:""};renderMaint()},onErr));
+  unsubs.push(onValue(ref(db,"config/payment"),s=>{payState=s.val()||null;renderPay()},onErr));
   unsubs.push(onValue(ref(db,"orders"),s=>{orderMap=s.val()||{};renderOrders()},onErr));
   unsubs.push(onValue(ref(db,"codes"),s=>{codeMap=s.val()||{};renderCodes()},onErr));
   unsubs.push(onValue(ref(db,"redeems"),s=>{redeemMap=s.val()||{};renderCodes()},onErr));
-  unsubs.push(onValue(query(ref(db,"uploads"),limitToLast(200)),s=>{uploadMap=s.val()||{};renderUploads()},onErr));
+  unsubs.push(onValue(query(ref(db,"uploads"),limitToLast(200)),s=>{uploadMap=s.val()||{};renderUploads();renderUsers()},onErr));
+  unsubs.push(onValue(ref(db,"users"),s=>{userMap=s.val()||{};renderUsers()},onErr));
+  unsubs.push(onValue(ref(db,"bans"),s=>{banMap=s.val()||{};renderUsers()},onErr));
 }
 function showLogin(){
   stopListening();
@@ -490,11 +625,97 @@ async function resetPw(){
   catch(e){ say($("loginMsg"),"Gagal kirim reset: "+(e.code||e.message),"err"); }
 }
 
+
+/* ── Ubah durasi VIP ── */
+async function changeDuration(sign){
+  const id = $("dUid").value.trim();
+  const amt = Number($("dAmt").value), unit = Number($("dUnit").value);
+  if(!/^\d{1,20}$/.test(id)){say($("dMsg"),"User ID harus berupa angka.","err");return}
+  if(!(amt>0)){say($("dMsg"),"Jumlah harus lebih dari 0.","err");return}
+  const cur = vipMap[id], delta = Math.round(amt*unit*3600000);
+  const label = amt+" "+(unit===24?"hari":"jam");
+  try{
+    if(sign>0){
+      if(cur && !cur.expiresAt){say($("dMsg"),"Roblox #"+id+" sudah VIP permanen.","err");return}
+      const base = Math.max(Date.now(),(cur&&cur.expiresAt)||0);
+      await update(ref(db,"vip"),{[id]:{addedAt:(cur&&cur.addedAt)||Date.now(),expiresAt:base+delta,note:(cur&&cur.note)||""}});
+      say($("dMsg"),"+"+label+" untuk Roblox #"+id+". Sekarang sampai "+fmtTime(base+delta)+".","ok");
+    }else{
+      if(!cur){say($("dMsg"),"Roblox #"+id+" belum VIP.","err");return}
+      if(!cur.expiresAt){say($("dMsg"),"VIP permanen tidak bisa dikurangi. Hapus dari daftar VIP.","err");return}
+      const next = cur.expiresAt-delta;
+      const ended = next<=Date.now();
+      await update(ref(db,"vip"),{[id]:{addedAt:cur.addedAt||Date.now(),expiresAt:ended?Date.now():next,note:cur.note||""}});
+      say($("dMsg"),"−"+label+" untuk Roblox #"+id+". "+(ended?"VIP langsung berakhir.":"Sekarang sampai "+fmtTime(next)+"."),"ok");
+    }
+  }catch(e){ fail($("dMsg"),e); }
+}
+
+/* ── Pengguna + ban ── */
+function collectUsers(){
+  const m = {};
+  Object.entries(userMap).forEach(([uid,u])=>{ if(u) m[uid]={uid,email:u.email||"",name:u.name||"",robloxId:u.robloxId||"",lastSeen:u.lastSeen||0}; });
+  // pengguna lama yang belum pernah tercatat tapi ada di riwayat upload
+  Object.values(uploadMap).forEach(o=>{
+    if(!o||!o.googleUid)return;
+    const u = m[o.googleUid]||(m[o.googleUid]={uid:o.googleUid,email:o.googleEmail||"",name:"",robloxId:o.robloxId||"",lastSeen:0});
+    if((o.at||0)>u.lastSeen) u.lastSeen=o.at;
+    if(!u.email&&o.googleEmail)u.email=o.googleEmail;
+    if(!u.robloxId&&o.robloxId)u.robloxId=o.robloxId;
+  });
+  Object.entries(banMap).forEach(([uid,b])=>{ if(b&&!m[uid]) m[uid]={uid,email:b.email||"",name:"",robloxId:b.robloxId||"",lastSeen:0}; });
+  return Object.values(m).sort((a,b)=>(b.lastSeen||0)-(a.lastSeen||0));
+}
+function renderUsers(){
+  if(!$("users"))return;
+  const q = $("usSearch").value.trim().toLowerCase();
+  const all = collectUsers();
+  $("usCount").textContent = all.length;
+  const shown = all.filter(u=>!q||[u.email,u.name,u.robloxId,u.uid].some(x=>String(x||"").toLowerCase().indexOf(q)>-1));
+  if(!shown.length){$("users").innerHTML='<div class="empty">'+(all.length?"Tidak ada yang cocok.":"Belum ada pengguna tercatat.")+"</div>";return}
+  $("users").innerHTML = shown.map(u=>{
+    const banned = !!banMap[u.uid];
+    const vip = u.robloxId && vipMap[u.robloxId] && isActive(vipMap[u.robloxId]);
+    const badges = (banned?'<span class="badge off">Di-ban</span>':'')+(vip?'<span class="badge ok">VIP</span>':'');
+    return '<div class="item"><div><div class="id">'+esc(u.name||u.email||u.uid)+badges+'</div>'+
+      '<div class="meta">'+esc(u.email||"—")+(u.robloxId?' · Roblox #'+esc(u.robloxId):'')+(u.lastSeen?' · '+esc(fmtTime(u.lastSeen)):'')+
+      (banned&&banMap[u.uid].reason?' · Alasan: '+esc(banMap[u.uid].reason):'')+'</div></div>'+
+      '<div class="btns">'+(banned
+        ?'<button class="btn small" type="button" data-unban="'+esc(u.uid)+'">Unban</button>'
+        :'<button class="btn danger" type="button" data-ban="'+esc(u.uid)+'">Ban</button>')+'</div></div>';
+  }).join("");
+}
+async function banUser(uid){
+  const u = collectUsers().find(x=>x.uid===uid)||{};
+  const reason = prompt("Ban "+(u.email||uid)+"?\nAlasan (opsional, maks 120 karakter):","");
+  if(reason===null)return;
+  try{
+    await set(ref(db,"bans/"+uid),{at:Date.now(),reason:reason.trim().slice(0,120),email:u.email||"",robloxId:u.robloxId||""});
+    say($("usMsg"),(u.email||uid)+" di-ban.","ok");
+  }catch(e){ fail($("usMsg"),e); }
+}
+async function unbanUser(uid){
+  try{ await remove(ref(db,"bans/"+uid)); say($("usMsg"),"Ban dicabut.","ok"); }
+  catch(e){ fail($("usMsg"),e); }
+}
+
+$("dAdd").addEventListener("click",()=>changeDuration(1));
+$("dSub").addEventListener("click",()=>changeDuration(-1));
+$("usSearch").addEventListener("input",renderUsers);
+$("users").addEventListener("click",e=>{
+  const b=e.target.closest("button"); if(!b)return;
+  if(b.dataset.ban)banUser(b.dataset.ban); else if(b.dataset.unban)unbanUser(b.dataset.unban);
+});
+$("list").addEventListener("click",e=>{const b=e.target.closest("button[data-dur]");if(b){$("dUid").value=b.dataset.dur;$("dUid").scrollIntoView({behavior:"smooth",block:"center"});$("dUid").focus()}});
 $("loginBtn").addEventListener("click",login);
 $("pw").addEventListener("keydown",e=>{if(e.key==="Enter")login()});
 $("resetBtn").addEventListener("click",()=>{if(configured)resetPw()});
 $("logoutBtn").addEventListener("click",()=>signOut(auth));
 $("pwBtn").addEventListener("click",changePw);
+$("qrisPick").addEventListener("click",()=>$("qrisFile").click());
+$("qrisFile").addEventListener("change",pickQris);
+$("qrisReset").addEventListener("click",resetQris);
+$("paySave").addEventListener("click",savePay);
 $("pwNew2").addEventListener("keydown",e=>{if(e.key==="Enter")changePw()});
 $("addBtn").addEventListener("click",add);
 $("uid").addEventListener("keydown",e=>{if(e.key==="Enter")add()});

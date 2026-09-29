@@ -140,7 +140,10 @@ async function handleUpload(context) {
     const hint = creatorType === "Group" && (res.status === 401 || res.status === 403)
       ? " Pastikan API key dibuat dari Group ini (atau kamu punya izin Manage Assets di Group), dan Group ID sudah benar."
       : "";
-    return json({ ok: false, message: `Roblox menolak upload (HTTP ${res.status}): ${detail}${hint}` });
+    const scopeHint = (res.status === 401 || res.status === 403)
+      ? " Pastikan API key punya scope Assets (Read + Write) — buat di creator.roblox.com → Credentials."
+      : "";
+    return json({ ok: false, message: `Roblox menolak upload (HTTP ${res.status}): ${detail}${hint}${scopeHint}` });
   }
 
   const operationPath = data.path || null;
@@ -162,14 +165,16 @@ async function handleUpload(context) {
     });
   }
   if (op.error) {
-    return json({ ok: false, message: `Roblox menolak asset ini: ${op.error.message || "diblokir moderasi."}` });
+    return json({ ok: true, done: true, rejected: true, message: `Roblox menolak asset ini: ${op.error.message || "diblokir moderasi."}` });
   }
 
   const assetId = op.response && op.response.assetId ? String(op.response.assetId) : null;
   const moderationState = op.response && op.response.moderationResult ? op.response.moderationResult.moderationState : null;
+  const rejected = String(moderationState || "").toLowerCase().includes("reject");
   return json({
     ok: true,
     assetId,
+    rejected,
     moderationState: moderationState || null,
     message: assetId ? `Berhasil dipublish. Asset ID: ${assetId}` : "Terkirim ke Roblox Open Cloud."
   });
