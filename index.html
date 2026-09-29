@@ -6,6 +6,7 @@
         <meta name="theme-color" content="#050505">
         <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#050505">
         <meta name="color-scheme" content="dark">
+        <script>(function(){var T={mono:{m:'#050505',p:[[236,237,241],[176,178,184],[124,126,132]]},blue:{m:'#040914',p:[[190,220,255],[110,170,255],[59,110,220]]},green:{m:'#030b07',p:[[190,255,215],[95,224,160],[34,160,90]]}};window.BX_THEMES=T;var n='mono';try{n=localStorage.getItem('baxdev_theme')||'mono'}catch(e){}if(!T[n])n='mono';document.documentElement.setAttribute('data-theme',n);window.__bxPalette=T[n].p;window.__bxThemeMeta=n==='mono'?null:T[n].m;if(n!=='mono'){document.querySelectorAll('meta[name="theme-color"]').forEach(function(x){x.setAttribute('content',T[n].m)})}})();</script>
         <link rel="icon" href="favicon.ico" sizes="any">
         <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
         <link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png">
@@ -4606,6 +4607,104 @@ window.BX = { user: null, ready: false, getToken: async function(){ return null;
 @keyframes ggspin{to{transform:rotate(360deg)}}
 @keyframes ggfade{from{opacity:0}to{opacity:1}}
 </style>
+<style id="color-themes">
+/* ═══ TEMA WARNA — Hitam (bawaan) · Biru · Hijau. Dipilih di Settings → Lanjutan ═══ */
+.plan-options { grid-template-columns: repeat(3, minmax(0,1fr)); gap: 8px; }
+.plan-option { padding: 12px 10px; }
+@media (max-width: 340px) { .plan-options { grid-template-columns: 1fr; } }
+.theme-picker { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+.theme-opt { display: inline-flex; align-items: center; gap: 9px; padding: 9px 16px; border-radius: 999px; cursor: pointer; font: 600 12.5px var(--font); color: var(--text); background: var(--surf, rgba(255,255,255,.05)); border: 1px solid var(--glass-border); transition: transform .2s ease, background .2s ease, border-color .2s ease; }
+.theme-opt:hover { transform: translateY(-1px); }
+.theme-opt.active { border-color: var(--accent-blue); background: var(--surface-hover); box-shadow: 0 0 0 1px var(--accent-blue) inset; }
+.theme-dot { display: block; width: 16px; height: 16px; border-radius: 50%; border: 1px solid rgba(255,255,255,.45); }
+.theme-dot[data-t="mono"] { background: linear-gradient(180deg,#ffffff,#aeb0b5); }
+.theme-dot[data-t="blue"] { background: linear-gradient(180deg,#d3e8ff,#3b82f6); }
+.theme-dot[data-t="green"] { background: linear-gradient(180deg,#cffbe0,#22c55e); }
+
+html[data-theme="blue"] { color-scheme: dark; --bg:#040914; --bg2:#0a1322; --bg3:#111d33;
+  --surface:rgba(110,170,255,.05); --surface-hover:rgba(110,170,255,.11); --glass:rgba(110,170,255,.07); --glass-strong:rgba(110,170,255,.13); --glass-border:rgba(110,170,255,.20);
+  --surf:rgba(110,170,255,.06); --surf-hi:rgba(110,170,255,.11);
+  --text:#f2f7ff; --text2:#a8b9d4; --text3:#7386a4;
+  --accent-blue:#9cc9ff; --silver:#9cc9ff; --silver-hi:#e8f2ff; --silver-lo:#6f9be0;
+  --chrome:linear-gradient(180deg,#d3e8ff 0%,#78b6ff 48%,#3b82f6 100%); --on-accent:#04122b;
+  --glow:inset 0 1px 0 rgba(110,170,255,.22), inset 0 -1px 0 rgba(110,170,255,.05), 0 12px 36px rgba(0,0,0,.35);
+  --glow-hover:inset 0 1px 0 rgba(110,170,255,.34), 0 16px 44px rgba(0,0,0,.45); }
+html[data-theme="blue"] body, html[data-theme="blue"] body.premium-user:not(.developer-mode), html[data-theme="blue"] body.developer-mode { --glass-border:rgba(110,170,255,.22); --glass-strong:rgba(110,170,255,.14); }
+html[data-theme="blue"] ::selection { background:#9cc9ff; color:#04122b; }
+html[data-theme="blue"] :is(button,[role=button],input,select,a):focus-visible { outline-color:#9cc9ff; }
+html[data-theme="blue"] .ambient-scene, html[data-theme="blue"] body.premium-user:not(.developer-mode) .ambient-scene {
+  background: radial-gradient(ellipse at 88% 6%, #14284a 0%, transparent 56%), radial-gradient(ellipse at 4% 98%, #0f2140 0%, transparent 54%), radial-gradient(ellipse at 50% 45%, #08111f 0%, transparent 70%), #030710; }
+html[data-theme="blue"] #navbar, html[data-theme="blue"] body.premium-user:not(.developer-mode) #navbar, html[data-theme="blue"] body.developer-mode #navbar { background:rgba(6,12,24,.58); border-bottom-color:rgba(110,170,255,.22); box-shadow:inset 0 -1px 0 rgba(110,170,255,.06), 0 10px 40px rgba(0,0,0,.35); }
+html[data-theme="blue"] .nav-link.active, html[data-theme="blue"] .settings-side .settings-tab.active { background:linear-gradient(135deg, rgba(110,170,255,.28), rgba(110,170,255,.06)); box-shadow:inset 0 0 0 1px rgba(110,170,255,.34), inset 0 1px 0 rgba(110,170,255,.32), 0 4px 12px rgba(0,0,0,.3); }
+html[data-theme="blue"] .signin-btn, html[data-theme="blue"] #login-nav-btn.nav-signin { background:linear-gradient(150deg, rgba(110,170,255,.28), rgba(110,170,255,.07)); border-color:rgba(110,170,255,.42); box-shadow:inset 0 1px 0 rgba(110,170,255,.34), 0 4px 14px rgba(0,0,0,.3); }
+html[data-theme="blue"] .nav-avatar, html[data-theme="blue"] .su-avatar, html[data-theme="blue"] #login-nav-btn.nav-silhouette, html[data-theme="blue"] body.premium-user:not(.developer-mode) .nav-avatar { background:linear-gradient(145deg, rgba(110,170,255,.32), rgba(110,170,255,.08)); border-color:rgba(110,170,255,.65); box-shadow:0 0 0 3px rgba(110,170,255,.10), 0 6px 18px rgba(0,0,0,.45), inset 0 1px 0 rgba(110,170,255,.4); }
+html[data-theme="blue"] .settings-user, html[data-theme="blue"] .settings-side .settings-nav { background:linear-gradient(135deg, rgba(110,170,255,.12), rgba(110,170,255,.03)); border-color:rgba(110,170,255,.18); }
+html[data-theme="blue"] #player-bar { background:rgba(6,12,24,.78); border-color:rgba(110,170,255,.30); }
+html[data-theme="blue"] .btn-primary, html[data-theme="blue"] .google-btn { background:var(--chrome); color:var(--on-accent); border-color:rgba(110,170,255,.7); box-shadow:inset 0 1px 0 rgba(255,255,255,.55), 0 8px 24px rgba(110,170,255,.22); }
+html[data-theme="blue"] .btn-primary:hover, html[data-theme="blue"] .google-btn:hover { background:var(--chrome); }
+html[data-theme="blue"] .speed-chip.active, html[data-theme="blue"] .source-tab.active { background:var(--chrome); color:var(--on-accent); border-color:rgba(110,170,255,.7); }
+html[data-theme="blue"] .toggle.on { background:rgba(110,170,255,.45); border-color:rgba(110,170,255,.7); }
+html[data-theme="blue"] .toggle.on::after { background:linear-gradient(#fff, #9cc9ff); }
+html[data-theme="blue"] .player-play, html[data-theme="blue"] .um-cover, html[data-theme="blue"] .connect-icon { background:var(--chrome); color:var(--on-accent); }
+html[data-theme="blue"] .progress-fill, html[data-theme="blue"] .um-progress span { background:var(--chrome); }
+html[data-theme="blue"] .studio-hero h1 span { background-image:linear-gradient(90deg, #ffffff, #9cc9ff 45%, #e8f2ff 70%, #6cb0ff); }
+html[data-theme="blue"] .plan-option { background:rgba(110,170,255,.06); border-color:rgba(110,170,255,.22); }
+html[data-theme="blue"] .plan-option:hover, html[data-theme="blue"] .plan-option:focus-visible { background:rgba(110,170,255,.13); border-color:#9cc9ff; }
+html[data-theme="blue"] .subscription-card, html[data-theme="blue"] body.premium-user:not(.developer-mode) .subscription-card { border-color:rgba(110,170,255,.40); background:rgba(6,12,24,.94); box-shadow:var(--shadow), 0 0 45px rgba(110,170,255,.10); }
+html[data-theme="blue"] .q-chip { background:rgba(110,170,255,.12); }
+html[data-theme="blue"] .q-chip.is-run { background:rgba(110,170,255,.24); }
+html[data-theme="blue"] .lib-note { background:rgba(110,170,255,.07); }
+html[data-theme="blue"] .badge-arch { background:rgba(110,170,255,.14); }
+html[data-theme="blue"] .gg-lock { background:rgba(110,170,255,.09); border-color:rgba(110,170,255,.24); }
+html[data-theme="blue"] #google-gate .gg-card, html[data-theme="blue"] #mt-overlay .mt-card, html[data-theme="blue"] #ban-overlay .bo-card { background:linear-gradient(150deg, rgba(110,170,255,.20), rgba(110,170,255,.06) 45%, rgba(110,170,255,.10)); border-color:rgba(110,170,255,.30); }
+html[data-theme="blue"] #google-gate .gg-btn, html[data-theme="blue"] #mt-overlay .mt-owner { background:var(--chrome); color:var(--on-accent); }
+html[data-theme="blue"] #google-gate .gg-back { background:linear-gradient(150deg, rgba(110,170,255,.14), rgba(110,170,255,.04)); border-color:rgba(110,170,255,.30); }
+html[data-theme="blue"] #google-gate .gg-reason { background:rgba(110,170,255,.12); border-color:rgba(110,170,255,.24); }
+html[data-theme="blue"] #mt-overlay .mt-ico { background:rgba(110,170,255,.14); border-color:rgba(110,170,255,.30); }
+html[data-theme="blue"] .theme-opt.active { border-color:#9cc9ff; background:rgba(110,170,255,.14); box-shadow:0 0 0 1px #9cc9ff inset; }
+
+html[data-theme="green"] { color-scheme: dark; --bg:#030b07; --bg2:#08140e; --bg3:#0f1f16;
+  --surface:rgba(100,230,160,.05); --surface-hover:rgba(100,230,160,.11); --glass:rgba(100,230,160,.07); --glass-strong:rgba(100,230,160,.13); --glass-border:rgba(100,230,160,.20);
+  --surf:rgba(100,230,160,.06); --surf-hi:rgba(100,230,160,.11);
+  --text:#f1fbf5; --text2:#a7c4b2; --text3:#6f9080;
+  --accent-blue:#86efac; --silver:#86efac; --silver-hi:#e6fff0; --silver-lo:#5fb984;
+  --chrome:linear-gradient(180deg,#cffbe0 0%,#6ee7a8 48%,#22c55e 100%); --on-accent:#03150b;
+  --glow:inset 0 1px 0 rgba(100,230,160,.22), inset 0 -1px 0 rgba(100,230,160,.05), 0 12px 36px rgba(0,0,0,.35);
+  --glow-hover:inset 0 1px 0 rgba(100,230,160,.34), 0 16px 44px rgba(0,0,0,.45); }
+html[data-theme="green"] body, html[data-theme="green"] body.premium-user:not(.developer-mode), html[data-theme="green"] body.developer-mode { --glass-border:rgba(100,230,160,.22); --glass-strong:rgba(100,230,160,.14); }
+html[data-theme="green"] ::selection { background:#86efac; color:#03150b; }
+html[data-theme="green"] :is(button,[role=button],input,select,a):focus-visible { outline-color:#86efac; }
+html[data-theme="green"] .ambient-scene, html[data-theme="green"] body.premium-user:not(.developer-mode) .ambient-scene {
+  background: radial-gradient(ellipse at 88% 6%, #123a25 0%, transparent 56%), radial-gradient(ellipse at 4% 98%, #0d2e1d 0%, transparent 54%), radial-gradient(ellipse at 50% 45%, #071510 0%, transparent 70%), #020805; }
+html[data-theme="green"] #navbar, html[data-theme="green"] body.premium-user:not(.developer-mode) #navbar, html[data-theme="green"] body.developer-mode #navbar { background:rgba(5,15,9,.58); border-bottom-color:rgba(100,230,160,.22); box-shadow:inset 0 -1px 0 rgba(100,230,160,.06), 0 10px 40px rgba(0,0,0,.35); }
+html[data-theme="green"] .nav-link.active, html[data-theme="green"] .settings-side .settings-tab.active { background:linear-gradient(135deg, rgba(100,230,160,.28), rgba(100,230,160,.06)); box-shadow:inset 0 0 0 1px rgba(100,230,160,.34), inset 0 1px 0 rgba(100,230,160,.32), 0 4px 12px rgba(0,0,0,.3); }
+html[data-theme="green"] .signin-btn, html[data-theme="green"] #login-nav-btn.nav-signin { background:linear-gradient(150deg, rgba(100,230,160,.28), rgba(100,230,160,.07)); border-color:rgba(100,230,160,.42); box-shadow:inset 0 1px 0 rgba(100,230,160,.34), 0 4px 14px rgba(0,0,0,.3); }
+html[data-theme="green"] .nav-avatar, html[data-theme="green"] .su-avatar, html[data-theme="green"] #login-nav-btn.nav-silhouette, html[data-theme="green"] body.premium-user:not(.developer-mode) .nav-avatar { background:linear-gradient(145deg, rgba(100,230,160,.32), rgba(100,230,160,.08)); border-color:rgba(100,230,160,.65); box-shadow:0 0 0 3px rgba(100,230,160,.10), 0 6px 18px rgba(0,0,0,.45), inset 0 1px 0 rgba(100,230,160,.4); }
+html[data-theme="green"] .settings-user, html[data-theme="green"] .settings-side .settings-nav { background:linear-gradient(135deg, rgba(100,230,160,.12), rgba(100,230,160,.03)); border-color:rgba(100,230,160,.18); }
+html[data-theme="green"] #player-bar { background:rgba(5,15,9,.78); border-color:rgba(100,230,160,.30); }
+html[data-theme="green"] .btn-primary, html[data-theme="green"] .google-btn { background:var(--chrome); color:var(--on-accent); border-color:rgba(100,230,160,.7); box-shadow:inset 0 1px 0 rgba(255,255,255,.55), 0 8px 24px rgba(100,230,160,.22); }
+html[data-theme="green"] .btn-primary:hover, html[data-theme="green"] .google-btn:hover { background:var(--chrome); }
+html[data-theme="green"] .speed-chip.active, html[data-theme="green"] .source-tab.active { background:var(--chrome); color:var(--on-accent); border-color:rgba(100,230,160,.7); }
+html[data-theme="green"] .toggle.on { background:rgba(100,230,160,.45); border-color:rgba(100,230,160,.7); }
+html[data-theme="green"] .toggle.on::after { background:linear-gradient(#fff, #86efac); }
+html[data-theme="green"] .player-play, html[data-theme="green"] .um-cover, html[data-theme="green"] .connect-icon { background:var(--chrome); color:var(--on-accent); }
+html[data-theme="green"] .progress-fill, html[data-theme="green"] .um-progress span { background:var(--chrome); }
+html[data-theme="green"] .studio-hero h1 span { background-image:linear-gradient(90deg, #ffffff, #86efac 45%, #e6fff0 70%, #4ade80); }
+html[data-theme="green"] .plan-option { background:rgba(100,230,160,.06); border-color:rgba(100,230,160,.22); }
+html[data-theme="green"] .plan-option:hover, html[data-theme="green"] .plan-option:focus-visible { background:rgba(100,230,160,.13); border-color:#86efac; }
+html[data-theme="green"] .subscription-card, html[data-theme="green"] body.premium-user:not(.developer-mode) .subscription-card { border-color:rgba(100,230,160,.40); background:rgba(5,15,9,.94); box-shadow:var(--shadow), 0 0 45px rgba(100,230,160,.10); }
+html[data-theme="green"] .q-chip { background:rgba(100,230,160,.12); }
+html[data-theme="green"] .q-chip.is-run { background:rgba(100,230,160,.24); }
+html[data-theme="green"] .lib-note { background:rgba(100,230,160,.07); }
+html[data-theme="green"] .badge-arch { background:rgba(100,230,160,.14); }
+html[data-theme="green"] .gg-lock { background:rgba(100,230,160,.09); border-color:rgba(100,230,160,.24); }
+html[data-theme="green"] #google-gate .gg-card, html[data-theme="green"] #mt-overlay .mt-card, html[data-theme="green"] #ban-overlay .bo-card { background:linear-gradient(150deg, rgba(100,230,160,.20), rgba(100,230,160,.06) 45%, rgba(100,230,160,.10)); border-color:rgba(100,230,160,.30); }
+html[data-theme="green"] #google-gate .gg-btn, html[data-theme="green"] #mt-overlay .mt-owner { background:var(--chrome); color:var(--on-accent); }
+html[data-theme="green"] #google-gate .gg-back { background:linear-gradient(150deg, rgba(100,230,160,.14), rgba(100,230,160,.04)); border-color:rgba(100,230,160,.30); }
+html[data-theme="green"] #google-gate .gg-reason { background:rgba(100,230,160,.12); border-color:rgba(100,230,160,.24); }
+html[data-theme="green"] #mt-overlay .mt-ico { background:rgba(100,230,160,.14); border-color:rgba(100,230,160,.30); }
+html[data-theme="green"] .theme-opt.active { border-color:#86efac; background:rgba(100,230,160,.14); box-shadow:0 0 0 1px #86efac inset; }
+</style>
 </head>
     <body class="intro-playing">
         <div id="google-gate" class="hide" role="dialog" aria-modal="true" aria-labelledby="gg-title">
@@ -5424,6 +5523,15 @@ window.BX = { user: null, ready: false, getToken: async function(){ return null;
                         <!-- Lanjutan -->
                         <div class="settings-section" id="settings-advanced">
                             <div class="card">
+                                <div class="setting-name">Tema warna</div>
+                                <div class="setting-desc">Ganti warna seluruh tampilan: navbar, kartu, tombol, pop-up, dan animasi latar.</div>
+                                <div class="theme-picker" role="group" aria-label="Tema warna">
+                                    <button type="button" class="theme-opt" data-tv="mono" aria-pressed="false" onclick="setTheme('mono')"><i class="theme-dot" data-t="mono"></i>Hitam</button>
+                                    <button type="button" class="theme-opt" data-tv="blue" aria-pressed="false" onclick="setTheme('blue')"><i class="theme-dot" data-t="blue"></i>Biru</button>
+                                    <button type="button" class="theme-opt" data-tv="green" aria-pressed="false" onclick="setTheme('green')"><i class="theme-dot" data-t="green"></i>Hijau</button>
+                                </div>
+                            </div>
+                            <div class="card">
                                 <div class="setting-row">
                                     <div class="setting-info">
                                         <div class="setting-name">Debug mode</div>
@@ -6096,7 +6204,7 @@ window.BX = { user: null, ready: false, getToken: async function(){ return null;
                 return S.account?.plan === 'premium';
             }
             function syncBrowserTheme() {
-                const color = isPremium() ? '#0c0c0d' : '#050505';
+                const color = window.__bxThemeMeta || (isPremium() ? '#0c0c0d' : '#050505');
                 document.querySelectorAll('meta[name="theme-color"]').forEach(meta => meta.setAttribute('content', color));
             }
             function updateAccountPlanUI() {
@@ -7114,14 +7222,29 @@ window.BX = { user: null, ready: false, getToken: async function(){ return null;
                     label: '7 hari',
                     price: 25000
                 }, {
+                    days: 15,
+                    label: '15 hari',
+                    price: 35000
+                }, {
                     days: 30,
                     label: '1 bulan',
                     price: 50000
                 }],
-                qris: null,
+                qris: {
+                    7: null,
+                    15: null,
+                    30: null
+                },
+                qrisLegacy: null,
                 adminWhatsapp: '6283172657811',
                 orderTtlMs: 24 * 60 * 60 * 1000
             };
+            const QRIS_DATA_URL = /^data:image\/(jpeg|png|webp);base64,/;
+
+            // QRIS tiap paket berbeda: foto khusus paket > foto lama (satu untuk semua) > qris.jpg bawaan
+            function qrisFor(days) {
+                return PAYMENT.qris[days] || PAYMENT.qrisLegacy || 'qris.jpg';
+            }
 
             // Harga VIP + foto QRIS diatur owner (Firebase config/payment). Gagal baca = pakai nilai bawaan.
             async function loadPaymentConfig() {
@@ -7129,17 +7252,22 @@ window.BX = { user: null, ready: false, getToken: async function(){ return null;
                 if (!base) return false;
                 try {
                     const ctrl = new AbortController();
-                    const timer = setTimeout( () => ctrl.abort(), 4000);
+                    const timer = setTimeout( () => ctrl.abort(), 6000);
                     const res = await fetch(base + '/config/payment.json', { cache: 'no-store', signal: ctrl.signal });
                     clearTimeout(timer);
                     if (!res.ok) return false;
                     const c = await res.json();
-                    const p7 = c && Number(c.p7), p30 = c && Number(c.p30);
-                    const before = JSON.stringify([PAYMENT.plans.map(p => p.price), PAYMENT.qris]);
-                    if (Number.isFinite(p7) && p7 >= 1000) PAYMENT.plans.find(p => p.days === 7).price = p7;
-                    if (Number.isFinite(p30) && p30 >= 1000) PAYMENT.plans.find(p => p.days === 30).price = p30;
-                    PAYMENT.qris = c && typeof c.qris === 'string' && /^data:image\/(jpeg|png|webp);base64,/.test(c.qris) ? c.qris : null;
-                    return before !== JSON.stringify([PAYMENT.plans.map(p => p.price), PAYMENT.qris]);
+                    const snapshot = () => JSON.stringify([PAYMENT.plans.map(p => p.price), PAYMENT.qris, PAYMENT.qrisLegacy]);
+                    const before = snapshot();
+                    const priceKey = {7: 'p7', 15: 'p15', 30: 'p30'};
+                    PAYMENT.plans.forEach(plan => {
+                        const v = c && Number(c[priceKey[plan.days]]);
+                        if (Number.isFinite(v) && v >= 1000) plan.price = v;
+                        const img = c && c['qris' + plan.days];
+                        PAYMENT.qris[plan.days] = typeof img === 'string' && QRIS_DATA_URL.test(img) ? img : null;
+                    });
+                    PAYMENT.qrisLegacy = c && typeof c.qris === 'string' && QRIS_DATA_URL.test(c.qris) ? c.qris : null;
+                    return before !== snapshot();
                 } catch (e) {
                     return false;
                 }
@@ -7237,9 +7365,9 @@ window.BX = { user: null, ready: false, getToken: async function(){ return null;
                         <div class="pay-meta">Bayar tepat sesuai nominal ini, termasuk dua digit terakhir, supaya admin bisa mencocokkan pembayaranmu.</div>
                     </div>
                     <div class="pay-qris">
-                        <img src="${escapeHtml(PAYMENT.qris || 'qris.jpg')}" alt="Kode QRIS pembayaran VIP">
+                        <img src="${escapeHtml(qrisFor(order.days))}" alt="Kode QRIS pembayaran VIP ${escapeHtml(planLabel(order.days))}">
                     </div>
-                    <a class="pay-save" href="${escapeHtml(PAYMENT.qris || 'qris.jpg')}" download="qris-baxdev.jpg">Simpan gambar QRIS</a>
+                    <a class="pay-save" href="${escapeHtml(qrisFor(order.days))}" download="qris-baxdev-${Number(order.days)}hari.jpg">Simpan gambar QRIS</a>
                     <ol class="pay-steps">
                         <li>Buka aplikasi bank atau e-wallet berlogo QRIS, lalu scan kode di atas.</li>
                         <li>Masukkan nominal ${amount} dan selesaikan pembayaran.</li>
@@ -7535,6 +7663,31 @@ window.BX = { user: null, ready: false, getToken: async function(){ return null;
             renderRecentFromLibrary();
             setTimeout(checkPendingLibrary, 2500);
         </script>
+        <script id="theme-switch">
+            // Tema warna: Hitam (bawaan), Biru, Hijau. Disimpan di browser dan dipakai semua tampilan.
+            const THEME_LABEL = {mono: 'Hitam', blue: 'Biru', green: 'Hijau'};
+            function applyTheme(name, persist) {
+                const T = window.BX_THEMES || {};
+                if (!T[name]) name = 'mono';
+                document.documentElement.setAttribute('data-theme', name);
+                window.__bxPalette = T[name] ? T[name].p : null;
+                window.__bxThemeMeta = name === 'mono' ? null : (T[name] && T[name].m);
+                if (persist) {
+                    try { localStorage.setItem('baxdev_theme', name); } catch (e) {}
+                }
+                document.querySelectorAll('.theme-opt').forEach(btn => {
+                    const on = btn.dataset.tv === name;
+                    btn.classList.toggle('active', on);
+                    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+                });
+                if (typeof syncBrowserTheme === 'function') syncBrowserTheme();
+            }
+            function setTheme(name) {
+                applyTheme(name, true);
+                toast('Tema ' + (THEME_LABEL[name] || 'Hitam') + ' aktif', 'success');
+            }
+            applyTheme(document.documentElement.getAttribute('data-theme') || 'mono', false);
+        </script>
         <script id="ambient-visuals">
             // Independent decoration: no application state, endpoints, or intro logic are changed.
             ( () => {
@@ -7567,7 +7720,7 @@ window.BX = { user: null, ready: false, getToken: async function(){ return null;
 
                 function draw() {
                     context.clearRect(0, 0, width, height);
-                    const palettes = [[236, 237, 241], [176, 178, 184], [124, 126, 132]];
+                    const palettes = window.__bxPalette || [[236, 237, 241], [176, 178, 184], [124, 126, 132]];
                     for (let band = 0; band < 3; band++) {
                         const color = palettes[band].join(',');
                         for (let strand = 0; strand < 30; strand++) {

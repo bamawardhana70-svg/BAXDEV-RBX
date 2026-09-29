@@ -40,7 +40,7 @@
           ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() < 10000000"
         },
         "days": {
-          ".validate": "newData.isNumber() && (newData.val() === 7 || newData.val() === 30)"
+          ".validate": "newData.isNumber() && (newData.val() === 7 || newData.val() === 15 || newData.val() === 30)"
         },
         "status": {
           ".validate": "newData.isString() && (newData.val() === 'pending' || newData.val() === 'approved' || newData.val() === 'rejected')"
@@ -234,7 +234,19 @@
         "p30": {
           ".validate": "newData.isNumber() && newData.val() >= 1000 && newData.val() <= 9900000"
         },
+        "p15": {
+          ".validate": "newData.isNumber() && newData.val() >= 1000 && newData.val() <= 9900000"
+        },
         "qris": {
+          ".validate": "newData.isString() && newData.val().matches(/^data:image\\/(jpeg|png|webp);base64,/) && newData.val().length <= 700000"
+        },
+        "qris7": {
+          ".validate": "newData.isString() && newData.val().matches(/^data:image\\/(jpeg|png|webp);base64,/) && newData.val().length <= 700000"
+        },
+        "qris15": {
+          ".validate": "newData.isString() && newData.val().matches(/^data:image\\/(jpeg|png|webp);base64,/) && newData.val().length <= 700000"
+        },
+        "qris30": {
           ".validate": "newData.isString() && newData.val().matches(/^data:image\\/(jpeg|png|webp);base64,/) && newData.val().length <= 700000"
         },
         "updatedAt": {

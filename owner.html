@@ -9,6 +9,7 @@
 <link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <title>baxdev — Owner Panel</title>
+<script>(function(){var n='mono';try{n=localStorage.getItem('baxdev_theme')||'mono'}catch(e){}if(n!=='blue'&&n!=='green')n='mono';document.documentElement.setAttribute('data-theme',n)})();</script>
 <style>
 :root{--bg:#050505;--bg2:#0d0d0e;--glass:rgba(255,255,255,.055);--line:rgba(255,255,255,.10);--text:#f0f0f0;--text2:#a4a6ab;--danger:#ff5a5a;--ok:#44ff88;--warn:#ffaa44}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -57,6 +58,7 @@ select:focus{border-color:rgba(190,222,226,.55)}
 .warn{font-size:12px;color:var(--warn);line-height:1.7;margin-bottom:16px}
 .qris-box{display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap}
 .qris-box img{width:150px;max-width:44vw;height:auto;border-radius:12px;background:#fff;border:1px solid var(--line)}
+.price-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px}
 .qris-side{display:flex;flex-direction:column;gap:8px;align-items:flex-start;flex:1;min-width:150px}
 .row.three{grid-template-columns:1fr}
 @media(min-width:560px){.row.three{grid-template-columns:1fr 1.2fr 1fr}}
@@ -66,6 +68,25 @@ select:focus{border-color:rgba(190,222,226,.55)}
 .linkbtn{background:none;border:none;color:var(--text2);font:inherit;font-size:12px;text-decoration:underline;cursor:pointer;margin-left:12px}
 .scrollbox{max-height:380px;overflow-y:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:14px;padding:0 10px;background:rgba(0,0,0,.18)}
 .item .btns{display:flex;gap:6px;flex-wrap:wrap}
+</style>
+<style id="color-themes">
+/* Tema warna mengikuti pilihan di situs utama (Settings → Lanjutan), disimpan di browser yang sama */
+
+html[data-theme="blue"]{--bg:#040914;--bg2:#0a1322;--glass:rgba(110,170,255,.07);--line:rgba(110,170,255,.20);--text:#f2f7ff;--text2:#a8b9d4}
+html[data-theme="blue"] body{background:radial-gradient(1200px 600px at 70% -10%,#14284a 0,transparent 60%),var(--bg)}
+html[data-theme="blue"] input:focus,html[data-theme="blue"] select:focus{border-color:rgba(110,170,255,.65)}
+html[data-theme="blue"] .btn{background:rgba(110,170,255,.09)}
+html[data-theme="blue"] .btn:hover{background:rgba(110,170,255,.17)}
+html[data-theme="blue"] .btn.primary{background:linear-gradient(180deg,#d3e8ff 0%,#78b6ff 48%,#3b82f6 100%);color:#04122b;border-color:transparent}
+html[data-theme="blue"] .btn.danger{background:rgba(255,90,90,.08)}
+
+html[data-theme="green"]{--bg:#030b07;--bg2:#08140e;--glass:rgba(100,230,160,.07);--line:rgba(100,230,160,.20);--text:#f1fbf5;--text2:#a7c4b2}
+html[data-theme="green"] body{background:radial-gradient(1200px 600px at 70% -10%,#123a25 0,transparent 60%),var(--bg)}
+html[data-theme="green"] input:focus,html[data-theme="green"] select:focus{border-color:rgba(100,230,160,.65)}
+html[data-theme="green"] .btn{background:rgba(100,230,160,.09)}
+html[data-theme="green"] .btn:hover{background:rgba(100,230,160,.17)}
+html[data-theme="green"] .btn.primary{background:linear-gradient(180deg,#cffbe0 0%,#6ee7a8 48%,#22c55e 100%);color:#03150b;border-color:transparent}
+html[data-theme="green"] .btn.danger{background:rgba(255,90,90,.08)}
 </style>
 </head>
 <body>
@@ -122,23 +143,10 @@ select:focus{border-color:rgba(190,222,226,.55)}
 
     <div class="card">
       <label style="margin-bottom:10px">Harga VIP &amp; QRIS <span class="badge off" id="payBadge">Bawaan</span></label>
-      <div class="row two" style="grid-template-columns:1fr 1fr">
-        <div><label for="price7">VIP 7 hari (Rp)</label><input id="price7" type="number" inputmode="numeric" min="1000" max="9900000" step="500" value="25000"></div>
-        <div><label for="price30">VIP 1 bulan (Rp)</label><input id="price30" type="number" inputmode="numeric" min="1000" max="9900000" step="500" value="50000"></div>
-      </div>
-      <label style="margin-top:14px">Foto QRIS</label>
-      <div class="qris-box">
-        <img id="qrisPrev" alt="Pratinjau QRIS" src="qris.jpg">
-        <div class="qris-side">
-          <input id="qrisFile" type="file" accept="image/*" class="hide">
-          <button class="btn small" id="qrisPick" type="button">Ganti foto QRIS</button>
-          <button class="btn small danger" id="qrisReset" type="button">Pakai bawaan</button>
-          <div class="note" id="qrisInfo">Memakai qris.jpg bawaan.</div>
-        </div>
-      </div>
+      <div id="payFields"></div>
       <div style="margin-top:14px"><button class="btn primary" id="paySave" type="button">Simpan harga &amp; QRIS</button></div>
       <div class="msg" id="payMsg" role="status"></div>
-      <p class="note" style="margin-top:10px">Perubahan langsung berlaku untuk pembeli berikutnya. Pesanan yang sudah dibuat tetap memakai nominal lamanya. Foto otomatis dikecilkan supaya ringan; pakai foto QRIS yang jelas dan tidak terpotong.</p>
+      <p class="note" style="margin-top:10px">Tiap paket (7 hari, 15 hari, 1 bulan) punya foto QRIS sendiri; pembeli melihat QRIS sesuai paket yang dipilih. Perubahan langsung berlaku untuk pembeli berikutnya. Pesanan yang sudah dibuat tetap memakai nominal lamanya. Foto otomatis dikecilkan supaya ringan; pakai foto QRIS yang jelas dan tidak terpotong.</p>
     </div>
 
     <div class="card">
@@ -154,6 +162,7 @@ select:focus{border-color:rgba(190,222,226,.55)}
         <div><label for="days">Masa aktif</label>
           <select id="days">
             <option value="7">7 hari</option>
+            <option value="15">15 hari</option>
             <option value="30">30 hari</option>
             <option value="0">Permanen</option>
           </select>
@@ -428,21 +437,43 @@ async function saveMaint(enabled){
 }
 
 
-/* ── Harga VIP & QRIS ── */
+/* ── Harga VIP & QRIS (3 paket, tiap paket punya foto QRIS sendiri) ── */
 let payState = null;      // isi node config/payment (null = bawaan)
-let qrisDraft = undefined; // undefined = tidak diubah, null = reset ke bawaan, string = data URL baru
-const DEF_P7 = 25000, DEF_P30 = 50000;
+const PAY_PLANS = [
+  {k:"7",  name:"7 hari",  p:"p7",  q:"qris7",  def:25000},
+  {k:"15", name:"15 hari", p:"p15", q:"qris15", def:35000},
+  {k:"30", name:"1 bulan", p:"p30", q:"qris30", def:50000}
+];
+const qrisDraft = {"7":undefined,"15":undefined,"30":undefined}; // undefined = tidak diubah, null = pakai qris.jpg bawaan, string = data URL baru
+function buildPayFields(){
+  $("payFields").innerHTML =
+    '<div class="price-grid">' + PAY_PLANS.map(pl =>
+      '<div><label for="price'+pl.k+'">VIP '+pl.name+' (Rp)</label><input id="price'+pl.k+'" type="number" inputmode="numeric" min="1000" max="9900000" step="500" value="'+pl.def+'"></div>'
+    ).join("") + '</div>' +
+    PAY_PLANS.map(pl =>
+      '<label style="margin-top:16px">Foto QRIS '+pl.name+'</label>' +
+      '<div class="qris-box"><img id="qrisPrev'+pl.k+'" alt="Pratinjau QRIS '+pl.name+'" src="qris.jpg">' +
+      '<div class="qris-side"><input id="qrisFile'+pl.k+'" data-qfile="'+pl.k+'" type="file" accept="image/*" class="hide">' +
+      '<button class="btn small" data-qpick="'+pl.k+'" type="button">Ganti foto QRIS</button>' +
+      '<button class="btn small danger" data-qreset="'+pl.k+'" type="button">Pakai bawaan</button>' +
+      '<div class="note" id="qrisInfo'+pl.k+'">Memakai qris.jpg bawaan.</div></div></div>'
+    ).join("");
+}
+buildPayFields();
 function renderPay(){
   const s = payState || {};
   const badge = $("payBadge");
   badge.textContent = payState ? "Kustom" : "Bawaan";
   badge.className = "badge " + (payState ? "ok" : "off");
-  if(document.activeElement !== $("price7")) $("price7").value = s.p7 || DEF_P7;
-  if(document.activeElement !== $("price30")) $("price30").value = s.p30 || DEF_P30;
-  if(qrisDraft === undefined){
-    $("qrisPrev").src = s.qris || "qris.jpg";
-    $("qrisInfo").textContent = s.qris ? "Memakai foto QRIS yang kamu upload." : "Memakai qris.jpg bawaan.";
-  }
+  PAY_PLANS.forEach(pl => {
+    const inp = $("price"+pl.k);
+    if(document.activeElement !== inp) inp.value = s[pl.p] || pl.def;
+    if(qrisDraft[pl.k] === undefined){
+      $("qrisPrev"+pl.k).src = s[pl.q] || s.qris || "qris.jpg";
+      $("qrisInfo"+pl.k).textContent = s[pl.q] ? "Memakai foto QRIS yang kamu upload."
+        : (s.qris ? "Memakai foto QRIS lama (dipakai semua paket sampai kamu upload foto khusus paket ini)." : "Memakai qris.jpg bawaan.");
+    }
+  });
 }
 function readImage(file){
   return new Promise((res,rej)=>{
@@ -457,7 +488,7 @@ async function compressQris(file){
   if(!/^image\//.test(file.type)) throw new Error("Pilih file gambar (JPG/PNG).");
   if(file.size > 15*1048576) throw new Error("Foto terlalu besar (maks 15 MB).");
   const img = await readImage(file);
-  const maxSide = 1000;
+  const maxSide = 900;
   const k = Math.min(1, maxSide / Math.max(img.naturalWidth, img.naturalHeight));
   const w = Math.max(1, Math.round(img.naturalWidth * k)), h = Math.max(1, Math.round(img.naturalHeight * k));
   const c = document.createElement("canvas");
@@ -466,42 +497,45 @@ async function compressQris(file){
   g.fillStyle = "#fff"; g.fillRect(0,0,w,h);
   g.drawImage(img,0,0,w,h);
   let q = 0.9, out = c.toDataURL("image/jpeg", q);
-  while(out.length > 600000 && q > 0.4){ q -= 0.1; out = c.toDataURL("image/jpeg", q); }
-  if(out.length > 600000) throw new Error("Foto masih terlalu besar setelah dikecilkan. Coba foto yang lebih sederhana.");
+  while(out.length > 400000 && q > 0.4){ q -= 0.1; out = c.toDataURL("image/jpeg", q); }
+  if(out.length > 400000) throw new Error("Foto masih terlalu besar setelah dikecilkan. Coba foto yang lebih sederhana.");
   return out;
 }
-async function pickQris(ev){
+async function pickQris(k, ev){
   const f = ev.target.files && ev.target.files[0];
   ev.target.value = "";
   if(!f) return;
   try{
     const data = await compressQris(f);
-    qrisDraft = data;
-    $("qrisPrev").src = data;
-    $("qrisInfo").textContent = "Foto baru siap (" + Math.round(data.length/1024) + " KB). Tekan Simpan untuk menerapkan.";
+    qrisDraft[k] = data;
+    $("qrisPrev"+k).src = data;
+    $("qrisInfo"+k).textContent = "Foto baru siap (" + Math.round(data.length/1024) + " KB). Tekan Simpan untuk menerapkan.";
     say($("payMsg"),"");
   }catch(e){ say($("payMsg"), e.message || "Gagal membaca foto.", "err"); }
 }
-function resetQris(){
-  qrisDraft = null;
-  $("qrisPrev").src = "qris.jpg";
-  $("qrisInfo").textContent = "Akan kembali ke qris.jpg bawaan setelah disimpan.";
+function resetQris(k){
+  qrisDraft[k] = null;
+  $("qrisPrev"+k).src = "qris.jpg";
+  $("qrisInfo"+k).textContent = "Akan kembali ke qris.jpg bawaan setelah disimpan.";
 }
 async function savePay(){
-  const p7 = Math.round(Number($("price7").value)), p30 = Math.round(Number($("price30").value));
   const ok = (n)=>Number.isFinite(n) && n >= 1000 && n <= 9900000;
-  if(!ok(p7) || !ok(p30)){ say($("payMsg"),"Harga harus antara Rp1.000 dan Rp9.900.000.","err"); return; }
   const cur = payState || {};
-  let qris = cur.qris || null;
-  if(qrisDraft === null) qris = null;
-  else if(typeof qrisDraft === "string") qris = qrisDraft;
-  const data = { p7, p30, updatedAt: Date.now() };
-  if(qris) data.qris = qris;
+  const data = { updatedAt: Date.now() };
+  for(const pl of PAY_PLANS){
+    const v = Math.round(Number($("price"+pl.k).value));
+    if(!ok(v)){ say($("payMsg"),"Harga VIP "+pl.name+" harus antara Rp1.000 dan Rp9.900.000.","err"); return; }
+    data[pl.p] = v;
+    const d = qrisDraft[pl.k];
+    // tidak diubah: pertahankan foto paket ini, atau ambil dari foto lama (satu untuk semua) supaya tampilan tidak berubah
+    const img = d === null ? null : (typeof d === "string" ? d : (cur[pl.q] || cur.qris || null));
+    if(img) data[pl.q] = img;
+  }
   const btn = $("paySave");
   btn.disabled = true;
   try{
     await set(ref(db,"config/payment"), data);
-    qrisDraft = undefined;
+    PAY_PLANS.forEach(pl => { qrisDraft[pl.k] = undefined; });
     say($("payMsg"),"Tersimpan. Harga dan QRIS baru langsung dipakai.","ok");
   }catch(e){ fail($("payMsg"),e); }
   finally{ btn.disabled = false; }
@@ -712,9 +746,11 @@ $("pw").addEventListener("keydown",e=>{if(e.key==="Enter")login()});
 $("resetBtn").addEventListener("click",()=>{if(configured)resetPw()});
 $("logoutBtn").addEventListener("click",()=>signOut(auth));
 $("pwBtn").addEventListener("click",changePw);
-$("qrisPick").addEventListener("click",()=>$("qrisFile").click());
-$("qrisFile").addEventListener("change",pickQris);
-$("qrisReset").addEventListener("click",resetQris);
+$("payFields").addEventListener("click",e=>{
+  const b=e.target.closest("button[data-qpick],button[data-qreset]"); if(!b)return;
+  if(b.dataset.qpick) $("qrisFile"+b.dataset.qpick).click(); else resetQris(b.dataset.qreset);
+});
+$("payFields").addEventListener("change",e=>{ if(e.target.matches("input[data-qfile]")) pickQris(e.target.dataset.qfile,e); });
 $("paySave").addEventListener("click",savePay);
 $("pwNew2").addEventListener("keydown",e=>{if(e.key==="Enter")changePw()});
 $("addBtn").addEventListener("click",add);

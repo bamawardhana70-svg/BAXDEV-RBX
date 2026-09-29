@@ -16,7 +16,7 @@ firebase-config.js               Config web Firebase (isi sendiri)
 database.rules.json              Security Rules Realtime Database (paste di Firebase Console)
 _redirects                       /admin dan /admin.html diarahkan ke /owner
 logo.png                         Logo untuk owner.html
-qris.jpg                         Gambar QRIS bawaan (dipakai kalau owner belum upload foto sendiri)
+qris.jpg                         Gambar QRIS bawaan (dipakai kalau owner belum upload foto untuk paket itu)
 functions/_lib/auth.js            Verifikasi token login Google (dipakai semua endpoint /api/*; Project ID ditulis di file ini)
 functions/api/
   roblox-upload.js               Upload audio ke Roblox Open Cloud
@@ -138,3 +138,7 @@ API key Roblox cukup memakai scope **Assets (Read + Write)**. Tombol Cek Koneksi
 Buka `/owner` → kartu **Harga VIP & QRIS**. Isi harga paket 7 hari dan 1 bulan, upload foto QRIS baru (otomatis dikecilkan), lalu Simpan.
 Data disimpan di Firebase `config/payment` dan langsung dipakai tombol Buy VIP. Kalau belum diatur, dipakai harga 25.000 / 50.000 dan `qris.jpg`.
 **Wajib:** paste ulang `database.rules.json` di Firebase Console → Realtime Database → Rules → Publish, supaya node `config` bisa dibaca publik dan ditulis owner saja.
+
+## Paket VIP, QRIS, dan tema
+- Paket VIP: 7 hari, 15 hari, 1 bulan. Harga dan foto QRIS tiap paket diatur di /owner (Harga VIP & QRIS): jadi ada 3 foto QRIS. Data disimpan di Firebase `config/payment` (`p7`/`p15`/`p30`, `qris7`/`qris15`/`qris30`). **Paste ulang `database.rules.json` ke Firebase Console** supaya paket 15 hari dan QRIS per paket diterima.
+- Tema warna (Hitam, Biru, Hijau): Settings → Lanjutan. Berlaku untuk seluruh tampilan dan tersimpan di browser (`baxdev_theme`); halaman /owner ikut tema yang sama.
