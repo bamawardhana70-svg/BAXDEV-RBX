@@ -5142,7 +5142,7 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                     <div>
                         <div class="plan-kicker">Akun kamu</div>
                         <div class="plan-title" id="home-plan-title">Free Plan</div>
-                        <div class="plan-usage" id="home-plan-usage">0/10 publish hari ini</div>
+                        <div class="plan-usage" id="home-plan-usage">0/5 publish hari ini</div>
                     </div>
                     <button class="btn btn-primary" id="home-plan-button" onclick="openSubscriptionModal()">Buy VIP</button>
                 </div>
@@ -5257,7 +5257,7 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                             <div style="display:flex;justify-content:flex-end;margin-top:9px">
                                 <button class="btn btn-primary" id="convert-youtube-btn" onclick="convertLinks('youtube')">Convert ke MP3</button>
                             </div>
-                            <div class="youtube-hint" id="convert-limit-hint" style="display:none">Kuota publish akun free sudah habis. Buy VIP atau tukar kode di Pengaturan → Akun.</div>
+                            <div class="youtube-hint" id="convert-limit-hint" style="display:none">Kuota publish hari ini sudah habis dan reset besok. Buy VIP atau tukar kode di Pengaturan → Akun.</div>
                             <div class="youtube-hint">Nama asset otomatis mengikuti judul YouTube dan tetap bisa kamu edit satu per satu. Preset kecepatan sama untuk seluruh batch. Hanya video yang kamu miliki atau punya izin untuk digunakan.</div>
                             <div class="convert-status" id="convert-status" role="status"></div>
                         </div>
@@ -5271,7 +5271,7 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                             <div style="display:flex;justify-content:flex-end;margin-top:9px">
                                 <button class="btn btn-primary" id="convert-tiktok-btn" onclick="convertLinks('tiktok')">Convert ke MP3</button>
                             </div>
-                            <div class="youtube-hint" id="convert-tiktok-limit-hint" style="display:none">Kuota publish akun free sudah habis. Buy VIP atau tukar kode di Pengaturan → Akun.</div>
+                            <div class="youtube-hint" id="convert-tiktok-limit-hint" style="display:none">Kuota publish hari ini sudah habis dan reset besok. Buy VIP atau tukar kode di Pengaturan → Akun.</div>
                             <div class="youtube-hint">Yang diambil adalah audio dari video TikTok. Nama asset mengikuti judul sound atau caption video dan tetap bisa kamu edit satu per satu. Hanya video yang kamu miliki atau punya izin untuk digunakan.</div>
                             <div class="convert-status" id="convert-tiktok-status" role="status"></div>
                         </div>
@@ -5533,7 +5533,7 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                                     <div class="setting-row" style="border-bottom:none;padding:0">
                                         <div class="setting-info">
                                             <div class="setting-name" id="acct-plan-title">Free Plan</div>
-                                            <div class="setting-desc" id="acct-plan-usage">0/10 publish</div>
+                                            <div class="setting-desc" id="acct-plan-usage">0/5 publish hari ini</div>
                                         </div>
                                         <button class="btn btn-primary" id="acct-plan-button" onclick="openSubscriptionModal()">Buy VIP</button>
                                     </div>
@@ -5817,15 +5817,16 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
         <script src="https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js"></script>
         <script>
             // ── STATE ─────────────────────────────────────────────
+            const FREE_UPLOAD_LIMIT = 5; // publish per hari untuk akun free; reset tengah malam waktu perangkat
             const S = {
                 library: JSON.parse(localStorage.getItem('baxdev_lib') || '[]'),
                 roblox: {},
                 developer: false,
                 account: {
                     plan: 'free',
-                    limit: 10,
+                    limit: FREE_UPLOAD_LIMIT,
                     used: 0,
-                    remaining: 10,
+                    remaining: FREE_UPLOAD_LIMIT,
                     period: 'day',
                     periodLabel: 'hari',
                     batchLimit: 1,
@@ -5906,7 +5907,6 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                 , HOLD_MS);
             }
             // ── NAV ───────────────────────────────────────────────
-            const FREE_UPLOAD_LIMIT = 10;
             const HOUR_MS = 3600000;
             let converting = false;
             // Sumber link yang bisa dikonversi ke MP3 (satu alur untuk semuanya).
@@ -6116,18 +6116,36 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
             function setOwnerHash(h) {
                 localStorage.setItem('baxdev_owner_hash', h);
             }
+            // Kuota harian disimpan per user Roblox: { [userId]: { day: 'YYYY-MM-DD', count } }. Format lama (angka total) dianggap kosong.
+            function todayKey() {
+                const d = new Date();
+                return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+            }
+            function readQuotaStore() {
+                try {
+                    const v = JSON.parse(localStorage.getItem('baxdev_quota') || '{}');
+                    return v && typeof v === 'object' ? v : {};
+                } catch (e) {
+                    return {};
+                }
+            }
+            function quotaUserKey() {
+                return String((S.roblox && S.roblox.userId) || '_none_');
+            }
             function getQuota() {
-                const totals = JSON.parse(localStorage.getItem('baxdev_quota') || '{}');
-                const key = String((S.roblox && S.roblox.userId) || '_none_');
+                const entry = readQuotaStore()[quotaUserKey()];
                 return {
-                    count: totals[key] || 0
+                    count: entry && typeof entry === 'object' && entry.day === todayKey() ? Number(entry.count) || 0 : 0
                 };
             }
             function incrementQuota() {
-                const totals = JSON.parse(localStorage.getItem('baxdev_quota') || '{}');
-                const key = String((S.roblox && S.roblox.userId) || '_none_');
-                totals[key] = (totals[key] || 0) + 1;
-                localStorage.setItem('baxdev_quota', JSON.stringify(totals));
+                const today = todayKey();
+                const next = { [quotaUserKey()]: { day: today, count: getQuota().count + 1 } };
+                for (const [key, entry] of Object.entries(readQuotaStore())) {
+                    if (key !== quotaUserKey() && entry && typeof entry === 'object' && entry.day === today)
+                        next[key] = entry; // entri hari lain sudah tidak relevan
+                }
+                try { localStorage.setItem('baxdev_quota', JSON.stringify(next)); } catch (e) {}
             }
             function refreshAccountState() {
                 const premium = isVIP();
@@ -6137,8 +6155,8 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                     limit: FREE_UPLOAD_LIMIT,
                     used: q.count,
                     remaining: Math.max(0, FREE_UPLOAD_LIMIT - q.count),
-                    period: 'account',
-                    periodLabel: 'akun',
+                    period: 'day',
+                    periodLabel: 'hari',
                     batchLimit: premium ? 5 : 1,
                     unlimited: premium,
                     premiumUntil: 0,
@@ -6146,6 +6164,20 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                 };
                 updateAccountPlanUI();
             }
+            // Ganti hari saat halaman masih terbuka: hitung ulang sisa kuota tanpa perlu reload.
+            let quotaDay = todayKey();
+            function syncQuotaDay() {
+                const day = todayKey();
+                if (day === quotaDay)
+                    return;
+                quotaDay = day;
+                refreshAccountState();
+            }
+            setInterval(syncQuotaDay, 60000);
+            document.addEventListener('visibilitychange', () => {
+                if (!document.hidden)
+                    syncQuotaDay();
+            });
             function navigate(page) {
                 document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
                 document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
@@ -6409,9 +6441,9 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
             function updateAccountPlanUI() {
                 const account = S.account || {
                     plan: 'free',
-                    limit: 10,
+                    limit: FREE_UPLOAD_LIMIT,
                     used: 0,
-                    remaining: 10,
+                    remaining: FREE_UPLOAD_LIMIT,
                     periodLabel: 'hari',
                     batchLimit: 1
                 };
@@ -6419,7 +6451,7 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                 document.body.classList.toggle('premium-user', premium);
                 const title = premium ? 'VIP Plan' : 'Free Plan';
                 const vipUntil = premium && S.remoteVip === true && S.vipExpiresAt ? ` · sampai ${new Date(S.vipExpiresAt).toLocaleString('id-ID', {day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'})}` : '';
-                const usage = account.unlimited ? `Publish tanpa batas (VIP)${vipUntil}` : `${account.used || 0}/${account.limit || 10} publish (total akun)`;
+                const usage = account.unlimited ? `Publish tanpa batas (VIP)${vipUntil}` : `${account.used || 0}/${account.limit || FREE_UPLOAD_LIMIT} publish hari ini`;
                 const homeCard = document.getElementById('home-plan-card');
                 if (homeCard)
                     homeCard.classList.toggle('premium', premium);
