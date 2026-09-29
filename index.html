@@ -1655,6 +1655,7 @@
                 box-shadow: var(--glow-hover)
             }
 
+            .lib-model-icon { width: 22px; height: 22px; color: var(--text2); }
             .lib-wave {
                 height: 38px;
                 background: var(--surface-hover);
@@ -4809,6 +4810,32 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
 .install-actions { grid-column: 1 / -1; display: flex; gap: 10px; }
 .install-actions .btn { flex: 1; min-height: 44px; justify-content: center; }
 @media (prefers-reduced-motion: reduce) { .install-sheet { transition: none; } }
+
+/* Tab sumber upload: 4 tab dibuat 2x2 di layar sempit */
+@media (max-width: 480px) { .source-switch { display: grid; grid-template-columns: 1fr 1fr; } }
+</style>
+<style>
+/* ── Toolbox ── */
+.tb-cats{display:flex!important;flex-wrap:nowrap!important;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.tb-cats::-webkit-scrollbar{display:none}
+.tb-cats .source-tab{flex:0 0 auto!important;min-width:78px;white-space:nowrap}
+.tb-note{min-height:16px;margin:0 0 12px;font-size:12px;line-height:1.5;color:var(--text2)}
+.tb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:12px}
+.tb-card{display:flex;flex-direction:column;min-width:0;overflow:hidden;background:var(--glass);border:1px solid var(--glass-border);border-radius:16px}
+.tb-thumb{aspect-ratio:1/1;display:grid;place-items:center;overflow:hidden;background:var(--surface)}
+.tb-thumb img{display:block;width:100%;height:100%;object-fit:cover}
+.tb-ph{width:36%;aspect-ratio:1/1;border-radius:12px;background:rgba(255,255,255,.07)}
+.tb-body{display:flex;flex-direction:column;gap:4px;min-width:0;padding:10px}
+.tb-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12.5px;font-weight:600;color:var(--text)}
+.tb-meta{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10.5px;color:var(--text3)}
+.tb-id{font:600 11px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.02em;color:var(--text2)}
+.tb-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.tb-actions .copy-btn{flex:1 1 auto;justify-content:center;min-height:32px;font-size:11px;text-decoration:none}
+.tb-skel .tb-thumb{animation:tb-pulse 1.2s ease-in-out infinite}
+.tb-skel .tb-body{min-height:96px}
+@keyframes tb-pulse{50%{opacity:.45}}
+.tb-more{display:flex;justify-content:center;margin:18px 0 6px}
+@media (max-width:640px){.tb-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}}
 </style>
 </head>
     <body class="intro-playing">
@@ -4863,6 +4890,18 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                     </svg>
                     Upload
     
+                </button>
+                <button class="nav-link" onclick="navigate('model')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/>
+                    </svg>
+                    Model
+                </button>
+                <button class="nav-link" onclick="navigate('toolbox')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.2-.6-.6-2.2z"/>
+                    </svg>
+                    Toolbox
                 </button>
                 <button class="nav-link" onclick="navigate('library')">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -4991,6 +5030,18 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                 </svg>
                 Upload
   
+            </div>
+            <div class="m-link" onclick="navigate('model');closeMenu()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/>
+                </svg>
+                Model
+            </div>
+            <div class="m-link" onclick="navigate('toolbox');closeMenu()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.2-.6-.6-2.2z"/>
+                </svg>
+                Toolbox
             </div>
             <div class="m-link" onclick="navigate('library');closeMenu()">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -5242,9 +5293,9 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
             </div>
             <!-- UPLOAD -->
             <div class="page" id="page-upload">
-                <h1 class="page-title">Upload Audio</h1>
-                <div class="page-sub">Publish audio langsung ke Roblox Asset</div>
-                <div class="source-switch" role="tablist" aria-label="Sumber audio">
+                <h1 class="page-title" id="upload-title">Upload Audio</h1>
+                <div class="page-sub" id="upload-sub">Publish audio langsung ke Roblox Asset</div>
+                <div class="source-switch" id="source-switch" role="tablist" aria-label="Jenis upload">
                     <button class="source-tab active" id="source-file-tab" onclick="setUploadSource('file')" role="tab" aria-selected="true">Upload file</button>
                     <button class="source-tab" id="source-youtube-tab" onclick="setUploadSource('youtube')" role="tab" aria-selected="false">YouTube URL</button>
                     <button class="source-tab" id="source-tiktok-tab" onclick="setUploadSource('tiktok')" role="tab" aria-selected="false">TikTok URL</button>
@@ -5296,12 +5347,28 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                         <span class="drop-tag">AAC</span>
                     </div>
                 </div>
+                <div class="drop-zone" id="model-drop-zone" style="display:none">
+                    <input type="file" id="model-input" accept=".rbxm,.rbxmx" multiple>
+                    <div class="drop-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="16 16 12 12 8 16"/>
+                            <line x1="12" y1="12" x2="12" y2="21"/>
+                            <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/>
+                        </svg>
+                    </div>
+                    <div class="drop-title">Drop file model di sini</div>
+                    <div class="drop-sub">atau klik untuk pilih file. Ekspor dari Roblox Studio lewat Save to File As.</div>
+                    <div class="drop-types">
+                        <span class="drop-tag">RBXM</span>
+                        <span class="drop-tag">RBXMX</span>
+                    </div>
+                </div>
                 <div class="file-queue" id="file-queue"></div>
                 <section class="upload-status" id="upload-status" aria-labelledby="upload-status-title" hidden>
                     <div class="section-title" id="upload-status-title">Status upload</div>
                     <div class="upload-status-list" id="upload-status-list" aria-live="polite"></div>
                 </section>
-                <div class="card" style="margin-bottom:18px">
+                <div class="card" id="audio-settings" style="margin-bottom:18px">
                     <div class="section-title" style="margin-bottom:16px">Pengaturan Upload</div>
                     <div class="settings-panel">
                         <div class="field-group">
@@ -5332,7 +5399,7 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                         <span style="font-size:12.5px;font-weight:600;color:var(--success)">Upload berhasil dipublish!</span>
                     </div>
                     <div class="result-id" id="result-asset-id">rbxassetid://0000000000</div>
-                    <div style="font-size:11.5px;color:var(--text2);margin-bottom:10px">Salin ID ini ke script Roblox kamu</div>
+                    <div id="result-note" style="font-size:11.5px;color:var(--text2);margin-bottom:10px">Salin ID ini ke script Roblox kamu</div>
                     <div style="display:flex;gap:7px;flex-wrap:wrap">
                         <button class="copy-btn" onclick="copyAssetId()">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -5341,7 +5408,7 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                             </svg>
                             Salin ID
                         </button>
-                        <button class="copy-btn" onclick="copyFullId()">
+                        <button class="copy-btn" id="result-full-btn" onclick="copyFullId()">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <rect x="9" y="9" width="13" height="13" rx="2"/>
                                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
@@ -5378,18 +5445,50 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                     </button>
                 </div>
             </div>
-            <!-- LIBRARY -->
-            <div class="page" id="page-library">
-                <h1 class="page-title">Library</h1>
-                <div class="page-sub">Semua audio yang sudah diupload ke Roblox</div>
+            <!-- TOOLBOX -->
+            <div class="page" id="page-toolbox">
+                <h1 class="page-title">Toolbox</h1>
+                <div class="page-sub">Cari model dan aset Roblox lain, lalu salin Asset ID-nya</div>
+                <div class="source-switch tb-cats" id="tb-cats" role="tablist" aria-label="Kategori aset">
+                    <button class="source-tab active" data-cat="10" onclick="toolboxSetCat('10')" role="tab" aria-selected="true">Model</button>
+                    <button class="source-tab" data-cat="13" onclick="toolboxSetCat('13')" role="tab" aria-selected="false">Decal</button>
+                    <button class="source-tab" data-cat="40" onclick="toolboxSetCat('40')" role="tab" aria-selected="false">MeshPart</button>
+                    <button class="source-tab" data-cat="38" onclick="toolboxSetCat('38')" role="tab" aria-selected="false">Plugin</button>
+                    <button class="source-tab" data-cat="3" onclick="toolboxSetCat('3')" role="tab" aria-selected="false">Audio</button>
+                </div>
                 <div class="library-toolbar">
                     <div class="search-wrap">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <circle cx="11" cy="11" r="8"/>
                             <line x1="21" y1="21" x2="16.65" y2="16.65"/>
                         </svg>
-                        <input type="text" placeholder="Cari audio..." id="lib-search" oninput="filterLibrary()">
+                        <input type="text" id="tb-search" placeholder="Cari model atau ID" autocomplete="off" enterkeyhint="search">
                     </div>
+                    <button class="btn btn-primary" id="tb-search-btn" type="button" onclick="toolboxSearch(true)">Cari</button>
+                </div>
+                <div class="tb-note" id="tb-note" role="status"></div>
+                <div class="tb-grid" id="tb-grid"></div>
+                <div class="tb-more">
+                    <button class="btn btn-outline" id="tb-more" type="button" onclick="toolboxSearch(false)" style="display:none">Muat lagi</button>
+                </div>
+            </div>
+            <!-- LIBRARY -->
+            <div class="page" id="page-library">
+                <h1 class="page-title">Library</h1>
+                <div class="page-sub">Semua audio dan model yang sudah diupload ke Roblox</div>
+                <div class="library-toolbar">
+                    <div class="search-wrap">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"/>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                        </svg>
+                        <input type="text" placeholder="Cari nama..." id="lib-search" oninput="filterLibrary()">
+                    </div>
+                    <select id="lib-kind" onchange="filterLibrary()" style="width:auto">
+                        <option value="all">Semua jenis</option>
+                        <option value="audio">Musik</option>
+                        <option value="model">Model</option>
+                    </select>
                     <select id="lib-filter" onchange="filterLibrary()" style="width:auto">
                         <option value="all">Semua</option>
                         <option value="done">Published</option>
@@ -6179,15 +6278,30 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                     syncQuotaDay();
             });
             function navigate(page) {
+                // "Model" memakai halaman upload yang sama dalam mode model; "Upload" khusus musik.
+                let view = page;
+                if (page === 'model' || page === 'upload') {
+                    const wantModel = page === 'model';
+                    if ((S.source === 'model') !== wantModel) {
+                        if (S.uploading && S.files.length) {
+                            toast('Antrean sedang diproses, tunggu sampai selesai', 'info');
+                            return;
+                        }
+                        setUploadSource(wantModel ? 'model' : 'file');
+                    }
+                    view = 'upload';
+                }
                 document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
                 document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
                 document.querySelectorAll('.m-link').forEach(l => l.classList.remove('active'));
-                document.getElementById('page-' + page).classList.add('active');
+                document.getElementById('page-' + view).classList.add('active');
                 const idx = {
                     home: 0,
                     upload: 1,
-                    library: 2,
-                    settings: 3
+                    model: 2,
+                    toolbox: 3,
+                    library: 4,
+                    settings: 5
                 }[page];
                 const nls = document.querySelectorAll('.nav-link');
                 const mls = document.querySelectorAll('.m-link');
@@ -6195,6 +6309,8 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                     nls[idx].classList.add('active');
                 if (mls[idx])
                     mls[idx].classList.add('active');
+                if (page === 'toolbox')
+                    toolboxOpen();
                 if (page === 'library') {
                     renderLibrary();
                     checkPendingLibrary();
@@ -6522,29 +6638,32 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
             }
 
             // ── FILE UPLOAD ───────────────────────────────────────
+            function bindDropZone(zone, input) {
+                zone.addEventListener('dragover', e => {
+                    e.preventDefault();
+                    zone.classList.add('drag-over');
+                });
+                zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+                zone.addEventListener('drop', e => {
+                    e.preventDefault();
+                    zone.classList.remove('drag-over');
+                    if (!requireGoogle('upload file'))
+                        return;
+                    addFiles([...e.dataTransfer.files]);
+                });
+                input.addEventListener('change', () => addFiles([...input.files]));
+                zone.addEventListener('click', e => {
+                    if (!requireGoogle('upload file')) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }
+                }, true);
+            }
             const dropZone = document.getElementById('drop-zone');
             const fileInput = document.getElementById('file-input');
-            dropZone.addEventListener('dragover', e => {
-                e.preventDefault();
-                dropZone.classList.add('drag-over')
-            }
-            );
-            dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
-            dropZone.addEventListener('drop', e => {
-                e.preventDefault();
-                dropZone.classList.remove('drag-over');
-                if (!requireGoogle('upload musik'))
-                    return;
-                addFiles([...e.dataTransfer.files])
-            }
-            );
-            fileInput.addEventListener('change', () => addFiles([...fileInput.files]));
-            dropZone.addEventListener('click', e => {
-                if (!requireGoogle('upload musik')) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                }
-            }, true);
+            const modelInput = document.getElementById('model-input');
+            bindDropZone(dropZone, fileInput);
+            bindDropZone(document.getElementById('model-drop-zone'), modelInput);
 
             function isLimitReached() {
                 return Boolean(hasRoblox() && S.account && !S.account.unlimited && S.account.remaining <= 0);
@@ -6571,15 +6690,32 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
             }
 
             function setUploadSource(source) {
-                S.source = source === 'youtube' || source === 'tiktok' ? source : 'file';
+                const next = source === 'youtube' || source === 'tiktok' || source === 'model' ? source : 'file';
+                // Antrean musik dan model tidak dicampur: pindah antara keduanya mengosongkan antrean.
+                if ((next === 'model') !== (S.source === 'model') && S.files.length) {
+                    if (S.uploading) {
+                        toast('Antrean sedang diproses, tunggu sampai selesai', 'info');
+                        return
+                    }
+                    clearFiles();
+                }
+                S.source = next;
+                const model = S.source === 'model';
+                document.getElementById('source-switch').style.display = model ? 'none' : '';
                 ['file', 'youtube', 'tiktok'].forEach(key => {
                     const tab = document.getElementById(`source-${key}-tab`);
+                    if (!tab)
+                        return;
                     tab.classList.toggle('active', S.source === key);
                     tab.setAttribute('aria-selected', String(S.source === key));
                 });
                 document.getElementById('drop-zone').style.display = S.source === 'file' ? '' : 'none';
+                document.getElementById('model-drop-zone').style.display = model ? '' : 'none';
                 document.getElementById('youtube-source').style.display = S.source === 'youtube' ? '' : 'none';
                 document.getElementById('tiktok-source').style.display = S.source === 'tiktok' ? '' : 'none';
+                document.getElementById('audio-settings').style.display = model ? 'none' : '';
+                document.getElementById('upload-title').textContent = model ? 'Upload Model' : 'Upload Audio';
+                document.getElementById('upload-sub').textContent = model ? 'Publish model Roblox (.rbxm) langsung ke Roblox Asset' : 'Publish audio langsung ke Roblox Asset';
                 Object.entries(LINK_SOURCES).forEach(([key, cfg]) => {
                     const status = document.getElementById(cfg.statusId);
                     status.classList.toggle('visible', S.source === key && Boolean(status.textContent));
@@ -6705,48 +6841,49 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                     toast(`${converted} link ${cfg.label} berhasil dikonversi ke MP3`, 'success');
             }
 
+            // Model Roblox (.rbxm/.rbxmx) tidak dikenali browser (f.type kosong), jadi dicek dari ekstensi.
+            function isModelFile(f) {
+                return /\.rbxmx?$/i.test(f && f.name || '');
+            }
+            // Menu Model hanya menerima .rbxm/.rbxmx; tab musik (file/YouTube/TikTok) hanya audio.
             function addFiles(files) {
-                const audio = files.filter(f => f.type.startsWith('audio/'));
-                if (!audio.length) {
-                    toast('Format tidak didukung', 'error');
+                const model = S.source === 'model';
+                const accepted = files.filter(f => model ? isModelFile(f) : f.type.startsWith('audio/'));
+                if (!accepted.length) {
+                    if (!model && files.some(isModelFile))
+                        toast('File .rbxm diupload lewat menu Model', 'error');
+                    else
+                        toast(model ? 'Format tidak didukung. Pakai file .rbxm atau .rbxmx' : 'Format tidak didukung', 'error');
                     return
                 }
-                const tooLarge = audio.find(f => f.size > 20 * 1024 * 1024);
+                const tooLarge = accepted.find(f => f.size > 20 * 1024 * 1024);
                 if (tooLarge) {
                     toast('Ukuran file maksimal Roblox adalah 20 MB', 'error');
                     return
                 }
                 const batchLimit = currentBatchLimit();
-                if (S.files.length + audio.length > batchLimit) {
-                    toast(`${isPremium() ? 'Premium' : 'Free'} maksimal ${batchLimit} audio per proses`, 'error');
+                if (S.files.length + accepted.length > batchLimit) {
+                    toast(`${isPremium() ? 'Premium' : 'Free'} maksimal ${batchLimit} file per proses`, 'error');
                     return
                 }
-                audio.forEach(f => {
+                accepted.forEach(f => {
                     if (!S.files.find(x => x.name === f.name)) {
                         S.files.push(f);
                         S.assetNames.push(defaultAssetName(f.name));
                     }
-                }
-                );
+                });
                 renderFileQueue();
                 updateUploadButton();
-                // Auto-detect format dari file pertama
-                if (audio.length > 0) {
-                    const ext = audio[0].name.split('.').pop().toLowerCase();
-                    const fmtMap = {
-                        mp3: 'mp3',
-                        ogg: 'ogg',
-                        wav: 'wav',
-                        flac: 'flac',
-                        aac: 'aac',
-                        m4a: 'aac'
-                    };
-                    const detected = fmtMap[ext] || 'mp3';
+                if (!model) {
+                    // Auto-detect format dari file pertama
+                    const ext = accepted[0].name.split('.').pop().toLowerCase();
+                    const fmtMap = { mp3: 'mp3', ogg: 'ogg', wav: 'wav', flac: 'flac', aac: 'aac', m4a: 'aac' };
                     const sel = document.getElementById('output-format');
                     if (sel)
-                        sel.value = detected;
+                        sel.value = fmtMap[ext] || 'mp3';
                 }
             }
+            const MODEL_ICON = '<path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/>';
             const QSTAT = { wait: ['Menunggu', ''], run: ['Diproses', 'is-run'], ok: ['Selesai', 'is-ok'], proc: ['Diproses', 'is-run'], fail: ['Gagal', 'is-bad'] };
             function fmtDur(t) {
                 t = Math.max(0, Math.round(t || 0));
@@ -6768,11 +6905,13 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
             }
             function renderFileQueue() {
                 document.getElementById('file-queue').innerHTML = S.files.map( (f, i) => {
-                    probeDuration(f);
+                    const model = isModelFile(f);
+                    if (!model)
+                        probeDuration(f);
                     const st = QSTAT[f._st || 'wait'];
                     return `
     <div class="file-item">
-      <div class="file-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>
+      <div class="file-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${model ? MODEL_ICON : '<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>'}</svg></div>
       <div class="file-details"><div class="file-name">${escapeHtml(f.name)}</div><div class="file-size">${fmtSize(f.size)}${f._dur ? ' · ' + fmtDur(f._dur) : ''} <span class="q-chip ${st[1]}">${st[0]}</span></div><input class="batch-name-input" type="text" value="${escapeHtml(S.assetNames[i] || defaultAssetName(f.name))}" maxlength="50" aria-label="Nama asset ${i + 1}" oninput="setAssetName(${i},this.value)">
       </div>
       <button class="file-rm" onclick="removeFile(${i})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
@@ -6784,7 +6923,7 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                 renderFileQueue();
             }
             function defaultAssetName(filename) {
-                return String(filename || 'Audio').replace(/\.[^.]+$/, '').trim().slice(0, 50) || 'Audio'
+                return String(filename || 'Asset').replace(/\.[^.]+$/, '').trim().slice(0, 50) || 'Asset'
             }
             async function fetchYoutubeTitle(url) {
                 try {
@@ -6856,7 +6995,7 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
             async function startUpload() {
                 if (!S.files.length)
                     return;
-                if (!requireRoblox('publish audio'))
+                if (!requireRoblox('publish file'))
                     return;
                 if (S.roblox.creatorType === 'Group' && !S.roblox.groupId) {
                     toast('Isi Group ID dulu di pengaturan Roblox sebelum publish ke Group', 'error');
@@ -6867,7 +7006,7 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                 refreshAccountState();
                 const batchSize = S.files.length;
                 if (batchSize > currentBatchLimit()) {
-                    toast(`${isPremium() ? 'VIP' : 'Free'} maksimal ${currentBatchLimit()} audio per proses`, 'error');
+                    toast(`${isPremium() ? 'VIP' : 'Free'} maksimal ${currentBatchLimit()} file per proses`, 'error');
                     return
                 }
                 if (S.account && !S.account.unlimited && S.account.remaining < batchSize) {
@@ -6899,18 +7038,19 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                         await sleep(100)
                     }
                     label.textContent = 'Publishing ke Roblox...';
+                    const model = isModelFile(file);
                     try {
                         const speed = S.speed || 1.0;
-                        const processed = await applySpeed(file, speed);
+                        const processed = model ? file : await applySpeed(file, speed);
                         // Salin isi file ke memori dulu: file dari picker/HP bisa "berubah" atau hilang
                         // selama upload dan itu memicu error "Failed to fetch".
                         let uploadFile;
                         try {
                             uploadFile = new File([await processed.arrayBuffer()], processed.name, {
-                                type: processed.type || 'audio/mpeg'
+                                type: model ? 'model/x-rbxm' : (processed.type || 'audio/mpeg')
                             });
                         } catch (readErr) {
-                            throw new Error('File tidak bisa dibaca. Pilih ulang file audionya lalu coba lagi.');
+                            throw new Error('File tidak bisa dibaca. Pilih ulang filenya lalu coba lagi.');
                         }
                         const fd = new FormData();
                         fd.append('file', uploadFile, uploadFile.name);
@@ -6918,7 +7058,7 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                         fd.append('apiKey', S.roblox.apiKey);
                         fd.append('creatorType', S.roblox.creatorType || 'User');
                         fd.append('groupId', S.roblox.groupId || '');
-                        fd.append('assetType', 'Audio');
+                        fd.append('assetType', model ? 'Model' : 'Audio');
                         fd.append('displayName', name);
                         fd.append('description', 'Uploaded via baxdev Roblox Audio Studio');
                         const res = await postWithRetry('/api/roblox-upload', fd);
@@ -6950,7 +7090,7 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                                 if (!statusRes.ok)
                                     throw new Error(status.message || 'Gagal membaca status publish');
                                 if (status.ok === false || status.error)
-                                    throw new Error(status.message || 'Roblox menolak audio ini');
+                                    throw new Error(status.message || 'Roblox menolak file ini');
                                 if (status.done)
                                     assetId = status.assetId;
                                 fill.style.width = Math.min(98, 86 + attempt) + '%';
@@ -6959,7 +7099,7 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                         }
                         fill.style.width = '100%';
                         pct.textContent = '100%';
-                        const base = { id: Date.now() + i, name, filename: file.name, size: file.size, uploadedAt: new Date().toISOString(), speed: S.speed };
+                        const base = { id: Date.now() + i, name, filename: file.name, size: file.size, uploadedAt: new Date().toISOString(), speed: S.speed, kind: model ? 'model' : 'audio' };
                         if (!assetId && opPath) {
                             // Masih diproses Roblox -> simpan sebagai "Diproses", dicek otomatis di Library
                             if (!S.account.unlimited) {
@@ -6968,7 +7108,7 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                             }
                             addLibEntry(Object.assign(base, { assetId: null, status: 'proc', operationPath: opPath }), null);
                             setQStatus(file, 'proc');
-                            toast('Terkirim. Roblox masih memproses audio ini, statusnya dicek otomatis di Library', 'info');
+                            toast(`Terkirim. Roblox masih memproses ${model ? 'model' : 'audio'} ini, statusnya dicek otomatis di Library`, 'info');
                         } else if (!assetId) {
                             throw new Error('Roblox belum mengembalikan Asset ID. Coba upload lagi.');
                         } else {
@@ -6978,13 +7118,15 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                             }
                             const entry = Object.assign(base, { assetId, status: 'done' });
                             addLibEntry(entry, { name: String(name).slice(0, 100), filename: String(file.name).slice(0, 160), size: file.size, assetId: String(assetId).slice(0, 30), status: 'done', speed: Number(S.speed) || 1 });
-                            document.getElementById('result-asset-id').textContent = 'rbxassetid://' + assetId;
+                            document.getElementById('result-asset-id').textContent = (model ? '' : 'rbxassetid://') + assetId;
+                            document.getElementById('result-full-btn').style.display = model ? 'none' : '';
+                            document.getElementById('result-note').textContent = model ? 'Pakai ID ini dengan InsertService:LoadAsset(ID) di game milikmu' : 'Salin ID ini ke script Roblox kamu';
                             document.getElementById('result-box').classList.add('visible');
                             setQStatus(file, 'ok');
-                            toast('Audio berhasil dipublish!', 'success');
+                            toast(model ? 'Model berhasil dipublish!' : 'Audio berhasil dipublish!', 'success');
                         }
                     } catch (e) {
-                        addLibEntry({ id: Date.now() + i, assetId: null, name, filename: file.name, size: file.size, status: 'fail', reason: String(e.message || 'Error').slice(0, 160), uploadedAt: new Date().toISOString() },
+                        addLibEntry({ id: Date.now() + i, assetId: null, name, filename: file.name, size: file.size, kind: model ? 'model' : 'audio', status: 'fail', reason: String(e.message || 'Error').slice(0, 160), uploadedAt: new Date().toISOString() },
                             { name: String(name).slice(0, 100), filename: String(file.name).slice(0, 160), size: file.size, status: 'fail', error: String(e.message || 'Error').slice(0, 160) });
                         setQStatus(file, 'fail');
                         toast('Gagal upload: ' + (e.message || 'Error'), 'error');
@@ -6998,6 +7140,7 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                 S.files = [];
                 S.assetNames = [];
                 fileInput.value = '';
+                modelInput.value = '';
                 renderFileQueue();
             }
 
@@ -7094,6 +7237,7 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                 const grid = document.getElementById('library-grid');
                 const q = document.getElementById('lib-search').value.toLowerCase();
                 const filter = document.getElementById('lib-filter').value;
+                const kind = document.getElementById('lib-kind').value;
                 const procCount = S.library.filter(i => i.status === 'proc').length;
                 const doneCount = S.library.filter(i => i.status === 'done' && i.assetId).length;
                 const copyAllWrap = document.getElementById('lib-copyall-wrap');
@@ -7101,18 +7245,18 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                 const note = document.getElementById('lib-note');
                 if (note) {
                     const parts = [];
-                    if (procCount) parts.push(`<b>${procCount}</b> audio masih diproses Roblox, dicek otomatis tiap 20 detik.`);
+                    if (procCount) parts.push(`<b>${procCount}</b> file masih diproses Roblox, dicek otomatis tiap 20 detik.`);
                     note.innerHTML = parts.join(' ');
                     note.style.display = parts.length ? '' : 'none';
                 }
-                const items = S.library.filter(i => (i.name || '').toLowerCase().includes(q) && (filter === 'all' || i.status === filter));
+                const items = S.library.filter(i => (i.name || '').toLowerCase().includes(q) && (filter === 'all' || i.status === filter) && (kind === 'all' || (kind === 'model') === (i.kind === 'model')));
                 if (!items.length) {
                     grid.innerHTML = `<div class="empty-lib"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg><p>${S.library.length ? 'Tidak ada hasil' : 'Library kosong'}</p><span>${S.library.length ? 'Coba kata kunci lain' : 'Upload audio pertama kamu'}</span></div>`;
                     return;
                 }
                 grid.innerHTML = items.map(i => `
     <div class="lib-card">
-      <div class="lib-wave">${Array(7).fill('<span style="height:6px"></span>').join('')}</div>
+      <div class="lib-wave">${i.kind === 'model' ? `<svg class="lib-model-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-label="Model">${MODEL_ICON}</svg>` : Array(7).fill('<span style="height:6px"></span>').join('')}</div>
       <div class="lib-body">
         <div class="lib-name" title="${escapeHtml(i.name || 'Tanpa nama')}">${escapeHtml(i.name || 'Tanpa nama')}</div>
         <div class="lib-meta">
@@ -7133,12 +7277,15 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                 renderLibrary()
             }
             function copyLib(id) {
-                navigator.clipboard.writeText('rbxassetid://' + id);
+                const item = S.library.find(x => String(x.assetId) === String(id));
+                // Model dipanggil lewat InsertService:LoadAsset(id), jadi yang disalin angka saja, bukan rbxassetid://.
+                navigator.clipboard.writeText((item && item.kind === 'model' ? '' : 'rbxassetid://') + id);
                 toast('ID disalin!', 'success')
             }
             function copyAllPublished() {
-                const done = S.library.filter(i => i.status === 'done' && i.assetId);
-                if (!done.length) { toast('Belum ada audio yang dipublish', 'info'); return; }
+                const kind = document.getElementById('lib-kind').value;
+                const done = S.library.filter(i => i.status === 'done' && i.assetId && (kind === 'all' || (kind === 'model') === (i.kind === 'model')));
+                if (!done.length) { toast('Belum ada asset yang dipublish', 'info'); return; }
                 const text = done.map(i => `${i.assetId} = ${i.name || 'Tanpa nama'}`).join('\n');
                 navigator.clipboard.writeText(text);
                 toast(`${done.length} data disalin!`, 'success');
@@ -7946,6 +8093,129 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                 }
                 , 3000);
             }
+
+            // ── TOOLBOX (cari aset Roblox lewat /api/roblox-toolbox) ──
+            const TB = { cat: '10', q: '', cursor: null, loading: false, seq: 0, inited: false };
+            const TB_LABEL = { '10': 'model', '13': 'decal', '40': 'meshpart', '38': 'plugin', '3': 'audio' };
+            function toolboxNote(text) {
+                document.getElementById('tb-note').textContent = text || '';
+            }
+            function toolboxOpen() {
+                if (TB.inited)
+                    return;
+                if (window.BX && window.BX.user) {
+                    TB.inited = true;
+                    toolboxSearch(true);
+                } else {
+                    toolboxNote('Login Google dulu untuk memakai Toolbox, lalu tekan Cari.');
+                }
+            }
+            function toolboxSetCat(cat) {
+                if (!TB_LABEL[cat])
+                    return;
+                TB.cat = cat;
+                document.querySelectorAll('#tb-cats .source-tab').forEach(b => {
+                    const on = b.dataset.cat === cat;
+                    b.classList.toggle('active', on);
+                    b.setAttribute('aria-selected', String(on));
+                });
+                document.getElementById('tb-search').placeholder = `Cari ${TB_LABEL[cat]} atau ID`;
+                TB.inited = true;
+                toolboxSearch(true);
+            }
+            function toolboxSkeleton(n) {
+                return Array.from({ length: n }, () => '<div class="tb-card tb-skel"><div class="tb-thumb"><div class="tb-ph"></div></div><div class="tb-body"></div></div>').join('');
+            }
+            function toolboxCard(it) {
+                const id = escapeHtml(it.id);
+                const thumb = it.thumb ? `<img src="${escapeHtml(it.thumb)}" alt="" loading="lazy" referrerpolicy="no-referrer">` : '<div class="tb-ph"></div>';
+                const meta = [it.creator ? `oleh ${it.creator}${it.verified ? ' ✓' : ''}` : '', it.likePct != null ? `${it.likePct}% suka` : ''].filter(Boolean).join(' · ');
+                const name = escapeHtml(it.name);
+                const rbx = (TB.cat === '3' || TB.cat === '13' || TB.cat === '40') ? `<button class="copy-btn" type="button" data-copy="rbxassetid://${id}" data-label="rbxassetid://">rbxassetid://</button>` : '';
+                return `<div class="tb-card"><div class="tb-thumb">${thumb}</div><div class="tb-body"><div class="tb-name" title="${name}">${name}</div><div class="tb-meta">${escapeHtml(meta) || '&nbsp;'}</div><div class="tb-id">ID ${id}</div><div class="tb-actions"><button class="copy-btn" type="button" data-copy="${id}" data-label="ID ${id}">Salin ID</button>${rbx}<a class="copy-btn" href="https://create.roblox.com/store/asset/${id}" target="_blank" rel="noopener noreferrer">Buka</a></div></div></div>`;
+            }
+            async function toolboxCopy(text, label) {
+                try {
+                    await navigator.clipboard.writeText(text);
+                } catch {
+                    const ta = document.createElement('textarea');
+                    ta.value = text;
+                    ta.style.cssText = 'position:fixed;opacity:0';
+                    document.body.appendChild(ta);
+                    ta.select();
+                    try {
+                        document.execCommand('copy');
+                    } catch {}
+                    ta.remove();
+                }
+                toast(`${label} disalin`, 'success');
+            }
+            async function toolboxSearch(reset) {
+                if (!requireGoogle('mencari di Toolbox'))
+                    return;
+                if (TB.loading && !reset)
+                    return;
+                const grid = document.getElementById('tb-grid');
+                const more = document.getElementById('tb-more');
+                if (reset) {
+                    TB.q = document.getElementById('tb-search').value.trim();
+                    TB.cursor = null;
+                    grid.innerHTML = toolboxSkeleton(6);
+                    more.style.display = 'none';
+                } else if (!TB.cursor) {
+                    return;
+                }
+                const seq = ++TB.seq;
+                TB.loading = true;
+                toolboxNote(reset ? 'Mencari...' : 'Memuat...');
+                try {
+                    const p = new URLSearchParams({ category: TB.cat });
+                    if (TB.q)
+                        p.set('q', TB.q);
+                    if (!reset && TB.cursor)
+                        p.set('cursor', TB.cursor);
+                    const res = await fetch('/api/roblox-toolbox?' + p.toString());
+                    const data = await res.json().catch( () => ({}));
+                    if (seq !== TB.seq)
+                        return;
+                    if (!res.ok || !data.ok) {
+                        if (reset)
+                            grid.innerHTML = '';
+                        toolboxNote(data.message || `Pencarian gagal (HTTP ${res.status}).`);
+                        return;
+                    }
+                    const items = Array.isArray(data.items) ? data.items : [];
+                    const html = items.map(toolboxCard).join('');
+                    if (reset)
+                        grid.innerHTML = html;
+                    else
+                        grid.insertAdjacentHTML('beforeend', html);
+                    TB.cursor = data.nextCursor || null;
+                    more.style.display = TB.cursor ? '' : 'none';
+                    const total = grid.querySelectorAll('.tb-card').length;
+                    toolboxNote(total ? (TB.q ? `${total} hasil untuk “${TB.q}”` : `${total} aset populer`) : (TB.q ? `Tidak ada hasil untuk “${TB.q}”.` : 'Tidak ada aset.'));
+                } catch {
+                    if (seq !== TB.seq)
+                        return;
+                    if (reset)
+                        grid.innerHTML = '';
+                    toolboxNote('Koneksi bermasalah. Coba lagi.');
+                } finally {
+                    if (seq === TB.seq)
+                        TB.loading = false;
+                }
+            }
+            document.getElementById('tb-grid').addEventListener('click', e => {
+                const b = e.target.closest('[data-copy]');
+                if (b)
+                    toolboxCopy(b.dataset.copy, b.dataset.label || 'ID');
+            });
+            document.getElementById('tb-search').addEventListener('keydown', e => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    toolboxSearch(true);
+                }
+            });
 
             // ── INIT ──────────────────────────────────────────────
             function escapeHtml(value) {
@@ -8789,8 +9059,10 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                 }
                 );
                 document.getElementById('file-input').setAttribute('aria-label', 'Pilih file audio');
-                document.getElementById('lib-search').setAttribute('aria-label', 'Cari audio');
-                document.getElementById('lib-filter').setAttribute('aria-label', 'Filter status audio');
+                document.getElementById('model-input').setAttribute('aria-label', 'Pilih file model rbxm');
+                document.getElementById('lib-kind').setAttribute('aria-label', 'Filter jenis asset');
+                document.getElementById('lib-search').setAttribute('aria-label', 'Cari nama asset');
+                document.getElementById('lib-filter').setAttribute('aria-label', 'Filter status asset');
                 document.querySelectorAll('.toggle').forEach(toggle => {
                     toggle.setAttribute('aria-label', toggle.closest('.setting-row').querySelector('.setting-name').textContent);
                     const syncToggle = () => toggle.setAttribute('aria-pressed', String(toggle.classList.contains('on')));

@@ -22,6 +22,19 @@ import { requireUser } from "../_lib/auth.js";
 const POLL_ATTEMPTS = 6;
 const POLL_DELAY_MS = 1500;
 
+// Tipe yang boleh diunggah lewat endpoint ini. Model hanya .rbxm / .rbxmx (format native Roblox);
+// content type-nya harus persis model/x-rbxm karena browser tidak mengenal ekstensi ini.
+const ASSET_TYPES = new Set(["Audio", "Model"]);
+const MODEL_EXT = /\.rbxmx?$/i;
+const MODEL_CONTENT_TYPE = "model/x-rbxm";
+const RBXM_MAGIC = "<roblox!";   // biner: 8 byte pertama
+const RBXMX_TAG = "<roblox";     // XML: muncul di awal dokumen (setelah <?xml ...?> bila ada)
+
+async function looksLikeRbxm(file) {
+  const head = new TextDecoder("latin1").decode(await file.slice(0, 256).arrayBuffer());
+  return head.startsWith(RBXM_MAGIC) || head.includes(RBXMX_TAG);
+}
+
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -73,13 +86,17 @@ async function handleUpload(context) {
   const creatorType = String(form.get("creatorType") || "User").trim();
   const groupId = String(form.get("groupId") || "").trim();
   const assetType = String(form.get("assetType") || "Audio");
+  const noun = assetType === "Model" ? "model" : "audio";
   // Clamped to 30 chars here too (not just client-side) so this endpoint is
   // safe even if something else calls it directly.
   const displayName = String(form.get("displayName") || "Untitled").trim().slice(0, 30) || "Untitled";
   const description = String(form.get("description") || "");
 
+  if (!ASSET_TYPES.has(assetType)) {
+    return json({ ok: false, message: "Tipe asset tidak didukung. Yang tersedia: Audio dan Model." }, 400);
+  }
   if (!(file instanceof File)) {
-    return json({ ok: false, message: "File audio tidak ditemukan di request." }, 400);
+    return json({ ok: false, message: `File ${noun} tidak ditemukan di request.` }, 400);
   }
   if (!userId || !apiKey) {
     return json({ ok: false, message: "userId dan apiKey wajib diisi." }, 400);
@@ -88,11 +105,19 @@ async function handleUpload(context) {
     return json({ ok: false, message: "groupId wajib diisi kalau creatorType = Group." }, 400);
   }
   if (file.size === 0) {
-    return json({ ok: false, message: "File audio kosong (0 byte) — coba upload ulang dari halaman Upload." }, 400);
+    return json({ ok: false, message: `File ${noun} kosong (0 byte) — coba upload ulang dari halaman Upload.` }, 400);
   }
   const MAX_BYTES = 20 * 1024 * 1024; // sama dengan batas di upload.html (MAX_FILE_MB)
   if (file.size > MAX_BYTES) {
-    return json({ ok: false, message: "File audio melebihi batas 20MB." }, 400);
+    return json({ ok: false, message: `File ${noun} melebihi batas 20MB.` }, 400);
+  }
+  if (assetType === "Model") {
+    if (!MODEL_EXT.test(file.name || "")) {
+      return json({ ok: false, message: "Model harus berformat .rbxm atau .rbxmx." }, 400);
+    }
+    if (!(await looksLikeRbxm(file))) {
+      return json({ ok: false, message: "Isi file bukan model Roblox yang valid. Ekspor ulang dari Roblox Studio (Save to File As → .rbxm)." }, 400);
+    }
   }
 
   // Publish target: personal account (userId) by default, or a Group/community
@@ -118,7 +143,11 @@ async function handleUpload(context) {
   // Roblox (curl --form 'request={...}') juga mengirim field ini tanpa
   // filename maupun content-type eksplisit.
   upstream.append("request", JSON.stringify(requestPayload));
-  upstream.append("fileContent", file, file.name || "audio");
+  if (assetType === "Model") {
+    upstream.append("fileContent", file.slice(0, file.size, MODEL_CONTENT_TYPE), file.name);
+  } else {
+    upstream.append("fileContent", file, file.name || "audio");
+  }
 
   let res;
   try {
