@@ -261,6 +261,19 @@
         "$other": {
           ".validate": false
         }
+      },
+      "info": {
+        ".write": "auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')",
+        ".validate": "newData.hasChildren(['text', 'updatedAt'])",
+        "text": {
+          ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 500"
+        },
+        "updatedAt": {
+          ".validate": "newData.isNumber()"
+        },
+        "$other": {
+          ".validate": false
+        }
       }
     }
   }

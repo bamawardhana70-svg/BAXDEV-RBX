@@ -143,6 +143,21 @@ html[data-theme="green"] .btn.danger{background:rgba(255,90,90,.08)}
     </div>
 
     <div class="card">
+      <div class="toolbar" style="margin-bottom:10px">
+        <label style="margin:0">Informasi di Home <span class="badge off" id="infoBadge">Kosong</span></label>
+      </div>
+      <label for="infoText">Teks informasi</label>
+      <textarea id="infoText" class="codebox" maxlength="500" placeholder="Contoh: Server Roblox sedang lambat, upload mungkin butuh waktu lebih lama."></textarea>
+      <div class="note" id="infoCount" style="margin-top:4px">0/500</div>
+      <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn primary" id="infoSend" type="button">Kirim informasi</button>
+        <button class="btn" id="infoClear" type="button">Hapus informasi</button>
+      </div>
+      <div class="msg" id="infoMsg" role="status"></div>
+      <p class="note" style="margin-top:10px">Informasi tampil di halaman Home semua pengguna (paling lambat sekitar 30 detik setelah dikirim). Selama ada informasi, jadwal sholat disembunyikan; setelah dihapus, jadwal sholat tampil lagi.</p>
+    </div>
+
+    <div class="card">
       <label style="margin-bottom:10px">Harga VIP &amp; QRIS <span class="badge off" id="payBadge">Bawaan</span></label>
       <div id="payFields"></div>
       <div style="margin-top:14px"><button class="btn primary" id="paySave" type="button">Simpan harga &amp; QRIS</button></div>
@@ -438,6 +453,41 @@ async function saveMaint(enabled){
 }
 
 
+/* ── Informasi di Home ── */
+let infoState = null;   // isi node config/info (null = kosong)
+function renderInfo(){
+  const b = $("infoBadge");
+  const on = !!(infoState && infoState.text);
+  b.textContent = on ? "Tampil" : "Kosong";
+  b.className = "badge " + (on ? "ok" : "off");
+  const t = $("infoText");
+  if (document.activeElement !== t) t.value = on ? infoState.text : "";
+  $("infoCount").textContent = t.value.length + "/500";
+}
+async function sendInfo(){
+  const text = $("infoText").value.trim().slice(0,500);
+  if(!text){ say($("infoMsg"),"Isi teks informasi dulu.","err"); return; }
+  const btn = $("infoSend");
+  btn.disabled = true;
+  try{
+    await set(ref(db,"config/info"),{ text:text, updatedAt:Date.now() });
+    say($("infoMsg"),"Informasi terkirim. Sekarang tampil di Home.","ok");
+  }catch(e){ fail($("infoMsg"),e); }
+  finally{ btn.disabled = false; }
+}
+async function clearInfo(){
+  if(!(infoState && infoState.text)){ say($("infoMsg"),"Belum ada informasi yang tampil.","err"); return; }
+  if(!confirm("Hapus informasi dari Home? Jadwal sholat akan tampil lagi."))return;
+  const btn = $("infoClear");
+  btn.disabled = true;
+  try{
+    await remove(ref(db,"config/info"));
+    $("infoText").value = "";
+    say($("infoMsg"),"Informasi dihapus. Home menampilkan jadwal sholat.","ok");
+  }catch(e){ fail($("infoMsg"),e); }
+  finally{ btn.disabled = false; }
+}
+
 /* ── Harga VIP & QRIS (3 paket, tiap paket punya foto QRIS sendiri) ── */
 let payState = null;      // isi node config/payment (null = bawaan)
 const PAY_PLANS = [
@@ -583,6 +633,7 @@ function listen(){
   const onErr = (e)=>say($("orderMsg"),"Gagal membaca data: "+(e&&e.message||e),"err");
   unsubs.push(onValue(ref(db,"vip"),s=>{vipMap=s.val()||{};renderVip()},onErr));
   unsubs.push(onValue(ref(db,"maintenance"),s=>{mtState=s.val()||{enabled:false,message:""};renderMaint()},onErr));
+  unsubs.push(onValue(ref(db,"config/info"),s=>{infoState=s.val()||null;renderInfo()},onErr));
   unsubs.push(onValue(ref(db,"config/payment"),s=>{payState=s.val()||null;renderPay()},onErr));
   unsubs.push(onValue(ref(db,"orders"),s=>{orderMap=s.val()||{};renderOrders()},onErr));
   unsubs.push(onValue(ref(db,"codes"),s=>{codeMap=s.val()||{};renderCodes()},onErr));
@@ -767,6 +818,9 @@ $("orders").addEventListener("click",e=>{
   const r=e.target.closest("button[data-reject]");if(r)reject(r.dataset.reject);
 });
 $("codeBtn").addEventListener("click",createCode);
+$("infoSend").addEventListener("click",sendInfo);
+$("infoClear").addEventListener("click",clearInfo);
+$("infoText").addEventListener("input",()=>{$("infoCount").textContent=$("infoText").value.length+"/500"});
 $("mtOn").addEventListener("click",()=>saveMaint(true));
 $("mtOff").addEventListener("click",()=>saveMaint(false));
 $("mtText").addEventListener("input",()=>{$("mtCount").textContent=$("mtText").value.length+"/500"});

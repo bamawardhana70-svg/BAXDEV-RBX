@@ -4757,6 +4757,34 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
 .theme-swatch.on { outline: 2px solid var(--accent-blue); outline-offset: 3px; }
 .theme-color-row { display: inline-flex; align-items: center; gap: 12px; font: 600 12.5px var(--font); color: var(--text2); }
 #theme-color { width: 46px; height: 34px; padding: 0; border: 1px solid var(--glass-border); border-radius: 10px; background: none; cursor: pointer; }
+
+/* Home: informasi owner / jadwal sholat */
+.home-info { margin: 0 0 18px; }
+.home-info[hidden] { display: none; }
+.home-info .hi-card { padding: 18px 20px; }
+.hi-kicker { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--text3); margin-bottom: 8px; }
+.hi-text { font-size: 14px; line-height: 1.65; color: var(--text); white-space: pre-wrap; overflow-wrap: anywhere; }
+.hi-meta { margin-top: 10px; font-size: 11px; color: var(--text3); }
+.pr-wrap { display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+.pr-next { min-width: 0; }
+.pr-line { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.pr-name { font-size: 20px; font-weight: 600; color: var(--text); }
+.pr-time { font-size: 20px; font-weight: 600; color: var(--text); font-variant-numeric: tabular-nums; }
+.pr-day { font-size: 11px; color: var(--text3); }
+.pr-count { margin-top: 2px; font-size: 12.5px; color: var(--text2); font-variant-numeric: tabular-nums; }
+.pr-list { display: flex; gap: 8px; flex-wrap: wrap; }
+.pr-chip { display: flex; flex-direction: column; gap: 2px; min-width: 66px; padding: 8px 12px; border-radius: var(--radius-xs); background: var(--surface); border: 1px solid var(--glass-border); }
+.pr-chip span { font-size: 11px; color: var(--text3); }
+.pr-chip b { font-size: 14px; font-weight: 600; color: var(--text); font-variant-numeric: tabular-nums; }
+.pr-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-top: 12px; font-size: 11px; color: var(--text3); }
+.pr-foot button { background: none; border: 0; padding: 4px 0; color: var(--text2); font: inherit; text-decoration: underline; cursor: pointer; }
+.pr-foot button:hover, .pr-foot button:focus-visible { color: var(--text); }
+.pr-msg { font-size: 13px; color: var(--text2); }
+@media (max-width: 640px) {
+    .pr-wrap { align-items: flex-start; }
+    .pr-list { width: 100%; }
+    .pr-chip { flex: 1 1 0; min-width: 0; }
+}
 </style>
 </head>
     <body class="intro-playing">
@@ -5051,6 +5079,7 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                         </div>
                     </div>
                 </section>
+                <section class="home-info" id="home-info" aria-label="Informasi" hidden></section>
                 <div class="stats-grid">
                     <div class="stat-card">
                         <div class="stat-icon">
@@ -5191,7 +5220,7 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                     <div class="card">
                         <div class="field-group">
                             <div class="field-label">URL YouTube</div>
-                            <textarea id="youtube-url" rows="3" placeholder="Tempel link YouTube, satu per baris. Free maksimal 3 (masuk antrean), VIP sampai 5 tanpa antre." autocomplete="off"></textarea>
+                            <textarea id="youtube-url" rows="3" placeholder="Tempel link YouTube, satu per baris. Free hanya 1 link per proses, VIP sampai 5 tanpa antre." autocomplete="off"></textarea>
                             <div style="display:flex;justify-content:flex-end;margin-top:9px">
                                 <button class="btn btn-primary" id="convert-youtube-btn" onclick="convertLinks('youtube')">Convert ke MP3</button>
                             </div>
@@ -5205,7 +5234,7 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                     <div class="card">
                         <div class="field-group">
                             <div class="field-label">URL TikTok</div>
-                            <textarea id="tiktok-url" rows="3" placeholder="Tempel link TikTok, satu per baris. Free maksimal 3 (masuk antrean), VIP sampai 5 tanpa antre." autocomplete="off"></textarea>
+                            <textarea id="tiktok-url" rows="3" placeholder="Tempel link TikTok, satu per baris. Free hanya 1 link per proses, VIP sampai 5 tanpa antre." autocomplete="off"></textarea>
                             <div style="display:flex;justify-content:flex-end;margin-top:9px">
                                 <button class="btn btn-primary" id="convert-tiktok-btn" onclick="convertLinks('tiktok')">Convert ke MP3</button>
                             </div>
@@ -6492,9 +6521,8 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                 return String(value || '').split(/[\n,]+/).map(item => item.trim()).filter(Boolean);
             }
 
-            // Free: file masuk antrean dan diproses satu per satu dengan jeda. VIP: langsung, tanpa jeda.
-            const FREE_QUEUE_MAX = 3;
-            const FREE_QUEUE_GAP_S = 20;
+            // Free: 1 audio/link per proses. VIP: sampai 5, tanpa jeda.
+            const FREE_QUEUE_MAX = 1;
             function isFreeQueue() {
                 return !S.account?.unlimited && !isPremium();
             }
@@ -6661,7 +6689,7 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
             function renderFileQueue() {
                 document.getElementById('file-queue').innerHTML = S.files.map( (f, i) => {
                     probeDuration(f);
-                    const st = (f._st || 'wait') === 'wait' && isFreeQueue() ? [`Antre #${i + 1}`, ''] : QSTAT[f._st || 'wait'];
+                    const st = QSTAT[f._st || 'wait'];
                     return `
     <div class="file-item">
       <div class="file-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>
@@ -6781,12 +6809,6 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                 document.getElementById('result-box').classList.remove('visible');
 
                 for (let i = 0; i < S.files.length; i++) {
-                    if (i > 0 && isFreeQueue()) {
-                        for (let sec = FREE_QUEUE_GAP_S; sec > 0; sec--) {
-                            label.textContent = `Antrean ${i + 1}/${S.files.length}: mulai dalam ${sec} dtk. VIP tanpa antre.`;
-                            await sleep(1000)
-                        }
-                    }
                     const file = S.files[i];
                     const name = S.assetNames[i] || defaultAssetName(file.name);
                     setQStatus(file, 'run');
@@ -7899,6 +7921,409 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                     try { localStorage.setItem('baxdev_lib', JSON.stringify(S.library)); } catch (e) {}
                 }
             })();
+
+            // ── HOME: INFORMASI OWNER + JADWAL SHOLAT ─────────────────
+            // Ada informasi dari owner (Firebase config/info) -> tampilkan itu. Kalau tidak ada -> jadwal sholat berikutnya.
+            // Jadwal: API AlAdhan (GET /v1/timings/{DD-MM-YYYY}?latitude&longitude&method=20, Kemenag RI).
+            // Lokasi bawaan Jakarta; koordinat perangkat baru dipakai kalau pengguna menekan "Pakai lokasi saya".
+            const HOME_INFO = { info: null, loaded: false, key: null, mode: null };
+            const PRAYERS = [['Fajr', 'Subuh'], ['Dhuhr', 'Dzuhur'], ['Asr', 'Ashar'], ['Maghrib', 'Maghrib'], ['Isha', 'Isya']];
+            const PRAYER_DEFAULT_LOC = { lat: -6.2088, lon: 106.8456, label: 'Jakarta', cc: 'ID', source: 'default' };
+            const PRAYER_LOC_KEY = 'baxdev_prayer_loc';
+            const PRAYER_LOC_TTL = 30 * 60 * 1000; // kota dicek ulang tiap 30 menit selama halaman terbuka
+            const PRAYER_MOVE_KM = 10;             // pindah kurang dari ini dianggap masih di kota yang sama
+            const ID_TIMEZONE = /^Asia\/(Jakarta|Pontianak|Makassar|Jayapura)$/;
+            const prayerCache = new Map();
+            const tzFormatters = new Map();
+            let prayerLoc = readPrayerLoc();
+            let prayerLocAt = 0;
+            let prayerLocBusy = false;
+            let prayerState = { status: 'loading', list: [], tz: null, day: null, at: 0 };
+            let prayerBusy = false;
+
+            // source: 'gps' (izin lokasi diberikan) | 'ip' (perkiraan kota dari jaringan) | 'default' (Jakarta)
+            function readPrayerLoc() {
+                try {
+                    const v = JSON.parse(localStorage.getItem(PRAYER_LOC_KEY) || 'null');
+                    if (v && Number.isFinite(v.lat) && Number.isFinite(v.lon) && Math.abs(v.lat) <= 90 && Math.abs(v.lon) <= 180) {
+                        return {
+                            lat: v.lat,
+                            lon: v.lon,
+                            label: typeof v.label === 'string' && v.label ? v.label.slice(0, 60) : 'Lokasi kamu',
+                            cc: typeof v.cc === 'string' ? v.cc.slice(0, 2).toUpperCase() : '',
+                            source: 'gps'
+                        };
+                    }
+                } catch (e) {}
+                return { ...PRAYER_DEFAULT_LOC };
+            }
+            // Hanya lokasi GPS yang disimpan (koordinat dibulatkan 2 desimal, ±1 km). Perkiraan jaringan tidak disimpan.
+            function savePrayerLoc(loc) {
+                try {
+                    if (loc.source === 'gps')
+                        localStorage.setItem(PRAYER_LOC_KEY, JSON.stringify({ lat: loc.lat, lon: loc.lon, label: loc.label, cc: loc.cc }));
+                    else
+                        localStorage.removeItem(PRAYER_LOC_KEY);
+                } catch (e) {}
+            }
+            function tzParts(tz) {
+                let fmt = tzFormatters.get(tz);
+                if (!fmt) {
+                    fmt = new Intl.DateTimeFormat('en-GB', { timeZone: tz, hourCycle: 'h23', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                    tzFormatters.set(tz, fmt);
+                }
+                const parts = fmt.formatToParts(new Date());
+                const g = t => Number(parts.find(x => x.type === t).value);
+                return { y: g('year'), m: g('month'), d: g('day'), sec: g('hour') * 3600 + g('minute') * 60 + g('second') };
+            }
+            function addDay(o, n) {
+                const dt = new Date(Date.UTC(o.y, o.m - 1, o.d + n));
+                return { y: dt.getUTCFullYear(), m: dt.getUTCMonth() + 1, d: dt.getUTCDate() };
+            }
+            function ddmmyyyy(o) {
+                return String(o.d).padStart(2, '0') + '-' + String(o.m).padStart(2, '0') + '-' + o.y;
+            }
+            function distKm(a, b) {
+                const rad = Math.PI / 180;
+                const dLat = (b.lat - a.lat) * rad;
+                const dLon = (b.lon - a.lon) * rad;
+                const h = Math.sin(dLat / 2) ** 2 + Math.cos(a.lat * rad) * Math.cos(b.lat * rad) * Math.sin(dLon / 2) ** 2;
+                return 12742 * Math.asin(Math.sqrt(h));
+            }
+            async function fetchJson(url, ms, opts) {
+                const ctrl = new AbortController();
+                const timer = setTimeout( () => ctrl.abort(), ms);
+                try {
+                    const res = await fetch(url, { ...opts, signal: ctrl.signal });
+                    if (!res.ok)
+                        throw new Error('HTTP ' + res.status);
+                    return await res.json();
+                } finally {
+                    clearTimeout(timer);
+                }
+            }
+            // ── Lokasi pengguna ──────────────────────────────────────
+            // 1) GPS kalau izin sudah diberikan  2) perkiraan kota dari jaringan (/api/geo)  3) Jakarta
+            function getGps() {
+                return new Promise( (resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 10000, maximumAge: 600000 }));
+            }
+            async function reverseCity(lat, lon) {
+                const fallbackCc = ID_TIMEZONE.test(Intl.DateTimeFormat().resolvedOptions().timeZone) ? 'ID' : '';
+                try {
+                    const d = await fetchJson(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=id`, 6000);
+                    const label = String(d.city || d.locality || d.principalSubdivision || '').slice(0, 60);
+                    return { label: label || 'Lokasi kamu', cc: String(d.countryCode || fallbackCc).toUpperCase() };
+                } catch (e) {
+                    return { label: 'Lokasi kamu', cc: fallbackCc };
+                }
+            }
+            async function gpsLocation() {
+                const pos = await getGps();
+                const lat = Math.round(pos.coords.latitude * 100) / 100;
+                const lon = Math.round(pos.coords.longitude * 100) / 100;
+                return { lat, lon, ...(await reverseCity(lat, lon)), source: 'gps' };
+            }
+            async function ipLocation() {
+                const d = await fetchJson('/api/geo', 5000, { cache: 'no-store' });
+                if (!d || !d.ok || !Number.isFinite(d.lat) || !Number.isFinite(d.lon))
+                    throw new Error('Lokasi jaringan tidak tersedia');
+                return { lat: d.lat, lon: d.lon, label: String(d.city || d.region || 'Lokasi kamu').slice(0, 60), cc: String(d.country || '').toUpperCase(), source: 'ip' };
+            }
+            async function gpsAllowed() {
+                try {
+                    if (navigator.permissions && navigator.permissions.query)
+                        return (await navigator.permissions.query({ name: 'geolocation' })).state === 'granted';
+                } catch (e) {}
+                return prayerLoc.source === 'gps';
+            }
+            function applyPrayerLocation(loc) {
+                const same = loc.cc === prayerLoc.cc && loc.label === prayerLoc.label && distKm(loc, prayerLoc) < PRAYER_MOVE_KM;
+                savePrayerLoc(loc);
+                if (same) {
+                    prayerLoc.source = loc.source;
+                    return;
+                }
+                prayerLoc = loc;
+                prayerState = { status: 'loading', list: [], tz: null, day: null, at: 0 };
+                paintPrayer();
+                refreshPrayer();
+            }
+            async function resolvePrayerLocation() {
+                if (prayerLocBusy)
+                    return;
+                prayerLocBusy = true;
+                paintPrayer();
+                let loc = null;
+                try {
+                    const allowed = !!navigator.geolocation && await gpsAllowed();
+                    if (allowed) {
+                        try { loc = await gpsLocation(); } catch (e) {}
+                    }
+                    // GPS sesaat gagal padahal sebelumnya sudah presisi: pertahankan, jangan turun ke perkiraan jaringan.
+                    if (!loc && !(allowed && prayerLoc.source === 'gps')) {
+                        try { loc = await ipLocation(); } catch (e) {}
+                    }
+                    if (loc)
+                        applyPrayerLocation(loc);
+                } finally {
+                    prayerLocAt = loc ? Date.now() : Date.now() - PRAYER_LOC_TTL + 60000; // gagal: coba lagi sekitar 1 menit
+                    prayerLocBusy = false;
+                    paintPrayer();
+                }
+            }
+            async function requestPreciseLocation() {
+                if (!navigator.geolocation || prayerLocBusy)
+                    return;
+                prayerLocBusy = true;
+                paintPrayer();
+                try {
+                    applyPrayerLocation(await gpsLocation());
+                    prayerLocAt = Date.now();
+                } catch (e) {
+                    toast(e && e.code === 1 ? 'Izin lokasi ditolak. Jadwal memakai perkiraan dari jaringan.' : 'Lokasi belum bisa dibaca. Coba lagi.', 'error');
+                } finally {
+                    prayerLocBusy = false;
+                    paintPrayer();
+                }
+            }
+            // ── Jadwal ───────────────────────────────────────────────
+            async function fetchPrayerDay(day, loc) {
+                const kemenag = loc.cc === 'ID';
+                const key = [ddmmyyyy(day), loc.lat, loc.lon, kemenag].join('|');
+                if (prayerCache.has(key))
+                    return prayerCache.get(key);
+                const url = `https://api.aladhan.com/v1/timings/${ddmmyyyy(day)}?latitude=${loc.lat}&longitude=${loc.lon}` + (kemenag ? '&method=20' : '');
+                const body = await fetchJson(url, 8000);
+                const timings = body && body.data && body.data.timings;
+                const tz = body && body.data && body.data.meta && body.data.meta.timezone;
+                if (!timings || !tz)
+                    throw new Error('Respons tidak dikenali');
+                const times = {};
+                for (const [k] of PRAYERS) {
+                    const m = /(\d{1,2}):(\d{2})/.exec(String(timings[k] || ''));
+                    if (!m)
+                        throw new Error('Waktu ' + k + ' tidak ada');
+                    times[k] = Number(m[1]) * 60 + Number(m[2]);
+                }
+                const out = { tz, times };
+                prayerCache.set(key, out);
+                return out;
+            }
+            // Daftar sholat yang belum lewat (waktu setempat lokasi). Lewat Isya -> jadwal besok.
+            async function loadUpcomingPrayers(loc) {
+                let day = tzParts(Intl.DateTimeFormat().resolvedOptions().timeZone);
+                let t = await fetchPrayerDay(day, loc);
+                let now = tzParts(t.tz);
+                if (ddmmyyyy(now) !== ddmmyyyy(day)) {
+                    day = now;
+                    t = await fetchPrayerDay(day, loc);
+                    now = tzParts(t.tz);
+                }
+                const mk = (offset, dayT) => PRAYERS.map( ([k, label]) => ({ label, min: dayT.times[k], offset }));
+                let list = mk(0, t).filter(p => p.min * 60 > now.sec);
+                if (!list.length) {
+                    const next = addDay(now, 1);
+                    list = mk(1, await fetchPrayerDay(next, loc));
+                }
+                return { list, tz: t.tz, day: ddmmyyyy(now) };
+            }
+            function fmtClock(min) {
+                return String(Math.floor(min / 60)).padStart(2, '0') + ':' + String(min % 60).padStart(2, '0');
+            }
+            function fmtCountdown(sec) {
+                const pad = n => String(n).padStart(2, '0');
+                return 'dalam ' + pad(Math.floor(sec / 3600)) + ':' + pad(Math.floor(sec % 3600 / 60)) + ':' + pad(sec % 60);
+            }
+            function prayerEls() {
+                const q = id => document.getElementById(id);
+                return { name: q('pr-name'), time: q('pr-time'), day: q('pr-day'), count: q('pr-count'), list: q('pr-list'), msg: q('pr-msg'), loc: q('pr-loc'), btn: q('pr-loc-btn'), main: q('pr-main') };
+            }
+            function prayerFootText() {
+                const place = prayerLoc.source === 'ip' ? prayerLoc.label + ' (perkiraan dari jaringan)'
+                    : prayerLoc.source === 'default' ? prayerLoc.label + ' (bawaan)'
+                    : prayerLoc.label;
+                return place + ' · ' + (prayerLoc.cc === 'ID' ? 'Kemenag RI' : 'AlAdhan');
+            }
+            // Hitung mundur berjalan tiap detik. Kalau sholat berikutnya lewat atau tanggal setempat berganti, jadwal dimuat ulang.
+            function tickPrayer() {
+                if (document.hidden || prayerState.status !== 'ok')
+                    return;
+                const el = prayerEls();
+                if (!el.main || el.main.hidden)
+                    return;
+                const now = tzParts(prayerState.tz);
+                const first = prayerState.list[0];
+                const diff = first.offset * 86400 + first.min * 60 - now.sec;
+                if (ddmmyyyy(now) !== prayerState.day || diff <= 0) {
+                    refreshPrayer();
+                    return;
+                }
+                el.count.textContent = fmtCountdown(diff);
+            }
+            function paintPrayer() {
+                const el = prayerEls();
+                if (!el.main)
+                    return;
+                const st = prayerState;
+                el.main.hidden = st.status !== 'ok';
+                el.msg.hidden = st.status === 'ok';
+                if (st.status === 'loading')
+                    el.msg.textContent = 'Memuat jadwal sholat...';
+                if (st.status === 'error')
+                    el.msg.textContent = 'Jadwal sholat belum bisa dimuat. Dicoba lagi otomatis.';
+                el.loc.textContent = prayerFootText();
+                el.btn.textContent = prayerLoc.source === 'gps' ? 'Perbarui lokasi' : 'Pakai lokasi presisi';
+                el.btn.hidden = !navigator.geolocation;
+                el.btn.disabled = prayerLocBusy;
+                if (st.status !== 'ok')
+                    return;
+                const [first, ...rest] = st.list;
+                el.name.textContent = first.label;
+                el.time.textContent = fmtClock(first.min);
+                el.day.textContent = first.offset ? 'besok' : '';
+                el.list.replaceChildren(...rest.map(p => {
+                    const chip = document.createElement('div');
+                    chip.className = 'pr-chip';
+                    const l = document.createElement('span');
+                    l.textContent = p.label + (p.offset ? ' (besok)' : '');
+                    const b = document.createElement('b');
+                    b.textContent = fmtClock(p.min);
+                    chip.append(l, b);
+                    return chip;
+                }));
+                tickPrayer();
+            }
+            async function refreshPrayer() {
+                if (prayerBusy)
+                    return;
+                prayerBusy = true;
+                try {
+                    let loc;
+                    do {
+                        loc = prayerLoc;
+                        try {
+                            const r = await loadUpcomingPrayers(loc);
+                            prayerState = { status: 'ok', list: r.list, tz: r.tz, day: r.day, at: Date.now() };
+                        } catch (e) {
+                            prayerState = { status: 'error', list: [], tz: null, day: null, at: Date.now() };
+                        }
+                    } while (loc !== prayerLoc); // lokasi berganti selagi memuat: ulangi dengan lokasi terbaru
+                } finally {
+                    prayerBusy = false;
+                }
+                paintPrayer();
+            }
+            function buildPrayerCard(box) {
+                box.innerHTML = `<div class="card hi-card">
+                    <div class="hi-kicker">Jadwal sholat berikutnya</div>
+                    <div class="pr-msg" id="pr-msg" role="status"></div>
+                    <div class="pr-wrap" id="pr-main" hidden>
+                        <div class="pr-next">
+                            <div class="pr-line"><span class="pr-name" id="pr-name"></span><span class="pr-time" id="pr-time"></span><span class="pr-day" id="pr-day"></span></div>
+                            <div class="pr-count" id="pr-count"></div>
+                        </div>
+                        <div class="pr-list" id="pr-list"></div>
+                    </div>
+                    <div class="pr-foot"><span id="pr-loc"></span><button type="button" id="pr-loc-btn"></button></div>
+                </div>`;
+                document.getElementById('pr-loc-btn').addEventListener('click', requestPreciseLocation);
+            }
+            function renderHomeInfo() {
+                const box = document.getElementById('home-info');
+                if (!box || !HOME_INFO.loaded)
+                    return;
+                const info = HOME_INFO.info;
+                box.hidden = false;
+                if (info) {
+                    const key = 'info|' + info.updatedAt + '|' + info.text;
+                    if (HOME_INFO.key === key)
+                        return;
+                    HOME_INFO.key = key;
+                    HOME_INFO.mode = 'info';
+                    const card = document.createElement('div');
+                    card.className = 'card hi-card';
+                    const kicker = document.createElement('div');
+                    kicker.className = 'hi-kicker';
+                    kicker.textContent = 'Informasi dari owner';
+                    const text = document.createElement('div');
+                    text.className = 'hi-text';
+                    text.textContent = info.text;
+                    card.append(kicker, text);
+                    if (Number.isFinite(info.updatedAt)) {
+                        const meta = document.createElement('div');
+                        meta.className = 'hi-meta';
+                        meta.textContent = 'Diperbarui ' + new Date(info.updatedAt).toLocaleString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+                        card.append(meta);
+                    }
+                    box.replaceChildren(card);
+                    return;
+                }
+                if (HOME_INFO.mode === 'prayer')
+                    return;
+                HOME_INFO.key = 'prayer';
+                HOME_INFO.mode = 'prayer';
+                buildPrayerCard(box);
+                paintPrayer();
+                if (prayerState.status !== 'ok')
+                    refreshPrayer();
+                if (Date.now() - prayerLocAt > PRAYER_LOC_TTL)
+                    resolvePrayerLocation();
+            }
+            async function loadHomeInfo() {
+                const base = fbDbUrl();
+                let info = null;
+                if (base) {
+                    try {
+                        const ctrl = new AbortController();
+                        const timer = setTimeout( () => ctrl.abort(), 6000);
+                        const res = await fetch(base + '/config/info.json', { cache: 'no-store', signal: ctrl.signal });
+                        clearTimeout(timer);
+                        if (res.ok) {
+                            const c = await res.json();
+                            if (c && typeof c.text === 'string' && c.text.trim())
+                                info = { text: c.text.trim().slice(0, 500), updatedAt: Number(c.updatedAt) };
+                        } else if (HOME_INFO.loaded) {
+                            return; // gagal baca: pertahankan tampilan terakhir
+                        }
+                    } catch (e) {
+                        if (HOME_INFO.loaded)
+                            return;
+                    }
+                }
+                HOME_INFO.info = info;
+                HOME_INFO.loaded = true;
+                renderHomeInfo();
+            }
+            loadHomeInfo();
+            setInterval( () => {
+                if (document.hidden)
+                    return;
+                loadHomeInfo();
+                if (HOME_INFO.mode === 'prayer') {
+                    if (prayerState.status === 'error' && Date.now() - prayerState.at > 60000)
+                        refreshPrayer();
+                    if (Date.now() - prayerLocAt > PRAYER_LOC_TTL)
+                        resolvePrayerLocation();
+                }
+            }, 30000);
+            setInterval(tickPrayer, 1000);
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden)
+                    return;
+                loadHomeInfo();
+                if (HOME_INFO.mode === 'prayer') {
+                    paintPrayer();
+                    if (Date.now() - prayerLocAt > PRAYER_LOC_TTL)
+                        resolvePrayerLocation();
+                }
+            });
+            window.addEventListener('online', () => {
+                if (HOME_INFO.mode !== 'prayer')
+                    return;
+                resolvePrayerLocation();
+                if (prayerState.status === 'error')
+                    refreshPrayer();
+            });
             loadPaymentConfig();
             initIntro();
             loadLocalState();
