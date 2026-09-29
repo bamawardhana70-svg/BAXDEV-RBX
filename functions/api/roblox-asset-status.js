@@ -1,4 +1,5 @@
 import { requireUser } from "../_lib/auth.js";
+import { resolveModeration } from "../_lib/moderation.js";
 
 // Cloudflare Pages Function — POST /api/roblox-asset-status
 //
@@ -24,11 +25,27 @@ export async function onRequestPost(context) {
 
   const apiKey = String(body.apiKey || "").trim();
   const operationPath = String(body.operationPath || "").trim();
-  if (!apiKey || !operationPath) {
-    return json({ ok: false, message: "apiKey dan operationPath wajib diisi." }, 400);
+  const knownAssetId = String(body.assetId || "").trim();
+  if (!apiKey || (!operationPath && !knownAssetId)) {
+    return json({ ok: false, message: "apiKey dan operationPath (atau assetId) wajib diisi." }, 400);
   }
-  if (!/^operations\/[\w-]+$/.test(operationPath)) {
+  if (operationPath && !/^operations\/[\w-]+$/.test(operationPath)) {
     return json({ ok: false, message: "Format operationPath tidak valid." }, 400);
+  }
+  if (!operationPath && !/^[0-9]{1,20}$/.test(knownAssetId)) {
+    return json({ ok: false, message: "Format assetId tidak valid." }, 400);
+  }
+
+  // Cek langsung lewat assetId (untuk entri yang tidak punya operationPath)
+  if (!operationPath) {
+    const moderation = await resolveModeration(knownAssetId, apiKey, null);
+    if (moderation === "rejected") {
+      return json({ ok: true, done: true, error: true, rejected: true, message: "Roblox menolak asset ini: diblokir moderasi." });
+    }
+    if (moderation === "reviewing") {
+      return json({ ok: true, done: false, moderating: true, message: "Masih dimoderasi Roblox." });
+    }
+    return json({ ok: true, done: true, assetId: knownAssetId, rejected: false, moderationState: "approved" });
   }
 
   let res;
@@ -55,9 +72,19 @@ export async function onRequestPost(context) {
   }
 
   const assetId = op.response && op.response.assetId ? String(op.response.assetId) : null;
-  const moderationState = op.response && op.response.moderationResult ? op.response.moderationResult.moderationState : null;
-  const rejected = String(moderationState || "").toLowerCase().includes("reject");
-  return json({ ok: true, done: true, assetId, rejected, moderationState: moderationState || null });
+  const opState = op.response && op.response.moderationResult ? op.response.moderationResult.moderationState : null;
+  if (!assetId) {
+    return json({ ok: true, done: true, assetId: null, rejected: false, moderationState: null });
+  }
+  // done=true hanya berarti asset sudah dibuat, bukan berarti lolos moderasi.
+  const moderation = await resolveModeration(assetId, apiKey, opState);
+  if (moderation === "rejected") {
+    return json({ ok: true, done: true, error: true, rejected: true, message: "Roblox menolak asset ini: diblokir moderasi." });
+  }
+  if (moderation === "reviewing") {
+    return json({ ok: true, done: false, moderating: true, message: "Masih dimoderasi Roblox." });
+  }
+  return json({ ok: true, done: true, assetId, rejected: false, moderationState: "approved" });
 }
 
 export async function onRequestGet() {

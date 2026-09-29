@@ -5819,6 +5819,12 @@ html[data-theme="green"] .theme-opt.active { border-color:#86efac; background:rg
                     return false;
                 return (S.remoteVip === true && (!S.vipExpiresAt || S.vipExpiresAt > Date.now())) || getVipList().some(v => String(v.id) === uid && (!v.expiresAt || v.expiresAt > Date.now()));
             }
+            function isPermanentVip() {
+                const uid = String((S.roblox && S.roblox.userId) || '').trim();
+                if (!uid)
+                    return false;
+                return (S.remoteVip === true && !S.vipExpiresAt) || getVipList().some(v => String(v.id) === uid && !v.expiresAt);
+            }
             function fbDbUrl() {
                 const c = window.BAXDEV_FIREBASE;
                 if (!c || !c.databaseURL || /ISI_/.test(c.databaseURL))
@@ -6232,8 +6238,8 @@ html[data-theme="green"] .theme-opt.active { border-color:#86efac; background:rg
                 if (homeUsage)
                     homeUsage.textContent = usage;
                 if (homeButton) {
-                    homeButton.textContent = premium ? 'VIP Aktif' : 'Buy VIP';
-                    homeButton.disabled = premium;
+                    homeButton.textContent = premium ? (isPermanentVip() ? 'VIP Permanen' : 'Perpanjang VIP') : 'Buy VIP';
+                    homeButton.disabled = premium && isPermanentVip();
                 }
                 const accountBadge = document.getElementById('acct-plan-badge');
                 if (accountBadge) {
@@ -6248,8 +6254,8 @@ html[data-theme="green"] .theme-opt.active { border-color:#86efac; background:rg
                 if (accountUsage)
                     accountUsage.textContent = usage;
                 if (accountButton) {
-                    accountButton.textContent = premium ? 'VIP Aktif' : 'Buy VIP';
-                    accountButton.disabled = premium;
+                    accountButton.textContent = premium ? (isPermanentVip() ? 'VIP Permanen' : 'Perpanjang VIP') : 'Buy VIP';
+                    accountButton.disabled = premium && isPermanentVip();
                 }
                 const ddPlan = document.getElementById('dd-plan');
                 if (ddPlan) {
@@ -6678,7 +6684,7 @@ html[data-theme="green"] .theme-opt.active { border-color:#86efac; background:rg
                             data.message = responseText.slice(0, 240);
                         if (!res.ok || data.ok === false)
                             throw new Error(data.message || 'Upload gagal');
-                        let assetId = data.assetId;
+                        let assetId = data.pending ? null : data.assetId;
                         let rejectedReason = data.rejected ? (data.message || 'Ditolak moderasi Roblox') : null;
                         const opPath = data.operationPath || null;
                         if (!rejectedReason && !assetId && data.pending && opPath) {
@@ -6738,7 +6744,7 @@ html[data-theme="green"] .theme-opt.active { border-color:#86efac; background:rg
                                 incrementQuota();
                                 refreshAccountState();
                             }
-                            const entry = Object.assign(base, { assetId, status: 'done' });
+                            const entry = Object.assign(base, { assetId, status: 'done', modOk: true });
                             addLibEntry(entry, { name: String(name).slice(0, 100), filename: String(file.name).slice(0, 160), size: file.size, assetId: String(assetId).slice(0, 30), status: 'done', speed: Number(S.speed) || 1 });
                             document.getElementById('result-asset-id').textContent = 'rbxassetid://' + assetId;
                             document.getElementById('result-box').classList.add('visible');
@@ -6925,28 +6931,43 @@ html[data-theme="green"] .theme-opt.active { border-color:#86efac; background:rg
             let _modBusy = false;
             async function checkPendingLibrary() {
                 if (_modBusy || !S.roblox || !S.roblox.apiKey) return;
-                const pending = S.library.filter(i => i.status === 'proc' && i.operationPath);
-                if (!pending.length) return;
+                const pending = S.library.filter(i => i.status === 'proc' && (i.operationPath || i.assetId));
+                // Entri lama berstatus "done" yang belum pernah diverifikasi moderasinya (maks 3 per putaran)
+                const unverified = S.library.filter(i => i.status === 'done' && i.assetId && !i.modOk).slice(0, 3);
+                if (!pending.length && !unverified.length) return;
                 _modBusy = true;
                 let changed = false;
-                for (const it of pending) {
+                for (const it of pending.concat(unverified)) {
                     try {
                         const r = await fetch('/api/roblox-asset-status', {
                             method: 'POST',
                             headers: { 'content-type': 'application/json' },
-                            body: JSON.stringify({ apiKey: S.roblox.apiKey, operationPath: it.operationPath })
+                            body: JSON.stringify(it.operationPath ? { apiKey: S.roblox.apiKey, operationPath: it.operationPath } : { apiKey: S.roblox.apiKey, assetId: String(it.assetId) })
                         });
                         const d = await r.json().catch( () => ({}));
-                        if (!r.ok || !d.done) continue;
+                        if (!r.ok) continue;
+                        if (d.ok === true && d.done === false) {
+                            // Masih direview Roblox. Entri "done" yang ternyata belum lolos dikembalikan ke "Dimoderasi".
+                            if (it.status === 'done') {
+                                it.status = 'proc';
+                                changed = true;
+                            }
+                            continue;
+                        }
+                        if (!d.done) continue;
                         if (d.rejected) {
                             it.status = 'archived';
                             it.reason = d.message || 'Ditolak moderasi Roblox';
                             it.archivedAt = new Date().toISOString();
-                            toast('"' + (it.name || 'Audio') + '" ditolak moderasi dan dipindah ke Arsip', 'error');
+                            it.assetId = null;
+                            toast('\"' + (it.name || 'Audio') + '\" ditolak moderasi dan dipindah ke Arsip', 'error');
                         } else if (d.assetId) {
+                            const wasProc = it.status === 'proc';
                             it.status = 'done';
                             it.assetId = d.assetId;
-                            toast('"' + (it.name || 'Audio') + '" lolos moderasi', 'success');
+                            it.modOk = true;
+                            if (wasProc)
+                                toast('\"' + (it.name || 'Audio') + '\" lolos moderasi', 'success');
                         } else if (d.ok === false) {
                             it.status = 'fail';
                         } else continue;
@@ -7304,15 +7325,16 @@ html[data-theme="green"] .theme-opt.active { border-color:#86efac; background:rg
             }
             function createOrder(uid, plan) {
                 const list = getOrders().filter(isOpenOrder);
-                const usedAmounts = new Set(list.map(o => o.amount));
-                let amount;
+                // Nominal bulat sesuai harga paket (tanpa angka acak). Pesanan dibedakan lewat kode pesanan.
+                const usedCodes = new Set(list.map(o => o.code));
+                let code;
                 do {
-                    amount = plan.price + 1 + crypto.getRandomValues(new Uint8Array(1))[0] % 99;
-                } while (usedAmounts.has(amount));
+                    code = newOrderCode();
+                } while (usedCodes.has(code));
                 const order = {
-                    code: newOrderCode(),
+                    code,
                     userId: uid,
-                    amount,
+                    amount: plan.price,
                     days: plan.days,
                     status: 'unpaid',
                     createdAt: Date.now()
@@ -7332,7 +7354,9 @@ html[data-theme="green"] .theme-opt.active { border-color:#86efac; background:rg
                 return `https://wa.me/${PAYMENT.adminWhatsapp}?text=${encodeURIComponent(text)}`;
             }
             function renderPlanChoice() {
+                const until = isVIP() && S.remoteVip === true && S.vipExpiresAt ? new Date(S.vipExpiresAt).toLocaleString('id-ID', {day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'}) : '';
                 document.getElementById('payment-body').innerHTML = `
+                    ${until ? `<p>VIP aktif sampai ${escapeHtml(until)}. Paket yang kamu beli ditambahkan setelah masa aktif ini, jadi boleh beli lebih dari sekali.</p>` : ''}
                     <div class="field-label">Pilih paket</div>
                     <div class="plan-options">
                         ${PAYMENT.plans.map(plan => `<button type="button" class="plan-option" data-days="${plan.days}"><strong>${escapeHtml(plan.label)}</strong><span>${formatRupiah(plan.price)}</span></button>`).join('')}
@@ -7354,6 +7378,7 @@ html[data-theme="green"] .theme-opt.active { border-color:#86efac; background:rg
                         <p>Kirim konfirmasi ke admin lewat WhatsApp. VIP diaktifkan setelah pembayaranmu dicek.</p>
                         <div class="pay-actions">
                             <a class="btn btn-primary" href="${escapeHtml(whatsappUrl(order))}" target="_blank" rel="noopener noreferrer">Hubungi admin</a>
+                            <button type="button" class="btn btn-outline" onclick="renderPlanChoice()">Beli paket lagi</button>
                             <button type="button" class="btn btn-outline" onclick="closeSubscriptionModal()">Tutup</button>
                         </div>`;
                     return;
@@ -7362,7 +7387,7 @@ html[data-theme="green"] .theme-opt.active { border-color:#86efac; background:rg
                     <div class="card-sm pay-block">
                         <div class="field-label">Total bayar &middot; VIP ${escapeHtml(planLabel(order.days))}</div>
                         <div class="pay-amount">${amount}</div>
-                        <div class="pay-meta">Bayar tepat sesuai nominal ini, termasuk dua digit terakhir, supaya admin bisa mencocokkan pembayaranmu.</div>
+                        <div class="pay-meta">Kode pesanan ${escapeHtml(order.code)} &middot; Roblox #${escapeHtml(order.userId)}. Simpan kode ini, admin memakainya untuk mencocokkan pembayaranmu.</div>
                     </div>
                     <div class="pay-qris">
                         <img src="${escapeHtml(qrisFor(order.days))}" alt="Kode QRIS pembayaran VIP ${escapeHtml(planLabel(order.days))}">
@@ -7486,8 +7511,8 @@ html[data-theme="green"] .theme-opt.active { border-color:#86efac; background:rg
                 }
             }
             function openSubscriptionModal() {
-                if (isVIP()) {
-                    toast('Akun kamu sudah VIP.', 'info');
+                if (isPermanentVip()) {
+                    toast('Akun kamu VIP permanen, tidak perlu beli lagi.', 'info');
                     return;
                 }
                 const uid = currentUserId();

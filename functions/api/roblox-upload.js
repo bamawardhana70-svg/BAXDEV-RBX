@@ -1,4 +1,5 @@
 import { requireUser } from "../_lib/auth.js";
+import { resolveModeration } from "../_lib/moderation.js";
 
 // Cloudflare Pages Function — POST /api/roblox-upload
 //
@@ -169,14 +170,30 @@ async function handleUpload(context) {
   }
 
   const assetId = op.response && op.response.assetId ? String(op.response.assetId) : null;
-  const moderationState = op.response && op.response.moderationResult ? op.response.moderationResult.moderationState : null;
-  const rejected = String(moderationState || "").toLowerCase().includes("reject");
+  const opState = op.response && op.response.moderationResult ? op.response.moderationResult.moderationState : null;
+  if (!assetId) {
+    return json({ ok: true, message: "Terkirim ke Roblox Open Cloud.", assetId: null, operationPath });
+  }
+  // done=true hanya berarti asset sudah dibuat. Cek status moderasi yang sebenarnya.
+  const moderation = await resolveModeration(assetId, apiKey, opState);
+  if (moderation === "rejected") {
+    return json({ ok: true, done: true, rejected: true, moderationState: "rejected", message: "Roblox menolak asset ini: diblokir moderasi." });
+  }
+  if (moderation === "reviewing") {
+    return json({
+      ok: true,
+      pending: true,
+      moderating: true,
+      operationPath,
+      message: "Terkirim ke Roblox, masih dalam moderasi. Asset ID muncul setelah lolos."
+    });
+  }
   return json({
     ok: true,
     assetId,
-    rejected,
-    moderationState: moderationState || null,
-    message: assetId ? `Berhasil dipublish. Asset ID: ${assetId}` : "Terkirim ke Roblox Open Cloud."
+    rejected: false,
+    moderationState: "approved",
+    message: `Berhasil dipublish. Asset ID: ${assetId}`
   });
 }
 
