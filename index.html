@@ -4539,6 +4539,20 @@
             .badge-arch { background: rgba(255,255,255,.10); color: var(--text2); }
             .lib-card.is-archived { opacity: .6; }
             .lib-reason { font-size: 10px; color: var(--text3); margin-top: 4px; line-height: 1.4; }
+            .upload-status { margin-bottom: 18px; }
+            .upload-status .section-title { margin-bottom: 10px; }
+            .upload-status-list { display: flex; flex-direction: column; gap: 8px; }
+            .us-item { align-items: flex-start; }
+            .us-rows { flex: 1; min-width: 0; margin: 0; display: grid; gap: 6px; }
+            .us-row { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 8px; align-items: center; font-size: 12.5px; }
+            .us-row dt { color: var(--text3); }
+            .us-row dd { margin: 0; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+            .us-row dd.us-id { font-family: monospace; }
+            .us-item .q-chip { margin-left: 0; }
+            .us-copy { flex-shrink: 0; width: 36px; height: 36px; border: 0; border-radius: 10px; background: var(--surf-hi); color: var(--text2); display: grid; place-items: center; cursor: pointer; transition: background .2s var(--ease), color .2s var(--ease); }
+            .us-copy:hover { color: var(--text); }
+            .us-copy:focus-visible { outline: 2px solid var(--text2); outline-offset: 2px; }
+            .us-copy svg { width: 16px; height: 16px; }
         </style>
 
 
@@ -5174,7 +5188,7 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                     <div class="card">
                         <div class="field-group">
                             <div class="field-label">URL YouTube</div>
-                            <textarea id="youtube-url" rows="3" placeholder="Tempel 1 link YouTube untuk Free. Premium bisa sampai 5 link, satu per baris." autocomplete="off"></textarea>
+                            <textarea id="youtube-url" rows="3" placeholder="Tempel link YouTube, satu per baris. Free maksimal 3 (masuk antrean), VIP sampai 5 tanpa antre." autocomplete="off"></textarea>
                             <div style="display:flex;justify-content:flex-end;margin-top:9px">
                                 <button class="btn btn-primary" id="convert-youtube-btn" onclick="convertYoutube()">Convert ke MP3</button>
                             </div>
@@ -5204,6 +5218,10 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                     </div>
                 </div>
                 <div class="file-queue" id="file-queue"></div>
+                <section class="upload-status" id="upload-status" aria-labelledby="upload-status-title" hidden>
+                    <div class="section-title" id="upload-status-title">Status upload</div>
+                    <div class="upload-status-list" id="upload-status-list" aria-live="polite"></div>
+                </section>
                 <div class="youtube-hint" style="margin:-6px 0 16px">Audio yang ditolak moderasi Roblox otomatis masuk Arsip di Library dan tetap dihitung sebagai kuota publish.</div>
                 <div class="card" style="margin-bottom:18px">
                     <div class="section-title" style="margin-bottom:16px">Pengaturan Upload</div>
@@ -5496,12 +5514,6 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                                             <polyline points="7 3 7 8 15 8"/>
                                         </svg>
                                         Simpan
-                                    </button>
-                                    <button class="btn btn-outline" onclick="testRobloxConnection()">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-                                        </svg>
-                                        Test Koneksi
                                     </button>
                                 </div>
                             </div>
@@ -6423,8 +6435,14 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                 return String(value || '').split(/[\n,]+/).map(item => item.trim()).filter(Boolean);
             }
 
+            // Free: file masuk antrean dan diproses satu per satu dengan jeda. VIP: langsung, tanpa jeda.
+            const FREE_QUEUE_MAX = 3;
+            const FREE_QUEUE_GAP_S = 20;
+            function isFreeQueue() {
+                return !S.account?.unlimited && !isPremium();
+            }
             function currentBatchLimit() {
-                return S.account?.unlimited ? 5 : (isPremium() ? 5 : 1);
+                return isFreeQueue() ? FREE_QUEUE_MAX : 5;
             }
 
             async function convertYoutube() {
@@ -6582,7 +6600,7 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
             function renderFileQueue() {
                 document.getElementById('file-queue').innerHTML = S.files.map( (f, i) => {
                     probeDuration(f);
-                    const st = QSTAT[f._st || 'wait'];
+                    const st = (f._st || 'wait') === 'wait' && isFreeQueue() ? [`Antre #${i + 1}`, ''] : QSTAT[f._st || 'wait'];
                     return `
     <div class="file-item">
       <div class="file-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>
@@ -6630,6 +6648,10 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                 S.assetNames[i] = String(value || '').slice(0, 50)
             }
             function removeFile(i) {
+                if (S.uploading) {
+                    toast('Antrean sedang diproses, tunggu sampai selesai', 'info');
+                    return
+                }
                 S.files.splice(i, 1);
                 S.assetNames.splice(i, 1);
                 renderFileQueue();
@@ -6693,10 +6715,17 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                 const label = document.getElementById('progress-label');
                 const pct = document.getElementById('progress-pct');
                 btn.disabled = true;
+                S.uploading = true;
                 wrap.style.display = 'block';
                 document.getElementById('result-box').classList.remove('visible');
 
                 for (let i = 0; i < S.files.length; i++) {
+                    if (i > 0 && isFreeQueue()) {
+                        for (let sec = FREE_QUEUE_GAP_S; sec > 0; sec--) {
+                            label.textContent = `Antrean ${i + 1}/${S.files.length}: mulai dalam ${sec} dtk. VIP tanpa antre.`;
+                            await sleep(1000)
+                        }
+                    }
                     const file = S.files[i];
                     const name = S.assetNames[i] || defaultAssetName(file.name);
                     setQStatus(file, 'run');
@@ -6815,6 +6844,7 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                     label.textContent = `Selesai ${i + 1}/${S.files.length}`;
                 }
                 await sleep(900);
+                S.uploading = false;
                 wrap.style.display = 'none';
                 btn.disabled = false;
                 S.files = [];
@@ -6977,7 +7007,40 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                 list.innerHTML = items.map(i => `<div class="recent-item"><div class="recent-thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div><div class="recent-info"><div class="recent-name">${escapeHtml(i.name || 'Tanpa nama')}</div><div class="recent-meta">${i.assetId ? 'ID ' + escapeHtml(String(i.assetId)) : 'Gagal'}</div></div></div>`).join('');
             }
 
+            // Upload yang dibuat di sesi ini tetap tampil di halaman Upload walau file-queue sudah dikosongkan.
+            const sessionUploadIds = new Set();
+            const UPLOAD_STATUS = {
+                proc: ['Dimoderasi', 'is-run'],
+                done: ['Published', 'is-ok'],
+                archived: ['Ditolak moderasi', 'is-bad'],
+                fail: ['Gagal', 'is-bad']
+            };
+            function renderUploadStatus() {
+                const box = document.getElementById('upload-status');
+                const list = document.getElementById('upload-status-list');
+                if (!box || !list) return;
+                const items = S.library.filter(i => i.status === 'proc' || sessionUploadIds.has(i.id)).slice(0, 6);
+                box.hidden = !items.length;
+                list.innerHTML = items.map(i => {
+                    const st = UPLOAD_STATUS[i.status] || UPLOAD_STATUS.fail;
+                    const id = i.assetId ? escapeHtml(String(i.assetId)) : '–';
+                    return `
+    <div class="file-item us-item">
+      <dl class="us-rows">
+        <div class="us-row"><dt>Nama</dt><dd title="${escapeHtml(i.name || 'Tanpa nama')}">${escapeHtml(i.name || 'Tanpa nama')}</dd></div>
+        <div class="us-row"><dt>Status</dt><dd><span class="q-chip ${st[1]}">${st[0]}</span></dd></div>
+        <div class="us-row"><dt>ID</dt><dd class="us-id">${id}</dd></div>
+      </dl>
+      ${i.assetId ? `<button type="button" class="us-copy" data-copy="${id}" aria-label="Salin ID ${escapeHtml(i.name || 'audio')}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>` : ''}
+    </div>`;
+                }).join('');
+            }
+            document.getElementById('upload-status-list').addEventListener('click', e => {
+                const btn = e.target.closest('[data-copy]');
+                if (btn) copyLib(btn.dataset.copy);
+            });
             function addLibEntry(entry, remote) {
+                sessionUploadIds.add(entry.id);
                 S.library.unshift(entry);
                 saveLibrary();
                 updateStats();
@@ -7040,7 +7103,8 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
             setInterval(checkPendingLibrary, 20000);
             function saveLibrary() {
                 localStorage.setItem('baxdev_lib', JSON.stringify(S.library));
-                renderRecentFromLibrary()
+                renderRecentFromLibrary();
+                renderUploadStatus()
             }
 
             // ── STATS ─────────────────────────────────────────────
@@ -7577,10 +7641,10 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                     settingsTab('roblox');
                     return;
                 }
-                const order = findActiveOrder(uid);
+                // VIP masih aktif = perpanjang: langsung tampilkan pilihan paket, bukan pesanan lama.
                 const draw = () => {
                     const o = findActiveOrder(uid);
-                    if (o) renderPayment(o);
+                    if (o && !isVIP()) renderPayment(o);
                     else renderPlanChoice();
                 };
                 draw();
@@ -7741,6 +7805,7 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
             initIntro();
             loadLocalState();
             renderRecentFromLibrary();
+            renderUploadStatus();
             setTimeout(checkPendingLibrary, 2500);
         </script>
         <script id="theme-switch">
