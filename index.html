@@ -4785,6 +4785,30 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
     .pr-list { width: 100%; }
     .pr-chip { flex: 1 1 0; min-width: 0; }
 }
+
+/* Home: riwayat upload server */
+.feed-section { margin-top: 24px; }
+.feed-section[hidden] { display: none; }
+.feed-card { padding: 4px 18px; }
+.feed-msg { margin: 0; padding: 14px 0; font-size: 13px; color: var(--text2); }
+.feed-msg[hidden] { display: none; }
+.feed-list { list-style: none; margin: 0; padding: 0; }
+.feed-list li { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 12px 0; border-top: 1px solid var(--glass-border); }
+.feed-list li:first-child { border-top: 0; }
+.feed-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13.5px; color: var(--text); }
+.feed-time { flex: none; font-size: 11.5px; color: var(--text3); font-variant-numeric: tabular-nums; }
+
+/* Popup install aplikasi */
+.install-sheet { position: fixed; left: 0; right: 0; bottom: 0; z-index: 950; display: flex; justify-content: center; padding: 0 12px calc(12px + env(safe-area-inset-bottom, 0px)); pointer-events: none; transform: translateY(calc(100% + 24px)); transition: transform .25s ease-out; }
+.install-sheet[hidden] { display: none; }
+.install-sheet.is-open { transform: none; }
+.install-card { pointer-events: auto; width: 100%; max-width: 440px; display: grid; grid-template-columns: 44px 1fr; gap: 14px; align-items: center; padding: 16px; border-radius: var(--radius); background: var(--bg2); border: 1px solid var(--glass-border); box-shadow: var(--shadow); }
+.install-icon { width: 44px; height: 44px; border-radius: 10px; }
+.install-title { margin: 0; font-size: 15px; font-weight: 600; color: var(--text); }
+.install-text { margin: 2px 0 0; font-size: 12.5px; line-height: 1.5; color: var(--text2); }
+.install-actions { grid-column: 1 / -1; display: flex; gap: 10px; }
+.install-actions .btn { flex: 1; min-height: 44px; justify-content: center; }
+@media (prefers-reduced-motion: reduce) { .install-sheet { transition: none; } }
 </style>
 </head>
     <body class="intro-playing">
@@ -5206,6 +5230,15 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                         </div>
                     </div>
                 </div>
+                <section class="feed-section" id="feed-section" aria-labelledby="feed-title">
+                    <div class="section-heading">
+                        <h2 class="section-title" id="feed-title">Riwayat upload server</h2>
+                    </div>
+                    <div class="card feed-card">
+                        <p class="feed-msg" id="feed-msg" role="status">Memuat riwayat...</p>
+                        <ul class="feed-list" id="feed-list"></ul>
+                    </div>
+                </section>
             </div>
             <!-- UPLOAD -->
             <div class="page" id="page-upload">
@@ -5768,6 +5801,19 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
         </div>
         <div id="toast"></div>
         <audio id="audio-element" preload="none"></audio>
+        <aside class="install-sheet" id="install-sheet" role="dialog" aria-labelledby="install-title" aria-describedby="install-text" hidden>
+            <div class="install-card">
+                <img class="install-icon" src="favicon-192.png" alt="" width="44" height="44">
+                <div class="install-copy">
+                    <h2 class="install-title" id="install-title">Pasang baxdev</h2>
+                    <p class="install-text" id="install-text"></p>
+                </div>
+                <div class="install-actions">
+                    <button type="button" class="btn" id="install-later">Nanti</button>
+                    <button type="button" class="btn btn-primary" id="install-go"></button>
+                </div>
+            </div>
+        </aside>
         <script src="https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js"></script>
         <script>
             // ── STATE ─────────────────────────────────────────────
@@ -6121,8 +6167,10 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                     renderLibrary();
                     checkPendingLibrary();
                 }
-                if (page === 'home')
+                if (page === 'home') {
                     updateStats();
+                    refreshFeed();
+                }
                 closeProfileDropdown();
             }
 
@@ -7117,7 +7165,11 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                 S.library.unshift(entry);
                 saveLibrary();
                 updateStats();
-                if (remote) pushUploadToFirebase(remote);
+                if (remote) {
+                    pushUploadToFirebase(remote);
+                    if (remote.status === 'done')
+                        pushFeedToFirebase(remote.name);
+                }
             }
             let _pendingBusy = false;
             async function checkPendingLibrary() {
@@ -8324,6 +8376,182 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                 if (prayerState.status === 'error')
                     refreshPrayer();
             });
+            // ── HOME: RIWAYAT UPLOAD SERVER ───────────────────────────
+            // Firebase /feed: hanya nama + waktu upload yang berhasil (tanpa email/ID). Diambil 5 terbaru, disegarkan
+            // tiap 5 detik selama Home terlihat dan tab aktif.
+            const FEED_LIMIT = 5;
+            const FEED_POLL_MS = 5000;
+            const FEED_TIMEOUT_MS = 4000;
+            const FEED_NAME_MAX = 60;
+            const feed = { rows: null, busy: false, failed: false };
+
+            async function pushFeedToFirebase(name) {
+                const base = fbDbUrl();
+                if (!base || !window.BX || !window.BX.user)
+                    return;
+                try {
+                    const token = await window.BX.getToken();
+                    if (!token)
+                        return;
+                    await fetch(base + '/feed.json?auth=' + encodeURIComponent(token), {
+                        method: 'POST',
+                        headers: { 'content-type': 'application/json' },
+                        body: JSON.stringify({ name: String(name || '').trim().slice(0, FEED_NAME_MAX) || 'Tanpa nama', at: Date.now() })
+                    });
+                } catch (e) {}
+            }
+            function feedAgo(at) {
+                const sec = Math.max(0, Math.round((Date.now() - at) / 1000));
+                if (sec < 60)
+                    return 'baru saja';
+                const min = Math.floor(sec / 60);
+                if (min < 60)
+                    return min + ' mnt lalu';
+                const hr = Math.floor(min / 60);
+                return hr < 24 ? hr + ' jam lalu' : Math.floor(hr / 24) + ' hari lalu';
+            }
+            async function fetchFeed() {
+                const data = await fetchJson(`${fbDbUrl()}/feed.json?orderBy=%22at%22&limitToLast=${FEED_LIMIT}`, FEED_TIMEOUT_MS, { cache: 'no-store' });
+                return Object.values(data || {})
+                    .filter(r => r && typeof r.name === 'string' && Number.isFinite(r.at))
+                    .sort( (a, b) => b.at - a.at)
+                    .slice(0, FEED_LIMIT);
+            }
+            function paintFeed() {
+                const list = document.getElementById('feed-list');
+                const msg = document.getElementById('feed-msg');
+                if (feed.rows && feed.rows.length) {
+                    msg.hidden = true;
+                    list.replaceChildren(...feed.rows.map(r => {
+                        const li = document.createElement('li');
+                        const name = document.createElement('span');
+                        name.className = 'feed-name';
+                        name.textContent = r.name;
+                        const time = document.createElement('span');
+                        time.className = 'feed-time';
+                        time.textContent = feedAgo(r.at);
+                        li.append(name, time);
+                        return li;
+                    }));
+                    return;
+                }
+                list.replaceChildren();
+                msg.hidden = false;
+                msg.textContent = feed.rows ? 'Belum ada upload.' : feed.failed ? 'Riwayat belum bisa dimuat. Dicoba lagi otomatis.' : 'Memuat riwayat...';
+            }
+            async function refreshFeed() {
+                const home = document.getElementById('page-home');
+                if (feed.busy || document.hidden || !fbDbUrl() || !home || !home.classList.contains('active'))
+                    return;
+                feed.busy = true;
+                try {
+                    feed.rows = await fetchFeed();
+                    feed.failed = false;
+                } catch (e) {
+                    feed.failed = true; // baris terakhir tetap ditampilkan kalau sudah ada
+                } finally {
+                    feed.busy = false;
+                }
+                paintFeed();
+            }
+            if (fbDbUrl()) {
+                refreshFeed();
+                setInterval(refreshFeed, FEED_POLL_MS);
+                document.addEventListener('visibilitychange', refreshFeed);
+            } else {
+                document.getElementById('feed-section').hidden = true;
+            }
+
+            // ── POPUP INSTALL APLIKASI ────────────────────────────────
+            // Muncul dari bawah tiap kunjungan selama belum terpasang; kalau ditutup, tidak muncul lagi selama 24 jam.
+            // Chrome/Edge/Android memakai beforeinstallprompt; iOS tidak punya API itu, jadi hanya ditampilkan petunjuk.
+            const INSTALL_KEY = 'baxdev_install_dismissed_at';
+            const INSTALL_SNOOZE_MS = 24 * 60 * 60 * 1000;
+            const INSTALL_DELAY_MS = 3000;
+            const INSTALL_ANIM_MS = 250;
+            const INSTALL_MAX_WAIT = 20; // maksimal menunggu intro selesai (x1 detik)
+            const installUi = { sheet: document.getElementById('install-sheet'), text: document.getElementById('install-text'), go: document.getElementById('install-go'), later: document.getElementById('install-later') };
+            let installEvent = null;
+            let installScheduled = false;
+
+            function isStandalone() {
+                return window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+            }
+            function isIos() {
+                return /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+            }
+            function installSnoozed() {
+                try {
+                    const age = Date.now() - Number(localStorage.getItem(INSTALL_KEY));
+                    return age >= 0 && age < INSTALL_SNOOZE_MS;
+                } catch (e) {
+                    return false;
+                }
+            }
+            function snoozeInstall() {
+                try { localStorage.setItem(INSTALL_KEY, String(Date.now())); } catch (e) {}
+            }
+            function hideInstallSheet() {
+                installUi.sheet.classList.remove('is-open');
+                setTimeout( () => { installUi.sheet.hidden = true; }, INSTALL_ANIM_MS);
+            }
+            function showInstallSheet(waited) {
+                if (isStandalone() || installSnoozed() || (!installEvent && !isIos()))
+                    return;
+                if (document.body.classList.contains('intro-playing') && waited < INSTALL_MAX_WAIT) {
+                    setTimeout( () => showInstallSheet(waited + 1), 1000);
+                    return;
+                }
+                installUi.text.textContent = installEvent ? 'Buka langsung dari layar utama, tanpa lewat browser.' : 'Ketuk ikon Bagikan, lalu pilih Tambahkan ke Layar Utama.';
+                installUi.go.textContent = installEvent ? 'Pasang' : 'Mengerti';
+                installUi.sheet.hidden = false;
+                void installUi.sheet.offsetHeight; // paksa reflow supaya transisi masuk berjalan
+                installUi.sheet.classList.add('is-open');
+            }
+            function scheduleInstallSheet() {
+                if (installScheduled)
+                    return;
+                installScheduled = true;
+                setTimeout( () => showInstallSheet(0), INSTALL_DELAY_MS);
+            }
+            async function acceptInstall() {
+                const ev = installEvent;
+                installEvent = null;
+                hideInstallSheet();
+                if (!ev) {
+                    snoozeInstall();
+                    return;
+                }
+                try {
+                    ev.prompt();
+                    const choice = await ev.userChoice;
+                    if (choice.outcome !== 'accepted')
+                        snoozeInstall();
+                } catch (e) {
+                    snoozeInstall();
+                }
+            }
+            function dismissInstall() {
+                snoozeInstall();
+                hideInstallSheet();
+            }
+            window.addEventListener('beforeinstallprompt', e => {
+                e.preventDefault();
+                installEvent = e;
+                scheduleInstallSheet();
+            });
+            window.addEventListener('appinstalled', () => {
+                installEvent = null;
+                hideInstallSheet();
+            });
+            installUi.go.addEventListener('click', acceptInstall);
+            installUi.later.addEventListener('click', dismissInstall);
+            document.addEventListener('keydown', e => {
+                if (e.key === 'Escape' && !installUi.sheet.hidden)
+                    dismissInstall();
+            });
+            if (isIos())
+                scheduleInstallSheet();
             loadPaymentConfig();
             initIntro();
             loadLocalState();
