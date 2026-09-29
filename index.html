@@ -4536,6 +4536,8 @@
             .lib-note { font-size: 11.5px; line-height: 1.6; color: var(--text2); background: rgba(255,255,255,.045); border-radius: 14px; padding: 10px 14px; margin-bottom: 12px; }
             .lib-note b { color: var(--text); font-weight: 600; }
             .lib-note button { background: none; border: 0; padding: 0; color: var(--text); text-decoration: underline; cursor: pointer; font: inherit; }
+            .lib-copyall-wrap { margin-bottom: 12px; }
+            .lib-copyall-wrap .btn { width: 100%; justify-content: center; font-size: 12.5px; padding: 9px 14px; }
             .badge-arch { background: rgba(255,255,255,.10); color: var(--text2); }
             .lib-card.is-archived { opacity: .6; }
             .lib-reason { font-size: 10px; color: var(--text3); margin-top: 4px; line-height: 1.4; }
@@ -4544,11 +4546,14 @@
             .upload-status-list { display: flex; flex-direction: column; gap: 8px; }
             .us-item { align-items: flex-start; }
             .us-rows { flex: 1; min-width: 0; margin: 0; display: grid; gap: 6px; }
-            .us-row { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 8px; align-items: center; font-size: 12.5px; }
-            .us-row dt { color: var(--text3); }
+            .us-row { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 8px; align-items: start; font-size: 12.5px; }
+            .us-row dt { color: var(--text3); padding-top: 2px; }
             .us-row dd { margin: 0; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
             .us-row dd.us-id { font-family: monospace; }
             .us-item .q-chip { margin-left: 0; }
+            .us-reason { white-space: normal; overflow: visible; text-overflow: initial; font-size: 11px; color: #ff9a9a; margin-top: 3px; line-height: 1.4; }
+            .us-link { color: var(--text); text-decoration: underline; text-underline-offset: 2px; font-size: 12.5px; }
+            .us-link:hover { opacity: .8; }
             .us-copy { flex-shrink: 0; width: 36px; height: 36px; border: 0; border-radius: 10px; background: var(--surf-hi); color: var(--text2); display: grid; place-items: center; cursor: pointer; transition: background .2s var(--ease), color .2s var(--ease); }
             .us-copy:hover { color: var(--text); }
             .us-copy:focus-visible { outline: 2px solid var(--text2); outline-offset: 2px; }
@@ -5319,6 +5324,15 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                         <option value="archived">Arsip</option>
                         <option value="fail">Gagal</option>
                     </select>
+                </div>
+                <div class="lib-copyall-wrap" id="lib-copyall-wrap" hidden>
+                    <button type="button" class="btn btn-outline" id="lib-copyall-btn" onclick="copyAllPublished()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="9" y="9" width="13" height="13" rx="2"/>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                        </svg>
+                        Salin Semua (ID = Nama)
+                    </button>
                 </div>
                 <div class="lib-note" id="lib-note" role="status"></div>
                 <div class="library-grid" id="library-grid">
@@ -6836,7 +6850,7 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                             toast('Audio berhasil dipublish!', 'success');
                         }
                     } catch (e) {
-                        addLibEntry({ id: Date.now() + i, assetId: null, name, filename: file.name, size: file.size, status: 'fail', uploadedAt: new Date().toISOString() },
+                        addLibEntry({ id: Date.now() + i, assetId: null, name, filename: file.name, size: file.size, status: 'fail', reason: String(e.message || 'Error').slice(0, 160), uploadedAt: new Date().toISOString() },
                             { name: String(name).slice(0, 100), filename: String(file.name).slice(0, 160), size: file.size, status: 'fail', error: String(e.message || 'Error').slice(0, 160) });
                         setQStatus(file, 'fail');
                         toast('Gagal upload: ' + (e.message || 'Error'), 'error');
@@ -6948,6 +6962,9 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                 const filter = document.getElementById('lib-filter').value;
                 const archivedCount = S.library.filter(i => i.status === 'archived').length;
                 const procCount = S.library.filter(i => i.status === 'proc').length;
+                const doneCount = S.library.filter(i => i.status === 'done' && i.assetId).length;
+                const copyAllWrap = document.getElementById('lib-copyall-wrap');
+                if (copyAllWrap) copyAllWrap.hidden = !doneCount;
                 const note = document.getElementById('lib-note');
                 if (note) {
                     const parts = [];
@@ -6988,6 +7005,13 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                 navigator.clipboard.writeText('rbxassetid://' + id);
                 toast('ID disalin!', 'success')
             }
+            function copyAllPublished() {
+                const done = S.library.filter(i => i.status === 'done' && i.assetId);
+                if (!done.length) { toast('Belum ada audio yang lolos moderasi', 'info'); return; }
+                const text = done.map(i => `${i.assetId} = ${i.name || 'Tanpa nama'}`).join('\n');
+                navigator.clipboard.writeText(text);
+                toast(`${done.length} data disalin!`, 'success');
+            }
             function deleteLib(id) {
                 S.library = S.library.filter(i => i.id !== id);
                 saveLibrary();
@@ -7009,12 +7033,6 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
 
             // Upload yang dibuat di sesi ini tetap tampil di halaman Upload walau file-queue sudah dikosongkan.
             const sessionUploadIds = new Set();
-            const UPLOAD_STATUS = {
-                proc: ['Dimoderasi', 'is-run'],
-                done: ['Published', 'is-ok'],
-                archived: ['Ditolak moderasi', 'is-bad'],
-                fail: ['Gagal', 'is-bad']
-            };
             function renderUploadStatus() {
                 const box = document.getElementById('upload-status');
                 const list = document.getElementById('upload-status-list');
@@ -7022,14 +7040,31 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                 const items = S.library.filter(i => i.status === 'proc' || sessionUploadIds.has(i.id)).slice(0, 6);
                 box.hidden = !items.length;
                 list.innerHTML = items.map(i => {
-                    const st = UPLOAD_STATUS[i.status] || UPLOAD_STATUS.fail;
                     const id = i.assetId ? escapeHtml(String(i.assetId)) : '–';
+                    // Status upload: apakah file berhasil terkirim & diproses server (terlepas dari hasil moderasi).
+                    const uploadOk = i.status !== 'fail';
+                    const uploadLabel = uploadOk ? 'Berhasil' : 'Gagal';
+                    const uploadChip = uploadOk ? 'is-ok' : 'is-bad';
+                    const uploadReason = (!uploadOk && i.reason) ? `<div class="us-reason">${escapeHtml(i.reason)}</div>` : '';
+                    // Status aset: hasil moderasi Roblox terhadap aset yang sudah terkirim.
+                    let modLabel = '–', modChip = '', modReason = '';
+                    if (i.status === 'done') {
+                        modLabel = 'Lulus Moderasi'; modChip = 'is-ok';
+                    } else if (i.status === 'archived') {
+                        modLabel = 'Ditolak Moderasi'; modChip = 'is-bad';
+                        if (i.reason) modReason = `<div class="us-reason">${escapeHtml(i.reason)}</div>`;
+                    } else if (i.status === 'proc') {
+                        modLabel = 'Menunggu Moderasi'; modChip = 'is-run';
+                    }
+                    const linkHtml = i.assetId ? `<a class="us-link" href="https://www.roblox.com/library/${id}" target="_blank" rel="noopener">Buka Aset ↗</a>` : '–';
                     return `
     <div class="file-item us-item">
       <dl class="us-rows">
         <div class="us-row"><dt>Nama</dt><dd title="${escapeHtml(i.name || 'Tanpa nama')}">${escapeHtml(i.name || 'Tanpa nama')}</dd></div>
-        <div class="us-row"><dt>Status</dt><dd><span class="q-chip ${st[1]}">${st[0]}</span></dd></div>
+        <div class="us-row"><dt>Status Upload</dt><dd><span class="q-chip ${uploadChip}">${uploadLabel}</span>${uploadReason}</dd></div>
+        <div class="us-row"><dt>Status Aset</dt><dd>${modChip ? `<span class="q-chip ${modChip}">${modLabel}</span>` : modLabel}${modReason}</dd></div>
         <div class="us-row"><dt>ID</dt><dd class="us-id">${id}</dd></div>
+        <div class="us-row"><dt>Link Aset</dt><dd>${linkHtml}</dd></div>
       </dl>
       ${i.assetId ? `<button type="button" class="us-copy" data-copy="${id}" aria-label="Salin ID ${escapeHtml(i.name || 'audio')}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>` : ''}
     </div>`;
@@ -7104,8 +7139,65 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
             function saveLibrary() {
                 localStorage.setItem('baxdev_lib', JSON.stringify(S.library));
                 renderRecentFromLibrary();
-                renderUploadStatus()
+                renderUploadStatus();
+                saveLibraryToFirebase();
             }
+            // ── SYNC LIBRARY KE FIREBASE (per akun Google, supaya tidak hilang kalau cache/HP diganti) ──
+            let _libSyncTimer = null;
+            function saveLibraryToFirebase() {
+                if (!window.BX || !window.BX.user) return;
+                clearTimeout(_libSyncTimer);
+                _libSyncTimer = setTimeout(async () => {
+                    const base = fbDbUrl();
+                    if (!base || !window.BX || !window.BX.user) return;
+                    try {
+                        const token = await window.BX.getToken();
+                        if (!token) return;
+                        const map = {};
+                        S.library.forEach(item => { if (item && item.id != null) map[String(item.id)] = item; });
+                        await fetch(base + '/library/' + encodeURIComponent(window.BX.user.uid) + '.json?auth=' + encodeURIComponent(token), {
+                            method: 'PUT',
+                            headers: { 'content-type': 'application/json' },
+                            body: JSON.stringify(map)
+                        });
+                    } catch (e) {}
+                }, 800);
+            }
+            // Ditarik sekali saat login: gabungkan riwayat dari cloud (mis. dari HP/browser lain) ke library lokal.
+            async function loadLibraryFromFirebase() {
+                if (!window.BX || !window.BX.user) return;
+                const base = fbDbUrl();
+                if (!base) return;
+                try {
+                    const token = await window.BX.getToken();
+                    if (!token) return;
+                    const res = await fetch(base + '/library/' + encodeURIComponent(window.BX.user.uid) + '.json?auth=' + encodeURIComponent(token), { cache: 'no-store' });
+                    if (!res.ok) return;
+                    const remote = await res.json();
+                    if (!remote) {
+                        // Belum ada backup di cloud sama sekali -> upload yang ada di perangkat ini sekarang.
+                        if (S.library.length) saveLibraryToFirebase();
+                        return;
+                    }
+                    const localIds = new Set(S.library.map(i => String(i.id)));
+                    let added = false;
+                    Object.keys(remote).forEach(key => {
+                        if (!localIds.has(key) && remote[key]) {
+                            S.library.push(remote[key]);
+                            added = true;
+                        }
+                    });
+                    if (added) {
+                        S.library.sort((a, b) => new Date(b.uploadedAt || 0) - new Date(a.uploadedAt || 0));
+                        localStorage.setItem('baxdev_lib', JSON.stringify(S.library));
+                        renderLibrary();
+                        updateStats();
+                        renderRecentFromLibrary();
+                        renderUploadStatus();
+                    }
+                } catch (e) {}
+            }
+            window.loadLibraryFromFirebase = loadLibraryFromFirebase;
 
             // ── STATS ─────────────────────────────────────────────
             function updateStats() {
@@ -8099,6 +8191,7 @@ if (!configured) {
     if (so) { so.style.display = user ? "" : "none"; so.title = user ? (user.email || "") : ""; }
     if (user) {
       window.closeGoogleLogin();
+      if (typeof loadLibraryFromFirebase === "function") loadLibraryFromFirebase();
       if (!was && pendingAction) {
         pendingAction = false;
         if (typeof toast === "function") toast("Berhasil login Google", "success");
