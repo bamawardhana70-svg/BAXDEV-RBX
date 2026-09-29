@@ -4538,8 +4538,6 @@
             .lib-note button { background: none; border: 0; padding: 0; color: var(--text); text-decoration: underline; cursor: pointer; font: inherit; }
             .lib-copyall-wrap { margin-bottom: 12px; }
             .lib-copyall-wrap .btn { width: 100%; justify-content: center; font-size: 12.5px; padding: 9px 14px; }
-            .badge-arch { background: rgba(255,255,255,.10); color: var(--text2); }
-            .lib-card.is-archived { opacity: .6; }
             .lib-reason { font-size: 10px; color: var(--text3); margin-top: 4px; line-height: 1.4; }
             .upload-status { margin-bottom: 18px; }
             .upload-status .section-title { margin-bottom: 10px; }
@@ -4674,7 +4672,6 @@ html[data-theme="blue"] .subscription-card, html[data-theme="blue"] body.premium
 html[data-theme="blue"] .q-chip { background:rgba(110,170,255,.12); }
 html[data-theme="blue"] .q-chip.is-run { background:rgba(110,170,255,.24); }
 html[data-theme="blue"] .lib-note { background:rgba(110,170,255,.07); }
-html[data-theme="blue"] .badge-arch { background:rgba(110,170,255,.14); }
 html[data-theme="blue"] .gg-lock { background:rgba(110,170,255,.09); border-color:rgba(110,170,255,.24); }
 html[data-theme="blue"] #google-gate .gg-card, html[data-theme="blue"] #mt-overlay .mt-card, html[data-theme="blue"] #ban-overlay .bo-card { background:linear-gradient(150deg, rgba(110,170,255,.20), rgba(110,170,255,.06) 45%, rgba(110,170,255,.10)); border-color:rgba(110,170,255,.30); }
 html[data-theme="blue"] #google-gate .gg-btn, html[data-theme="blue"] #mt-overlay .mt-owner { background:var(--chrome); color:var(--on-accent); }
@@ -4716,7 +4713,6 @@ html[data-theme="green"] .subscription-card, html[data-theme="green"] body.premi
 html[data-theme="green"] .q-chip { background:rgba(100,230,160,.12); }
 html[data-theme="green"] .q-chip.is-run { background:rgba(100,230,160,.24); }
 html[data-theme="green"] .lib-note { background:rgba(100,230,160,.07); }
-html[data-theme="green"] .badge-arch { background:rgba(100,230,160,.14); }
 html[data-theme="green"] .gg-lock { background:rgba(100,230,160,.09); border-color:rgba(100,230,160,.24); }
 html[data-theme="green"] #google-gate .gg-card, html[data-theme="green"] #mt-overlay .mt-card, html[data-theme="green"] #ban-overlay .bo-card { background:linear-gradient(150deg, rgba(100,230,160,.20), rgba(100,230,160,.06) 45%, rgba(100,230,160,.10)); border-color:rgba(100,230,160,.30); }
 html[data-theme="green"] #google-gate .gg-btn, html[data-theme="green"] #mt-overlay .mt-owner { background:var(--chrome); color:var(--on-accent); }
@@ -4771,7 +4767,7 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                 <div id="gg-form" style="display:none">
                     <h1 id="gg-title">Masuk ke BaxDev</h1>
                     <div class="gg-reason" id="gg-reason" style="display:none"></div>
-                    <p>Login dengan Google untuk upload musik dan convert YouTube ke MP3</p>
+                    <p>Login dengan Google untuk upload musik dan convert YouTube atau TikTok ke MP3</p>
                     <button class="gg-btn" id="gg-btn" type="button">
                         <svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
                         Lanjutkan dengan Google
@@ -4996,7 +4992,7 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                             ke <span>Roblox.</span>
                         </h1>
                         <p class="hero-description">
-                            Ubah lagu atau link YouTube jadi audio asset Roblox. Convert, atur kecepatan, lalu publish langsung dari browser. Asset ID siap dipakai di game kamu.
+                            Ubah lagu atau link YouTube dan TikTok jadi audio asset Roblox. Convert, atur kecepatan, lalu publish langsung dari browser. Asset ID siap dipakai di game kamu.
                         </p>
                         <div class="hero-actions">
                             <button class="btn btn-primary" onclick="navigate('upload')">
@@ -5024,6 +5020,7 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                             <span class="format-chip">OGG</span>
                             <span class="format-chip">FLAC</span>
                             <span class="format-chip">LINK YOUTUBE</span>
+                            <span class="format-chip">LINK TIKTOK</span>
                             <span class="format-chip">MAKS 20 MB</span>
                         </div>
                     </div>
@@ -5109,7 +5106,7 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                     <div class="card step-card">
                         <div class="step-num">02</div>
                         <div class="step-title">Pilih musik</div>
-                        <div class="step-desc">Upload file audio atau tempel link YouTube, atur kecepatan, lalu beri nama asset.</div>
+                        <div class="step-desc">Upload file audio atau tempel link YouTube/TikTok, atur kecepatan, lalu beri nama asset.</div>
                     </div>
                     <div class="card step-card">
                         <div class="step-num">03</div>
@@ -5188,6 +5185,7 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                 <div class="source-switch" role="tablist" aria-label="Sumber audio">
                     <button class="source-tab active" id="source-file-tab" onclick="setUploadSource('file')" role="tab" aria-selected="true">Upload file</button>
                     <button class="source-tab" id="source-youtube-tab" onclick="setUploadSource('youtube')" role="tab" aria-selected="false">YouTube URL</button>
+                    <button class="source-tab" id="source-tiktok-tab" onclick="setUploadSource('tiktok')" role="tab" aria-selected="false">TikTok URL</button>
                 </div>
                 <div class="youtube-source" id="youtube-source" style="display:none">
                     <div class="card">
@@ -5195,11 +5193,25 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                             <div class="field-label">URL YouTube</div>
                             <textarea id="youtube-url" rows="3" placeholder="Tempel link YouTube, satu per baris. Free maksimal 3 (masuk antrean), VIP sampai 5 tanpa antre." autocomplete="off"></textarea>
                             <div style="display:flex;justify-content:flex-end;margin-top:9px">
-                                <button class="btn btn-primary" id="convert-youtube-btn" onclick="convertYoutube()">Convert ke MP3</button>
+                                <button class="btn btn-primary" id="convert-youtube-btn" onclick="convertLinks('youtube')">Convert ke MP3</button>
                             </div>
                             <div class="youtube-hint" id="convert-limit-hint" style="display:none">Kuota publish akun free sudah habis. Buy VIP atau tukar kode di Pengaturan → Akun.</div>
                             <div class="youtube-hint">Nama asset otomatis mengikuti judul YouTube dan tetap bisa kamu edit satu per satu. Preset kecepatan sama untuk seluruh batch. Hanya video yang kamu miliki atau punya izin untuk digunakan.</div>
                             <div class="convert-status" id="convert-status" role="status"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="youtube-source" id="tiktok-source" style="display:none">
+                    <div class="card">
+                        <div class="field-group">
+                            <div class="field-label">URL TikTok</div>
+                            <textarea id="tiktok-url" rows="3" placeholder="Tempel link TikTok, satu per baris. Free maksimal 3 (masuk antrean), VIP sampai 5 tanpa antre." autocomplete="off"></textarea>
+                            <div style="display:flex;justify-content:flex-end;margin-top:9px">
+                                <button class="btn btn-primary" id="convert-tiktok-btn" onclick="convertLinks('tiktok')">Convert ke MP3</button>
+                            </div>
+                            <div class="youtube-hint" id="convert-tiktok-limit-hint" style="display:none">Kuota publish akun free sudah habis. Buy VIP atau tukar kode di Pengaturan → Akun.</div>
+                            <div class="youtube-hint">Yang diambil adalah audio dari video TikTok. Nama asset mengikuti judul sound atau caption video dan tetap bisa kamu edit satu per satu. Hanya video yang kamu miliki atau punya izin untuk digunakan.</div>
+                            <div class="convert-status" id="convert-tiktok-status" role="status"></div>
                         </div>
                     </div>
                 </div>
@@ -5227,7 +5239,6 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                     <div class="section-title" id="upload-status-title">Status upload</div>
                     <div class="upload-status-list" id="upload-status-list" aria-live="polite"></div>
                 </section>
-                <div class="youtube-hint" style="margin:-6px 0 16px">Audio yang ditolak moderasi Roblox otomatis masuk Arsip di Library dan tetap dihitung sebagai kuota publish.</div>
                 <div class="card" style="margin-bottom:18px">
                     <div class="section-title" style="margin-bottom:16px">Pengaturan Upload</div>
                     <div class="settings-panel">
@@ -5320,8 +5331,7 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                     <select id="lib-filter" onchange="filterLibrary()" style="width:auto">
                         <option value="all">Semua</option>
                         <option value="done">Published</option>
-                        <option value="proc">Dimoderasi</option>
-                        <option value="archived">Arsip</option>
+                        <option value="proc">Diproses</option>
                         <option value="fail">Gagal</option>
                     </select>
                 </div>
@@ -5578,7 +5588,7 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                                 <div class="setting-row" style="border-bottom:none;padding:0">
                                     <div class="setting-info">
                                         <div class="setting-name">Siap upload musik?</div>
-                                        <div class="setting-desc">Pilih file audio atau tempel link YouTube di halaman Upload.</div>
+                                        <div class="setting-desc">Pilih file audio atau tempel link YouTube/TikTok di halaman Upload.</div>
                                     </div>
                                     <button class="btn btn-primary" onclick="navigate('upload')">Buka Upload</button>
                                 </div>
@@ -5706,7 +5716,7 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                 <div class="subscription-benefits">
                     <span>Publish tanpa batas</span>
                     <span>5 audio per batch</span>
-                    <span>5 link YouTube per proses</span>
+                    <span>5 link YouTube/TikTok per proses</span>
                     <span>Tema silver chrome VIP</span>
                 </div>
                 <div id="payment-body"></div>
@@ -5824,6 +5834,32 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
             const FREE_UPLOAD_LIMIT = 10;
             const HOUR_MS = 3600000;
             let converting = false;
+            // Sumber link yang bisa dikonversi ke MP3 (satu alur untuk semuanya).
+            const LINK_SOURCES = {
+                youtube: {
+                    label: 'YouTube',
+                    inputId: 'youtube-url',
+                    statusId: 'convert-status',
+                    buttonId: 'convert-youtube-btn',
+                    hintId: 'convert-limit-hint',
+                    endpoint: '/api/youtube-download',
+                    parse: value => hostUrl(value, ['youtube.com', 'm.youtube.com', 'music.youtube.com', 'youtu.be']),
+                    fetchTitle: url => fetchYoutubeTitle(url),
+                    cleanTitle: title => title
+                },
+                tiktok: {
+                    label: 'TikTok',
+                    inputId: 'tiktok-url',
+                    statusId: 'convert-tiktok-status',
+                    buttonId: 'convert-tiktok-btn',
+                    hintId: 'convert-tiktok-limit-hint',
+                    endpoint: '/api/tiktok-download',
+                    parse: value => hostUrl(value, ['tiktok.com', 'm.tiktok.com', 'vm.tiktok.com', 'vt.tiktok.com']),
+                    fetchTitle: () => Promise.resolve(null),
+                    // Caption TikTok biasanya penuh hashtag; buang supaya jadi nama asset yang wajar.
+                    cleanTitle: title => String(title || '').replace(/#\S+/g, ' ').replace(/\s+/g, ' ').trim() || null
+                }
+            };
             let redeeming = false;
             function hasRoblox() {
                 return Boolean(S.roblox && S.roblox.userId && S.roblox.apiKey);
@@ -6405,47 +6441,54 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                 return Boolean(hasRoblox() && S.account && !S.account.unlimited && S.account.remaining <= 0);
             }
             function updateConvertButton() {
-                const button = document.getElementById('convert-youtube-btn');
-                if (!button)
-                    return;
                 const limitReached = isLimitReached();
-                button.disabled = converting || limitReached;
-                button.textContent = limitReached ? 'Batas publish tercapai' : 'Convert ke MP3';
-                const hint = document.getElementById('convert-limit-hint');
-                if (hint)
-                    hint.style.display = limitReached ? '' : 'none';
+                Object.values(LINK_SOURCES).forEach(cfg => {
+                    const button = document.getElementById(cfg.buttonId);
+                    if (!button)
+                        return;
+                    button.disabled = converting || limitReached;
+                    button.textContent = limitReached ? 'Batas publish tercapai' : 'Convert ke MP3';
+                    const hint = document.getElementById(cfg.hintId);
+                    if (hint)
+                        hint.style.display = limitReached ? '' : 'none';
+                });
             }
             function updateUploadButton() {
                 const ready = S.files.length > 0;
                 const limitReached = isLimitReached();
                 updateConvertButton();
                 document.getElementById('upload-btn').disabled = !ready || limitReached;
-                document.getElementById('upload-btn-label').textContent = limitReached ? `Batas publish per ${S.account.periodLabel || 'periode'} tercapai` : (S.files.length > 1 ? `Publish ${S.files.length} audio ke Roblox` : (S.source === 'youtube' ? 'Publish ke Roblox' : 'Upload & Publish ke Roblox'));
+                document.getElementById('upload-btn-label').textContent = limitReached ? `Batas publish per ${S.account.periodLabel || 'periode'} tercapai` : (S.files.length > 1 ? `Publish ${S.files.length} audio ke Roblox` : (S.source !== 'file' ? 'Publish ke Roblox' : 'Upload & Publish ke Roblox'));
             }
 
             function setUploadSource(source) {
-                S.source = source === 'youtube' ? 'youtube' : 'file';
-                document.getElementById('source-file-tab').classList.toggle('active', S.source === 'file');
-                document.getElementById('source-youtube-tab').classList.toggle('active', S.source === 'youtube');
-                document.getElementById('source-file-tab').setAttribute('aria-selected', String(S.source === 'file'));
-                document.getElementById('source-youtube-tab').setAttribute('aria-selected', String(S.source === 'youtube'));
+                S.source = source === 'youtube' || source === 'tiktok' ? source : 'file';
+                ['file', 'youtube', 'tiktok'].forEach(key => {
+                    const tab = document.getElementById(`source-${key}-tab`);
+                    tab.classList.toggle('active', S.source === key);
+                    tab.setAttribute('aria-selected', String(S.source === key));
+                });
                 document.getElementById('drop-zone').style.display = S.source === 'file' ? '' : 'none';
                 document.getElementById('youtube-source').style.display = S.source === 'youtube' ? '' : 'none';
-                document.getElementById('convert-status').classList.toggle('visible', S.source === 'youtube' && Boolean(document.getElementById('convert-status').textContent));
+                document.getElementById('tiktok-source').style.display = S.source === 'tiktok' ? '' : 'none';
+                Object.entries(LINK_SOURCES).forEach(([key, cfg]) => {
+                    const status = document.getElementById(cfg.statusId);
+                    status.classList.toggle('visible', S.source === key && Boolean(status.textContent));
+                });
                 updateUploadButton();
             }
 
-            function youtubeUrl(value) {
+            function hostUrl(value, hosts) {
                 try {
-                    const url = new URL(value.trim());
+                    const url = new URL(String(value).trim());
                     const host = url.hostname.toLowerCase().replace(/^www\./, '');
-                    return ['youtube.com', 'm.youtube.com', 'music.youtube.com', 'youtu.be'].includes(host) ? url : null;
+                    return hosts.includes(host) ? url : null;
                 } catch {
                     return null;
                 }
             }
 
-            function youtubeUrls(value) {
+            function linkList(value) {
                 return String(value || '').split(/[\n,]+/).map(item => item.trim()).filter(Boolean);
             }
 
@@ -6459,33 +6502,36 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                 return isFreeQueue() ? FREE_QUEUE_MAX : 5;
             }
 
-            async function convertYoutube() {
-                const input = document.getElementById('youtube-url');
-                const status = document.getElementById('convert-status');
+            async function convertLinks(sourceKey) {
+                const cfg = LINK_SOURCES[sourceKey];
+                if (!cfg)
+                    return;
+                const input = document.getElementById(cfg.inputId);
+                const status = document.getElementById(cfg.statusId);
                 if (converting)
                     return;
-                if (!requireGoogle('convert YouTube ke MP3'))
+                if (!requireGoogle(`convert ${cfg.label} ke MP3`))
                     return;
                 refreshAccountState();
                 if (isLimitReached()) {
                     toast('Batas publish akun free sudah tercapai. Buy VIP atau tukar kode di Pengaturan.', 'error');
                     return
                 }
-                const rawUrls = youtubeUrls(input.value);
+                const rawUrls = linkList(input.value);
                 const maxLinks = currentBatchLimit();
                 if (!rawUrls.length) {
-                    toast('Masukkan URL YouTube yang valid', 'error');
+                    toast(`Masukkan URL ${cfg.label} yang valid`, 'error');
                     return
                 }
-                if (!requireRoblox('convert YouTube'))
+                if (!requireRoblox(`convert ${cfg.label}`))
                     return;
                 if (rawUrls.length > maxLinks) {
                     toast(`${isPremium() ? 'Premium' : 'Free'} maksimal ${maxLinks} link per proses`, 'error');
                     return
                 }
-                const urls = rawUrls.map(value => youtubeUrl(value));
+                const urls = rawUrls.map(value => cfg.parse(value));
                 if (urls.some(url => !url)) {
-                    toast('Semua baris harus berisi URL YouTube yang valid', 'error');
+                    toast(`Semua baris harus berisi URL ${cfg.label} yang valid`, 'error');
                     return
                 }
                 if (!S.account.unlimited && rawUrls.length > Number(S.account.remaining || 0)) {
@@ -6505,8 +6551,8 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                     status.textContent = `Mengonversi link ${i + 1}/${urls.length}...`;
                     try {
                         const [officialTitle, res] = await Promise.all([
-                            fetchYoutubeTitle(urls[i].href),
-                            fetch('/api/youtube-download', {
+                            cfg.fetchTitle(urls[i].href),
+                            fetch(cfg.endpoint, {
                                 method: 'POST',
                                 headers: {
                                     'Content-Type': 'application/json'
@@ -6517,7 +6563,7 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                             })
                         ]);
                         if (res.status === 404)
-                            throw new Error('Endpoint /api/youtube-download tidak ditemukan. Deploy ke Cloudflare Pages dengan folder functions/ ikut ter-upload.');
+                            throw new Error(`Endpoint ${cfg.endpoint} tidak ditemukan. Deploy ke Cloudflare Pages dengan folder functions/ ikut ter-upload.`);
                         const contentType = res.headers.get('content-type') || '';
                         if (!res.ok || !/^(audio\/|application\/octet-stream)/i.test(contentType)) {
                             const data = await res.json().catch( () => ({}));
@@ -6531,7 +6577,8 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                             const rawTitle = res.headers.get('x-audio-title');
                             apiTitle = rawTitle ? decodeURIComponent(rawTitle) : null;
                         } catch (e) {}
-                        addFiles([new File([blob],responseFilename(res, officialTitle || apiTitle || `youtube-${i + 1}`),{
+                        const title = cfg.cleanTitle(officialTitle || apiTitle);
+                        addFiles([new File([blob],responseFilename(res, title || `${sourceKey}-${i + 1}`),{
                             type: 'audio/mpeg'
                         })]);
                         converted += 1;
@@ -6547,7 +6594,7 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                     status.textContent += ` ${failures.join(' ')}`;
                     toast(`${failures.length} link gagal dikonversi`, 'error');
                 } else
-                    toast(`${converted} link YouTube berhasil dikonversi ke MP3`, 'success');
+                    toast(`${converted} link ${cfg.label} berhasil dikonversi ke MP3`, 'success');
             }
 
             function addFiles(files) {
@@ -6592,7 +6639,7 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                         sel.value = detected;
                 }
             }
-            const QSTAT = { wait: ['Menunggu', ''], run: ['Diproses', 'is-run'], ok: ['Selesai', 'is-ok'], proc: ['Dimoderasi', 'is-run'], rej: ['Ditolak', 'is-bad'], fail: ['Gagal', 'is-bad'] };
+            const QSTAT = { wait: ['Menunggu', ''], run: ['Diproses', 'is-run'], ok: ['Selesai', 'is-ok'], proc: ['Diproses', 'is-run'], fail: ['Gagal', 'is-bad'] };
             function fmtDur(t) {
                 t = Math.max(0, Math.round(t || 0));
                 return Math.floor(t / 60) + ':' + String(t % 60).padStart(2, '0');
@@ -6783,10 +6830,9 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                         if (!res.ok || data.ok === false)
                             throw new Error(data.message || 'Upload gagal');
                         let assetId = data.pending ? null : data.assetId;
-                        let rejectedReason = data.rejected ? (data.message || 'Ditolak moderasi Roblox') : null;
                         const opPath = data.operationPath || null;
-                        if (!rejectedReason && !assetId && data.pending && opPath) {
-                            for (let attempt = 0; attempt < 10 && !assetId && !rejectedReason; attempt++) {
+                        if (!assetId && data.pending && opPath) {
+                            for (let attempt = 0; attempt < 10 && !assetId; attempt++) {
                                 await sleep(1500);
                                 let statusRes;
                                 try {
@@ -6801,14 +6847,10 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                                 const status = await statusRes.json().catch( () => ({}));
                                 if (!statusRes.ok)
                                     throw new Error(status.message || 'Gagal membaca status publish');
-                                if (status.done) {
-                                    if (status.rejected)
-                                        rejectedReason = status.message || 'Ditolak moderasi Roblox';
-                                    else if (status.ok === false)
-                                        throw new Error(status.message || 'Roblox menolak audio ini');
-                                    else
-                                        assetId = status.assetId;
-                                }
+                                if (status.ok === false || status.error)
+                                    throw new Error(status.message || 'Roblox menolak audio ini');
+                                if (status.done)
+                                    assetId = status.assetId;
                                 fill.style.width = Math.min(98, 86 + attempt) + '%';
                                 pct.textContent = Math.min(98, 86 + attempt) + '%';
                             }
@@ -6816,25 +6858,15 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                         fill.style.width = '100%';
                         pct.textContent = '100%';
                         const base = { id: Date.now() + i, name, filename: file.name, size: file.size, uploadedAt: new Date().toISOString(), speed: S.speed };
-                        if (rejectedReason) {
-                            // Tidak lolos moderasi -> otomatis masuk Arsip (tetap memakai kuota)
-                            if (!S.account.unlimited) {
-                                incrementQuota();
-                                refreshAccountState();
-                            }
-                            addLibEntry(Object.assign(base, { assetId: null, status: 'archived', reason: rejectedReason, archivedAt: new Date().toISOString() }),
-                                { status: 'fail', error: 'Ditolak moderasi: ' + rejectedReason });
-                            setQStatus(file, 'rej');
-                            toast('Ditolak moderasi Roblox, dipindah ke Arsip', 'error');
-                        } else if (!assetId && opPath) {
-                            // Masih direview Roblox -> simpan sebagai "Dimoderasi", dicek otomatis di Library
+                        if (!assetId && opPath) {
+                            // Masih diproses Roblox -> simpan sebagai "Diproses", dicek otomatis di Library
                             if (!S.account.unlimited) {
                                 incrementQuota();
                                 refreshAccountState();
                             }
                             addLibEntry(Object.assign(base, { assetId: null, status: 'proc', operationPath: opPath }), null);
                             setQStatus(file, 'proc');
-                            toast('Terkirim. Roblox masih memoderasi audio ini, statusnya dicek otomatis di Library', 'info');
+                            toast('Terkirim. Roblox masih memproses audio ini, statusnya dicek otomatis di Library', 'info');
                         } else if (!assetId) {
                             throw new Error('Roblox belum mengembalikan Asset ID. Coba upload lagi.');
                         } else {
@@ -6842,7 +6874,7 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                                 incrementQuota();
                                 refreshAccountState();
                             }
-                            const entry = Object.assign(base, { assetId, status: 'done', modOk: true });
+                            const entry = Object.assign(base, { assetId, status: 'done' });
                             addLibEntry(entry, { name: String(name).slice(0, 100), filename: String(file.name).slice(0, 160), size: file.size, assetId: String(assetId).slice(0, 30), status: 'done', speed: Number(S.speed) || 1 });
                             document.getElementById('result-asset-id').textContent = 'rbxassetid://' + assetId;
                             document.getElementById('result-box').classList.add('visible');
@@ -6960,7 +6992,6 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                 const grid = document.getElementById('library-grid');
                 const q = document.getElementById('lib-search').value.toLowerCase();
                 const filter = document.getElementById('lib-filter').value;
-                const archivedCount = S.library.filter(i => i.status === 'archived').length;
                 const procCount = S.library.filter(i => i.status === 'proc').length;
                 const doneCount = S.library.filter(i => i.status === 'done' && i.assetId).length;
                 const copyAllWrap = document.getElementById('lib-copyall-wrap');
@@ -6968,28 +6999,26 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                 const note = document.getElementById('lib-note');
                 if (note) {
                     const parts = [];
-                    if (procCount) parts.push(`<b>${procCount}</b> audio sedang dimoderasi Roblox, dicek otomatis tiap 20 detik.`);
-                    if (archivedCount) parts.push(`<b>${archivedCount}</b> audio diarsip otomatis karena tidak lolos moderasi Roblox. <button type="button" onclick="document.getElementById('lib-filter').value='archived';renderLibrary()">Lihat Arsip</button>`);
-                    if (!parts.length) parts.push('Audio yang ditolak moderasi Roblox otomatis masuk ke <b>Arsip</b>.');
+                    if (procCount) parts.push(`<b>${procCount}</b> audio masih diproses Roblox, dicek otomatis tiap 20 detik.`);
                     note.innerHTML = parts.join(' ');
+                    note.style.display = parts.length ? '' : 'none';
                 }
-                const items = S.library.filter(i => (i.name || '').toLowerCase().includes(q) && (filter === 'all' ? i.status !== 'archived' : i.status === filter));
+                const items = S.library.filter(i => (i.name || '').toLowerCase().includes(q) && (filter === 'all' || i.status === filter));
                 if (!items.length) {
                     grid.innerHTML = `<div class="empty-lib"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg><p>${S.library.length ? 'Tidak ada hasil' : 'Library kosong'}</p><span>${S.library.length ? 'Coba kata kunci lain' : 'Upload audio pertama kamu'}</span></div>`;
                     return;
                 }
                 grid.innerHTML = items.map(i => `
-    <div class="lib-card ${i.status === 'archived' ? 'is-archived' : ''}">
+    <div class="lib-card">
       <div class="lib-wave">${Array(7).fill('<span style="height:6px"></span>').join('')}</div>
       <div class="lib-body">
         <div class="lib-name" title="${escapeHtml(i.name || 'Tanpa nama')}">${escapeHtml(i.name || 'Tanpa nama')}</div>
         <div class="lib-meta">
           <span class="lib-size">${fmtSize(i.size || 0)}</span>
-          <span class="recent-badge ${i.status === 'done' ? 'badge-done' : i.status === 'proc' ? 'badge-proc' : i.status === 'archived' ? 'badge-arch' : 'badge-fail'}">${i.status === 'done' ? 'Published' : i.status === 'proc' ? 'Dimoderasi' : i.status === 'archived' ? 'Diarsip' : 'Gagal'}</span>
+          <span class="recent-badge ${i.status === 'done' ? 'badge-done' : i.status === 'proc' ? 'badge-proc' : 'badge-fail'}">${i.status === 'done' ? 'Published' : i.status === 'proc' ? 'Diproses' : 'Gagal'}</span>
         </div>
         ${i.assetId ? `<div class="lib-id">${i.assetId}</div>` : ''}
-        ${i.status === 'archived' ? `<div class="lib-reason" title="${escapeHtml(i.reason || '')}">Tidak lolos moderasi Roblox</div>` : ''}
-        ${i.status === 'proc' ? '<div class="lib-reason">Menunggu hasil review Roblox</div>' : ''}
+        ${i.status === 'proc' ? '<div class="lib-reason">Masih diproses Roblox</div>' : ''}
       </div>
       <div class="lib-actions">
         ${i.assetId ? `<button class="lib-act" aria-label="Salin ID" onclick="copyLib('${i.assetId}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span class="lib-lbl">Salin ID</span></button>` : ''}
@@ -7007,7 +7036,7 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
             }
             function copyAllPublished() {
                 const done = S.library.filter(i => i.status === 'done' && i.assetId);
-                if (!done.length) { toast('Belum ada audio yang lolos moderasi', 'info'); return; }
+                if (!done.length) { toast('Belum ada audio yang dipublish', 'info'); return; }
                 const text = done.map(i => `${i.assetId} = ${i.name || 'Tanpa nama'}`).join('\n');
                 navigator.clipboard.writeText(text);
                 toast(`${done.length} data disalin!`, 'success');
@@ -7023,7 +7052,7 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
             function renderRecentFromLibrary() {
                 const list = document.getElementById('recent-list');
                 if (!list) return;
-                const items = S.library.filter(i => i.status !== 'archived').slice(0, 8);
+                const items = S.library.slice(0, 8);
                 if (!items.length) {
                     list.innerHTML = '<div class="recent-item"><div class="recent-thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div><div class="recent-info"><div class="recent-name">Belum ada aktivitas</div><div class="recent-meta">Upload audio pertama kamu</div></div></div>';
                     return;
@@ -7041,28 +7070,15 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                 box.hidden = !items.length;
                 list.innerHTML = items.map(i => {
                     const id = i.assetId ? escapeHtml(String(i.assetId)) : '–';
-                    // Status upload: apakah file berhasil terkirim & diproses server (terlepas dari hasil moderasi).
-                    const uploadOk = i.status !== 'fail';
-                    const uploadLabel = uploadOk ? 'Berhasil' : 'Gagal';
-                    const uploadChip = uploadOk ? 'is-ok' : 'is-bad';
-                    const uploadReason = (!uploadOk && i.reason) ? `<div class="us-reason">${escapeHtml(i.reason)}</div>` : '';
-                    // Status aset: hasil moderasi Roblox terhadap aset yang sudah terkirim.
-                    let modLabel = '–', modChip = '', modReason = '';
-                    if (i.status === 'done') {
-                        modLabel = 'Lulus Moderasi'; modChip = 'is-ok';
-                    } else if (i.status === 'archived') {
-                        modLabel = 'Ditolak Moderasi'; modChip = 'is-bad';
-                        if (i.reason) modReason = `<div class="us-reason">${escapeHtml(i.reason)}</div>`;
-                    } else if (i.status === 'proc') {
-                        modLabel = 'Menunggu Moderasi'; modChip = 'is-run';
-                    }
+                    const uploadState = { done: ['Berhasil', 'is-ok'], proc: ['Diproses', 'is-run'], fail: ['Gagal', 'is-bad'] };
+                    const [uploadLabel, uploadChip] = uploadState[i.status] || uploadState.fail;
+                    const uploadReason = (i.status === 'fail' && i.reason) ? `<div class="us-reason">${escapeHtml(i.reason)}</div>` : '';
                     const linkHtml = i.assetId ? `<a class="us-link" href="https://www.roblox.com/library/${id}" target="_blank" rel="noopener">Buka Aset ↗</a>` : '–';
                     return `
     <div class="file-item us-item">
       <dl class="us-rows">
         <div class="us-row"><dt>Nama</dt><dd title="${escapeHtml(i.name || 'Tanpa nama')}">${escapeHtml(i.name || 'Tanpa nama')}</dd></div>
         <div class="us-row"><dt>Status Upload</dt><dd><span class="q-chip ${uploadChip}">${uploadLabel}</span>${uploadReason}</dd></div>
-        <div class="us-row"><dt>Status Aset</dt><dd>${modChip ? `<span class="q-chip ${modChip}">${modLabel}</span>` : modLabel}${modReason}</dd></div>
         <div class="us-row"><dt>ID</dt><dd class="us-id">${id}</dd></div>
         <div class="us-row"><dt>Link Aset</dt><dd>${linkHtml}</dd></div>
       </dl>
@@ -7081,54 +7097,36 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                 updateStats();
                 if (remote) pushUploadToFirebase(remote);
             }
-            let _modBusy = false;
+            let _pendingBusy = false;
             async function checkPendingLibrary() {
-                if (_modBusy || !S.roblox || !S.roblox.apiKey) return;
-                const pending = S.library.filter(i => i.status === 'proc' && (i.operationPath || i.assetId));
-                // Entri lama berstatus "done" yang belum pernah diverifikasi moderasinya (maks 3 per putaran)
-                const unverified = S.library.filter(i => i.status === 'done' && i.assetId && !i.modOk).slice(0, 3);
-                if (!pending.length && !unverified.length) return;
-                _modBusy = true;
+                if (_pendingBusy || !S.roblox || !S.roblox.apiKey) return;
+                const pending = S.library.filter(i => i.status === 'proc' && i.operationPath);
+                if (!pending.length) return;
+                _pendingBusy = true;
                 let changed = false;
-                for (const it of pending.concat(unverified)) {
+                for (const it of pending) {
                     try {
                         const r = await fetch('/api/roblox-asset-status', {
                             method: 'POST',
                             headers: { 'content-type': 'application/json' },
-                            body: JSON.stringify(it.operationPath ? { apiKey: S.roblox.apiKey, operationPath: it.operationPath } : { apiKey: S.roblox.apiKey, assetId: String(it.assetId) })
+                            body: JSON.stringify({ apiKey: S.roblox.apiKey, operationPath: it.operationPath })
                         });
                         const d = await r.json().catch( () => ({}));
-                        if (!r.ok) continue;
-                        if (d.ok === true && d.done === false) {
-                            // Masih direview Roblox. Entri "done" yang ternyata belum lolos dikembalikan ke "Dimoderasi".
-                            if (it.status === 'done') {
-                                it.status = 'proc';
-                                changed = true;
-                            }
-                            continue;
-                        }
-                        if (!d.done) continue;
-                        if (d.rejected) {
-                            it.status = 'archived';
-                            it.reason = d.message || 'Ditolak moderasi Roblox';
-                            it.archivedAt = new Date().toISOString();
-                            it.assetId = null;
-                            toast('\"' + (it.name || 'Audio') + '\" ditolak moderasi dan dipindah ke Arsip', 'error');
+                        if (!r.ok || d.ok !== true || !d.done) continue;
+                        if (d.error) {
+                            it.status = 'fail';
+                            it.reason = String(d.message || 'Roblox menolak asset ini').slice(0, 160);
+                            toast('\"' + (it.name || 'Audio') + '\" gagal diproses Roblox', 'error');
                         } else if (d.assetId) {
-                            const wasProc = it.status === 'proc';
                             it.status = 'done';
                             it.assetId = d.assetId;
-                            it.modOk = true;
-                            if (wasProc)
-                                toast('\"' + (it.name || 'Audio') + '\" lolos moderasi', 'success');
-                        } else if (d.ok === false) {
-                            it.status = 'fail';
+                            toast('\"' + (it.name || 'Audio') + '\" selesai diproses', 'success');
                         } else continue;
                         delete it.operationPath;
                         changed = true;
                     } catch (e) {}
                 }
-                _modBusy = false;
+                _pendingBusy = false;
                 if (changed) {
                     saveLibrary();
                     updateStats();
@@ -7183,7 +7181,7 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                     let added = false;
                     Object.keys(remote).forEach(key => {
                         if (!localIds.has(key) && remote[key]) {
-                            S.library.push(remote[key]);
+                            S.library.push(normalizeLibraryItem(remote[key]));
                             added = true;
                         }
                     });
@@ -7877,19 +7875,27 @@ body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; b
                 checkRemoteVip();
             }
 
-            (function undoLegacyArchive() {
-                // v10 sempat memindahkan semua "Gagal" lama ke Arsip. Arsip hanya untuk yang ditolak moderasi Roblox, jadi kembalikan.
-                let n = 0;
-                S.library.forEach(i => {
-                    if (i.legacy) {
-                        i.status = 'fail';
-                        delete i.legacy;
-                        delete i.reason;
-                        delete i.archivedAt;
-                        n++;
-                    }
-                });
-                if (n) {
+            // Status "archived" (ditolak moderasi) dan penanda modOk sudah dihapus. Entri lama disesuaikan.
+            function normalizeLibraryItem(i) {
+                if (!i || typeof i !== 'object') return i;
+                if (i.legacy) {
+                    delete i.reason;
+                }
+                if (i.status === 'archived' || i.legacy) {
+                    i.status = 'fail';
+                }
+                if (i.status === 'proc' && !i.operationPath) {
+                    i.status = i.assetId ? 'done' : 'fail';
+                }
+                delete i.legacy;
+                delete i.archivedAt;
+                delete i.modOk;
+                return i;
+            }
+            (function migrateLibrary() {
+                const before = JSON.stringify(S.library);
+                S.library.forEach(normalizeLibraryItem);
+                if (JSON.stringify(S.library) !== before) {
                     try { localStorage.setItem('baxdev_lib', JSON.stringify(S.library)); } catch (e) {}
                 }
             })();

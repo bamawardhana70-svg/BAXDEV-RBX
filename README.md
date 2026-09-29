@@ -25,6 +25,7 @@ functions/api/
   roblox-profile.js              Nama + avatar Roblox (avatar di pojok kanan atas dan Settings)
   youtube-download.js            Convert link YouTube ke MP3
   youtube-title.js               Ambil judul asli video (oEmbed YouTube)
+  tiktok-download.js             Convert link TikTok ke MP3 (API tikwm.com)
 ```
 
 ## Deploy ke Cloudflare Pages
@@ -50,12 +51,13 @@ Build command dikosongkan, output directory diisi `/`.
 
 ## Setelah deploy
 1. Buka Settings → Roblox, isi **API Key** (creator.roblox.com → Credentials, izin Assets: Read + Write) dan **User ID**.
-2. Klik test koneksi. Kalau berhasil, upload dan convert YouTube sudah bisa dipakai.
+2. Klik test koneksi. Kalau berhasil, upload dan convert YouTube/TikTok sudah bisa dipakai.
 
 
 ## Catatan
 - Coba lokal: `npx wrangler pages dev .`
 - API key layanan convert YouTube ada di `functions/api/youtube-download.js` (konstanta `API_KEY`). Ganti di sana kalau berubah.
+- Convert TikTok memakai API publik tikwm.com (`functions/api/tiktok-download.js`, tanpa API key). Ini layanan pihak ketiga tanpa jaminan uptime dan dibatasi sekitar 1 request per detik; kalau gagal, pesan errornya diteruskan ke halaman Upload.
 - Ganti nama domain: Pages → project → Custom domains.
 - Kalau `/api/*` membalas HTML atau 404, berarti folder `functions/` tidak ikut ter-upload atau project dibuat sebagai Workers.
 
@@ -144,6 +146,6 @@ Data disimpan di Firebase `config/payment` dan langsung dipakai tombol Buy VIP. 
 - Tema warna (Hitam, Biru, Hijau): Settings → Lanjutan. Berlaku untuk seluruh tampilan dan tersimpan di browser (`baxdev_theme`); halaman /owner ikut tema yang sama.
 - Beli VIP boleh berkali-kali: paket baru ditambahkan setelah masa aktif yang sekarang (owner menekan Aktifkan, masa aktif otomatis menumpuk). Tombol berubah jadi "Perpanjang VIP" saat VIP masih aktif; VIP permanen tidak perlu beli lagi.
 - Nominal pembayaran bulat sesuai harga paket (tanpa angka acak). Pesanan dicocokkan lewat kode pesanan `BX-XXXX` yang ikut terkirim di pesan WhatsApp dan tampil di /owner.
-- Status moderasi: operation Roblox `done` hanya berarti asset sudah dibuat. Status sebenarnya dicek lewat `moderationResult` asset (`functions/_lib/moderation.js`). Selama masih Reviewing, track tampil "Dimoderasi" dan dicek otomatis tiap 20 detik di Library; baru jadi "Published" setelah Approved, atau masuk Arsip kalau Rejected. Entri lama yang sudah terlanjur "Published" diverifikasi ulang otomatis.
+- Status upload: kalau Roblox belum selesai memproses dalam beberapa detik, track tampil "Diproses" dan dicek otomatis tiap 20 detik di Library sampai Asset ID muncul (`/api/roblox-asset-status`). Tidak ada lagi pengecekan moderasi atau Arsip; entri lama berstatus Arsip otomatis jadi "Gagal".
 - Tema "Warna bebas" (Settings → Lanjutan) khusus VIP: pilih warna apa saja lewat swatch atau color picker; seluruh tampilan (dan /owner) mengikuti. Logikanya ada di `theme.js`. Kalau VIP habis, tampilan kembali ke Hitam; warna pilihan tetap tersimpan dan aktif lagi saat VIP diperpanjang. Catatan: ini pengaturan tampilan di sisi browser, bukan pengaman.
 - Avatar VIP: cincin emas berputar, mahkota kecil, dan kilau di semua avatar (navbar, dropdown, Settings, Akun).

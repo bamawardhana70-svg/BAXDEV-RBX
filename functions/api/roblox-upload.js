@@ -1,5 +1,4 @@
 import { requireUser } from "../_lib/auth.js";
-import { resolveModeration } from "../_lib/moderation.js";
 
 // Cloudflare Pages Function — POST /api/roblox-upload
 //
@@ -16,7 +15,7 @@ import { resolveModeration } from "../_lib/moderation.js";
 // operation is polled to completion via GET /v1/{operationPath}. So this
 // function polls that endpoint for a bounded window right after upload and
 // returns the resolved assetId when it's ready. If Roblox is still
-// processing/moderating past that window, it replies with pending:true and
+// processing past that window, it replies with pending:true and
 // the operationPath so the client can resolve it later via
 // /api/roblox-asset-status instead of the UI silently showing nothing.
 
@@ -162,37 +161,20 @@ async function handleUpload(context) {
       ok: true,
       pending: true,
       operationPath,
-      message: "Terkirim ke Roblox, masih diproses (moderasi audio). ID aset akan muncul begitu selesai."
+      message: "Terkirim ke Roblox, masih diproses. ID aset akan muncul begitu selesai."
     });
   }
   if (op.error) {
-    return json({ ok: true, done: true, rejected: true, message: `Roblox menolak asset ini: ${op.error.message || "diblokir moderasi."}` });
+    return json({ ok: false, message: `Roblox menolak asset ini: ${op.error.message || "upload gagal."}` });
   }
 
   const assetId = op.response && op.response.assetId ? String(op.response.assetId) : null;
-  const opState = op.response && op.response.moderationResult ? op.response.moderationResult.moderationState : null;
   if (!assetId) {
     return json({ ok: true, message: "Terkirim ke Roblox Open Cloud.", assetId: null, operationPath });
-  }
-  // done=true hanya berarti asset sudah dibuat. Cek status moderasi yang sebenarnya.
-  const moderation = await resolveModeration(assetId, apiKey, opState);
-  if (moderation === "rejected") {
-    return json({ ok: true, done: true, rejected: true, moderationState: "rejected", message: "Roblox menolak asset ini: diblokir moderasi." });
-  }
-  if (moderation === "reviewing") {
-    return json({
-      ok: true,
-      pending: true,
-      moderating: true,
-      operationPath,
-      message: "Terkirim ke Roblox, masih dalam moderasi. Asset ID muncul setelah lolos."
-    });
   }
   return json({
     ok: true,
     assetId,
-    rejected: false,
-    moderationState: "approved",
     message: `Berhasil dipublish. Asset ID: ${assetId}`
   });
 }
