@@ -1,0 +1,17 @@
+{
+  "name": "baxdev-yt",
+  "main": "src/index.js",
+  "compatibility_date": "2025-06-01",
+  "containers": [
+    {
+      "class_name": "YtContainer",
+      "image": "./Dockerfile",
+      "max_instances": 2,
+      "instance_type": "basic"
+    }
+  ],
+  "durable_objects": {
+    "bindings": [{ "class_name": "YtContainer", "name": "YT" }]
+  },
+  "migrations": [{ "new_sqlite_classes": ["YtContainer"], "tag": "v1" }]
+}

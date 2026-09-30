@@ -16,6 +16,7 @@ firebase-config.js               Config web Firebase (isi sendiri)
 database.rules.json              Security Rules Realtime Database (paste di Firebase Console)
 _redirects                       /admin dan /admin.html diarahkan ke /owner
 logo.png                         Logo untuk owner.html
+functions/api/roblox-permission.js  Beri akses audio ke map (Universe)
 qris.jpg                         Gambar QRIS bawaan (dipakai kalau owner belum upload foto QRIS)
 functions/_lib/auth.js            Verifikasi token login Google (dipakai semua endpoint /api/*; Project ID ditulis di file ini)
 functions/api/
@@ -23,6 +24,7 @@ functions/api/
   roblox-test.js                 Cek koneksi API Key + User ID
   roblox-asset-status.js         Cek status upload yang masih diproses
   roblox-profile.js              Nama + avatar Roblox (avatar di pojok kanan atas dan Settings)
+  roblox-my-audio.js             Impor musik lama dari akun Roblox ke Library (cek ID, scan best-effort)
   roblox-toolbox.js              Pencarian Toolbox / Creator Store Roblox (menu Toolbox), tanpa API key
   youtube-download.js            Convert link YouTube ke MP3
   youtube-title.js               Ambil judul asli video (oEmbed YouTube)
@@ -136,6 +138,20 @@ API key Roblox cukup memakai scope **Assets (Read + Write)**. Tombol Cek Koneksi
 - **Ubah durasi VIP**: isi Roblox ID + jumlah jam/hari, lalu Tambah atau Kurangi. Tombol "Durasi" di daftar VIP mengisi ID otomatis.
 - **Pengguna**: daftar scroll semua akun Google yang pernah login (`users/<uid>`, ditulis otomatis saat login) plus akun lama dari riwayat upload. Tombol **Ban** menulis `bans/<uid>`: pop-up "Akun Diblokir" tampil di situs dan semua `/api/*` membalas 403 (dicek di `functions/_lib/auth.js`). **Unban** menghapusnya.
 - **Wajib publish ulang `database.rules.json`** di Firebase Console → Realtime Database → Rules.
+
+## Beri akses audio ke map / teman
+Library -> tombol **Beri Akses Map / Teman**. Pilih banyak audio Published, isi banyak Universe ID (koma / baris baru), lalu proses.
+Backend: `functions/api/roblox-permission.js` memanggil Open Cloud `PATCH /asset-permissions-api/v1/assets/permissions` (subjectType `Universe`, action `Use`), satu panggilan per map. API key Roblox perlu scope `asset-permissions:write`. Maks 50 audio dan 20 map per proses.
+
+## Publish file place (.rbxl / .rbxlx)
+Library -> tombol **Publish Place**. Pilih file, isi Universe ID dan Place ID, pilih Published (live) atau Saved.
+Backend: `functions/api/roblox-place-publish.js` memanggil Open Cloud Place Publishing (`POST /universes/v1/{universeId}/places/{placeId}/versions`). API key perlu scope `universe-places:write` dan experience harus ditambahkan ke key. Maks 90 MB.
+
+## Backend YouTube milik sendiri
+Konversi YouTube -> MP3 tidak lagi memakai API pihak ketiga. Folder `yt-backend/` berisi server kecil (yt-dlp + ffmpeg) yang kamu jalankan di VPS/Docker.
+Di Cloudflare Pages isi env `YT_BACKEND_URL` dan `YT_BACKEND_SECRET` (rahasia internal, sama dengan di server). Panduan lengkap ada di `yt-backend/README.md`.
+Tanpa VPS: `yt-worker/` menjalankan backend yang sama di Cloudflare Containers (paket Workers Paid).
+Default-nya convert YouTube tetap lewat API key lama (api.theresav.eu); backend sendiri hanya dipakai kalau kedua env di atas diisi.
 
 ## Atur harga VIP & QRIS
 Buka `/owner` → kartu **Harga VIP & QRIS**. Isi harga paket 7 hari dan 1 bulan, upload foto QRIS baru (otomatis dikecilkan), lalu Simpan.

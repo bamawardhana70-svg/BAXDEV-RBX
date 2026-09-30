@@ -2,29 +2,25 @@ import { requireUser } from "../_lib/auth.js";
 
 // Cloudflare Pages Function — POST /api/youtube-download
 //
-// Proxy convert YouTube -> MP3 lewat api.theresav.eu, dipanggil dari server
-// (bukan langsung dari browser) karena dua alasan: (1) API-nya butuh header
-// "x-apikey" custom, yang berarti browser akan mengirim CORS preflight
-// (OPTIONS) lebih dulu — kalau api.theresav.eu tidak membalas header CORS
-// yang tepat untuk preflight itu, fetch dari client selalu gagal duluan
-// sebelum request GET-nya sendiri sempat terkirim; (2) API key jadi tidak
-// pernah ikut ter-expose di bundle/network tab browser, sama seperti
-// /api/roblox-upload menyembunyikan API key Roblox.
+// Default: convert lewat api.theresav.eu memakai API key milik sendiri (di bawah).
+// Opsional: kalau env YT_BACKEND_URL + YT_BACKEND_SECRET diisi, pakai backend sendiri
+// (folder yt-backend/ atau yt-worker/) sebagai gantinya.
 //
-// Function ini SELALU membalas byte audio langsung (content-type audio/*)
-// kalau berhasil, supaya client cuma perlu satu request same-origin dan
-// tidak perlu tahu bentuk respons upstream. Kalau upstream ternyata cuma
-// memberi link download terpisah (JSON, bukan file langsung) — bentuk yang
-// umum dipakai API convert pihak ketiga tapi tidak terdokumentasi resmi di
-// mana pun yang bisa kita verifikasi — function ini yang mengambil link itu
-// lagi di server (request kedua, tetap di server) lalu meneruskan byte-nya.
-// Judul (kalau upstream sediakan) dititipkan lewat header X-Audio-Title,
-// di-URL-encode karena header HTTP cuma boleh berisi ASCII.
+// Sukses: audio/mpeg (+ header X-Audio-Title, URL-encoded). Gagal: JSON {ok:false,message}.
 
 const API_KEY = "U8LwW";
 
+const HOSTS = new Set(["youtube.com", "www.youtube.com", "m.youtube.com", "music.youtube.com", "youtu.be"]);
+
+function isYoutube(value) {
+  try {
+    const u = new URL(value);
+    return (u.protocol === "https:" || u.protocol === "http:") && HOSTS.has(u.hostname.toLowerCase());
+  } catch { return false; }
+}
+
 export async function onRequestPost(context) {
-  const { request } = context;
+  const { request, env } = context;
 
   const denied = await requireUser(request);
   if (denied) return denied;
@@ -38,7 +34,39 @@ export async function onRequestPost(context) {
 
   const url = String(body.url || "").trim();
   if (!url) return json({ ok: false, message: "url wajib diisi." }, 400);
+  if (!isYoutube(url)) return json({ ok: false, message: "Link harus dari YouTube." }, 400);
 
+  const base = String((env && env.YT_BACKEND_URL) || "").trim().replace(/\/+$/, "");
+  const secret = String((env && env.YT_BACKEND_SECRET) || "").trim();
+  if (!base || !secret) return legacyConvert(url);
+
+  let upstream;
+  try {
+    upstream = await fetch(base + "/convert", {
+      method: "POST",
+      headers: { "content-type": "application/json", "x-backend-secret": secret },
+      body: JSON.stringify({ url })
+    });
+  } catch {
+    return json({ ok: false, message: "Tidak bisa menghubungi backend YouTube. Cek server-nya menyala." }, 502);
+  }
+
+  const type = upstream.headers.get("content-type") || "";
+  if (upstream.ok && /^audio\//i.test(type)) {
+    const headers = { "content-type": type, "cache-control": "no-store" };
+    const title = upstream.headers.get("x-audio-title");
+    if (title) headers["x-audio-title"] = title;
+    return new Response(upstream.body, { status: 200, headers });
+  }
+
+  let msg = "";
+  try { msg = (await upstream.json()).message || ""; } catch { /* bukan JSON */ }
+  if (upstream.status === 401) msg = "Rahasia backend tidak cocok. Samakan YT_BACKEND_SECRET di Pages dan di server.";
+  return json({ ok: false, message: msg || `Backend YouTube membalas HTTP ${upstream.status}.` }, upstream.status === 429 ? 429 : 502);
+}
+
+// ── Jalur default: API convert pihak ketiga dengan API key ───────────────────
+async function legacyConvert(url) {
   const apiUrl = `https://api.theresav.eu/api/download/ytmp3?url=${encodeURIComponent(url)}&format=mp3&bitrate=64k`;
 
   let upstream;
@@ -55,17 +83,12 @@ export async function onRequestPost(context) {
 
   const contentType = upstream.headers.get("content-type") || "";
 
-  // Kasus 1: upstream langsung membalas file audio — teruskan apa adanya.
+  // Upstream langsung membalas file audio.
   if (/^audio\//i.test(contentType) || /^application\/octet-stream/i.test(contentType)) {
-    return new Response(upstream.body, {
-      status: 200,
-      headers: { "content-type": contentType || "audio/mpeg" }
-    });
+    return new Response(upstream.body, { status: 200, headers: { "content-type": contentType || "audio/mpeg" } });
   }
 
-  // Kasus 2: upstream membalas JSON berisi link download terpisah. Nama
-  // field-nya diprobe defensif dengan beberapa kemungkinan umum karena
-  // bentuk respons API ini tidak ada dokumentasi resminya.
+  // Upstream membalas JSON berisi link download terpisah.
   let data;
   try { data = await upstream.json(); } catch {
     return json({ ok: false, message: "Respons API convert bukan audio maupun JSON yang dikenali." });
@@ -76,9 +99,7 @@ export async function onRequestPost(context) {
     || (data.data && (data.data.url || data.data.downloadUrl));
   const title = data.title || (data.result && data.result.title) || (data.data && data.data.title) || null;
 
-  if (!downloadUrl) {
-    return json({ ok: false, message: "Tidak menemukan URL audio di respons API convert." });
-  }
+  if (!downloadUrl) return json({ ok: false, message: "Tidak menemukan URL audio di respons API convert." });
 
   let fileRes;
   try {
@@ -86,12 +107,9 @@ export async function onRequestPost(context) {
   } catch (err) {
     return json({ ok: false, message: "Gagal mengunduh hasil convert: " + (err && err.message ? err.message : "network error") });
   }
-  if (!fileRes.ok) {
-    return json({ ok: false, message: `Gagal mengunduh hasil convert (HTTP ${fileRes.status}).` });
-  }
+  if (!fileRes.ok) return json({ ok: false, message: `Gagal mengunduh hasil convert (HTTP ${fileRes.status}).` });
 
-  const fileContentType = fileRes.headers.get("content-type") || "audio/mpeg";
-  const headers = { "content-type": fileContentType };
+  const headers = { "content-type": fileRes.headers.get("content-type") || "audio/mpeg" };
   if (title) headers["x-audio-title"] = encodeURIComponent(title);
   return new Response(fileRes.body, { status: 200, headers });
 }

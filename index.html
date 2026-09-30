@@ -4540,6 +4540,23 @@
             .lib-copyall-wrap { margin-bottom: 12px; }
             .lib-copyall-wrap .btn { width: 100%; justify-content: center; font-size: 12.5px; padding: 9px 14px; }
             .lib-reason { font-size: 10px; color: var(--text3); margin-top: 4px; line-height: 1.4; }
+            .lib-maps { font-size: 10px; color: var(--text2); margin-top: 4px; line-height: 1.4; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+            .lib-tools { display: flex; gap: 8px; overflow-x: auto; margin-bottom: 12px; padding-bottom: 2px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+            .lib-tools::-webkit-scrollbar { display: none; }
+            .lib-tools .btn { flex: none; width: auto; white-space: nowrap; font-size: 12.5px; padding: 9px 14px; gap: 6px; }
+            .lib-tools .btn svg { width: 15px; height: 15px; flex: none; }
+            .lib-card.is-sel { outline: 2px solid var(--silver-hi, #fff); outline-offset: -2px; }
+            .lib-card.is-pick { cursor: pointer; }
+            .lib-card.is-off { opacity: .45; }
+            .lib-check { width: 20px; height: 20px; accent-color: #fff; flex: none; margin: 0 4px 0 12px; align-self: center; pointer-events: none; }
+            .lib-selbar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; position: sticky; top: 8px; z-index: 5; padding: 10px 12px; margin-bottom: 12px; border-radius: 16px; border: 1px solid var(--lg-border); background: rgba(20,20,22,.72); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
+            .lib-selbar[hidden] { display: none; }
+            .lib-selbar .lib-selcount { font-size: 12.5px; font-weight: 600; margin-right: auto; }
+            .lib-selbar .btn { font-size: 12px; padding: 8px 12px; }
+            .imp-row { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 12px; }
+            .imp-row.is-off { opacity: .55; }
+            .imp-row input { width: 18px; height: 18px; accent-color: #fff; flex: none; }
+            .imp-tag { margin-left: auto; font-size: 10.5px; color: var(--text3); white-space: nowrap; }
             .upload-status { margin-bottom: 18px; }
             .upload-status .section-title { margin-bottom: 10px; }
             .upload-status-list { display: flex; flex-direction: column; gap: 8px; }
@@ -4883,6 +4900,34 @@ html .subscription-overlay, html #login-overlay { background: rgba(0,0,0,.34) !i
   html #mobile-menu, html #profile-dropdown, html .subscription-card, html .toast-item, html .login-card, html .install-card { background: rgba(28,28,30,.92) !important; }
 }
 </style>
+<style id="access-modal">
+.access-overlay { position: fixed; inset: 0; z-index: 270; display: flex; align-items: center; justify-content: center; padding: 16px; background: rgba(0,0,0,.34); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }
+.access-overlay[hidden] { display: none; }
+.access-card { width: min(480px, 100%); max-height: calc(100dvh - 32px); overflow-y: auto; padding: 20px; border-radius: 26px; display: flex; flex-direction: column; gap: 10px;
+  background: var(--lg-fill); border: 1px solid var(--lg-border); -webkit-backdrop-filter: var(--lg-blur); backdrop-filter: var(--lg-blur); box-shadow: var(--lg-shadow); }
+.access-head { display: flex; align-items: center; justify-content: space-between; }
+.access-head h2 { margin: 0; font: 700 20px var(--font-display); }
+.access-x { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--lg-border); background: rgba(255,255,255,.08); color: var(--text); font-size: 20px; line-height: 1; cursor: pointer; }
+.access-hint, .access-note { margin: 0; font-size: 12.5px; line-height: 1.55; color: var(--text2); }
+.access-note { font-size: 11.5px; color: var(--text3); }
+.access-label { margin-top: 4px; display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 12px; font-weight: 600; letter-spacing: .04em; color: var(--text); }
+.access-sub { font-weight: 400; color: var(--text3); letter-spacing: 0; font-size: 11px; }
+.access-link { border: 0; background: none; color: var(--silver-hi); font: 600 12px var(--font); cursor: pointer; text-decoration: underline; }
+.access-list { max-height: 190px; overflow-y: auto; border-radius: 16px; border: 1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.04); padding: 4px; }
+.access-item { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 12px; cursor: pointer; }
+.access-item:hover { background: rgba(255,255,255,.08); }
+.access-item input { width: 18px; height: 18px; accent-color: #fff; flex: none; }
+.access-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; }
+.access-id { flex: none; font-size: 11px; color: var(--text3); font-variant-numeric: tabular-nums; }
+.access-empty { padding: 14px; font-size: 13px; color: var(--text2); text-align: center; }
+.access-card textarea { width: 100%; resize: vertical; }
+.access-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.access-chip { padding: 5px 10px; border-radius: 999px; border: 1px solid var(--lg-border); background: rgba(255,255,255,.08); color: var(--text); font: 500 11.5px var(--font); cursor: pointer; }
+.access-result { display: flex; flex-direction: column; gap: 6px; }
+.access-ok, .access-err { padding: 9px 12px; border-radius: 12px; font-size: 12.5px; line-height: 1.5; }
+.access-ok { background: rgba(120,220,160,.14); border: 1px solid rgba(120,220,160,.35); }
+.access-err { background: rgba(255,120,120,.12); border: 1px solid rgba(255,120,120,.35); }
+</style>
 </head>
     <body class="intro-playing">
         <div id="google-gate" class="hide" role="dialog" aria-modal="true" aria-labelledby="gg-title">
@@ -5060,6 +5105,66 @@ html .subscription-overlay, html #login-overlay { background: rgba(0,0,0,.34) !i
             </div>
         </div>
         <!-- Mobile Menu -->
+        <div id="access-overlay" class="access-overlay" hidden onclick="if(event.target===this)closeAccess()">
+            <div class="access-card" role="dialog" aria-modal="true" aria-labelledby="access-title">
+                <div class="access-head">
+                    <h2 id="access-title">Beri Akses Audio</h2>
+                    <button type="button" class="access-x" aria-label="Tutup" onclick="closeAccess()">&times;</button>
+                </div>
+                <p class="access-hint">Izinkan map kamu atau map teman memakai audio ini. Bisa pilih banyak audio dan banyak map sekaligus.</p>
+                <div class="access-label">1. Pilih audio <button type="button" class="access-link" onclick="accessToggleAll()">Pilih semua</button></div>
+                <div class="access-list" id="access-list"></div>
+                <div class="access-label">2. Universe ID map <span class="access-sub">pisahkan dengan koma / baris baru</span></div>
+                <textarea id="access-universes" rows="3" placeholder="contoh: 9895063794, 1234567890" inputmode="numeric"></textarea>
+                <div class="access-chips" id="access-saved"></div>
+                <p class="access-note">Pakai <b>Universe ID</b>, bukan Place ID (ada di Creator Hub &rarr; Experience). Untuk map teman, minta Universe ID-nya. API key kamu perlu izin <b>asset-permissions:write</b>. Akses yang sudah diberikan tidak bisa dicabut dari sini (cabut lewat Creator Hub &rarr; Asset Manager). Daftar &ldquo;Izin map&rdquo; di kartu hanya catatan akses yang diberikan lewat baxdev.</p>
+                <div class="access-result" id="access-result" role="status"></div>
+                <button type="button" class="btn btn-primary" id="access-go" onclick="accessSubmit()">Beri Akses</button>
+            </div>
+        </div>
+        <div id="imp-overlay" class="access-overlay" hidden onclick="if(event.target===this)closeImport()">
+            <div class="access-card" role="dialog" aria-modal="true" aria-labelledby="imp-title">
+                <div class="access-head">
+                    <h2 id="imp-title">Impor Musik Lama</h2>
+                    <button type="button" class="access-x" aria-label="Tutup" onclick="closeImport()">&times;</button>
+                </div>
+                <p class="access-hint">Masukkan musik yang dulu sudah kamu publish di akun Roblox ke Library ini, lalu atur map mana yang boleh memakainya.</p>
+                <div class="access-label">Tempel ID audio <span class="access-sub">pisahkan koma / baris baru</span></div>
+                <textarea id="imp-ids" rows="3" placeholder="contoh: 1837879082, 9046541234" inputmode="numeric"></textarea>
+                <div style="display:flex;gap:8px;flex-wrap:wrap">
+                    <button type="button" class="btn btn-outline" id="imp-check" onclick="importCheck()">Cek ID</button>
+                    <button type="button" class="btn btn-outline" id="imp-scan" onclick="importScan()">Scan Akun Otomatis</button>
+                </div>
+                <div class="access-label">Hasil <button type="button" class="access-link" onclick="importToggleAll()">Pilih semua</button></div>
+                <div class="access-list" id="imp-list"><div class="access-empty">Belum ada hasil.</div></div>
+                <p class="access-note">Cek ID memakai API key dengan izin <b>asset:read</b>; hanya audio buatan akunmu yang berstatus Approved yang bisa diimpor. Scan otomatis tidak dijamin jalan (Roblox bisa menolak API key); kalau gagal, tempel ID manual dari Creator Hub &rarr; Asset Manager.</p>
+                <div class="access-result" id="imp-result" role="status"></div>
+                <button type="button" class="btn btn-primary" id="imp-go" onclick="importAdd()">Tambah ke Library</button>
+            </div>
+        </div>
+        <div id="pp-overlay" class="access-overlay" hidden onclick="if(event.target===this)closePlacePub()">
+            <div class="access-card" role="dialog" aria-modal="true" aria-labelledby="pp-title">
+                <div class="access-head">
+                    <h2 id="pp-title">Publish Place</h2>
+                    <button type="button" class="access-x" aria-label="Tutup" onclick="closePlacePub()">&times;</button>
+                </div>
+                <p class="access-hint">Upload file place <b>.rbxl</b> atau <b>.rbxlx</b> langsung ke map kamu tanpa buka Studio.</p>
+                <div class="access-label">File place</div>
+                <input type="file" id="pp-file" accept=".rbxl,.rbxlx">
+                <div class="access-label">Universe ID</div>
+                <input type="text" id="pp-universe" inputmode="numeric" placeholder="contoh: 9895063794">
+                <div class="access-label">Place ID</div>
+                <input type="text" id="pp-place" inputmode="numeric" placeholder="contoh: 1234567890">
+                <div class="access-label">Mode</div>
+                <select id="pp-type">
+                    <option value="Published">Published (langsung live)</option>
+                    <option value="Saved">Saved (simpan saja, belum live)</option>
+                </select>
+                <p class="access-note">Universe ID dan Place ID ada di Creator Hub. API key perlu izin <b>universe-places:write</b> dan experience tujuan harus ditambahkan ke key itu. Mode Published menimpa versi live map tersebut.</p>
+                <div class="access-result" id="pp-result" role="status"></div>
+                <button type="button" class="btn btn-primary" id="pp-go" onclick="placePubSubmit()">Upload &amp; Publish</button>
+            </div>
+        </div>
         <div id="mobile-menu">
             <div class="m-link active" onclick="navigate('home');closeMenu()">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -5550,6 +5655,18 @@ html .subscription-overlay, html #login-overlay { background: rgba(0,0,0,.34) !i
                         </svg>
                         Salin Semua (ID = Nama)
                     </button>
+                </div>
+                <div class="lib-tools" id="lib-tools">
+                    <button type="button" class="btn btn-outline" onclick="openAccess()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Beri Akses Map</button>
+                    <button type="button" class="btn btn-outline" onclick="openPlacePub()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>Publish Place</button>
+                    <button type="button" class="btn btn-outline" id="lib-sel-btn" onclick="libSelToggleMode()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span id="lib-sel-lbl">Pilih Audio</span></button>
+                    <button type="button" class="btn btn-outline" onclick="openImport()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Impor Lama</button>
+                </div>
+                <div class="lib-selbar" id="lib-selbar" hidden>
+                    <span class="lib-selcount" id="lib-selcount">0 dipilih</span>
+                    <button type="button" class="btn btn-outline" onclick="libSelAll()">Pilih semua</button>
+                    <button type="button" class="btn btn-primary" onclick="libSelGrant()">Beri Izin Map</button>
+                    <button type="button" class="btn btn-outline" onclick="libSelToggleMode()">Batal</button>
                 </div>
                 <div class="lib-note" id="lib-note" role="status"></div>
                 <div class="library-grid" id="library-grid">
@@ -7300,24 +7417,73 @@ html .subscription-overlay, html #login-overlay { background: rgba(0,0,0,.34) !i
                     grid.innerHTML = `<div class="empty-lib"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg><p>${S.library.length ? 'Tidak ada hasil' : 'Library kosong'}</p><span>${S.library.length ? 'Coba kata kunci lain' : 'Upload audio pertama kamu'}</span></div>`;
                     return;
                 }
-                grid.innerHTML = items.map(i => `
-    <div class="lib-card">
+                const selOn = libSelMode;
+                grid.innerHTML = items.map(i => {
+                    const pickable = i.assetId && i.kind !== 'model' && i.status === 'done';
+                    const picked = pickable && libSel.has(String(i.assetId));
+                    const cls = 'lib-card' + (selOn ? (pickable ? ' is-pick' : ' is-off') : '') + (picked ? ' is-sel' : '');
+                    const click = selOn && pickable ? ` onclick="libSelToggle('${i.assetId}')"` : '';
+                    return `
+    <div class="${cls}"${click}>
+      ${selOn && pickable ? `<input type="checkbox" class="lib-check" tabindex="-1" ${picked ? 'checked' : ''}>` : ''}
       <div class="lib-wave">${i.kind === 'model' ? `<svg class="lib-model-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-label="Model">${MODEL_ICON}</svg>` : Array(7).fill('<span style="height:6px"></span>').join('')}</div>
       <div class="lib-body">
         <div class="lib-name" title="${escapeHtml(i.name || 'Tanpa nama')}">${escapeHtml(i.name || 'Tanpa nama')}</div>
         <div class="lib-meta">
-          <span class="lib-size">${fmtSize(i.size || 0)}</span>
+          <span class="lib-size">${i.imported ? 'Impor' : fmtSize(i.size || 0)}</span>
           <span class="recent-badge ${i.status === 'done' ? 'badge-done' : i.status === 'proc' ? 'badge-proc' : 'badge-fail'}">${i.status === 'done' ? 'Published' : i.status === 'proc' ? 'Diproses' : 'Gagal'}</span>
         </div>
         ${i.assetId ? `<div class="lib-id">${i.assetId}</div>` : ''}
         ${i.status === 'proc' ? '<div class="lib-reason">Masih diproses Roblox</div>' : ''}
+        ${i.kind !== 'model' && Array.isArray(i.maps) && i.maps.length ? `<div class="lib-maps" title="${escapeHtml(i.maps.join(', '))}">Izin map: ${i.maps.length} (${escapeHtml(i.maps.slice(0, 2).join(', '))}${i.maps.length > 2 ? '…' : ''})</div>` : ''}
       </div>
-      <div class="lib-actions">
+      <div class="lib-actions"${selOn ? ' hidden' : ''}>
         ${i.assetId ? `<button class="lib-act" aria-label="Salin ID" onclick="copyLib('${i.assetId}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span class="lib-lbl">Salin ID</span></button>` : ''}
+        ${i.assetId && i.kind !== 'model' && i.status === 'done' ? `<button class="lib-act" aria-label="Atur izin map" onclick="openAccess('${i.assetId}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span class="lib-lbl">Izin Map</span></button>` : ''}
         <button class="lib-act lib-del" aria-label="Hapus" onclick="deleteLib(${i.id})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg><span class="lib-lbl">Hapus</span></button>
       </div>
-    </div>`).join('');
+    </div>`;
+                }).join('');
+                libSelUpdate();
                 renderRecentFromLibrary();
+            }
+            // ── PILIH BANYAK AUDIO DI LIBRARY ──
+            let libSelMode = false;
+            const libSel = new Set();
+            function libSelToggleMode() {
+                libSelMode = !libSelMode;
+                libSel.clear();
+                renderLibrary();
+            }
+            function libSelToggle(id) {
+                id = String(id);
+                if (libSel.has(id)) libSel.delete(id); else libSel.add(id);
+                renderLibrary();
+            }
+            function libSelVisibleIds() {
+                return Array.from(document.querySelectorAll('#library-grid .lib-card.is-pick')).map(el => {
+                    const m = /libSelToggle\('(\d+)'\)/.exec(el.getAttribute('onclick') || '');
+                    return m ? m[1] : null;
+                }).filter(Boolean);
+            }
+            function libSelAll() {
+                const ids = libSelVisibleIds();
+                const all = ids.length && ids.every(id => libSel.has(id));
+                ids.forEach(id => all ? libSel.delete(id) : libSel.add(id));
+                renderLibrary();
+            }
+            function libSelUpdate() {
+                const bar = document.getElementById('lib-selbar');
+                const btn = document.getElementById('lib-sel-btn');
+                if (bar) bar.hidden = !libSelMode;
+                const lbl = document.getElementById('lib-sel-lbl'); if (lbl) lbl.textContent = libSelMode ? 'Keluar Pilih' : 'Pilih Audio';
+                const c = document.getElementById('lib-selcount');
+                if (c) c.textContent = libSel.size + ' dipilih';
+            }
+            function libSelGrant() {
+                if (!libSel.size) { toast('Pilih minimal 1 audio dulu', 'info'); return; }
+                const ids = Array.from(libSel);
+                openAccess(ids);
             }
             function filterLibrary() {
                 renderLibrary()
@@ -7335,6 +7501,253 @@ html .subscription-overlay, html #login-overlay { background: rgba(0,0,0,.34) !i
                 const text = done.map(i => `${i.assetId} = ${i.name || 'Tanpa nama'}`).join('\n');
                 navigator.clipboard.writeText(text);
                 toast(`${done.length} data disalin!`, 'success');
+            }
+            // ── BERI AKSES AUDIO KE MAP (multi audio x multi universe) ──
+            const ACCESS_KEY = 'baxdev_universes';
+            function accessSaved() {
+                try { const l = JSON.parse(localStorage.getItem(ACCESS_KEY) || '[]'); return Array.isArray(l) ? l.filter(x => /^\d+$/.test(String(x))) : []; } catch (e) { return []; }
+            }
+            function accessRenderSaved() {
+                const box = document.getElementById('access-saved');
+                const list = accessSaved();
+                box.innerHTML = list.map(id => `<button type="button" class="access-chip" onclick="accessAddUniverse('${id}')">${id}</button>`).join('');
+                box.style.display = list.length ? '' : 'none';
+            }
+            function accessAddUniverse(id) {
+                const ta = document.getElementById('access-universes');
+                const cur = ta.value.split(/[\s,;]+/).filter(Boolean);
+                if (!cur.includes(id)) cur.push(id);
+                ta.value = cur.join(', ');
+            }
+            function accessAudios() {
+                return S.library.filter(i => i.kind !== 'model' && i.status === 'done' && i.assetId);
+            }
+            function openAccess(preselectId) {
+                if (!requireRoblox('memberi akses audio')) return;
+                const items = accessAudios();
+                const list = document.getElementById('access-list');
+                list.innerHTML = items.length ? items.map(i => `
+                    <label class="access-item"><input type="checkbox" value="${escapeHtml(String(i.assetId))}">
+                    <span class="access-name">${escapeHtml(i.name || 'Tanpa nama')}</span>
+                    <span class="access-id">${escapeHtml(String(i.assetId))}</span></label>`).join('')
+                    : '<div class="access-empty">Belum ada audio yang berstatus Published.</div>';
+                document.getElementById('access-result').innerHTML = '';
+                accessRenderSaved();
+                document.getElementById('access-universes').value = '';
+                if (preselectId) {
+                    const want = new Set((Array.isArray(preselectId) ? preselectId : [preselectId]).map(String));
+                    document.querySelectorAll('#access-list input[type=checkbox]').forEach(b => { if (want.has(b.value)) b.checked = true; });
+                }
+                document.getElementById('access-overlay').hidden = false;
+            }
+            function closeAccess() { document.getElementById('access-overlay').hidden = true; }
+            function accessToggleAll() {
+                const boxes = document.querySelectorAll('#access-list input[type=checkbox]');
+                const all = Array.from(boxes).every(b => b.checked);
+                boxes.forEach(b => b.checked = !all);
+            }
+            async function accessSubmit() {
+                const assetIds = Array.from(document.querySelectorAll('#access-list input:checked')).map(b => b.value);
+                const universeIds = document.getElementById('access-universes').value.split(/[\s,;]+/).filter(Boolean);
+                const out = document.getElementById('access-result');
+                if (!assetIds.length) { out.innerHTML = '<div class="access-err">Pilih minimal 1 audio.</div>'; return; }
+                if (!universeIds.length || universeIds.some(u => !/^\d+$/.test(u))) { out.innerHTML = '<div class="access-err">Universe ID harus angka. Isi minimal 1.</div>'; return; }
+                const btn = document.getElementById('access-go');
+                btn.disabled = true; btn.textContent = 'Memproses...';
+                out.innerHTML = '';
+                try {
+                    const r = await fetch('/api/roblox-permission', {
+                        method: 'POST',
+                        headers: { 'content-type': 'application/json' },
+                        body: JSON.stringify({ apiKey: S.roblox.apiKey, assetIds, universeIds })
+                    });
+                    const d = await r.json().catch(() => ({}));
+                    if (!Array.isArray(d.results)) {
+                        out.innerHTML = `<div class="access-err">${escapeHtml(d.message || 'Gagal memberi akses.')}</div>`;
+                    } else {
+                        out.innerHTML = d.results.map(x => x.ok
+                            ? `<div class="access-ok">Map ${escapeHtml(String(x.universeId))}: ${x.success.length} audio diberi akses${x.failed.length ? `, ${x.failed.length} gagal` : ''}</div>`
+                            : `<div class="access-err">Map ${escapeHtml(String(x.universeId))}: ${escapeHtml(x.message || 'Gagal')}</div>`).join('');
+                        let mapsChanged = false;
+                        d.results.forEach(x => {
+                            if (!x.ok) return;
+                            (x.success || []).forEach(aid => {
+                                const it = S.library.find(l => String(l.assetId) === String(aid));
+                                if (!it) return;
+                                if (!Array.isArray(it.maps)) it.maps = [];
+                                if (!it.maps.includes(String(x.universeId))) { it.maps.push(String(x.universeId)); mapsChanged = true; }
+                            });
+                        });
+                        if (mapsChanged) { saveLibrary(); renderLibrary(); }
+                        const okIds = d.results.filter(x => x.ok).map(x => String(x.universeId));
+                        if (okIds.length) {
+                            try { localStorage.setItem(ACCESS_KEY, JSON.stringify(Array.from(new Set(okIds.concat(accessSaved()))).slice(0, 12))); } catch (e) {}
+                            accessRenderSaved();
+                            toast('Akses diberikan', 'success');
+                        }
+                    }
+                } catch (e) {
+                    out.innerHTML = '<div class="access-err">Koneksi bermasalah. Coba lagi.</div>';
+                } finally {
+                    btn.disabled = false; btn.textContent = 'Beri Akses';
+                }
+            }
+            // ── IMPOR MUSIK LAMA DARI AKUN ROBLOX ──
+            let impFound = [];
+            function openImport() {
+                if (!requireRoblox('impor musik lama')) return;
+                impFound = [];
+                document.getElementById('imp-ids').value = '';
+                document.getElementById('imp-result').innerHTML = '';
+                importRender();
+                document.getElementById('imp-overlay').hidden = false;
+            }
+            function closeImport() { document.getElementById('imp-overlay').hidden = true; }
+            function importRender() {
+                const list = document.getElementById('imp-list');
+                if (!impFound.length) { list.innerHTML = '<div class="access-empty">Belum ada hasil.</div>'; return; }
+                const have = new Set(S.library.map(i => String(i.assetId)));
+                list.innerHTML = impFound.map(x => {
+                    const dup = have.has(x.id);
+                    const off = dup || x.ok === false || (x.state && x.state !== 'Approved' && x.state !== 'Unknown');
+                    const tag = dup ? 'Sudah di Library' : x.ok === false ? x.reason : (x.state === 'Reviewing' ? 'Masih direview' : x.state === 'Rejected' ? 'Ditolak Roblox' : '');
+                    return `<label class="imp-row${off ? ' is-off' : ''}"><input type="checkbox" value="${escapeHtml(x.id)}" ${off ? 'disabled' : 'checked'}>
+                        <span class="access-name">${escapeHtml(x.name || 'Audio ' + x.id)}</span>
+                        <span class="access-id">${escapeHtml(x.id)}</span>${tag ? `<span class="imp-tag">${escapeHtml(tag)}</span>` : ''}</label>`;
+                }).join('');
+            }
+            function importToggleAll() {
+                const boxes = Array.from(document.querySelectorAll('#imp-list input[type=checkbox]:not(:disabled)'));
+                const all = boxes.every(b => b.checked);
+                boxes.forEach(b => b.checked = !all);
+            }
+            function importMsg(cls, text) { document.getElementById('imp-result').innerHTML = `<div class="${cls}">${escapeHtml(text)}</div>`; }
+            async function importPost(payload) {
+                const r = await fetch('/api/roblox-my-audio', {
+                    method: 'POST',
+                    headers: { 'content-type': 'application/json' },
+                    body: JSON.stringify(Object.assign({ apiKey: S.roblox.apiKey, userId: S.roblox.userId }, payload))
+                });
+                return r.json().catch(() => ({}));
+            }
+            async function importCheck() {
+                const ids = document.getElementById('imp-ids').value.split(/[\s,;]+/).filter(Boolean);
+                if (!ids.length || ids.some(x => !/^\d+$/.test(x))) return importMsg('access-err', 'Isi minimal 1 ID audio (angka saja).');
+                const btn = document.getElementById('imp-check');
+                btn.disabled = true; btn.textContent = 'Mengecek...';
+                document.getElementById('imp-result').innerHTML = '';
+                try {
+                    const d = await importPost({ assetIds: ids });
+                    if (!Array.isArray(d.items)) return importMsg('access-err', d.message || 'Gagal mengecek ID.');
+                    impFound = d.items;
+                    importRender();
+                    const good = d.items.filter(x => x.ok && x.state === 'Approved').length;
+                    importMsg(good ? 'access-ok' : 'access-err', good ? `${good} audio siap diimpor.` : 'Tidak ada audio yang bisa diimpor. Lihat keterangan di daftar.');
+                } catch (e) {
+                    importMsg('access-err', 'Koneksi bermasalah. Coba lagi.');
+                } finally {
+                    btn.disabled = false; btn.textContent = 'Cek ID';
+                }
+            }
+            async function importScan() {
+                const btn = document.getElementById('imp-scan');
+                btn.disabled = true; btn.textContent = 'Memindai...';
+                document.getElementById('imp-result').innerHTML = '';
+                try {
+                    let cursor = '', all = [], pages = 0;
+                    do {
+                        const d = await importPost({ scan: true, cursor });
+                        if (d.scanOk === false || d.ok === false) {
+                            return importMsg('access-err', (d.message || 'Scan gagal.') + ' Tempel ID manual lalu klik Cek ID.');
+                        }
+                        all = all.concat(d.items || []);
+                        cursor = d.nextCursor || '';
+                        pages++;
+                    } while (cursor && pages < 6);
+                    if (!all.length) return importMsg('access-err', 'Tidak ada audio ditemukan. Tempel ID manual lalu klik Cek ID.');
+                    // Verifikasi status moderasi lewat Assets API, 40 ID per putaran.
+                    const ids = all.map(x => x.id), checked = [];
+                    for (let i = 0; i < ids.length; i += 40) {
+                        const d = await importPost({ assetIds: ids.slice(i, i + 40) });
+                        if (Array.isArray(d.items)) checked.push(...d.items);
+                    }
+                    impFound = checked.length ? checked : all.map(x => Object.assign({ ok: true, state: 'Unknown' }, x));
+                    importRender();
+                    importMsg('access-ok', `${impFound.length} audio ditemukan${cursor ? ' (baru sebagian, ulangi scan untuk sisanya)' : ''}.`);
+                } catch (e) {
+                    importMsg('access-err', 'Koneksi bermasalah. Coba lagi.');
+                } finally {
+                    btn.disabled = false; btn.textContent = 'Scan Akun Otomatis';
+                }
+            }
+            function importAdd() {
+                const picked = Array.from(document.querySelectorAll('#imp-list input:checked')).map(b => b.value);
+                if (!picked.length) return importMsg('access-err', 'Pilih minimal 1 audio.');
+                const have = new Set(S.library.map(i => String(i.assetId)));
+                let n = 0;
+                picked.forEach((id, k) => {
+                    if (have.has(id)) return;
+                    const x = impFound.find(f => f.id === id) || {};
+                    S.library.unshift({ id: Date.now() + k, name: x.name || 'Audio ' + id, filename: '', size: 0, kind: 'audio', status: 'done', assetId: id, imported: true, maps: [], uploadedAt: new Date().toISOString() });
+                    n++;
+                });
+                if (!n) return importMsg('access-err', 'Semua audio yang dipilih sudah ada di Library.');
+                saveLibrary();
+                renderLibrary();
+                updateStats();
+                importRender();
+                importMsg('access-ok', `${n} audio ditambahkan ke Library. Tekan "Izin Map" di kartunya untuk mengatur map.`);
+                toast(`${n} audio diimpor`, 'success');
+            }
+            // ── PUBLISH PLACE (.rbxl / .rbxlx) ──
+            const PP_KEY = 'baxdev_place_last';
+            function openPlacePub() {
+                if (!requireRoblox('publish place')) return;
+                try {
+                    const l = JSON.parse(localStorage.getItem(PP_KEY) || '{}');
+                    if (l.u) document.getElementById('pp-universe').value = l.u;
+                    if (l.p) document.getElementById('pp-place').value = l.p;
+                } catch (e) {}
+                document.getElementById('pp-result').innerHTML = '';
+                document.getElementById('pp-overlay').hidden = false;
+            }
+            function closePlacePub() { document.getElementById('pp-overlay').hidden = true; }
+            async function placePubSubmit() {
+                const out = document.getElementById('pp-result');
+                const file = document.getElementById('pp-file').files[0];
+                const u = document.getElementById('pp-universe').value.trim();
+                const p = document.getElementById('pp-place').value.trim();
+                const type = document.getElementById('pp-type').value;
+                const err = m => { out.innerHTML = `<div class="access-err">${escapeHtml(m)}</div>`; };
+                if (!file) return err('Pilih file .rbxl atau .rbxlx dulu.');
+                if (!/\.rbxlx?$/i.test(file.name)) return err('File harus berformat .rbxl atau .rbxlx.');
+                if (file.size > 90 * 1024 * 1024) return err('File melebihi batas 90MB.');
+                if (!/^\d+$/.test(u) || !/^\d+$/.test(p)) return err('Universe ID dan Place ID harus angka.');
+                if (type === 'Published' && !confirm('Versi live map ini akan ditimpa file baru. Lanjut?')) return;
+                const btn = document.getElementById('pp-go');
+                btn.disabled = true; btn.textContent = 'Mengunggah...';
+                out.innerHTML = '';
+                try {
+                    const fd = new FormData();
+                    fd.append('file', file, file.name);
+                    fd.append('apiKey', S.roblox.apiKey);
+                    fd.append('universeId', u);
+                    fd.append('placeId', p);
+                    fd.append('versionType', type);
+                    const r = await fetch('/api/roblox-place-publish', { method: 'POST', body: fd });
+                    const d = await r.json().catch(() => ({}));
+                    if (r.ok && d.ok) {
+                        out.innerHTML = `<div class="access-ok">${type === 'Published' ? 'Berhasil dipublish' : 'Berhasil disimpan'}${d.version ? ' sebagai versi ' + escapeHtml(String(d.version)) : ''}.</div>`;
+                        try { localStorage.setItem(PP_KEY, JSON.stringify({ u, p })); } catch (e) {}
+                        toast('Place berhasil diupload', 'success');
+                    } else {
+                        err(d.message || 'Gagal upload place.');
+                    }
+                } catch (e) {
+                    err('Koneksi bermasalah. Coba lagi.');
+                } finally {
+                    btn.disabled = false; btn.textContent = 'Upload & Publish';
+                }
             }
             function deleteLib(id) {
                 S.library = S.library.filter(i => i.id !== id);
