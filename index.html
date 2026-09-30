@@ -5129,40 +5129,17 @@ html .subscription-overlay, html #login-overlay { background: rgba(0,0,0,.34) !i
                     <button type="button" class="access-x" aria-label="Tutup" onclick="closeImport()">&times;</button>
                 </div>
                 <p class="access-hint">Masukkan musik yang dulu sudah kamu publish di akun Roblox ke Library ini, lalu atur map mana yang boleh memakainya.</p>
-                <div class="access-label">Tempel ID audio <span class="access-sub">pisahkan koma / baris baru</span></div>
-                <textarea id="imp-ids" rows="3" placeholder="contoh: 1837879082, 9046541234" inputmode="numeric"></textarea>
+                <div class="access-label">Tempel banyak ID audio <span class="access-sub">bebas format, maks 500</span></div>
+                <textarea id="imp-ids" rows="5" placeholder="Tempel banyak ID sekaligus, misalnya:&#10;1837879082&#10;9046541234, 7723451122&#10;rbxassetid://5523311890"></textarea>
                 <div style="display:flex;gap:8px;flex-wrap:wrap">
                     <button type="button" class="btn btn-outline" id="imp-check" onclick="importCheck()">Cek ID</button>
                     <button type="button" class="btn btn-outline" id="imp-scan" onclick="importScan()">Scan Akun Otomatis</button>
                 </div>
                 <div class="access-label">Hasil <button type="button" class="access-link" onclick="importToggleAll()">Pilih semua</button></div>
                 <div class="access-list" id="imp-list"><div class="access-empty">Belum ada hasil.</div></div>
-                <p class="access-note">Cek ID memakai API key dengan izin <b>asset:read</b>; hanya audio buatan akunmu yang berstatus Approved yang bisa diimpor. Scan otomatis tidak dijamin jalan (Roblox bisa menolak API key); kalau gagal, tempel ID manual dari Creator Hub &rarr; Asset Manager.</p>
+                <p class="access-note">Cek ID memakai API key dengan izin <b>asset:read</b>; hanya audio buatan akunmu yang berstatus Approved yang bisa diimpor. Scan otomatis hanya menemukan audio <b>publik</b> (yang tampil di Creator Store). Audio privat tidak terdeteksi; tempel ID-nya manual dari Creator Hub &rarr; Asset Manager.</p>
                 <div class="access-result" id="imp-result" role="status"></div>
                 <button type="button" class="btn btn-primary" id="imp-go" onclick="importAdd()">Tambah ke Library</button>
-            </div>
-        </div>
-        <div id="pp-overlay" class="access-overlay" hidden onclick="if(event.target===this)closePlacePub()">
-            <div class="access-card" role="dialog" aria-modal="true" aria-labelledby="pp-title">
-                <div class="access-head">
-                    <h2 id="pp-title">Publish Place</h2>
-                    <button type="button" class="access-x" aria-label="Tutup" onclick="closePlacePub()">&times;</button>
-                </div>
-                <p class="access-hint">Upload file place <b>.rbxl</b> atau <b>.rbxlx</b> langsung ke map kamu tanpa buka Studio.</p>
-                <div class="access-label">File place</div>
-                <input type="file" id="pp-file" accept=".rbxl,.rbxlx">
-                <div class="access-label">Universe ID</div>
-                <input type="text" id="pp-universe" inputmode="numeric" placeholder="contoh: 9895063794">
-                <div class="access-label">Place ID</div>
-                <input type="text" id="pp-place" inputmode="numeric" placeholder="contoh: 1234567890">
-                <div class="access-label">Mode</div>
-                <select id="pp-type">
-                    <option value="Published">Published (langsung live)</option>
-                    <option value="Saved">Saved (simpan saja, belum live)</option>
-                </select>
-                <p class="access-note">Universe ID dan Place ID ada di Creator Hub. API key perlu izin <b>universe-places:write</b> dan experience tujuan harus ditambahkan ke key itu. Mode Published menimpa versi live map tersebut.</p>
-                <div class="access-result" id="pp-result" role="status"></div>
-                <button type="button" class="btn btn-primary" id="pp-go" onclick="placePubSubmit()">Upload &amp; Publish</button>
             </div>
         </div>
         <div id="mobile-menu">
@@ -5658,7 +5635,6 @@ html .subscription-overlay, html #login-overlay { background: rgba(0,0,0,.34) !i
                 </div>
                 <div class="lib-tools" id="lib-tools">
                     <button type="button" class="btn btn-outline" onclick="openAccess()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Beri Akses Map</button>
-                    <button type="button" class="btn btn-outline" onclick="openPlacePub()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>Publish Place</button>
                     <button type="button" class="btn btn-outline" id="lib-sel-btn" onclick="libSelToggleMode()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span id="lib-sel-lbl">Pilih Audio</span></button>
                     <button type="button" class="btn btn-outline" onclick="openImport()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Impor Lama</button>
                 </div>
@@ -7630,19 +7606,34 @@ html .subscription-overlay, html #login-overlay { background: rgba(0,0,0,.34) !i
                 });
                 return r.json().catch(() => ({}));
             }
+            // Ambil semua angka ID dari teks apa pun (rbxassetid://123, link, "123 = Nama", satu baris satu ID).
+            function importParseIds(text) {
+                const found = String(text || '').match(/\d{5,19}/g) || [];
+                return Array.from(new Set(found));
+            }
             async function importCheck() {
-                const ids = document.getElementById('imp-ids').value.split(/[\s,;]+/).filter(Boolean);
-                if (!ids.length || ids.some(x => !/^\d+$/.test(x))) return importMsg('access-err', 'Isi minimal 1 ID audio (angka saja).');
+                const ids = importParseIds(document.getElementById('imp-ids').value);
+                if (!ids.length) return importMsg('access-err', 'Tidak ada ID audio yang terbaca. Tempel angka ID (boleh banyak sekaligus).');
+                if (ids.length > 500) return importMsg('access-err', 'Maksimal 500 ID sekali cek. Bagi jadi beberapa kali.');
                 const btn = document.getElementById('imp-check');
-                btn.disabled = true; btn.textContent = 'Mengecek...';
+                btn.disabled = true;
                 document.getElementById('imp-result').innerHTML = '';
                 try {
-                    const d = await importPost({ assetIds: ids });
-                    if (!Array.isArray(d.items)) return importMsg('access-err', d.message || 'Gagal mengecek ID.');
-                    impFound = d.items;
+                    const items = [];
+                    for (let i = 0; i < ids.length; i += 40) {
+                        btn.textContent = `Mengecek ${Math.min(i + 40, ids.length)}/${ids.length}...`;
+                        const d = await importPost({ assetIds: ids.slice(i, i + 40) });
+                        if (!Array.isArray(d.items)) {
+                            if (!items.length) return importMsg('access-err', d.message || 'Gagal mengecek ID.');
+                            importMsg('access-err', (d.message || 'Sebagian ID gagal dicek.') + ' Hasil yang sudah masuk tetap ditampilkan.');
+                            break;
+                        }
+                        items.push(...d.items);
+                    }
+                    impFound = items;
                     importRender();
-                    const good = d.items.filter(x => x.ok && x.state === 'Approved').length;
-                    importMsg(good ? 'access-ok' : 'access-err', good ? `${good} audio siap diimpor.` : 'Tidak ada audio yang bisa diimpor. Lihat keterangan di daftar.');
+                    const good = items.filter(x => x.ok && x.state === 'Approved').length;
+                    importMsg(good ? 'access-ok' : 'access-err', good ? `${good} dari ${items.length} audio siap diimpor.` : 'Tidak ada audio yang bisa diimpor. Lihat keterangan di daftar.');
                 } catch (e) {
                     importMsg('access-err', 'Koneksi bermasalah. Coba lagi.');
                 } finally {
@@ -7654,24 +7645,29 @@ html .subscription-overlay, html #login-overlay { background: rgba(0,0,0,.34) !i
                 btn.disabled = true; btn.textContent = 'Memindai...';
                 document.getElementById('imp-result').innerHTML = '';
                 try {
-                    let cursor = '', all = [], pages = 0;
+                    let cursor = '', all = [], pages = 0, src = '';
                     do {
                         const d = await importPost({ scan: true, cursor });
                         if (d.scanOk === false || d.ok === false) {
                             return importMsg('access-err', (d.message || 'Scan gagal.') + ' Tempel ID manual lalu klik Cek ID.');
                         }
+                        src = d.source || src;
                         all = all.concat(d.items || []);
                         cursor = d.nextCursor || '';
                         pages++;
-                    } while (cursor && pages < 6);
+                    } while (cursor && pages < 10);
                     if (!all.length) return importMsg('access-err', 'Tidak ada audio ditemukan. Tempel ID manual lalu klik Cek ID.');
-                    // Verifikasi status moderasi lewat Assets API, 40 ID per putaran.
-                    const ids = all.map(x => x.id), checked = [];
-                    for (let i = 0; i < ids.length; i += 40) {
-                        const d = await importPost({ assetIds: ids.slice(i, i + 40) });
-                        if (Array.isArray(d.items)) checked.push(...d.items);
+                    if (src === 'store') {
+                        // Audio di Creator Store sudah lolos moderasi, tidak perlu cek ulang (menghindari 401).
+                        impFound = all.map(x => ({ id: x.id, name: x.name, ok: true, state: 'Approved' }));
+                    } else {
+                        const ids = all.map(x => x.id), checked = [];
+                        for (let i = 0; i < ids.length; i += 40) {
+                            const d = await importPost({ assetIds: ids.slice(i, i + 40) });
+                            if (Array.isArray(d.items)) checked.push(...d.items.filter(x => x.ok));
+                        }
+                        impFound = checked.length ? checked : all.map(x => ({ id: x.id, name: x.name, ok: true, state: 'Unknown' }));
                     }
-                    impFound = checked.length ? checked : all.map(x => Object.assign({ ok: true, state: 'Unknown' }, x));
                     importRender();
                     importMsg('access-ok', `${impFound.length} audio ditemukan${cursor ? ' (baru sebagian, ulangi scan untuk sisanya)' : ''}.`);
                 } catch (e) {
@@ -7698,56 +7694,6 @@ html .subscription-overlay, html #login-overlay { background: rgba(0,0,0,.34) !i
                 importRender();
                 importMsg('access-ok', `${n} audio ditambahkan ke Library. Tekan "Izin Map" di kartunya untuk mengatur map.`);
                 toast(`${n} audio diimpor`, 'success');
-            }
-            // ── PUBLISH PLACE (.rbxl / .rbxlx) ──
-            const PP_KEY = 'baxdev_place_last';
-            function openPlacePub() {
-                if (!requireRoblox('publish place')) return;
-                try {
-                    const l = JSON.parse(localStorage.getItem(PP_KEY) || '{}');
-                    if (l.u) document.getElementById('pp-universe').value = l.u;
-                    if (l.p) document.getElementById('pp-place').value = l.p;
-                } catch (e) {}
-                document.getElementById('pp-result').innerHTML = '';
-                document.getElementById('pp-overlay').hidden = false;
-            }
-            function closePlacePub() { document.getElementById('pp-overlay').hidden = true; }
-            async function placePubSubmit() {
-                const out = document.getElementById('pp-result');
-                const file = document.getElementById('pp-file').files[0];
-                const u = document.getElementById('pp-universe').value.trim();
-                const p = document.getElementById('pp-place').value.trim();
-                const type = document.getElementById('pp-type').value;
-                const err = m => { out.innerHTML = `<div class="access-err">${escapeHtml(m)}</div>`; };
-                if (!file) return err('Pilih file .rbxl atau .rbxlx dulu.');
-                if (!/\.rbxlx?$/i.test(file.name)) return err('File harus berformat .rbxl atau .rbxlx.');
-                if (file.size > 90 * 1024 * 1024) return err('File melebihi batas 90MB.');
-                if (!/^\d+$/.test(u) || !/^\d+$/.test(p)) return err('Universe ID dan Place ID harus angka.');
-                if (type === 'Published' && !confirm('Versi live map ini akan ditimpa file baru. Lanjut?')) return;
-                const btn = document.getElementById('pp-go');
-                btn.disabled = true; btn.textContent = 'Mengunggah...';
-                out.innerHTML = '';
-                try {
-                    const fd = new FormData();
-                    fd.append('file', file, file.name);
-                    fd.append('apiKey', S.roblox.apiKey);
-                    fd.append('universeId', u);
-                    fd.append('placeId', p);
-                    fd.append('versionType', type);
-                    const r = await fetch('/api/roblox-place-publish', { method: 'POST', body: fd });
-                    const d = await r.json().catch(() => ({}));
-                    if (r.ok && d.ok) {
-                        out.innerHTML = `<div class="access-ok">${type === 'Published' ? 'Berhasil dipublish' : 'Berhasil disimpan'}${d.version ? ' sebagai versi ' + escapeHtml(String(d.version)) : ''}.</div>`;
-                        try { localStorage.setItem(PP_KEY, JSON.stringify({ u, p })); } catch (e) {}
-                        toast('Place berhasil diupload', 'success');
-                    } else {
-                        err(d.message || 'Gagal upload place.');
-                    }
-                } catch (e) {
-                    err('Koneksi bermasalah. Coba lagi.');
-                } finally {
-                    btn.disabled = false; btn.textContent = 'Upload & Publish';
-                }
             }
             function deleteLib(id) {
                 S.library = S.library.filter(i => i.id !== id);
