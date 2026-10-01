@@ -143,10 +143,6 @@ API key Roblox cukup memakai scope **Assets (Read + Write)**. Tombol Cek Koneksi
 Library -> tombol **Beri Akses Map / Teman**. Pilih banyak audio Published, isi banyak Universe ID (koma / baris baru), lalu proses.
 Backend: `functions/api/roblox-permission.js` memanggil Open Cloud `PATCH /asset-permissions-api/v1/assets/permissions` (subjectType `Universe`, action `Use`), satu panggilan per map. API key Roblox perlu scope `asset-permissions:write`. Maks 50 audio dan 20 map per proses.
 
-## Publish file place (.rbxl / .rbxlx)
-Library -> tombol **Publish Place**. Pilih file, isi Universe ID dan Place ID, pilih Published (live) atau Saved.
-Backend: `functions/api/roblox-place-publish.js` memanggil Open Cloud Place Publishing (`POST /universes/v1/{universeId}/places/{placeId}/versions`). API key perlu scope `universe-places:write` dan experience harus ditambahkan ke key. Maks 90 MB.
-
 ## Backend YouTube milik sendiri
 Konversi YouTube -> MP3 tidak lagi memakai API pihak ketiga. Folder `yt-backend/` berisi server kecil (yt-dlp + ffmpeg) yang kamu jalankan di VPS/Docker.
 Di Cloudflare Pages isi env `YT_BACKEND_URL` dan `YT_BACKEND_SECRET` (rahasia internal, sama dengan di server). Panduan lengkap ada di `yt-backend/README.md`.
