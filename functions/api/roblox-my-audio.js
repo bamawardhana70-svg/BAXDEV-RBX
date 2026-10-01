@@ -6,8 +6,10 @@ import { requireUser } from "../_lib/auth.js";
 //
 //   { apiKey, userId, assetIds: ["123", ...] }   -> cek tiap ID lewat Open Cloud Assets API
 //                                                   (GET /assets/v1/assets/{id}, key perlu asset:read). Andal.
-//   { apiKey, userId, scan: true, cursor? }       -> daftar audio PUBLIK akun lewat Creator Store (tanpa API key).
-//                                                   Audio privat tidak muncul; untuk itu tempel ID manual.
+//   { apiKey, userId, scan: true, cursor? }       -> coba daftar semua audio buatan akun (best-effort).
+//                                                   Endpoint daftar ini bukan bagian resmi Open Cloud dan bisa
+//                                                   menolak API key; kalau gagal, hasilnya scanOk:false dan
+//                                                   pengguna diminta tempel ID manual.
 // API key hanya lewat di request ini (tidak disimpan/di-log).
 
 const MAX_IDS = 40;
@@ -40,7 +42,8 @@ async function handle({ request }) {
   if (!ids.length) return json({ ok: false, message: "Isi minimal 1 ID audio." }, 400);
   if (ids.length > MAX_IDS) return json({ ok: false, message: `Maksimal ${MAX_IDS} ID per proses.` }, 400);
 
-  const items = await Promise.all(ids.map((id) => inspect(apiKey, userId, id)));
+  const items = [];
+  for (const id of ids) items.push(await inspect(apiKey, userId, id));
   return json({ ok: true, items });
 }
 
@@ -81,81 +84,33 @@ async function inspect(apiKey, userId, id) {
   };
 }
 
-// Daftar audio buatan akun.
-// 1) Creator Store (toolbox-service, tanpa API key): audio PUBLIK milik userId. Ini jalur utama.
-// 2) Cadangan: itemconfiguration dengan API key (sering ditolak 401, jadi hanya dicoba kalau jalur 1 kosong).
+// Best-effort: daftar audio buatan akun.
 async function scan(apiKey, userId, cursor) {
   if (cursor && !/^[\w\-=+/.,:~%]+$/.test(cursor)) return json({ ok: false, message: "Cursor tidak valid." }, 400);
+  const p = new URLSearchParams({ assetType: "Audio", isArchived: "false", limit: "50" });
+  if (cursor) p.set("cursor", cursor);
 
-  // Jalur 1: Creator Store
-  let storeErr = "";
+  let res;
   try {
-    const p = new URLSearchParams({ creatorType: "1", creatorTargetId: userId, limit: "30" });
-    if (cursor) p.set("cursor", cursor);
-    const res = await fetch("https://apis.roblox.com/toolbox-service/v1/marketplace/3?" + p, {
-      headers: { accept: "application/json" }
-    });
-    if (res.ok) {
-      const page = await res.json();
-      const ids = (Array.isArray(page.data) ? page.data : [])
-        .map((r) => String(r && r.id != null ? r.id : ""))
-        .filter((id) => /^\d+$/.test(id));
-      if (ids.length) {
-        const names = await loadNames(ids);
-        return json({
-          ok: true, scanOk: true, source: "store",
-          items: ids.map((id) => ({ id, name: names[id] || "Audio " + id })),
-          nextCursor: page.nextPageCursor || null
-        });
-      }
-      if (cursor) return json({ ok: true, scanOk: true, source: "store", items: [], nextCursor: null });
-    } else {
-      storeErr = "Creator Store HTTP " + res.status;
-    }
-  } catch {
-    storeErr = "Gagal menghubungi Creator Store";
-  }
-
-  // Jalur 2: cadangan lewat API key (tanpa jaminan)
-  const q = new URLSearchParams({ assetType: "Audio", isArchived: "false", limit: "50" });
-  try {
-    const res = await fetch("https://itemconfiguration.roblox.com/v1/creations/get-assets?" + q, {
+    res = await fetch("https://itemconfiguration.roblox.com/v1/creations/get-assets?" + p, {
       headers: { "x-api-key": apiKey, accept: "application/json" }
     });
-    if (res.ok) {
-      const data = await res.json().catch(() => ({}));
-      const rows = Array.isArray(data.data) ? data.data : Array.isArray(data.assets) ? data.assets : [];
-      const items = rows.map((r) => {
-        const id = String((r && (r.assetId != null ? r.assetId : r.id)) || "");
-        return /^\d+$/.test(id) ? { id, name: String((r && (r.name || r.displayName)) || "Audio " + id).slice(0, 100) } : null;
-      }).filter(Boolean);
-      if (items.length) return json({ ok: true, scanOk: true, source: "config", items, nextCursor: data.nextPageCursor || null });
-    }
-  } catch { /* lanjut ke pesan gagal */ }
+  } catch {
+    return json({ ok: true, scanOk: false, message: "Gagal menghubungi Roblox." });
+  }
+  if (!res.ok) {
+    return json({ ok: true, scanOk: false, message: "Roblox tidak mengizinkan daftar otomatis lewat API key (HTTP " + res.status + ")." });
+  }
+  let data = {};
+  try { data = await res.json(); } catch { /* kosong */ }
 
-  return json({
-    ok: true,
-    scanOk: false,
-    message: storeErr
-      ? "Scan gagal (" + storeErr + ")."
-      : "Tidak ada audio publik di Creator Store untuk akun ini. Audio yang privat tidak bisa dipindai otomatis."
-  });
-}
+  const rows = Array.isArray(data.data) ? data.data : Array.isArray(data.assets) ? data.assets : [];
+  const items = rows.map((r) => {
+    const id = String((r && (r.assetId != null ? r.assetId : r.id)) || "");
+    return /^\d+$/.test(id) ? { id, name: String((r && (r.name || r.displayName)) || "Audio " + id).slice(0, 100) } : null;
+  }).filter(Boolean);
 
-async function loadNames(ids) {
-  const out = {};
-  try {
-    const res = await fetch("https://apis.roblox.com/toolbox-service/v1/items/details?assetIds=" + encodeURIComponent(ids.join(",")), {
-      headers: { accept: "application/json" }
-    });
-    if (!res.ok) return out;
-    const d = await res.json();
-    for (const row of d.data || []) {
-      const a = (row && row.asset) || {};
-      if (a.id != null) out[String(a.id)] = String(a.name || "").slice(0, 100);
-    }
-  } catch { /* nama opsional */ }
-  return out;
+  return json({ ok: true, scanOk: true, items, nextCursor: data.nextPageCursor || null });
 }
 
 function uniqueIds(list) {
