@@ -5306,16 +5306,6 @@ html .subscription-overlay, html #login-overlay { background: rgba(0,0,0,.34) !i
                         <div class="stat-val" id="stat-uploads">0</div>
                         <div class="stat-label">Published</div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                                <circle cx="12" cy="7" r="4"/>
-                            </svg>
-                        </div>
-                        <div class="stat-val" id="stat-roblox">–</div>
-                        <div class="stat-label">Roblox User</div>
-                    </div>
                 </div>
                 <div class="plan-card" id="home-plan-card">
                     <div>
@@ -5624,19 +5614,15 @@ html .subscription-overlay, html #login-overlay { background: rgba(0,0,0,.34) !i
                         <option value="fail">Gagal</option>
                     </select>
                 </div>
-                <div class="lib-copyall-wrap" id="lib-copyall-wrap" hidden>
-                    <button type="button" class="btn btn-outline" id="lib-copyall-btn" onclick="copyAllPublished()">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="9" y="9" width="13" height="13" rx="2"/>
-                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-                        </svg>
-                        Salin Semua (ID = Nama)
-                    </button>
-                </div>
                 <div class="lib-tools" id="lib-tools">
-                    <button type="button" class="btn btn-outline" onclick="openAccess()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Beri Akses Map</button>
-                    <button type="button" class="btn btn-outline" id="lib-sel-btn" onclick="libSelToggleMode()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span id="lib-sel-lbl">Pilih Audio</span></button>
-                    <button type="button" class="btn btn-outline" onclick="openImport()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Impor Lama</button>
+                    <span class="lib-copyall-wrap" id="lib-copyall-wrap" hidden>
+                        <button type="button" class="btn btn-outline" id="lib-copyall-btn" onclick="copyAllPublished()" title="Salin Semua (ID = Nama)" aria-label="Salin Semua (ID = Nama)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                        </button>
+                    </span>
+                    <button type="button" class="btn btn-outline" onclick="openAccess()" title="Beri Akses Map / Teman" aria-label="Beri Akses Map / Teman"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></button>
+                    <button type="button" class="btn btn-outline" id="lib-sel-btn" onclick="libSelToggleMode()" title="Pilih Beberapa Audio" aria-label="Pilih Beberapa Audio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span id="lib-sel-lbl">Pilih Audio</span></button>
+                    <button type="button" class="btn btn-outline" onclick="openImport()" title="Impor Musik Lama dari Akun" aria-label="Impor Musik Lama dari Akun"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
                 </div>
                 <div class="lib-selbar" id="lib-selbar" hidden>
                     <span class="lib-selcount" id="lib-selcount">0 dipilih</span>
@@ -7824,7 +7810,7 @@ html .subscription-overlay, html #login-overlay { background: rgba(0,0,0,.34) !i
             function updateStats() {
                 document.getElementById('stat-total').textContent = S.library.length;
                 document.getElementById('stat-uploads').textContent = S.library.filter(i => i.status === 'done').length;
-                document.getElementById('stat-roblox').textContent = S.roblox.userId ? '#' + S.roblox.userId : '–';
+                const _sr = document.getElementById('stat-roblox'); if (_sr) _sr.textContent = S.roblox.userId ? '#' + S.roblox.userId : '–';
                 if (hasRoblox())
                     updateAccountStats();
             }
@@ -10292,6 +10278,77 @@ html body .section-heading{margin:26px 4px 12px !important}
     fill();title();
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',build);else build();
+})();
+</script>
+
+<style id="bx-v49-layout">
+/* ═══ BAXDEV v49 — Home & Pengaturan di HP dirombak, tombol Library kotak kecil ═══ */
+
+/* Library: tombol kotak kecil, rata kiri, icon saja */
+html body .lib-tools{display:flex !important;flex-wrap:wrap;justify-content:flex-start;gap:8px;overflow:visible !important;margin:0 0 14px}
+html body #lib-copyall-wrap:not([hidden]){display:contents}
+html body .lib-tools .btn{flex:none !important;width:44px !important;height:44px;min-width:0;padding:0 !important;gap:0 !important;justify-content:center;border-radius:14px !important}
+html body .lib-tools .btn svg{width:19px !important;height:19px !important}
+html body .lib-tools .btn span{display:none !important}
+
+/* Home: 2 kartu statistik (tanpa Roblox User) */
+html body .stats-grid{grid-template-columns:repeat(2,minmax(0,1fr)) !important}
+
+@media (max-width:1099px){
+  /* Home HP */
+  html body #page-home{display:none}
+  html body #page-home.active{display:flex;flex-direction:column;gap:12px}
+  html body #page-home>*{margin:0}
+  html body #bx-welcome{display:grid !important;grid-template-columns:56px minmax(0,1fr);grid-template-rows:auto auto;align-content:center;column-gap:14px;row-gap:2px;padding:16px !important;border-radius:24px !important;margin:0 !important}
+  html body #bx-welcome .bx-av{grid-row:1 / span 2;align-self:center;width:56px !important;height:56px !important;border-radius:18px !important;margin:0 !important;font-size:18px}
+  html body #bx-welcome .bx-kick{display:none}
+  html body #bx-welcome .bx-name{font-size:19px !important;margin:0 0 2px;letter-spacing:-.01em}
+  html body #bx-welcome .bx-handle{font-size:13px}
+  html body .stats-grid{margin:0 !important;gap:10px !important}
+  html body .stat-card{flex-direction:row !important;justify-content:flex-start;text-align:left !important;align-items:center;gap:12px !important;padding:14px !important;border-radius:20px !important}
+  html body .stat-card .stat-icon{width:40px;height:40px;flex:none;margin:0}
+  html body .stat-card .stat-val{font-size:22px;line-height:1}
+  html body .stat-card .stat-label{font-size:11.5px;margin-top:3px}
+  html body .plan-card{margin:0 !important;padding:14px 16px !important;border-radius:20px !important;gap:12px !important}
+  html body .plan-title{font-size:16px}
+  html body .plan-card .btn{padding:10px 16px;font-size:13px}
+  html body #bx-qa .section-heading,html body #page-home>.section-heading{margin:10px 4px 0 !important}
+  html body #bx-qa .bx-qa-grid{grid-template-columns:repeat(4,minmax(0,1fr)) !important;gap:8px !important;margin-top:10px}
+  html body .bx-tile{min-height:0 !important;padding:12px 4px 10px !important;align-items:center;text-align:center;gap:6px;border-radius:18px !important}
+  html body .bx-tile .bx-ico{width:42px !important;height:42px !important;margin:0 !important;border-radius:14px !important}
+  html body .bx-tile b{font-size:11.5px !important;font-weight:600;line-height:1.2 !important}
+  html body .bx-tile small{display:none}
+  html body .steps-grid{margin:0 -14px !important;padding:2px 14px 6px !important}
+  html body .step-card{flex-basis:72% !important;padding:16px !important}
+  html body #recent-list{padding:6px 14px !important}
+
+  html body .library-toolbar{flex-wrap:wrap !important;gap:8px !important}
+  html body .library-toolbar .search-wrap{flex:1 1 100% !important;min-width:0}
+  html body .library-toolbar select{flex:1 1 0;min-width:0;width:auto !important}
+
+  /* Pengaturan HP */
+  html body #page-settings .page-sub{margin-bottom:10px !important}
+  html body .settings-layout{gap:12px !important;margin-top:8px !important}
+  html body .settings-side{display:flex;flex-direction:column;gap:10px;position:static !important;width:100% !important;max-width:100% !important;min-width:0}
+  html body .settings-side>*{width:100% !important;max-width:100% !important;box-sizing:border-box}
+  html body .settings-user{padding:12px 14px !important;border-radius:20px !important}
+  html body .settings-side .settings-nav{display:grid !important;grid-auto-flow:column;grid-auto-columns:1fr;gap:4px;padding:4px !important;border-radius:18px !important;overflow-x:auto;position:sticky;top:calc(var(--bx-h,72px) + env(safe-area-inset-top,0px) + 6px);z-index:6;
+    background:rgba(14,14,16,.92) !important;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+  html body .settings-side .settings-tab{flex-direction:column;gap:4px;padding:9px 8px !important;font-size:11px !important;border-radius:14px !important;white-space:nowrap;justify-content:center;text-align:center}
+  html body .settings-side .settings-tab svg{width:18px !important;height:18px !important}
+  html body .settings-main .card,html body .settings-main .acct-profile-card{padding:16px !important;border-radius:22px !important}
+  html body .acct-stats{display:grid !important;grid-template-columns:repeat(3,minmax(0,1fr)) !important;gap:8px !important}
+  html body .acct-info-grid{display:grid !important;grid-template-columns:1fr !important;gap:8px !important}
+  html body .settings-main .btn{min-height:44px}
+}
+</style>
+<script id="bx-v49-js">
+(function(){
+  function go(){
+    var plan=document.getElementById('home-plan-card'),qa=document.getElementById('bx-qa');
+    if(plan&&qa&&plan.nextElementSibling!==qa)plan.after(qa);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(go,0)});else setTimeout(go,0);
 })();
 </script>
 
