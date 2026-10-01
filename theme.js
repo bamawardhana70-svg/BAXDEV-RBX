@@ -26,7 +26,7 @@
     var c = hex2hsl(hex), h = c[0], s0 = c[1], neutral = s0 < 0.12;
     var S = neutral ? s0 : Math.max(s0, 0.45), Sd = neutral ? s0 : Math.min(S, 0.6);
     return {
-      t: rgbs(h, S, 0.64), bg: hx(h, Sd, 0.035), bg2: hx(h, Sd, 0.06), bg3: hx(h, Sd, 0.095), nav: rgbs(h, Sd, 0.05),
+      t: rgbs(h, S, 0.64), bg: hx(h, Sd, 0.035), bg2: hx(h, Sd, 0.06), bg3: hx(h, Sd, 0.095), nav: rgbs(h, Sd, 0.05), bgr: rgbs(h, Sd, 0.035),
       amb0: hx(h, Sd, 0.025), amb1: hx(h, Sd, 0.16), amb2: hx(h, Sd, 0.125), amb3: hx(h, Sd, 0.07),
       text: hx(h, neutral ? s0 : 0.5, 0.965), text2: hx(h, Math.min(S, 0.25), 0.76), text3: hx(h, Math.min(S, 0.18), 0.56),
       light: hx(h, S, 0.72), light2: hx(h, S, 0.6), hi: hx(h, S, 0.93), lo: hx(h, S * 0.7, 0.6),
@@ -46,6 +46,7 @@ html[data-theme="custom"] { color-scheme: dark; --bg:@bg@; --bg2:@bg2@; --bg3:@b
   --glow:inset 0 1px 0 rgba(@t@,.22), inset 0 -1px 0 rgba(@t@,.05), 0 12px 36px rgba(0,0,0,.35);
   --glow-hover:inset 0 1px 0 rgba(@t@,.34), 0 16px 44px rgba(0,0,0,.45); }
 html[data-theme="custom"] body, html[data-theme="custom"] body.premium-user:not(.developer-mode), html[data-theme="custom"] body.developer-mode { --glass-border:rgba(@t@,.22); --glass-strong:rgba(@t@,.14); }
+html[data-theme="custom"] { --bx-t:@t@; --bx-nav:@nav@; --bx-bg:@bgr@; }
 html[data-theme="custom"] ::selection { background:@light@; color:@onacc@; }
 html[data-theme="custom"] :is(button,[role=button],input,select,a):focus-visible { outline-color:@light@; }
 html[data-theme="custom"] .ambient-scene, html[data-theme="custom"] body.premium-user:not(.developer-mode) .ambient-scene {

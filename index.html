@@ -10352,5 +10352,109 @@ html body .stats-grid{grid-template-columns:repeat(2,minmax(0,1fr)) !important}
 })();
 </script>
 
+<style id="bx-v50-glass">
+/* ═══ BAXDEV v50 — Hitam mengikuti tema + liquid glass (blur) + top bar desktop rapi ═══
+   --bx-t = warna aksen tema (rgb), --bx-nav = hitam bernuansa tema, --bx-bg = dasar gelap tema.
+   Mono tetap hitam/putih netral; Blue/Green/Aurora/Senja/Samudra/Custom otomatis ikut warnanya. */
+:root{--bx-t:255,255,255;--bx-nav:10,10,12;--bx-bg:7,7,8}
+html[data-theme="mono"]{--bx-t:255,255,255;--bx-nav:10,10,12;--bx-bg:7,7,8}
+html[data-theme="blue"]{--bx-t:110,170,255;--bx-nav:6,12,24;--bx-bg:4,9,20}
+html[data-theme="green"]{--bx-t:100,230,160;--bx-nav:5,15,9;--bx-bg:3,11,7}
+html[data-theme="aurora"]{--bx-t:166,110,255;--bx-nav:14,6,24;--bx-bg:12,4,20}
+html[data-theme="senja"]{--bx-t:255,147,110;--bx-nav:24,12,6;--bx-bg:20,10,4}
+html[data-theme="samudra"]{--bx-t:110,252,255;--bx-nav:6,22,24;--bx-bg:4,18,20}
+
+:root{
+  --g-fill:linear-gradient(145deg,rgba(var(--bx-t),.15),rgba(var(--bx-t),.045) 50%,rgba(var(--bx-t),.10)),rgba(var(--bx-nav),.50);
+  --g-fill-hi:linear-gradient(145deg,rgba(var(--bx-t),.21),rgba(var(--bx-t),.07) 50%,rgba(var(--bx-t),.14)),rgba(var(--bx-nav),.56);
+  --g-line:rgba(var(--bx-t),.17);--g-line-hi:rgba(var(--bx-t),.34);
+  --g-blur:blur(24px) saturate(170%);
+  --g-spec:inset 0 1px 0 rgba(var(--bx-t),.36),inset 0 -1px 0 rgba(var(--bx-t),.06),inset 0 0 26px rgba(var(--bx-t),.05);
+  --g-drop:0 18px 44px -18px rgba(0,0,0,.7),0 2px 8px rgba(0,0,0,.28);
+  --m-line:rgba(var(--bx-t),.15);--m-line2:rgba(var(--bx-t),.28);--m-tile:rgba(var(--bx-t),.09);
+  --bx-glass-nav:linear-gradient(180deg,rgba(var(--bx-t),.10),rgba(var(--bx-t),.03)),rgba(var(--bx-nav),.52);
+  --bx-glass-pop:linear-gradient(150deg,rgba(var(--bx-t),.16),rgba(var(--bx-t),.05) 55%,rgba(var(--bx-t),.10)),rgba(var(--bx-nav),.72);
+}
+
+/* Panel / kartu */
+html body :is(.card,.stat-card,.hero-mock,.home-info,.library-toolbar,.plan-card,.step-card,.settings-user,.acct-profile-card,.bx-tile,#bx-welcome){
+  background:var(--g-fill) !important;border:1px solid var(--g-line) !important;
+  -webkit-backdrop-filter:var(--g-blur);backdrop-filter:var(--g-blur);box-shadow:var(--g-spec),var(--g-drop) !important}
+html body :is(.bx-tile,.card,.stat-card):hover{border-color:var(--g-line-hi) !important;background:var(--g-fill-hi) !important}
+html body #bx-welcome{background:var(--g-fill-hi) !important}
+html body .bx-ico{background:rgba(var(--bx-t),.10) !important;border-color:var(--m-line) !important;box-shadow:inset 0 1px 0 rgba(var(--bx-t),.25)}
+
+/* Navbar atas */
+html body #navbar{background:var(--bx-glass-nav) !important;border:1px solid var(--m-line) !important;
+  -webkit-backdrop-filter:blur(28px) saturate(180%);backdrop-filter:blur(28px) saturate(180%);
+  box-shadow:inset 0 1px 0 rgba(var(--bx-t),.30),0 14px 40px -18px rgba(0,0,0,.8) !important}
+html body .nav-link:hover{background:rgba(var(--bx-t),.10) !important}
+html body .nav-link.active{background:linear-gradient(145deg,rgba(var(--bx-t),.26),rgba(var(--bx-t),.08)) !important;
+  box-shadow:inset 0 1px 0 rgba(var(--bx-t),.42),inset 0 0 0 1px rgba(var(--bx-t),.22) !important}
+
+/* Tombol, input, chip */
+html body :is(.btn-outline,.btn-ghost,.btn-secondary){background:var(--g-fill) !important;border:1px solid var(--m-line) !important;
+  -webkit-backdrop-filter:blur(16px) saturate(160%);backdrop-filter:blur(16px) saturate(160%);box-shadow:var(--g-spec) !important}
+html body input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=file]),html body textarea,html body select{
+  background:rgba(var(--bx-t),.07) !important;border:1px solid var(--m-line) !important;
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+html body input:focus,html body textarea:focus,html body select:focus{border-color:rgba(var(--bx-t),.55) !important;
+  background:rgba(var(--bx-t),.11) !important;box-shadow:0 0 0 4px rgba(var(--bx-t),.12) !important}
+html body .format-chip{background:rgba(var(--bx-t),.08) !important}
+html body .source-tab.active{background:linear-gradient(145deg,rgba(var(--bx-t),.30),rgba(var(--bx-t),.10)) !important;
+  box-shadow:inset 0 1px 0 rgba(var(--bx-t),.45) !important}
+
+/* Modal, dropdown, toast, player */
+html body :is(.access-card,.login-card,.subscription-card,.gg-card,#profile-dropdown,.toast-item){
+  background:var(--bx-glass-pop) !important;border:1px solid var(--m-line2) !important;
+  -webkit-backdrop-filter:blur(32px) saturate(180%);backdrop-filter:blur(32px) saturate(180%);
+  box-shadow:inset 0 1px 0 rgba(var(--bx-t),.34),0 30px 80px -20px rgba(0,0,0,.8) !important}
+html body #player-bar{background:var(--bx-glass-nav) !important;border:1px solid var(--m-line2) !important;
+  -webkit-backdrop-filter:blur(28px) saturate(180%);backdrop-filter:blur(28px) saturate(180%);
+  box-shadow:inset 0 1px 0 rgba(var(--bx-t),.30),0 20px 50px -16px rgba(0,0,0,.8) !important}
+
+/* HP: header, tombol, drawer */
+@media (max-width:1099px){
+  html body #navbar{background:var(--bx-glass-nav) !important;border:0 !important;border-bottom:1px solid var(--m-line) !important}
+  #bx-burger,#bx-logo,.dr-x{background:rgba(var(--bx-t),.09) !important;border-color:var(--m-line2) !important;
+    -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);box-shadow:inset 0 1px 0 rgba(var(--bx-t),.28)}
+  #bx-scrim{background:rgba(var(--bx-bg),.55) !important;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+  #bx-drawer{background:var(--bx-glass-pop) !important;border-right:1px solid var(--m-line2) !important;
+    -webkit-backdrop-filter:blur(34px) saturate(180%);backdrop-filter:blur(34px) saturate(180%);
+    box-shadow:inset -1px 0 0 rgba(var(--bx-t),.12),24px 0 60px -20px rgba(0,0,0,.7)}
+  .dr-acct{background:rgba(var(--bx-t),.09) !important}
+  .dr-item.active{background:linear-gradient(145deg,rgba(var(--bx-t),.24),rgba(var(--bx-t),.07)) !important;border-color:var(--m-line2) !important}
+  html body .settings-side .settings-nav{background:var(--bx-glass-nav) !important;
+    -webkit-backdrop-filter:blur(24px) saturate(170%);backdrop-filter:blur(24px) saturate(170%)}
+}
+
+/* PC: top bar rapi */
+@media (min-width:1100px){
+  html body #navbar{height:62px !important;border-radius:22px !important;gap:14px !important;padding:0 12px 0 20px !important}
+  html body .nav-links{gap:3px !important;min-width:0;flex:1 1 auto}
+  html body .nav-link{white-space:nowrap;padding:9px 14px !important}
+  html body .nav-right{flex:none}
+  html body #app{padding-top:calc(62px + 46px) !important}
+  html body #profile-dropdown{top:86px !important}
+  html body .settings-side{top:92px !important}
+  html body #bx-qa .bx-qa-grid{grid-template-columns:repeat(4,minmax(0,1fr)) !important;gap:16px !important}
+  html body .bx-tile{min-height:140px}
+  html body #page-home .stats-grid{grid-template-columns:repeat(2,minmax(0,1fr)) !important}
+}
+@media (min-width:1100px) and (max-width:1279px){
+  html body #navbar{gap:8px !important;padding:0 10px 0 14px !important}
+  html body .nav-link{padding:9px 10px !important;font-size:13.5px !important;gap:6px !important}
+  html body .nav-link svg{width:16px !important;height:16px !important}
+}
+
+/* Tanpa dukungan blur: pakai latar lebih pekat */
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  :root{--g-fill:rgba(var(--bx-nav),.92);--g-fill-hi:rgba(var(--bx-nav),.95);--bx-glass-nav:rgba(var(--bx-nav),.95);--bx-glass-pop:rgba(var(--bx-nav),.97)}
+}
+@media (prefers-reduced-transparency:reduce){
+  :root{--g-fill:rgba(var(--bx-nav),.94);--g-fill-hi:rgba(var(--bx-nav),.96);--bx-glass-nav:rgba(var(--bx-nav),.96);--bx-glass-pop:rgba(var(--bx-nav),.98)}
+}
+</style>
+
 </body>
 </html>

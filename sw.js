@@ -1,5 +1,5 @@
 // Service worker baxdev: shell offline ringan. API, Firebase, dan Roblox TIDAK pernah di-cache.
-const CACHE = "baxdev-shell-v1";
+const CACHE = "baxdev-shell-v2";
 const SHELL = ["/", "/favicon-192.png", "/logo.png", "/manifest.webmanifest"];
 
 self.addEventListener("install", (e) => {
