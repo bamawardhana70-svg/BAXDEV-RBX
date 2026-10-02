@@ -11641,5 +11641,17 @@ body.bx-busy-on{overflow:hidden}
 .rf-empty{padding:14px 4px;font-size:12.5px;color:#8f9197;text-align:center}
 @media(max-width:480px){.rf-hero,.rf-card{padding:16px}.rf-title{font-size:19px}}
 </style>
+
+<style id="bx-libfix-css">
+html body .lib-card{min-width:0 !important;overflow:hidden}
+html body .lib-card>*{min-width:0;max-width:100%}
+html body .lib-actions{display:flex !important;gap:6px;width:100%;box-sizing:border-box;container-type:inline-size}
+html body .lib-act{flex:1 1 0 !important;min-width:0 !important;overflow:hidden;padding:0 4px !important;gap:4px !important}
+html body .lib-act .lib-lbl{overflow:hidden;text-overflow:clip}
+@container (max-width:172px){
+  html body .lib-act .lib-lbl{display:none !important}
+  html body .lib-act svg{width:15px !important;height:15px !important}
+}
+</style>
 </body>
 </html>
