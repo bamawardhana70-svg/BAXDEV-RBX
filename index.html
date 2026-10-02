@@ -4940,6 +4940,8 @@ html .subscription-overlay, html #login-overlay { background: rgba(0,0,0,.34) !i
     set:function(patch){
       if(typeof isVIP==='function'&&!isVIP()){if(typeof toast==='function')toast('Border avatar khusus pengguna VIP. Beli VIP dulu ya.','info');return;}
       Object.assign(A.cfg,patch);A.save();A.apply();
+      // Ubah warna border (mode Warna bebas / Neon) -> warna tema ikut berubah.
+      if(patch.c&&(A.cfg.s==='warna'||A.cfg.s==='neon')&&typeof setCustomColor==='function'){try{setCustomColor(patch.c);}catch(e){}}
     },
     syncUI:function(){
       var c=A.cfg;
@@ -7089,11 +7091,13 @@ html .subscription-overlay, html #login-overlay { background: rgba(0,0,0,.34) !i
                     return `
     <div class="file-item">
       <div class="file-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${model ? MODEL_ICON : '<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>'}</svg></div>
-      <div class="file-details"><div class="file-name">${escapeHtml(f.name)}</div><div class="file-size">${fmtSize(f.size)}${f._dur ? ' · ' + fmtDur(f._dur) : ''} <span class="q-chip ${st[1]}">${st[0]}</span></div><input class="batch-name-input" type="text" value="${escapeHtml(S.assetNames[i] || defaultAssetName(f.name))}" maxlength="50" aria-label="Nama asset ${i + 1}" oninput="setAssetName(${i},this.value)">
+      <div class="file-details"><div class="file-name">${escapeHtml(f.name)}</div><div class="file-size">${fmtSize(f.size)}${f._dur ? ' · ' + fmtDur(f._dur) : ''} <span class="q-chip ${st[1]}">${st[0]}</span></div><input class="batch-name-input" type="text" value="${escapeHtml(S.assetNames[i] || defaultAssetName(f.name))}" maxlength="50" aria-label="Nama asset ${i + 1}" oninput="setAssetName(${i},this.value)">${model ? '' : '<div class="bx-prev" data-pv="' + i + '"></div>'}
       </div>
       <button class="file-rm" onclick="removeFile(${i})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>`;
                 }).join('');
+                if (window.BXPrev)
+                    BXPrev.mount();
             }
             function setQStatus(f, st) {
                 f._st = st;
@@ -7216,6 +7220,7 @@ html .subscription-overlay, html #login-overlay { background: rgba(0,0,0,.34) !i
                 btn.disabled = true;
                 S.uploading = true;
                 wrap.style.display = 'block';
+                if (window.bxBusy) bxBusy.show('Menyiapkan upload…');
                 document.getElementById('result-box').classList.remove('visible');
 
                 for (let i = 0; i < S.files.length; i++) {
@@ -7223,16 +7228,20 @@ html .subscription-overlay, html #login-overlay { background: rgba(0,0,0,.34) !i
                     const name = S.assetNames[i] || defaultAssetName(file.name);
                     setQStatus(file, 'run');
                     label.textContent = `Mengupload ${i + 1}/${S.files.length}: ${file.name}`;
-                    for (let p = 0; p <= 85; p += 15) {
-                        fill.style.width = p + '%';
-                        pct.textContent = p + '%';
-                        await sleep(100)
-                    }
+                    fill.style.width = '5%';
+                    pct.textContent = '5%';
+                    if (window.bxBusy) bxBusy.set('Memproses file…', i / S.files.length, file.name);
+                    await new Promise(r => requestAnimationFrame(() => setTimeout(r, 0)));
                     label.textContent = 'Publishing ke Roblox...';
                     const model = isModelFile(file);
                     try {
                         const speed = S.speed || 1.0;
-                        const processed = model ? file : await applyAudioEffects(file, speed, S.pitch || 0);
+                        const processed = model ? file : await applyAudioEffects(file, speed, S.pitch || 0, f => {
+                            const v = 5 + f * 40;
+                            fill.style.width = v + '%';
+                            pct.textContent = Math.round(v) + '%';
+                            if (window.bxBusy) bxBusy.set('Memproses audio…', (i + .05 + f * .45) / S.files.length);
+                        });
                         // Salin isi file ke memori dulu: file dari picker/HP bisa "berubah" atau hilang
                         // selama upload dan itu memicu error "Failed to fetch".
                         let uploadFile;
@@ -7252,6 +7261,7 @@ html .subscription-overlay, html #login-overlay { background: rgba(0,0,0,.34) !i
                         fd.append('assetType', model ? 'Model' : 'Audio');
                         fd.append('displayName', name);
                         fd.append('description', 'Uploaded via baxdev Roblox Audio Studio');
+                        if (window.bxBusy) bxBusy.set('Mengunggah ke Roblox…', (i + .55) / S.files.length);
                         const res = await postWithRetry('/api/roblox-upload', fd);
                         const responseText = await res.text();
                         let data = {};
@@ -7286,6 +7296,7 @@ html .subscription-overlay, html #login-overlay { background: rgba(0,0,0,.34) !i
                                     assetId = status.assetId;
                                 fill.style.width = Math.min(98, 86 + attempt) + '%';
                                 pct.textContent = Math.min(98, 86 + attempt) + '%';
+                                if (window.bxBusy) bxBusy.set('Menunggu pengecekan Roblox…', (i + .65 + Math.min(attempt, 9) * .035) / S.files.length);
                             }
                         }
                         fill.style.width = '100%';
@@ -7325,7 +7336,9 @@ html .subscription-overlay, html #login-overlay { background: rgba(0,0,0,.34) !i
                         toast('Gagal upload: ' + (e.message || 'Error'), 'error');
                     }
                     label.textContent = `Selesai ${i + 1}/${S.files.length}`;
+                    if (window.bxBusy) bxBusy.set(i + 1 === S.files.length ? 'Selesai' : 'Lanjut file berikutnya…', (i + 1) / S.files.length);
                 }
+                if (window.bxBusy) bxBusy.hide();
                 await sleep(900);
                 S.uploading = false;
                 wrap.style.display = 'none';
@@ -7419,7 +7432,7 @@ html .subscription-overlay, html #login-overlay { background: rgba(0,0,0,.34) !i
                 return out;
             }
 
-            async function applyAudioEffects(file, speed, pitch) {
+            async function applyAudioEffects(file, speed, pitch, onProgress) {
                 const ext = file.name.split('.').pop().toLowerCase();
                 const robloxFormat = ['mp3', 'ogg', 'wav', 'flac'].includes(ext);
                 const noPitch = !pitch;
@@ -7461,7 +7474,11 @@ html .subscription-overlay, html #login-overlay { background: rgba(0,0,0,.34) !i
                         return out;
                     }
                     ;
-                    for (let i = 0; i < left.length; i += block) {
+                    for (let i = 0, n = 0; i < left.length; i += block, n++) {
+                        if (n % 40 === 0) {
+                            if (onProgress) onProgress(i / left.length);
+                            await new Promise(r => setTimeout(r, 0));
+                        }
                         const encoded = right ? encoder.encodeBuffer(toInt16(left, i), toInt16(right, i)) : encoder.encodeBuffer(toInt16(left, i));
                         if (encoded.length)
                             mp3.push(new Int8Array(encoded));
@@ -9700,6 +9717,11 @@ html .subscription-overlay, html #login-overlay { background: rgba(0,0,0,.34) !i
                         frame = 0;
                         return;
                     }
+                    if (window.__bxPauseAmbient) {
+                        lastFrame = now;
+                        frame = requestAnimationFrame(tick);
+                        return;
+                    }
                     if (now - lastFrame >= 1000 / 30) {
                         time += Math.min((now - lastFrame) / 1000, .05) * motionRate;
                         lastFrame = now;
@@ -11155,5 +11177,404 @@ html body:not(.developer-mode) #settings-developer{display:none}
 .pitch-reset[hidden]{display:none}
 </style>
 
+<style id="bx-v58b">
+/* ═══ BAXDEV v58b — Navbar atas PC + preview audio di Upload ═══ */
+
+/* ── Preview audio (antrean Upload) ── */
+.bx-prev:empty{display:none}
+.bx-prev{margin-top:10px}
+.pv{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:8px 10px;border-radius:14px;
+  background:rgba(var(--bx-t,255,255,255),.06);border:1px solid var(--m-line,rgba(255,255,255,.09))}
+.pv-btn{width:36px;height:36px;border-radius:50%;flex:none;display:grid;place-items:center;padding:0;cursor:pointer;
+  border:1px solid var(--m-line2,rgba(255,255,255,.17));color:var(--text,#fff);
+  background:linear-gradient(145deg,rgba(var(--bx-t,255,255,255),.34),rgba(var(--bx-t,255,255,255),.12));
+  transition:transform .15s,box-shadow .25s;-webkit-tap-highlight-color:transparent}
+.pv-btn:hover{transform:scale(1.07)}
+.pv-btn:active{transform:scale(.93)}
+.pv-btn svg{width:16px;height:16px;fill:currentColor !important;stroke:none !important}
+.pv-btn .i-pause{display:none}
+.pv-btn.is-playing .i-pause{display:block}
+.pv-btn.is-playing .i-play{display:none}
+.pv-btn.is-playing{box-shadow:0 0 0 4px rgba(var(--bx-t,255,255,255),.16),0 0 18px rgba(var(--bx-t,255,255,255),.45)}
+.pv-wave{position:relative;flex:1 1 140px;min-width:0;height:38px;cursor:pointer;touch-action:none;border-radius:8px;outline:none}
+.pv-wave:focus-visible{box-shadow:0 0 0 2px rgba(var(--bx-t,255,255,255),.6)}
+.pv-wave canvas{display:block;width:100%;height:100%}
+.pv-meta{display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex:none;
+  font:500 11.5px var(--font,inherit);color:var(--text2,#aaa);font-variant-numeric:tabular-nums}
+.pv-time b{color:var(--text,#fff);font-weight:600}
+.pv-fx{font-size:10.5px;letter-spacing:.02em;color:rgb(var(--bx-t,255,255,255))}
+.pv-fx:empty{display:none}
+
+/* ── Navbar atas (PC) ── */
+@media (min-width:1100px){
+  html body #navbar{height:60px !important;border-radius:20px !important;padding:0 10px 0 18px !important;gap:16px !important;
+    background:linear-gradient(180deg,rgba(var(--bx-t),.13),rgba(var(--bx-t),.035)),rgba(var(--bx-nav),.64) !important;
+    border:1px solid var(--m-line) !important;
+    box-shadow:inset 0 1px 0 rgba(var(--bx-t),.34),0 18px 44px -18px rgba(0,0,0,.85) !important;
+    transition:top .3s cubic-bezier(.3,.9,.3,1),height .3s,width .3s,background .3s,box-shadow .3s}
+  html body.bx-scrolled #navbar{top:8px !important;height:54px !important;width:min(calc(100% - 72px),var(--wrap)) !important;
+    background:linear-gradient(180deg,rgba(var(--bx-t),.16),rgba(var(--bx-t),.05)),rgba(var(--bx-nav),.92) !important;
+    box-shadow:inset 0 1px 0 rgba(var(--bx-t),.38),0 22px 50px -16px rgba(0,0,0,.9) !important}
+  /* garis cahaya tipis di bawah bar, ikut warna tema */
+  html body #navbar::after{content:"";position:absolute;left:14%;right:14%;bottom:-1px;height:1px;pointer-events:none;
+    background:linear-gradient(90deg,transparent,rgba(var(--bx-t),.65),transparent);opacity:.7}
+  /* logo */
+  html body #nav-logo-wrap{padding-right:18px !important;margin-right:2px !important;border-right:1px solid var(--m-line) !important;border-radius:0 !important;cursor:pointer}
+  html body #nav-logo{transition:transform .25s,filter .25s}
+  html body #nav-logo-wrap:hover #nav-logo{transform:scale(1.05)}
+  /* menu */
+  html body .nav-links{position:relative;gap:2px !important}
+  html body .nav-link{position:relative;z-index:1;padding:9px 14px !important;border-radius:12px !important;font-weight:500;
+    color:var(--text2,#aaa);transition:color .2s,background .2s}
+  html body .nav-link svg{opacity:.78;transition:transform .25s,opacity .2s}
+  html body .nav-link:hover{color:var(--text,#fff)}
+  html body .nav-link:hover svg{opacity:1;transform:translateY(-1px) scale(1.1)}
+  html body .nav-link.active{color:var(--text,#fff) !important}
+  html body .nav-link.active svg{opacity:1}
+  /* pil penanda yang meluncur ke menu aktif */
+  .nav-ind{position:absolute;z-index:0;top:50%;left:0;height:38px;margin-top:-19px;width:0;border-radius:13px;pointer-events:none;opacity:0;
+    background:linear-gradient(145deg,rgba(var(--bx-t),.32),rgba(var(--bx-t),.09));
+    box-shadow:inset 0 1px 0 rgba(var(--bx-t),.5),inset 0 0 0 1px rgba(var(--bx-t),.28),0 8px 20px -8px rgba(var(--bx-t),.55);
+    transition:transform .4s cubic-bezier(.3,1.25,.4,1),width .4s cubic-bezier(.3,1.25,.4,1),opacity .2s}
+  html.bx-nav-ind .nav-ind{opacity:1}
+  html.bx-nav-ind body .nav-link.active,html.bx-nav-ind body .nav-link.active:hover{background:transparent !important;box-shadow:none !important}
+  /* kanan */
+  html body .nav-right{gap:10px !important;padding-left:14px !important;border-left:1px solid var(--m-line) !important}
+  html body #login-nav-btn{height:40px;padding:0 16px !important;border-radius:14px !important;font-weight:600}
+}
+@media (prefers-reduced-motion:reduce){.nav-ind{transition:none}}
+</style>
+
+<script id="bx-v58b-js">
+/* Preview audio real-time di antrean Upload: putar/jeda, waveform dengan playhead bergerak, geser untuk seek,
+   waktu berjalan, dan mengikuti preset kecepatan + pitch yang dipilih. */
+(function () {
+  var AC = window.AudioContext || window.webkitAudioContext;
+  var BARS = 64, MAX_WAVE = 14 * 1024 * 1024;
+  var reg = [], mounted = [], raf = 0, chain = Promise.resolve();
+
+  function Sx() { return typeof S !== 'undefined' ? S : null; }
+  function accent() { return getComputedStyle(document.documentElement).getPropertyValue('--bx-t').trim() || '255,255,255'; }
+  function fmt(t) { t = Math.max(0, t || 0); var m = Math.floor(t / 60), s = Math.floor(t % 60); return m + ':' + (s < 10 ? '0' : '') + s; }
+  function rate() {
+    var s = Sx(), sp = (s && s.speed) || 1, pt = (s && s.pitch) || 0;
+    return Math.max(0.125, Math.min(4, sp * Math.pow(2, pt / 12)));
+  }
+  function fxText() {
+    var s = Sx(), sp = (s && s.speed) || 1, pt = (s && s.pitch) || 0, out = [];
+    if (sp !== 1) out.push(sp + '×');
+    if (pt) out.push((pt > 0 ? '+' : '') + pt + ' st');
+    return out.join(' · ');
+  }
+  function dur(st) {
+    var d = st.a.duration;
+    return isFinite(d) && d > 0 ? d : (st.dur || st.f._dur || 0);
+  }
+  function applyRate(st) {
+    var a = st.a, r = rate();
+    try { a.preservesPitch = false; a.mozPreservesPitch = false; a.webkitPreservesPitch = false; } catch (e) {}
+    if (a.playbackRate !== r) a.playbackRate = r;
+  }
+
+  function getSt(f) {
+    if (f._pv) return f._pv;
+    var a = new Audio();
+    a.preload = 'metadata';
+    var st = { f: f, a: a, url: URL.createObjectURL(f), peaks: null, loading: false, failed: false, dur: 0 };
+    a.src = st.url;
+    ['play', 'pause', 'ended'].forEach(function (ev) { a.addEventListener(ev, function () { syncBtns(); kick(); }); });
+    a.addEventListener('loadedmetadata', paint);
+    a.addEventListener('seeked', paint);
+    f._pv = st;
+    reg.push(st);
+    return st;
+  }
+
+  async function loadPeaks(st) {
+    if (st.peaks || st.loading || st.failed || !AC || st.f.size > MAX_WAVE) return;
+    st.loading = true;
+    var ctx = null;
+    try {
+      var buf = await st.f.arrayBuffer();
+      ctx = new AC();
+      var ab = await ctx.decodeAudioData(buf);
+      var c0 = ab.getChannelData(0), c1 = ab.numberOfChannels > 1 ? ab.getChannelData(1) : null;
+      var n = c0.length, per = Math.max(1, Math.floor(n / BARS)), step = Math.max(1, Math.floor(per / 160));
+      var peaks = new Array(BARS), mx = 0, b, i;
+      for (b = 0; b < BARS; b++) {
+        var from = b * per, to = Math.min(n, from + per), m = 0;
+        for (i = from; i < to; i += step) {
+          var v = Math.abs(c0[i]);
+          if (c1) { var w = Math.abs(c1[i]); if (w > v) v = w; }
+          if (v > m) m = v;
+        }
+        peaks[b] = m;
+        if (m > mx) mx = m;
+      }
+      if (mx > 0) for (b = 0; b < BARS; b++) peaks[b] = peaks[b] / mx;
+      st.peaks = peaks;
+      st.dur = ab.duration;
+    } catch (e) {
+      st.failed = true;
+    }
+    try { if (ctx) ctx.close(); } catch (e) {}
+    st.loading = false;
+    paint();
+  }
+
+  function toggle(st) {
+    if (st.a.paused) {
+      reg.forEach(function (o) { if (o !== st) o.a.pause(); });
+      var s = Sx();
+      try { if (s && s.audioEl && !s.audioEl.paused) s.audioEl.pause(); } catch (e) {}
+      applyRate(st);
+      var p = st.a.play();
+      if (p && p.catch) p.catch(function () { if (typeof toast === 'function') toast('Preview audio tidak bisa diputar di browser ini', 'error'); });
+    } else {
+      st.a.pause();
+    }
+  }
+
+  function draw(m) {
+    var w = m.wave.clientWidth, h = m.wave.clientHeight;
+    if (!w || !h) return;
+    var dpr = window.devicePixelRatio || 1, cv = m.cv;
+    if (cv.width !== Math.round(w * dpr) || cv.height !== Math.round(h * dpr)) { cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); }
+    var g = cv.getContext('2d');
+    g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    g.clearRect(0, 0, w, h);
+    var st = m.st, d = dur(st), cur = st.a.currentTime || 0, p = d > 0 ? Math.min(1, cur / d) : 0, t = accent();
+    var gap = 2, bw = Math.max(1.5, (w - gap * (BARS - 1)) / BARS), r = Math.min(bw / 2, 2);
+    for (var i = 0; i < BARS; i++) {
+      var amp = st.peaks ? st.peaks[i] : 0.22 + 0.1 * Math.sin(i * 0.8);
+      var bh = Math.max(3, amp * (h - 4)), x = i * (bw + gap), y = (h - bh) / 2;
+      g.fillStyle = (i + 0.5) / BARS <= p ? 'rgb(' + t + ')' : 'rgba(' + t + ',.28)';
+      g.beginPath();
+      if (g.roundRect) g.roundRect(x, y, bw, bh, r); else g.rect(x, y, bw, bh);
+      g.fill();
+    }
+    if (p > 0) {
+      g.fillStyle = 'rgba(255,255,255,.92)';
+      g.fillRect(Math.max(0, Math.min(w - 2, p * w - 1)), 0, 2, h);
+    }
+    m.cur.textContent = fmt(cur);
+    m.tot.textContent = fmt(d);
+    m.fx.textContent = fxText();
+    m.wave.setAttribute('aria-valuenow', String(Math.round(p * 100)));
+  }
+  function paint() { mounted.forEach(draw); }
+
+  function syncBtns() {
+    mounted.forEach(function (m) {
+      var pl = !m.st.a.paused && !m.st.a.ended;
+      m.btn.classList.toggle('is-playing', pl);
+      m.btn.setAttribute('aria-label', pl ? 'Jeda preview' : 'Putar preview');
+    });
+  }
+
+  function loop() {
+    raf = 0;
+    var any = false;
+    mounted.forEach(function (m) {
+      var a = m.st.a;
+      if (a.paused) return;
+      if (!m.box.offsetParent) { a.pause(); return; }   // pindah halaman -> hentikan preview
+      any = true;
+      applyRate(m.st);
+    });
+    paint();
+    if (any) raf = requestAnimationFrame(loop);
+  }
+  function kick() { if (!raf) raf = requestAnimationFrame(loop); }
+
+  function bind(m) {
+    var drag = false;
+    m.btn.addEventListener('click', function () { toggle(m.st); });
+    function seek(e) {
+      var d = dur(m.st), rc = m.wave.getBoundingClientRect();
+      if (d > 0 && rc.width) m.st.a.currentTime = Math.max(0, Math.min(1, (e.clientX - rc.left) / rc.width)) * d;
+      paint();
+    }
+    m.wave.addEventListener('pointerdown', function (e) { drag = true; try { m.wave.setPointerCapture(e.pointerId); } catch (x) {} seek(e); });
+    m.wave.addEventListener('pointermove', function (e) { if (drag) seek(e); });
+    ['pointerup', 'pointercancel'].forEach(function (ev) { m.wave.addEventListener(ev, function () { drag = false; }); });
+    m.wave.addEventListener('keydown', function (e) {
+      var a = m.st.a;
+      if (e.key === 'ArrowRight') { a.currentTime = Math.min(dur(m.st), a.currentTime + 5); e.preventDefault(); paint(); }
+      else if (e.key === 'ArrowLeft') { a.currentTime = Math.max(0, a.currentTime - 5); e.preventDefault(); paint(); }
+      else if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); toggle(m.st); }
+    });
+  }
+
+  function mount() {
+    var s = Sx(), files = (s && s.files) || [];
+    mounted = [];
+    document.querySelectorAll('#file-queue .bx-prev[data-pv]').forEach(function (box) {
+      var f = files[+box.getAttribute('data-pv')];
+      if (!f || (typeof isModelFile === 'function' && isModelFile(f))) return;
+      var st = getSt(f);
+      box.innerHTML = '<div class="pv"><button type="button" class="pv-btn" aria-label="Putar preview">' +
+        '<svg class="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg>' +
+        '<svg class="i-pause" viewBox="0 0 24 24"><rect x="6" y="5" width="4.2" height="14" rx="1.2"/><rect x="13.8" y="5" width="4.2" height="14" rx="1.2"/></svg></button>' +
+        '<div class="pv-wave" role="slider" tabindex="0" aria-label="Posisi preview" aria-valuemin="0" aria-valuemax="100"><canvas></canvas></div>' +
+        '<div class="pv-meta"><span class="pv-time"><b class="pv-cur">0:00</b> / <span class="pv-tot">0:00</span></span><span class="pv-fx"></span></div></div>';
+      var m = { st: st, box: box, btn: box.querySelector('.pv-btn'), wave: box.querySelector('.pv-wave'), cv: box.querySelector('canvas'),
+        cur: box.querySelector('.pv-cur'), tot: box.querySelector('.pv-tot'), fx: box.querySelector('.pv-fx') };
+      bind(m);
+      mounted.push(m);
+      chain = chain.then(function () { return loadPeaks(st); });
+    });
+    // buang preview untuk file yang sudah tidak ada di antrean
+    reg = reg.filter(function (st) {
+      if (files.indexOf(st.f) > -1) return true;
+      try { st.a.pause(); st.a.removeAttribute('src'); st.a.load(); } catch (e) {}
+      URL.revokeObjectURL(st.url);
+      delete st.f._pv;
+      return false;
+    });
+    syncBtns();
+    paint();
+    kick();
+  }
+
+  // Ganti kecepatan / pitch / warna tema saat preview jalan -> langsung terasa
+  function refresh() {
+    mounted.forEach(function (m) { if (!m.st.a.paused) applyRate(m.st); });
+    paint();
+  }
+  document.addEventListener('click', function (e) {
+    var t = e.target;
+    if (t && t.closest && t.closest('.speed-chip,#pitch-reset,.theme-swatch,.theme-opt')) setTimeout(refresh, 30);
+  });
+  document.addEventListener('input', function (e) {
+    var id = e.target && e.target.id;
+    if (id === 'pitch-range' || id === 'theme-color' || id === 'avb-color') setTimeout(refresh, 30);
+  });
+  window.addEventListener('resize', paint);
+  try {
+    var s0 = Sx();
+    if (s0 && s0.audioEl) s0.audioEl.addEventListener('play', function () { reg.forEach(function (o) { o.a.pause(); }); });
+  } catch (e) {}
+
+  window.BXPrev = { mount: mount };
+  if (mounted.length === 0 && document.querySelector('#file-queue .bx-prev')) mount();
+})();
+
+/* Navbar atas PC: pil penanda meluncur ke menu aktif + bar memadat saat halaman di-scroll. */
+(function () {
+  var links = document.querySelector('#navbar .nav-links');
+  if (!links) return;
+  var mq = window.matchMedia('(min-width:1100px)');
+  var ind = document.createElement('span');
+  ind.className = 'nav-ind';
+  ind.setAttribute('aria-hidden', 'true');
+  links.appendChild(ind);
+  var first = true;
+
+  function place() {
+    var root = document.documentElement;
+    if (!mq.matches) { root.classList.remove('bx-nav-ind'); return; }
+    var a = links.querySelector('.nav-link.active');
+    if (!a || !a.offsetWidth) { root.classList.remove('bx-nav-ind'); return; }
+    if (first) ind.style.transition = 'none';
+    ind.style.width = a.offsetWidth + 'px';
+    ind.style.transform = 'translateX(' + a.offsetLeft + 'px)';
+    root.classList.add('bx-nav-ind');
+    if (first) { void ind.offsetWidth; ind.style.transition = ''; first = false; }
+  }
+  new MutationObserver(place).observe(links, { subtree: true, attributes: true, attributeFilter: ['class'] });
+  if (window.ResizeObserver) new ResizeObserver(place).observe(links);
+  window.addEventListener('resize', place);
+  window.addEventListener('load', place);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(place);
+  if (mq.addEventListener) mq.addEventListener('change', place);
+  place();
+
+  window.addEventListener('scroll', function (e) {
+    var t = e.target, y = Math.max(window.scrollY || 0, t && t.scrollTop || 0);
+    document.body.classList.toggle('bx-scrolled', y > 12);
+  }, { capture: true, passive: true });
+})();
+</script>
+
+
+<style id="bx-busy-css">
+#bx-busy{position:fixed;inset:0;z-index:2147482000;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(6,6,8,.9);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .28s ease,visibility 0s linear .28s}
+#bx-busy.show{opacity:1;visibility:visible;pointer-events:auto;transition:opacity .28s ease}
+body.bx-busy-on{overflow:hidden}
+.bxb-card{width:min(300px,82vw);text-align:center;transform:translateY(8px) scale(.98);transition:transform .35s cubic-bezier(.22,.8,.26,1)}
+#bx-busy.show .bxb-card{transform:none}
+.bxb-logo{display:block;margin:0 auto;width:clamp(96px,30vw,140px);height:auto;filter:brightness(0) invert(1);opacity:.95}
+.bxb-word{display:none;font:700 18px/1 var(--font-display,system-ui),sans-serif;letter-spacing:.42em;padding-left:.42em;color:#f4f4f5}
+#bx-busy.no-logo .bxb-logo{display:none}
+#bx-busy.no-logo .bxb-word{display:block}
+.bxb-sub{margin-top:10px;font:500 9px/1 var(--font-display,system-ui),sans-serif;letter-spacing:.34em;padding-left:.34em;color:#8a8c92}
+.bxb-bar{position:relative;margin:26px auto 14px;height:3px;border-radius:3px;background:rgba(255,255,255,.1);overflow:hidden}
+.bxb-bar i{position:absolute;top:0;bottom:0;left:0;width:3%;border-radius:inherit;background:var(--silver-hi,#f2f2f4);transition:width .45s cubic-bezier(.22,.8,.26,1)}
+.bxb-bar i::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.75),transparent);transform:translateX(-100%);animation:bxbShine 1.4s ease-in-out infinite}
+@keyframes bxbShine{to{transform:translateX(100%)}}
+.bxb-msg{font:500 12.5px/1.4 var(--font-body,system-ui),sans-serif;color:#d8d8db}
+.bxb-meta{margin-top:6px;display:flex;justify-content:space-between;gap:12px;font:400 11px/1.3 system-ui,sans-serif;color:#7f8187}
+.bxb-file{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media (prefers-reduced-motion:reduce){.bxb-bar i::after{animation:none}.bxb-card{transition:none}}
+</style>
+<div id="bx-busy" role="status" aria-live="polite" aria-hidden="true">
+  <div class="bxb-card">
+    <img class="bxb-logo" alt="BAXDEV" decoding="async">
+    <div class="bxb-word">BAXDEV</div>
+    <div class="bxb-sub">AUDIO STUDIO</div>
+    <div class="bxb-bar"><i></i></div>
+    <div class="bxb-msg">Menyiapkan…</div>
+    <div class="bxb-meta"><span class="bxb-file"></span><span class="bxb-pct">0%</span></div>
+  </div>
+</div>
+<script id="bx-busy-js">
+(() => {
+  const root = document.getElementById('bx-busy');
+  if (!root) return;
+  const bar = root.querySelector('.bxb-bar i');
+  const msg = root.querySelector('.bxb-msg');
+  const pctEl = root.querySelector('.bxb-pct');
+  const fileEl = root.querySelector('.bxb-file');
+  const logo = root.querySelector('.bxb-logo');
+  const intro = document.getElementById('intro-logo-img');
+  if (intro && intro.getAttribute('src')) logo.src = intro.getAttribute('src');
+  else root.classList.add('no-logo');
+  logo.addEventListener('error', () => root.classList.add('no-logo'));
+  let shownAt = 0, timer = 0;
+  window.bxBusy = {
+    show(text) {
+      clearTimeout(timer);
+      msg.textContent = text || 'Memproses…';
+      fileEl.textContent = '';
+      bar.style.width = '3%';
+      pctEl.textContent = '0%';
+      shownAt = Date.now();
+      window.__bxPauseAmbient = true;
+      document.body.classList.add('bx-busy-on');
+      root.setAttribute('aria-hidden', 'false');
+      root.classList.add('show');
+    },
+    set(text, frac, file) {
+      if (text) msg.textContent = text;
+      if (typeof frac === 'number') {
+        const p = Math.max(3, Math.min(100, Math.round(frac * 100)));
+        bar.style.width = p + '%';
+        pctEl.textContent = p + '%';
+      }
+      if (file !== undefined) fileEl.textContent = file;
+    },
+    hide() {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        root.classList.remove('show');
+        root.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('bx-busy-on');
+        window.__bxPauseAmbient = false;
+      }, Math.max(0, 700 - (Date.now() - shownAt)));
+    }
+  };
+})();
+</script>
 </body>
 </html>
