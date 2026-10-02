@@ -176,6 +176,12 @@ Data disimpan di Firebase `config/payment` dan langsung dipakai tombol Buy VIP. 
 - Pengundang harus sudah mengisi Roblox User ID di Pengaturan.
 - **Wajib**: paste ulang `database.rules.json` ke Firebase Console → Realtime Database → Rules → Publish, lalu deploy ulang.
 
+## Referal v2 + Leaderboard (v61)
+- Halaman **Referal** didesain ulang: kartu link undangan, statistik (total diundang, bonus aktif, peringkat), slot bonus 8 segmen, **Leaderboard Top 10 pengundang** (medali emas/perak/perunggu, baris "kamu" disorot), dan riwayat undangan.
+- Data baru di Firebase: `referrals/board/<uid>` = `{total, at}` (naik +1 secara atomik bersama klaim referal, divalidasi rules, dibaca semua user login, di-index `total`) dan `referrals/profiles/<uid>` = `{name, at}` (nama depan Google, ditulis pemiliknya sendiri).
+- Leaderboard menghitung undangan yang tercatat **sejak fitur ini aktif**. Untuk memberi skor awal ke pengundang lama, owner bisa mengisi `referrals/board/<uid>` manual di Firebase Console.
+- **Wajib**: paste ulang `database.rules.json` ke Firebase Console → Realtime Database → Rules → Publish, lalu deploy ulang.
+
 ## Kuota publish tidak bisa direset (v55)
 - Akun free: **5 publish per hari**, reset **00.00 WIB**. Dihitung di server (`functions/api/roblox-upload.js` + `functions/_lib/auth.js`) dan disimpan di Firebase `quota/<uid>` per akun Google, jadi hapus data browser / ganti Roblox ID / ubah kode di browser tidak mengubah hitungan.
 - VIP aktif tidak dihitung (tanpa batas).

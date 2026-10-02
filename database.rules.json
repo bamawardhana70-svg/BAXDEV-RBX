@@ -345,6 +345,41 @@
           }
         }
       },
+      "board": {
+        ".indexOn": [
+          "total"
+        ],
+        ".read": "auth != null",
+        "$inviter": {
+          ".write": "(auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')) || (auth != null && newData.parent().parent().child('claims').child(auth.uid).child('inviterUid').val() === $inviter && !root.child('referrals').child('claims').child(auth.uid).exists() && newData.child('total').val() === (data.exists() ? data.child('total').val() : 0) + 1)",
+          ".validate": "newData.hasChildren(['total', 'at'])",
+          "total": {
+            ".validate": "newData.isNumber() && newData.val() >= 0"
+          },
+          "at": {
+            ".validate": "newData.isNumber()"
+          },
+          "$other": {
+            ".validate": false
+          }
+        }
+      },
+      "profiles": {
+        "$uid": {
+          ".read": "auth != null",
+          ".write": "auth != null && auth.uid === $uid",
+          ".validate": "newData.hasChildren(['name'])",
+          "name": {
+            ".validate": "newData.isString() && newData.val().length <= 40"
+          },
+          "at": {
+            ".validate": "newData.isNumber()"
+          },
+          "$other": {
+            ".validate": false
+          }
+        }
+      },
       "inviters": {
         "$inviter": {
           ".read": "auth != null && auth.uid === $inviter",

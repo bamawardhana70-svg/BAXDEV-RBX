@@ -8580,32 +8580,57 @@ html .subscription-overlay, html #login-overlay { background: rgba(0,0,0,.34) !i
                     });
                     if (!put.ok)
                         throw new Error('Gagal menyiapkan link undangan. Coba lagi.');
-                    const [cObj, listRaw] = await Promise.all([
-                        fetch(`${base}/referrals/counts/${encodeURIComponent(uid)}.json${q}`, { cache: 'no-store' }).then(r => r.ok ? r.json() : 0),
-                        fetch(`${base}/referrals/inviters/${encodeURIComponent(uid)}.json${q}`, { cache: 'no-store' }).then(r => r.ok ? r.json() : null)
+                    const getJ = p => fetch(`${base}/referrals/${p}${p.includes('?') ? '&' : '?'}auth=${encodeURIComponent(token)}`, { cache: 'no-store' }).then(r => r.ok ? r.json() : null).catch(() => null);
+                    const myName = String(window.BX.user.name || '').split(' ')[0].slice(0, 40) || 'Pengguna';
+                    fetch(`${base}/referrals/profiles/${encodeURIComponent(uid)}.json${q}`, { method: 'PUT', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ name: myName, at: Date.now() }) }).catch(() => {});
+                    const [cObj, listRaw, boardRaw, myBoard] = await Promise.all([
+                        getJ(`counts/${encodeURIComponent(uid)}.json`),
+                        getJ(`inviters/${encodeURIComponent(uid)}.json`),
+                        getJ('board.json?orderBy=%22total%22&limitToLast=10'),
+                        getJ(`board/${encodeURIComponent(uid)}.json`)
                     ]);
+                    const top = Object.entries(boardRaw || {}).map(([id, v]) => ({ id, total: Number(v && v.total) || 0 })).filter(x => x.total > 0).sort((x, y) => y.total - x.total);
+                    const profs = await Promise.all(top.map(x => getJ(`profiles/${encodeURIComponent(x.id)}.json`)));
+                    top.forEach((x, i) => { x.name = (profs[i] && profs[i].name) || 'Pengguna'; });
                     const nowT = Date.now();
                     const winActive = !!(cObj && Number(cObj.until) > nowT);
                     const count = winActive ? Number(cObj.n) || 0 : 0;
                     const untilTxt = winActive ? new Date(Number(cObj.until)).toLocaleString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '';
-                    const list = Object.values(listRaw || {}).sort((a, b) => (b.at || 0) - (a.at || 0));
+                    const list = Object.values(listRaw || {}).sort((x, y) => (y.at || 0) - (x.at || 0));
+                    const myTotal = Math.max(Number(myBoard && myBoard.total) || 0, list.length);
+                    const myIdx = top.findIndex(x => x.id === uid);
                     refCurrentLink = refLinkFor(code);
                     const fmt = t => new Date(t).toLocaleString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
-                    const rows = list.length ? list.map(x => `<div class="setting-row" style="padding:10px 0"><div class="setting-info"><div class="setting-name">${refEsc(x.name || 'Pengguna baru')}</div><div class="setting-desc">${x.at ? fmt(x.at) : ''}</div></div><div class="setting-desc">+6 jam VIP</div></div>`).join('') : '<div class="setting-desc">Belum ada yang daftar lewat link kamu.</div>';
+                    const slots = Array.from({ length: REF_MAX }, (_, i) => `<i class="${i < count ? 'on' : ''}"></i>`).join('');
+                    const board = top.length ? top.map((x, i) => `<div class="rf-row${x.id === uid ? ' me' : ''}"><span class="rf-rank r${i + 1}">${i + 1}</span><span class="rf-av">${refEsc(x.name.charAt(0).toUpperCase() || '?')}</span><span class="rf-name">${refEsc(x.name)}${x.id === uid ? '<em>kamu</em>' : ''}</span><span class="rf-score">${x.total}<small>undangan</small></span></div>`).join('') : '<div class="rf-empty">Belum ada yang masuk papan peringkat. Jadilah yang pertama!</div>';
+                    const hist = list.length ? list.map(x => `<div class="rf-row"><span class="rf-av">${refEsc((x.name || 'P').charAt(0).toUpperCase())}</span><span class="rf-name">${refEsc(x.name || 'Pengguna baru')}</span><span class="rf-date">${x.at ? fmt(x.at) : ''}</span></div>`).join('') : '<div class="rf-empty">Belum ada yang bergabung lewat link kamu.</div>';
                     root.innerHTML = `
-                        <div class="card">
-                            <div class="setting-name">Link undangan kamu</div>
-                            <div class="setting-desc" style="margin:6px 0 12px">Bagikan link ini. Tiap orang yang <b>belum pernah memakai BAXDEV</b> lalu login Google lewat link ini bikin kamu dapat <b>+6 jam VIP</b>. Maksimal 2 hari VIP (${REF_MAX} orang); kalau bonusnya sudah habis kamu bisa dapat lagi.</div>
-                            <input type="text" readonly value="${refEsc(refCurrentLink)}" onclick="this.select()" style="width:100%;margin-bottom:10px">
-                            <div style="display:flex;gap:8px;flex-wrap:wrap">
-                                <button class="btn btn-primary" onclick="refCopy()">Salin link</button>
-                                <button class="btn btn-outline" onclick="refShare()">Bagikan</button>
-                            </div>
+                        <div class="rf-hero">
+                            <div class="rf-eyebrow">PROGRAM REFERAL</div>
+                            <div class="rf-title">Undang teman, dapat VIP gratis</div>
+                            <div class="rf-desc">Tiap orang yang <b>belum pernah memakai BAXDEV</b> lalu login Google lewat link kamu = <b>+6 jam VIP</b>. Maksimal ${REF_MAX} orang (2 hari VIP) per periode bonus.</div>
+                            <div class="rf-link"><input type="text" readonly value="${refEsc(refCurrentLink)}" onclick="this.select()"><button class="btn btn-primary" onclick="refCopy()">Salin</button></div>
+                            <button class="btn btn-outline rf-share" onclick="refShare()">Bagikan link</button>
                         </div>
-                        <div class="card" style="margin-top:12px">
-                            <div class="setting-name">${count} dari ${REF_MAX} slot terpakai</div>
-                            <div class="setting-desc" style="margin:4px 0 8px">${count >= REF_MAX ? 'Batas 2 hari tercapai. Kamu bisa dapat tambahan lagi setelah bonus referal ini habis (' + untilTxt + ').' : (count ? count * 6 + ' jam bonus referal berjalan, sisa ' + (REF_MAX - count) + ' slot.' : 'Belum ada bonus referal berjalan, ' + REF_MAX + ' slot kosong.')}</div>
-                            ${rows}
+                        <div class="rf-stats">
+                            <div><b>${myTotal}</b><span>Total diundang</span></div>
+                            <div><b>${count * 6}j</b><span>Bonus aktif</span></div>
+                            <div><b>${myIdx >= 0 ? '#' + (myIdx + 1) : '-'}</b><span>Peringkat</span></div>
+                        </div>
+                        <div class="rf-card">
+                            <div class="rf-h">Slot bonus <small>${count}/${REF_MAX}</small></div>
+                            <div class="rf-slots">${slots}</div>
+                            <div class="rf-note">${count >= REF_MAX ? 'Batas tercapai. Slot terbuka lagi setelah bonus habis (' + untilTxt + ').' : (count ? 'Bonus berjalan sampai ' + untilTxt + '.' : 'Belum ada bonus aktif. Bagikan link kamu untuk mulai.')}</div>
+                        </div>
+                        <div class="rf-card">
+                            <div class="rf-h">Leaderboard <small>Top 10 pengundang</small></div>
+                            ${board}
+                            ${myIdx < 0 && myTotal > 0 ? '<div class="rf-note">Kamu belum masuk 10 besar (' + myTotal + ' undangan tercatat).</div>' : ''}
+                            <div class="rf-note">Peringkat dihitung dari undangan yang tercatat sejak fitur ini aktif.</div>
+                        </div>
+                        <div class="rf-card">
+                            <div class="rf-h">Riwayat undangan <small>${list.length} orang</small></div>
+                            ${hist}
                         </div>`;
                     checkRemoteVip();
                 } catch (e) {
@@ -10022,8 +10047,8 @@ if (!configured) {
     try {
       var rec = await rest("referrals/codes/" + code + ".json");
       if (!rec || !rec.uid || rec.uid === u.uid || !/^\d{1,20}$/.test(String(rec.roblox))) { clear(); return true; }
-      var res = await Promise.all([rest("referrals/counts/" + encodeURIComponent(rec.uid) + ".json"), rest("vip/" + rec.roblox + ".json")]);
-      var c0 = res[0], vip = res[1], now = Date.now(), HR6 = 21600000;
+      var res = await Promise.all([rest("referrals/counts/" + encodeURIComponent(rec.uid) + ".json"), rest("vip/" + rec.roblox + ".json"), rest("referrals/board/" + encodeURIComponent(rec.uid) + ".json")]);
+      var c0 = res[0], vip = res[1], bd = res[2], now = Date.now(), HR6 = 21600000;
       var active = c0 && Number(c0.until) > now;   // jendela bonus referal masih jalan
       if (active && Number(c0.n) >= 8) { clear(); return true; }   // batas 2 hari tercapai; tambah lagi setelah bonus habis
       var newCount = active ? { n: Number(c0.n) + 1, until: Number(c0.until) + HR6 } : { n: 1, until: now + HR6 };
@@ -10031,6 +10056,7 @@ if (!configured) {
       body["referrals/claims/" + u.uid] = { code: code, inviterUid: rec.uid, inviterRoblox: String(rec.roblox), at: now };
       body["referrals/inviters/" + rec.uid + "/" + u.uid] = { at: now, name: String(u.name || "").split(" ")[0].slice(0, 40) };
       body["referrals/counts/" + rec.uid] = newCount;
+      body["referrals/board/" + rec.uid] = { total: (Number(bd && bd.total) || 0) + 1, at: now };
       if (!(vip && !vip.expiresAt)) {   // VIP permanen tidak perlu ditambah
         var start = vip && vip.expiresAt > now ? vip.expiresAt : now;
         body["vip/" + rec.roblox] = { addedAt: (vip && vip.addedAt) || now, expiresAt: start + 21600000, note: (vip && vip.note) || "Referal" };
@@ -11576,5 +11602,44 @@ body.bx-busy-on{overflow:hidden}
   };
 })();
 </script>
+
+<style id="bx-ref-css">
+#ref-root{display:flex;flex-direction:column;gap:12px}
+.rf-hero,.rf-card{border-radius:22px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.04);padding:20px}
+.rf-hero{position:relative;overflow:hidden;padding:24px 20px;background:radial-gradient(120% 140% at 0% 0%,rgba(255,255,255,.1),transparent 55%),rgba(255,255,255,.04)}
+.rf-eyebrow{font:600 10px/1 var(--font-display,system-ui),sans-serif;letter-spacing:.3em;color:var(--silver-lo,#86888d)}
+.rf-title{margin:10px 0 6px;font:700 22px/1.2 var(--font-display,system-ui),sans-serif;color:#fff}
+.rf-desc{font-size:13px;line-height:1.55;color:#a9abb1;max-width:520px}
+.rf-desc b{color:#fff;font-weight:600}
+.rf-link{display:flex;gap:8px;margin-top:16px}
+.rf-link input{flex:1;min-width:0;height:44px;padding:0 14px;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.35);color:#e8e8ea;font-size:13px}
+.rf-link .btn{height:44px;padding:0 20px;border-radius:14px}
+.rf-share{margin-top:8px;width:100%;height:42px;border-radius:14px}
+.rf-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.rf-stats>div{border-radius:18px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.04);padding:14px 8px;text-align:center}
+.rf-stats b{display:block;font:700 22px/1 var(--font-display,system-ui),sans-serif;color:#fff}
+.rf-stats span{display:block;margin-top:6px;font-size:10px;letter-spacing:.08em;color:#8f9197}
+.rf-h{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px;font:600 14px/1 var(--font-display,system-ui),sans-serif;color:#fff}
+.rf-h small{font:400 11px system-ui;color:#8f9197}
+.rf-slots{display:grid;grid-template-columns:repeat(8,1fr);gap:5px}
+.rf-slots i{height:8px;border-radius:6px;background:rgba(255,255,255,.1)}
+.rf-slots i.on{background:var(--silver-hi,#f2f2f4);box-shadow:0 0 10px rgba(255,255,255,.25)}
+.rf-note{margin-top:10px;font-size:11.5px;line-height:1.5;color:#8f9197}
+.rf-row{display:flex;align-items:center;gap:10px;padding:10px 8px;border-radius:14px}
+.rf-row+.rf-row{margin-top:2px}
+.rf-row.me{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12)}
+.rf-rank{flex:0 0 26px;height:26px;border-radius:50%;display:grid;place-items:center;font:700 12px system-ui;color:#b5b7bc;background:rgba(255,255,255,.07)}
+.rf-rank.r1{color:#2a1f00;background:linear-gradient(180deg,#ffe7a0,#e6b34a)}
+.rf-rank.r2{color:#1b1c1f;background:linear-gradient(180deg,#f4f4f6,#aeb0b5)}
+.rf-rank.r3{color:#2a1500;background:linear-gradient(180deg,#f0c9a2,#b9774a)}
+.rf-av{flex:0 0 34px;height:34px;border-radius:50%;display:grid;place-items:center;font:700 13px system-ui;color:#fff;background:rgba(255,255,255,.12)}
+.rf-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13.5px;font-weight:500;color:#ececee}
+.rf-name em{margin-left:8px;padding:2px 7px;border-radius:999px;font:600 9px system-ui;letter-spacing:.08em;font-style:normal;text-transform:uppercase;color:#111;background:var(--silver-hi,#f2f2f4)}
+.rf-score{text-align:right;font:700 17px/1 var(--font-display,system-ui),sans-serif;color:#fff}
+.rf-score small{display:block;margin-top:3px;font:400 9px system-ui;color:#8f9197;letter-spacing:.06em}
+.rf-date{font-size:11px;color:#8f9197}
+.rf-empty{padding:14px 4px;font-size:12.5px;color:#8f9197;text-align:center}
+@media(max-width:480px){.rf-hero,.rf-card{padding:16px}.rf-title{font-size:19px}}
+</style>
 </body>
 </html>
