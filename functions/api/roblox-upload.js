@@ -1,4 +1,4 @@
-import { requireUser } from "../_lib/auth.js";
+import { requireUser, quotaBegin, quotaCommit } from "../_lib/auth.js";
 
 // Cloudflare Pages Function — POST /api/roblox-upload
 //
@@ -120,6 +120,21 @@ async function handleUpload(context) {
     }
   }
 
+  // Kuota harian akun free (server-side, tidak bisa direset dari browser). VIP lolos.
+  const quota = await quotaBegin(request, userId);
+  if (!quota.ok) {
+    return json({
+      ok: false, code: "quota_exceeded",
+      message: `Kuota publish hari ini sudah habis (${quota.used}/${quota.limit}) dan reset besok jam 00.00 WIB. Beli VIP atau tukar kode di Pengaturan → Akun.`,
+      quota: { used: quota.used, limit: quota.limit }
+    }, 429);
+  }
+  const ok = async (obj) => {
+    const qi = await quotaCommit(quota);
+    if (qi) obj.quota = qi;
+    return json(obj);
+  };
+
   // Publish target: personal account (userId) by default, or a Group/community
   // (groupId) when the user picked "Group" as Creator Type in Settings. Roblox's
   // Open Cloud Assets API keys creationContext.creator by whichever one is set —
@@ -179,14 +194,14 @@ async function handleUpload(context) {
   if (!operationPath) {
     // Upload diterima tapi Roblox tidak mengembalikan operation path — tidak
     // ada cara untuk resolve assetId sama sekali.
-    return json({ ok: true, message: "Terkirim ke Roblox Open Cloud.", assetId: null, operationPath: null });
+    return ok({ ok: true, message: "Terkirim ke Roblox Open Cloud.", assetId: null, operationPath: null });
   }
 
   const op = await pollOperation(operationPath, apiKey);
   if (!op) {
     // Masih diproses Roblox setelah jendela polling — bukan gagal, cuma
     // belum selesai. Client menyimpan operationPath untuk dicek lagi nanti.
-    return json({
+    return ok({
       ok: true,
       pending: true,
       operationPath,
@@ -199,9 +214,9 @@ async function handleUpload(context) {
 
   const assetId = op.response && op.response.assetId ? String(op.response.assetId) : null;
   if (!assetId) {
-    return json({ ok: true, message: "Terkirim ke Roblox Open Cloud.", assetId: null, operationPath });
+    return ok({ ok: true, message: "Terkirim ke Roblox Open Cloud.", assetId: null, operationPath });
   }
-  return json({
+  return ok({
     ok: true,
     assetId,
     message: `Berhasil dipublish. Asset ID: ${assetId}`

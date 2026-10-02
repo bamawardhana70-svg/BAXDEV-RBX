@@ -90,3 +90,56 @@ export async function requireUser(request) {
   }
   return null;
 }
+
+// ── Kuota publish harian akun free (disimpan di Firebase: quota/<uid> = {day, count}) ──
+// Dihitung server-side per akun Google, jadi tidak bisa direset lewat hapus data browser / ganti Roblox ID.
+// Hari berganti 00.00 WIB (UTC+7). Pastikan FREE_DAILY_LIMIT sama dengan FREE_UPLOAD_LIMIT di index.html.
+export const FREE_DAILY_LIMIT = 5;
+const WIB_MS = 7 * 3600e3, DAY_MS = 86400e3;
+const wibDay = (now) => Math.floor((now + WIB_MS) / DAY_MS);
+
+async function readQuota(uid, token) {
+  const r = await fetch(FIREBASE_DB_URL + "/quota/" + encodeURIComponent(uid) + ".json?auth=" + encodeURIComponent(token), { cache: "no-store" });
+  if (!r.ok) throw new Error("quota read " + r.status);
+  const rec = await r.json();
+  const day = wibDay(Date.now());
+  return { day, used: rec && rec.day === day ? Number(rec.count) || 0 : 0 };
+}
+
+// Cek sebelum upload. { ok:false, used, limit } kalau kuota habis. Gagal baca DB / rules belum dipasang = jangan blokir (skip).
+export async function quotaBegin(request, robloxId) {
+  const m = /^Bearer\s+(.+)$/i.exec(request.headers.get("authorization") || "");
+  if (!m) return { ok: true, skip: true };
+  try {
+    const user = await verifyIdToken(m[1], FIREBASE_PROJECT_ID);
+    if (!user) return { ok: true, skip: true };
+    if (/^[0-9]{1,20}$/.test(String(robloxId || ""))) {
+      try {
+        const vr = await fetch(FIREBASE_DB_URL + "/vip/" + robloxId + ".json", { cache: "no-store" });
+        if (vr.ok) {
+          const v = await vr.json();
+          if (v && (!v.expiresAt || v.expiresAt > Date.now())) return { ok: true, vip: true };   // VIP tanpa batas
+        }
+      } catch { /* anggap bukan VIP */ }
+    }
+    const q = await readQuota(user.uid, m[1]);
+    if (q.used >= FREE_DAILY_LIMIT) return { ok: false, used: q.used, limit: FREE_DAILY_LIMIT };
+    return { ok: true, uid: user.uid, token: m[1] };
+  } catch {
+    return { ok: true, skip: true };
+  }
+}
+
+// Catat 1 publish setelah upload berhasil. Balikkan { used, limit } atau null.
+export async function quotaCommit(q) {
+  if (!q || q.skip || q.vip || !q.uid) return null;
+  try {
+    const cur = await readQuota(q.uid, q.token);   // baca ulang supaya tidak menimpa hitungan terbaru
+    const next = cur.used + 1;
+    const r = await fetch(FIREBASE_DB_URL + "/quota/" + encodeURIComponent(q.uid) + ".json?auth=" + encodeURIComponent(q.token), {
+      method: "PUT", headers: { "content-type": "application/json" },
+      body: JSON.stringify({ day: cur.day, count: next })
+    });
+    return r.ok ? { used: next, limit: FREE_DAILY_LIMIT } : null;
+  } catch { return null; }
+}

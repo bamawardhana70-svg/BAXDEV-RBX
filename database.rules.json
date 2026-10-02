@@ -6,7 +6,7 @@
       ".read": "auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')",
       "$userId": {
         ".read": true,
-        ".write": "(auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')) || (auth != null && newData.child('code').isString() && root.child('codes').child(newData.child('code').val()).child('hours').isNumber() && root.child('codes').child(newData.child('code').val()).child('uses').val() < root.child('codes').child(newData.child('code').val()).child('maxUses').val() && !root.child('redeems').child(newData.child('code').val()).child(auth.uid).exists() && newData.parent().parent().child('codes').child(newData.child('code').val()).child('uses').val() === root.child('codes').child(newData.child('code').val()).child('uses').val() + 1 && newData.parent().parent().child('redeems').child(newData.child('code').val()).child(auth.uid).child('roblox').val() === $userId && !(data.exists() && data.child('expiresAt').val() === 0) && newData.child('expiresAt').val() > 0 && newData.child('expiresAt').val() <= (data.exists() && data.child('expiresAt').val() > now ? data.child('expiresAt').val() : now) + root.child('codes').child(newData.child('code').val()).child('hours').val() * 3600000 + 300000)",
+        ".write": "(auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')) || (auth != null && newData.child('code').isString() && root.child('codes').child(newData.child('code').val()).child('hours').isNumber() && root.child('codes').child(newData.child('code').val()).child('uses').val() < root.child('codes').child(newData.child('code').val()).child('maxUses').val() && !root.child('redeems').child(newData.child('code').val()).child(auth.uid).exists() && newData.parent().parent().child('codes').child(newData.child('code').val()).child('uses').val() === root.child('codes').child(newData.child('code').val()).child('uses').val() + 1 && newData.parent().parent().child('redeems').child(newData.child('code').val()).child(auth.uid).child('roblox').val() === $userId && !(data.exists() && data.child('expiresAt').val() === 0) && newData.child('expiresAt').val() > 0 && newData.child('expiresAt').val() <= (data.exists() && data.child('expiresAt').val() > now ? data.child('expiresAt').val() : now) + root.child('codes').child(newData.child('code').val()).child('hours').val() * 3600000 + 300000) || (auth != null && !root.child('referrals').child('claims').child(auth.uid).exists() && !root.child('users').child(auth.uid).exists() && newData.parent().parent().child('referrals').child('claims').child(auth.uid).child('inviterRoblox').val() === $userId && !(data.exists() && data.child('expiresAt').val() === 0) && newData.child('expiresAt').val() > 0 && newData.child('expiresAt').val() <= (data.exists() && data.child('expiresAt').val() > now ? data.child('expiresAt').val() : now) + 21600000 + 300000)",
         ".validate": "$userId.matches(/^[0-9]{1,20}$/) && newData.hasChildren(['addedAt', 'expiresAt'])",
         "addedAt": {
           ".validate": "newData.isNumber()"
@@ -183,7 +183,7 @@
     "users": {
       ".read": "auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')",
       "$uid": {
-        ".write": "(auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')) || (auth != null && auth.uid === $uid)",
+        ".write": "(auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')) || (auth != null && auth.uid === $uid && newData.exists())",
         ".read": "auth != null && auth.uid === $uid",
         ".validate": "newData.hasChildren(['email', 'lastSeen'])",
         "email": {
@@ -280,6 +280,100 @@
         },
         "at": {
           ".validate": "newData.isNumber() && newData.val() <= now + 60000 && newData.val() >= now - 600000"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    },
+    "referrals": {
+      ".read": "(auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com'))",
+      "codes": {
+        "$code": {
+          ".read": "auth != null",
+          ".write": "auth != null && newData.exists() && newData.child('uid').val() === auth.uid && (!data.exists() || data.child('uid').val() === auth.uid)",
+          ".validate": "$code.matches(/^[A-Z0-9]{6,12}$/) && newData.hasChildren(['uid', 'roblox', 'at'])",
+          "uid": {
+            ".validate": "newData.isString() && newData.val().length <= 128"
+          },
+          "roblox": {
+            ".validate": "newData.isString() && newData.val().matches(/^[0-9]{1,20}$/)"
+          },
+          "at": {
+            ".validate": "newData.isNumber()"
+          },
+          "$other": {
+            ".validate": false
+          }
+        }
+      },
+      "claims": {
+        "$invitee": {
+          ".read": "auth != null && auth.uid === $invitee",
+          ".write": "auth != null && auth.uid === $invitee && !data.exists() && newData.exists() && !root.child('users').child($invitee).exists() && newData.child('inviterUid').val() !== $invitee && root.child('referrals').child('codes').child(newData.child('code').val()).child('uid').val() === newData.child('inviterUid').val() && root.child('referrals').child('codes').child(newData.child('code').val()).child('roblox').val() === newData.child('inviterRoblox').val() && newData.parent().parent().child('inviters').child(newData.child('inviterUid').val()).child($invitee).exists() && newData.parent().parent().child('counts').child(newData.child('inviterUid').val()).child('until').isNumber()",
+          ".validate": "newData.hasChildren(['code', 'inviterUid', 'inviterRoblox', 'at'])",
+          "code": {
+            ".validate": "newData.isString() && newData.val().matches(/^[A-Z0-9]{6,12}$/)"
+          },
+          "inviterUid": {
+            ".validate": "newData.isString() && newData.val().length <= 128"
+          },
+          "inviterRoblox": {
+            ".validate": "newData.isString() && newData.val().matches(/^[0-9]{1,20}$/)"
+          },
+          "at": {
+            ".validate": "newData.isNumber()"
+          },
+          "$other": {
+            ".validate": false
+          }
+        }
+      },
+      "counts": {
+        "$inviter": {
+          ".read": "auth != null",
+          ".write": "(auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')) || (auth != null && newData.parent().parent().child('claims').child(auth.uid).child('inviterUid').val() === $inviter && !root.child('referrals').child('claims').child(auth.uid).exists() && ((data.exists() && data.child('until').val() > now && data.child('n').val() < 8 && newData.child('n').val() === data.child('n').val() + 1 && newData.child('until').val() === data.child('until').val() + 21600000) || ((!data.exists() || data.child('until').val() <= now) && newData.child('n').val() === 1 && newData.child('until').val() >= now + 21300000 && newData.child('until').val() <= now + 21900000)))",
+          ".validate": "newData.hasChildren(['n', 'until'])",
+          "n": {
+            ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 8"
+          },
+          "until": {
+            ".validate": "newData.isNumber()"
+          },
+          "$other": {
+            ".validate": false
+          }
+        }
+      },
+      "inviters": {
+        "$inviter": {
+          ".read": "auth != null && auth.uid === $inviter",
+          "$invitee": {
+            ".write": "auth != null && auth.uid === $invitee && !data.exists() && newData.exists() && newData.parent().parent().parent().child('claims').child(auth.uid).child('inviterUid').val() === $inviter",
+            ".validate": "newData.hasChildren(['at'])",
+            "at": {
+              ".validate": "newData.isNumber()"
+            },
+            "name": {
+              ".validate": "newData.isString() && newData.val().length <= 40"
+            },
+            "$other": {
+              ".validate": false
+            }
+          }
+        }
+      }
+    },
+    "quota": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "(auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')) || (auth != null && auth.uid === $uid && newData.exists() && ((data.exists() && data.child('day').val() === newData.child('day').val() && newData.child('count').val() === data.child('count').val() + 1) || ((!data.exists() || data.child('day').val() < newData.child('day').val()) && newData.child('count').val() === 1)))",
+        ".validate": "newData.hasChildren(['day', 'count'])",
+        "day": {
+          ".validate": "newData.isNumber() && newData.val() * 86400000 <= now + 25200000 && (newData.val() + 1) * 86400000 > now + 25200000"
+        },
+        "count": {
+          ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 1000"
         },
         "$other": {
           ".validate": false

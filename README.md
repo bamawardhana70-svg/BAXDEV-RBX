@@ -168,3 +168,17 @@ Data disimpan di Firebase `config/payment` dan langsung dipakai tombol Buy VIP. 
 - Tema "Warna bebas" (Settings → Lanjutan) khusus VIP: pilih warna apa saja lewat swatch atau color picker; seluruh tampilan (dan /owner) mengikuti. Logikanya ada di `theme.js`. Kalau VIP habis, tampilan kembali ke Hitam; warna pilihan tetap tersimpan dan aktif lagi saat VIP diperpanjang. Catatan: ini pengaturan tampilan di sisi browser, bukan pengaman.
 - Avatar VIP: cincin emas berputar, mahkota kecil, dan kilau di semua avatar (navbar, dropdown, Settings, Akun).
 - Menu **Toolbox** (hamburger dan navbar desktop): cari aset Roblox seperti di create.roblox.com/store/models. Kategori Model, Decal, MeshPart, Plugin, Audio; ada kolom cari, tempel ID atau link `create.roblox.com/store/asset/ID` untuk melihat satu asset, dan tombol Muat lagi. Tiap kartu punya Salin ID (untuk Audio, Decal, MeshPart juga `rbxassetid://ID`) dan Buka di Creator Store. Frontend memanggil `GET /api/roblox-toolbox?category=10&q=...&cursor=...`; endpoint itu meneruskan ke `apis.roblox.com/toolbox-service/v1/marketplace/{kategori}` dan `.../items/details` plus thumbnail dari `thumbnails.roblox.com`. Endpoint publik ini tidak butuh API key, tapi tetap wajib login Google (`requireUser`). Roblox bisa membatasi permintaan (HTTP 429); pesannya diteruskan ke halaman. Tidak ada perubahan di `database.rules.json`.
+
+## Referal (v55)
+- Menu **Referal** (ikon hadiah): tiap user login punya link `https://domainmu/?ref=KODE`.
+- Orang yang **belum pernah login/memakai BAXDEV** lalu login Google lewat link itu → pengundang otomatis dapat **+6 jam VIP** (menumpuk di atas masa aktif VIP yang ada, masuk ke akun Roblox pengundang).
+- Syarat "orang baru" dijaga Security Rules: akun belum punya record `users/<uid>`, tiap akun cuma bisa diklaim sekali, tidak bisa mengundang diri sendiri, VIP permanen tidak diubah. Batas 8 undangan = maksimal 2 hari bonus referal sekaligus. Kalau bonus referalnya sudah habis (waktunya lewat), hitungan mulai dari 0 lagi dan bisa dapat tambahan lagi. Disimpan di `referrals/counts/<uid>` = `{n, until}` (ubah angka `8` di `database.rules.json` dan `index.html` kalau mau).
+- Pengundang harus sudah mengisi Roblox User ID di Pengaturan.
+- **Wajib**: paste ulang `database.rules.json` ke Firebase Console → Realtime Database → Rules → Publish, lalu deploy ulang.
+
+## Kuota publish tidak bisa direset (v55)
+- Akun free: **5 publish per hari**, reset **00.00 WIB**. Dihitung di server (`functions/api/roblox-upload.js` + `functions/_lib/auth.js`) dan disimpan di Firebase `quota/<uid>` per akun Google, jadi hapus data browser / ganti Roblox ID / ubah kode di browser tidak mengubah hitungan.
+- VIP aktif tidak dihitung (tanpa batas).
+- Rules `quota/<uid>`: hitungan hanya bisa naik 1 per publish dan hanya bisa diturunkan oleh owner lewat Console.
+- Ubah batas: `FREE_DAILY_LIMIT` di `functions/_lib/auth.js` dan `FREE_UPLOAD_LIMIT` di `index.html` (harus sama).
+- Kalau rules belum dipublish, server tidak memblokir (fail-open) dan web memakai hitungan lokal lama.
