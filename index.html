@@ -4743,7 +4743,6 @@ html[data-theme="green"] .theme-opt.active { border-color:#86efac; background:rg
 /* ═══ VIP: avatar emas + UI tema warna bebas ═══ */
 @property --gold-a { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
 @keyframes gold-spin { to { --gold-a: 360deg; } }
-@keyframes gold-twinkle { 0%,100% { opacity: .25; transform: scale(.6) rotate(0deg); } 50% { opacity: 1; transform: scale(1.15) rotate(20deg); } }
 body.premium-user :is(.nav-avatar, .su-avatar, #dd-avatar, #acct-avatar-big) {
   position: relative;
   overflow: visible !important;
@@ -4752,18 +4751,6 @@ body.premium-user :is(.nav-avatar, .su-avatar, #dd-avatar, #acct-avatar-big) {
   box-shadow: 0 0 0 3px rgba(245,196,81,.16), 0 0 22px rgba(245,196,81,.55), 0 6px 18px rgba(0,0,0,.45) !important;
   animation: gold-spin 6s linear infinite;
 }
-body.premium-user :is(.nav-avatar, .su-avatar, #dd-avatar, #acct-avatar-big)::after {
-  content: ''; position: absolute; top: -10px; right: -7px; width: 18px; height: 18px; z-index: 3; pointer-events: none;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M2.5 19h19l1-12-6 4.5L12 3 7.5 11.5l-6-4.5z' fill='%23f5c451' stroke='%23fff3b0' stroke-width='1.2' stroke-linejoin='round'/%3E%3Crect x='3' y='19.5' width='18' height='2.2' rx='1' fill='%23b8860b'/%3E%3C/svg%3E") center / contain no-repeat;
-  filter: drop-shadow(0 0 4px rgba(245,196,81,.9));
-}
-body.premium-user :is(#dd-avatar, #acct-avatar-big)::after { width: 24px; height: 24px; top: -13px; right: -9px; }
-body.premium-user :is(.nav-avatar, .su-avatar, #dd-avatar, #acct-avatar-big)::before {
-  content: '\2726'; position: absolute; bottom: -5px; left: -5px; z-index: 3; pointer-events: none;
-  font-size: 11px; line-height: 1; color: #ffe08a; text-shadow: 0 0 6px #f5c451, 0 0 12px rgba(245,196,81,.8);
-  animation: gold-twinkle 2.4s ease-in-out infinite;
-}
-body.premium-user :is(#dd-avatar, #acct-avatar-big)::before { font-size: 14px; bottom: -6px; left: -6px; }
 .theme-opt .theme-tag { font-size: 9px; font-weight: 700; letter-spacing: .08em; padding: 2px 6px; border-radius: 999px; color: #2a1c00; background: linear-gradient(180deg, #fff3b0, #f5c451); }
 .theme-opt.locked { opacity: .7; }
 .theme-dot[data-t="custom"] { background: conic-gradient(#ef4444, #f59e0b, #84cc16, #06b6d4, #8b5cf6, #ec4899, #ef4444); }
@@ -4933,23 +4920,21 @@ html .subscription-overlay, html #login-overlay { background: rgba(0,0,0,.34) !i
   var d=document.documentElement,K='baxdev_avb',G='baxdev_glass';
   function hexRgb(h){h=(h||'#f5c451').replace('#','');return[parseInt(h.substr(0,2),16),parseInt(h.substr(2,2),16),parseInt(h.substr(4,2),16)];}
   function mix(h,t,r){var a=hexRgb(h),b=hexRgb(t);return'#'+a.map(function(v,i){return('0'+Math.round(v+(b[i]-v)*r).toString(16)).slice(-2)}).join('');}
-  function lum(h){var a=hexRgb(h);return(a[0]*299+a[1]*587+a[2]*114)/1000;}
   var A={cfg:{s:'gold',c:'#a855f7',w:3},
     load:function(){try{var j=JSON.parse(localStorage.getItem(K)||'null');if(j&&j.s)A.cfg=Object.assign(A.cfg,j);}catch(e){}},
     save:function(){try{localStorage.setItem(K,JSON.stringify(A.cfg));}catch(e){}},
     apply:function(){
       var c=A.cfg,st=d.style,h=c.c,rgb=hexRgb(h).join(',');
       d.setAttribute('data-avb',c.s);st.setProperty('--avb-w',(c.w||3)+'px');
-      ['--avb-bg','--avb-shadow','--avb-tag-bg','--avb-tag-fg'].forEach(function(k){st.removeProperty(k)});
-      var fg=lum(h)>150?'#101012':'#ffffff';
+      ['--avb-bg','--avb-shadow','--avb-deco'].forEach(function(k){st.removeProperty(k)});
       if(c.s==='warna'){st.setProperty('--avb-bg','conic-gradient(from var(--gold-a,0deg),'+mix(h,'#ffffff',.55)+','+h+','+mix(h,'#000000',.45)+','+mix(h,'#ffffff',.35)+','+h+','+mix(h,'#000000',.35)+','+mix(h,'#ffffff',.55)+')');
-        st.setProperty('--avb-shadow','0 0 0 3px rgba('+rgb+',.18),0 0 22px rgba('+rgb+',.55)');st.setProperty('--avb-tag-bg',h);st.setProperty('--avb-tag-fg',fg);}
+        st.setProperty('--avb-shadow','0 0 0 3px rgba('+rgb+',.18),0 0 22px rgba('+rgb+',.55)');st.setProperty('--avb-deco','linear-gradient(180deg,'+mix(h,'#ffffff',.6)+','+h+' 55%,'+mix(h,'#000000',.4)+')');}
       else if(c.s==='neon'){st.setProperty('--avb-bg','linear-gradient('+h+','+h+')');
-        st.setProperty('--avb-shadow','0 0 0 3px rgba('+rgb+',.22),0 0 24px rgba('+rgb+',.95),0 0 56px rgba('+rgb+',.4)');st.setProperty('--avb-tag-bg',h);st.setProperty('--avb-tag-fg',fg);}
+        st.setProperty('--avb-shadow','0 0 0 3px rgba('+rgb+',.22),0 0 24px rgba('+rgb+',.95),0 0 56px rgba('+rgb+',.4)');st.setProperty('--avb-deco','linear-gradient(180deg,'+mix(h,'#ffffff',.35)+','+h+')');}
       else if(c.s==='pelangi'){st.setProperty('--avb-bg','conic-gradient(from var(--gold-a,0deg),#ff5f6d,#ffc371,#f7ff6b,#6bffb8,#5ec8ff,#a56bff,#ff6bd6,#ff5f6d)');
-        st.setProperty('--avb-shadow','0 0 0 3px rgba(168,107,255,.16),0 0 22px rgba(120,160,255,.5)');st.setProperty('--avb-tag-bg','linear-gradient(90deg,#ff9a9e,#a18cd1,#5ec8ff)');st.setProperty('--avb-tag-fg','#120a24');}
+        st.setProperty('--avb-shadow','0 0 0 3px rgba(168,107,255,.16),0 0 22px rgba(120,160,255,.5)');st.setProperty('--avb-deco','linear-gradient(90deg,#ff5f6d,#ffc371,#6bffb8,#5ec8ff,#a56bff,#ff6bd6)');}
       else if(c.s==='tema'){st.setProperty('--avb-bg','conic-gradient(from var(--gold-a,0deg),rgba(var(--bx-t,255,255,255),1),rgba(255,255,255,.92),rgba(var(--bx-t,255,255,255),.55),rgba(var(--bx-t,255,255,255),1))');
-        st.setProperty('--avb-shadow','0 0 0 3px rgba(var(--bx-t,255,255,255),.16),0 0 22px rgba(var(--bx-t,255,255,255),.5)');st.setProperty('--avb-tag-bg','rgb(var(--bx-t,255,255,255))');st.setProperty('--avb-tag-fg','#0a0a0c');}
+        st.setProperty('--avb-shadow','0 0 0 3px rgba(var(--bx-t,255,255,255),.16),0 0 22px rgba(var(--bx-t,255,255,255),.5)');st.setProperty('--avb-deco','linear-gradient(180deg,#ffffff,rgb(var(--bx-t,255,255,255)))');}
       A.syncUI();
     },
     set:function(patch){
@@ -5566,8 +5551,17 @@ html .subscription-overlay, html #login-overlay { background: rgba(0,0,0,.34) !i
                             </div>
                         </div>
                         <div class="field-group">
+                            <div class="field-label">Pitch</div>
+                            <div class="pitch-row">
+                                <input type="range" id="pitch-range" min="-12" max="12" step="1" value="0" aria-label="Pitch dalam semiton" oninput="setPitch(this.value)">
+                                <output id="pitch-value" for="pitch-range">0 st</output>
+                                <button type="button" class="btn btn-outline pitch-reset" id="pitch-reset" onclick="setPitch(0)" hidden>Reset</button>
+                            </div>
+                            <div class="batch-name-hint">Naik atau turunkan nada dalam semiton (12 st = 1 oktaf). Durasi lagu tidak ikut berubah.</div>
+                        </div>
+                        <div class="field-group">
                             <div class="field-label">Nama Asset Roblox</div>
-                            <div class="batch-name-hint">Nama asset diatur satu per satu di daftar file setelah kamu memilih atau mengonversi audio. Preset kecepatan tetap sama untuk seluruh batch.</div>
+                            <div class="batch-name-hint">Nama asset diatur satu per satu di daftar file setelah kamu memilih atau mengonversi audio. Preset kecepatan dan pitch tetap sama untuk seluruh batch.</div>
                         </div>
                     </div>
                 </div>
@@ -5715,7 +5709,7 @@ html .subscription-overlay, html #login-overlay { background: rgba(0,0,0,.34) !i
             </div>
             <div class="page" id="page-settings">
                 <h1 class="page-title">Pengaturan</h1>
-                <div class="page-sub">Kelola koneksi Roblox, akun, dan preferensi upload musik</div>
+                <div class="page-sub">Koneksi Roblox, akun, audio, tampilan, dan lainnya dalam satu halaman</div>
                 <div class="settings-layout">
                     <aside class="settings-side">
                         <div class="settings-user" id="settings-user">
@@ -5726,42 +5720,11 @@ html .subscription-overlay, html #login-overlay { background: rgba(0,0,0,.34) !i
                             </div>
                             <button type="button" class="btn btn-outline" id="gg-signout" style="display:none;margin-left:auto;padding:6px 12px;font-size:12px" onclick="googleSignOut()">Keluar Google</button>
                         </div>
-                        <div class="settings-nav" role="tablist" aria-label="Menu pengaturan">
-                            <div class="settings-tab active" onclick="settingsTab('account')">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                                    <circle cx="12" cy="7" r="4"/>
-                                </svg>
-                                Akun &amp; Koneksi
-                            </div>
-                            <div class="settings-tab" onclick="settingsTab('audio')">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M9 18V5l12-2v13"/>
-                                    <circle cx="6" cy="18" r="3"/>
-                                    <circle cx="18" cy="16" r="3"/>
-                                </svg>
-                                Audio
-                            </div>
-                            <div class="settings-tab" onclick="settingsTab('advanced')">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <circle cx="12" cy="12" r="3"/>
-                                    <path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9 17 7M7 17l-2.1 2.1"/>
-                                </svg>
-                                Lanjutan
-                            </div>
-                            <div class="settings-tab" id="developer-tab" style="display:none" onclick="settingsTab('developer')">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polyline points="16 18 22 12 16 6"/>
-                                    <polyline points="8 6 2 12 8 18"/>
-                                    <line x1="14" y1="4" x2="10" y2="20"/>
-                                </svg>
-                                Developer
-                            </div>
-                        </div>
                     </aside>
                     <div class="settings-main">
                         <!-- Akun & Koneksi -->
-                        <div class="settings-section active" id="settings-account">
+                        <div class="settings-section" id="settings-account">
+                            <h2 class="settings-heading">Akun &amp; Koneksi</h2>
                             <div class="acct-profile-card" id="acct-logged-out">
                                 <div class="connect-hero">
                                     <div class="connect-icon">
@@ -5922,6 +5885,7 @@ html .subscription-overlay, html #login-overlay { background: rgba(0,0,0,.34) !i
                         </div>
                         <!-- Audio -->
                         <div class="settings-section" id="settings-audio">
+                            <h2 class="settings-heading">Audio</h2>
                             <div class="spec-grid">
                                 <div class="card spec-tile">
                                     <div class="spec-k">Format</div>
@@ -5934,9 +5898,9 @@ html .subscription-overlay, html #login-overlay { background: rgba(0,0,0,.34) !i
                                     <div class="spec-d">Per file, sesuai batas audio Roblox.</div>
                                 </div>
                                 <div class="card spec-tile">
-                                    <div class="spec-k">Kecepatan</div>
+                                    <div class="spec-k">Kecepatan &amp; pitch</div>
                                     <div class="spec-v">Di halaman Upload</div>
-                                    <div class="spec-d">Preset dipilih saat upload; hasil proses dikompresi ke MP3.</div>
+                                    <div class="spec-d">Diatur saat upload; hasil proses dikompresi ke MP3.</div>
                                 </div>
                             </div>
                             <div class="card">
@@ -5951,6 +5915,7 @@ html .subscription-overlay, html #login-overlay { background: rgba(0,0,0,.34) !i
                         </div>
                         <!-- Lanjutan -->
                         <div class="settings-section" id="settings-advanced">
+                            <h2 class="settings-heading">Tampilan &amp; Lanjutan</h2>
                             <div class="card">
                                 <div class="setting-name">Tema warna</div>
                                 <div class="setting-desc">Ganti warna seluruh tampilan: navbar, kartu, tombol, pop-up, dan animasi latar.</div>
@@ -6022,6 +5987,7 @@ html .subscription-overlay, html #login-overlay { background: rgba(0,0,0,.34) !i
                             </div>
                         </div>
                         <div class="settings-section" id="settings-developer">
+                            <h2 class="settings-heading">Developer</h2>
                             <div class="card">
                                 <div class="section-title" style="margin-bottom:8px">Admin Panel — VIP</div>
                                 <div style="font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:16px">Panel lokal khusus perangkat ini (password tersimpan di browser). Tambahkan Roblox User ID ke daftar VIP untuk memberi upload tanpa batas.</div>
@@ -6154,6 +6120,7 @@ html .subscription-overlay, html #login-overlay { background: rgba(0,0,0,.34) !i
                 files: [],
                 assetNames: [],
                 speed: 1.0,
+                pitch: 0,
                 source: 'file',
                 audioEl: document.getElementById('audio-element'),
                 isPlaying: false,
@@ -6549,22 +6516,17 @@ html .subscription-overlay, html #login-overlay { background: rgba(0,0,0,.34) !i
             function settingsTab(tab) {
                 if (tab === 'roblox')
                     tab = 'account';
-                document.querySelectorAll('.settings-tab').forEach(t => t.classList.remove('active'));
-                document.querySelectorAll('.settings-section').forEach(s => s.classList.remove('active'));
                 if (tab === 'developer' && !S.developer)
                     return;
-                const idx = {
-                    account: 0,
-                    audio: 1,
-                    advanced: 2,
-                    developer: 3
-                }[tab];
-                if (idx === undefined)
+                const section = document.getElementById('settings-' + tab);
+                if (!section)
                     return;
-                document.querySelectorAll('.settings-tab')[idx].classList.add('active');
-                document.getElementById('settings-' + tab).classList.add('active');
                 if (tab === 'developer')
                     renderVipList();
+                requestAnimationFrame( () => section.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                }));
             }
 
             // ── PROFILE DROPDOWN ──────────────────────────────────
@@ -6758,9 +6720,6 @@ html .subscription-overlay, html #login-overlay { background: rgba(0,0,0,.34) !i
                 if (dangerCard)
                     dangerCard.style.display = ready ? 'flex' : 'none';
                 updateAccountPlanUI();
-                const developerTab = document.getElementById('developer-tab');
-                if (developerTab)
-                    developerTab.style.display = S.developer ? 'flex' : 'none';
                 updateUploadButton();
                 updateRobloxUI();
             }
@@ -7051,7 +7010,7 @@ html .subscription-overlay, html #login-overlay { background: rgba(0,0,0,.34) !i
                 converting = false;
                 updateConvertButton();
                 if (converted)
-                    status.textContent = `${converted}/${urls.length} link selesai. Semua memakai preset ${S.speed || 1}× dan siap dipublish.`;
+                    status.textContent = `${converted}/${urls.length} link selesai. Semua memakai preset ${S.speed || 1}×${S.pitch ? ', pitch ' + formatPitch(S.pitch) : ''} dan siap dipublish.`;
                 if (failures.length) {
                     status.textContent += ` ${failures.join(' ')}`;
                     toast(`${failures.length} link gagal dikonversi`, 'error');
@@ -7209,6 +7168,19 @@ html .subscription-overlay, html #login-overlay { background: rgba(0,0,0,.34) !i
                     S.audioEl.playbackRate = v;
             }
 
+            function formatPitch(v) {
+                return (v > 0 ? '+' : '') + v + ' st';
+            }
+            function setPitch(v) {
+                const value = Math.max(-12, Math.min(12, Math.round(Number(v) || 0)));
+                S.pitch = value;
+                const range = document.getElementById('pitch-range');
+                if (range && Number(range.value) !== value)
+                    range.value = value;
+                document.getElementById('pitch-value').textContent = formatPitch(value);
+                document.getElementById('pitch-reset').hidden = value === 0;
+            }
+
             // ── UPLOAD ────────────────────────────────────────────
             async function startUpload() {
                 if (!S.files.length)
@@ -7260,7 +7232,7 @@ html .subscription-overlay, html #login-overlay { background: rgba(0,0,0,.34) !i
                     const model = isModelFile(file);
                     try {
                         const speed = S.speed || 1.0;
-                        const processed = model ? file : await applySpeed(file, speed);
+                        const processed = model ? file : await applyAudioEffects(file, speed, S.pitch || 0);
                         // Salin isi file ke memori dulu: file dari picker/HP bisa "berubah" atau hilang
                         // selama upload dan itu memicu error "Failed to fetch".
                         let uploadFile;
@@ -7387,10 +7359,71 @@ html .subscription-overlay, html #login-overlay { background: rgba(0,0,0,.34) !i
                 throw new Error('Koneksi ke server terputus (Failed to fetch). Cek internet, matikan VPN/pemblokir iklan, lalu coba lagi.');
             }
 
-            async function applySpeed(file, speed) {
+            // Time-stretch WSOLA: panjang jadi `ratio`x, nada tetap. Dipakai untuk pitch shift
+            // (resample dulu supaya nada berubah, lalu durasi dikembalikan).
+            async function stretchAudio(channels, ratio) {
+                const FRAME = 2048;
+                const HALF = FRAME / 2;
+                const SEARCH = 256;
+                const SEARCH_STEP = 2;
+                const CORR_STRIDE = 4;
+                const YIELD_EVERY = 150;
+                const length = channels[0].length;
+                const outLength = Math.max(1, Math.round(length * ratio));
+                const hop = HALF / ratio;
+                const guide = channels[0];
+                const hann = new Float32Array(FRAME);
+                for (let i = 0; i < FRAME; i++)
+                    hann[i] = .5 - .5 * Math.cos(2 * Math.PI * i / FRAME);
+                const out = channels.map( () => new Float32Array(outLength));
+                let previous = 0;
+                for (let frame = 0, outPos = 0; outPos < outLength; frame++, outPos += HALF) {
+                    let start = 0;
+                    if (frame > 0) {
+                        const target = Math.round(frame * hop);
+                        const reference = Math.min(previous + HALF, Math.max(0, length - HALF));
+                        const low = Math.max(0, target - SEARCH);
+                        const high = Math.min(Math.max(0, length - FRAME), target + SEARCH);
+                        start = Math.min(high, Math.max(low, 0));
+                        let best = -Infinity;
+                        for (let c = low; c <= high; c += SEARCH_STEP) {
+                            let dot = 0
+                              , energy = 1e-9;
+                            const span = Math.min(HALF, length - c, length - reference);
+                            for (let i = 0; i < span; i += CORR_STRIDE) {
+                                const g = guide[c + i];
+                                dot += g * guide[reference + i];
+                                energy += g * g;
+                            }
+                            const score = dot / Math.sqrt(energy);
+                            if (score > best) {
+                                best = score;
+                                start = c;
+                            }
+                        }
+                    }
+                    const count = Math.min(FRAME, length - start, outLength - outPos);
+                    for (let ch = 0; ch < channels.length; ch++) {
+                        const source = channels[ch];
+                        const target = out[ch];
+                        for (let i = 0; i < count; i++) {
+                            // Frame pertama tidak di-fade-in supaya awal lagu tidak terpotong
+                            const gain = frame === 0 && i < HALF ? 1 : hann[i];
+                            target[outPos + i] += source[start + i] * gain;
+                        }
+                    }
+                    previous = start;
+                    if (frame % YIELD_EVERY === YIELD_EVERY - 1)
+                        await new Promise(resolve => setTimeout(resolve, 0));
+                }
+                return out;
+            }
+
+            async function applyAudioEffects(file, speed, pitch) {
                 const ext = file.name.split('.').pop().toLowerCase();
                 const robloxFormat = ['mp3', 'ogg', 'wav', 'flac'].includes(ext);
-                if ((!speed || speed === 1.0) && robloxFormat)
+                const noPitch = !pitch;
+                if ((!speed || speed === 1.0) && noPitch && robloxFormat)
                     return file;
                 if (!window.lamejs)
                     throw new Error('Encoder audio belum siap. Muat ulang halaman lalu coba lagi.');
@@ -7402,24 +7435,29 @@ html .subscription-overlay, html #login-overlay { background: rgba(0,0,0,.34) !i
                     const decoded = await ctx.decodeAudioData(await file.arrayBuffer());
                     await ctx.close();
                     const channels = Math.min(decoded.numberOfChannels, 2);
-                    const outputLength = Math.max(1, Math.ceil(decoded.length / (speed || 1)));
+                    const pitchRatio = Math.pow(2, (pitch || 0) / 12);
+                    const rate = (speed || 1) * pitchRatio;
+                    const outputLength = Math.max(1, Math.ceil(decoded.length / rate));
                     const offline = new OfflineAudioContext(channels,outputLength,decoded.sampleRate);
                     const source = offline.createBufferSource();
                     source.buffer = decoded;
-                    source.playbackRate.value = speed || 1;
+                    source.playbackRate.value = rate;
                     source.connect(offline.destination);
                     source.start(0);
                     const rendered = await offline.startRendering();
+                    let data = Array.from({length: channels}, (_, ch) => rendered.getChannelData(ch));
+                    if (!noPitch)
+                        data = await stretchAudio(data, pitchRatio);
                     const encoder = new lamejs.Mp3Encoder(channels,rendered.sampleRate,128);
-                    const left = rendered.getChannelData(0);
-                    const right = channels === 2 ? rendered.getChannelData(1) : null;
+                    const left = data[0];
+                    const right = channels === 2 ? data[1] : null;
                     const mp3 = [];
                     const block = 1152;
-                    const toInt16 = (data, start) => {
-                        const length = Math.min(block, data.length - start);
+                    const toInt16 = (samples, start) => {
+                        const length = Math.min(block, samples.length - start);
                         const out = new Int16Array(length);
                         for (let i = 0; i < length; i++)
-                            out[i] = Math.max(-32768, Math.min(32767, data[start + i] * 32767));
+                            out[i] = Math.max(-32768, Math.min(32767, samples[start + i] * 32767));
                         return out;
                     }
                     ;
@@ -9555,33 +9593,107 @@ html .subscription-overlay, html #login-overlay { background: rgba(0,0,0,.34) !i
                   , lastFrame = 0
                   , frame = 0;
 
+                const TAU = Math.PI * 2;
+                const METEOR_COUNT = 34;
+                const STAR_COUNT = 90;
+                const FALL_ANGLE = .5; // radian dari garis vertikal, jatuh ke kiri-bawah
+                const FALL_X = -Math.sin(FALL_ANGLE);
+                const FALL_Y = Math.cos(FALL_ANGLE);
+                // Cahaya latar tipis supaya langit tidak datar; warna mengikuti tema (window.__bxPalette)
+                const GLOWS = [
+                    {color: 1, x: .15, y: .15, size: .6, alpha: .12},
+                    {color: 2, x: .85, y: .85, size: .6, alpha: .10}
+                ];
+                let meteors = [];
+                let stars = [];
+
+                function seededRandom(seed) {
+                    return () => {
+                        seed = (seed + 0x6D2B79F5) | 0;
+                        let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+                        t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+                        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+                    };
+                }
+                function makeSky() {
+                    const random = seededRandom(56);
+                    meteors = Array.from({length: METEOR_COUNT}, () => ({
+                        lane: random() * 1.5 - .1,
+                        offset: random(),
+                        period: 2.2 + random() * 4.8,
+                        length: 90 + random() * 170,
+                        thickness: .8 + random() * 1.4,
+                        alpha: .45 + random() * .5,
+                        color: Math.floor(random() * 3)
+                    }));
+                    stars = Array.from({length: STAR_COUNT}, () => ({
+                        x: random(),
+                        y: random(),
+                        radius: .4 + random() * .9,
+                        speed: .6 + random() * 1.6,
+                        phase: random() * TAU
+                    }));
+                }
+
+                function drawGlows(palettes) {
+                    const reach = Math.max(width, height);
+                    for (const glow of GLOWS) {
+                        const cx = width * glow.x;
+                        const cy = height * glow.y;
+                        const radius = reach * glow.size;
+                        const color = palettes[glow.color].join(',');
+                        const fill = context.createRadialGradient(cx, cy, 0, cx, cy, radius);
+                        fill.addColorStop(0, `rgba(${color},${glow.alpha})`);
+                        fill.addColorStop(1, `rgba(${color},0)`);
+                        context.fillStyle = fill;
+                        context.fillRect(0, 0, width, height);
+                    }
+                }
+                function drawStars(palettes) {
+                    const color = palettes[0].join(',');
+                    for (const star of stars) {
+                        const twinkle = .5 + Math.sin(time * star.speed + star.phase) * .5;
+                        context.fillStyle = `rgba(${color},${.12 + twinkle * .4})`;
+                        context.beginPath();
+                        context.arc(width * star.x, height * star.y, star.radius, 0, TAU);
+                        context.fill();
+                    }
+                }
+                function drawMeteors(palettes) {
+                    const travel = height / FALL_Y + 320;
+                    context.lineCap = 'round';
+                    for (const meteor of meteors) {
+                        const progress = (time / meteor.period + meteor.offset) % 1;
+                        const fade = Math.min(1, progress / .08, (1 - progress) / .25);
+                        const distance = progress * travel - 160;
+                        const headX = width * meteor.lane - FALL_X * travel * .5 + FALL_X * distance;
+                        const headY = FALL_Y * distance;
+                        const tailX = headX - FALL_X * meteor.length;
+                        const tailY = headY - FALL_Y * meteor.length;
+                        const color = palettes[meteor.color].join(',');
+                        const alpha = meteor.alpha * fade;
+                        const trail = context.createLinearGradient(headX, headY, tailX, tailY);
+                        trail.addColorStop(0, `rgba(255,255,255,${alpha})`);
+                        trail.addColorStop(.25, `rgba(${color},${alpha * .55})`);
+                        trail.addColorStop(1, `rgba(${color},0)`);
+                        context.strokeStyle = trail;
+                        context.lineWidth = meteor.thickness;
+                        context.beginPath();
+                        context.moveTo(headX, headY);
+                        context.lineTo(tailX, tailY);
+                        context.stroke();
+                        context.fillStyle = `rgba(255,255,255,${alpha})`;
+                        context.beginPath();
+                        context.arc(headX, headY, meteor.thickness * .9, 0, TAU);
+                        context.fill();
+                    }
+                }
                 function draw() {
                     context.clearRect(0, 0, width, height);
                     const palettes = window.__bxPalette || [[236, 237, 241], [176, 178, 184], [124, 126, 132]];
-                    for (let band = 0; band < 3; band++) {
-                        const color = palettes[band].join(',');
-                        for (let strand = 0; strand < 30; strand++) {
-                            const fraction = strand / 29;
-                            context.beginPath();
-                            for (let step = 0; step <= 64; step++) {
-                                const x = width * step / 64;
-                                const u = step / 64;
-                                const y = height * (-.22 + band * .45 + fraction * .29 + u * .17 + Math.sin(u * 5.2 + time * .24 + band * 1.6 + fraction * .55) * .19 + Math.cos(u * 2.8 - time * .18 + band * .9) * .15);
-                                if (step === 0)
-                                    context.moveTo(x, y);
-                                else
-                                    context.lineTo(x, y);
-                            }
-                            const edge = Math.pow(fraction, 3);
-                            const light = context.createLinearGradient(0, 0, width, height * .2);
-                            light.addColorStop(0, `rgba(${color},${.045 + edge * .07})`);
-                            light.addColorStop(.5, `rgba(${color},${.07 + edge * .21})`);
-                            light.addColorStop(1, `rgba(${color},${.05 + edge * .11})`);
-                            context.strokeStyle = light;
-                            context.lineWidth = 1 + fraction * .55;
-                            context.stroke();
-                        }
-                    }
+                    drawGlows(palettes);
+                    drawStars(palettes);
+                    drawMeteors(palettes);
                 }
                 function tick(now) {
                     if (document.hidden) {
@@ -9620,11 +9732,12 @@ html .subscription-overlay, html #login-overlay { background: rgba(0,0,0,.34) !i
                 window.addEventListener('resize', resize, {
                     passive: true
                 });
+                makeSky();
                 resize();
                 syncMotion();
 
                 // Give the original div-based navigation the same keyboard access as buttons.
-                document.querySelectorAll('#nav-logo-wrap, .m-link, .settings-tab, .profile-item, .profile-btn, .roblox-pill').forEach(element => {
+                document.querySelectorAll('#nav-logo-wrap, .m-link, .profile-item, .profile-btn, .roblox-pill').forEach(element => {
                     element.setAttribute('role', 'button');
                     element.tabIndex = 0;
                     element.addEventListener('keydown', event => {
@@ -10531,7 +10644,6 @@ html body .section-heading{margin:26px 4px 12px !important}
         [null,'Upload Model','Upload .rbxm jadi asset',"navigate('model')",2],
         [null,'Toolbox','Cari model & aset Roblox',"navigate('toolbox')",3],
         [null,'Library','Kelola audio tersimpan',"navigate('library')",4],
-        ['user','Koneksi Roblox','Set API key & User ID',"navigate('settings');settingsTab('roblox')"],
         [null,'Pengaturan','Tema, upload, dan lainnya',"navigate('settings')",5],
         ['star','Beli VIP','Upload lebih banyak & tema bebas',"openSubscriptionModal()"],
         [null,'Referal','Undang teman, dapat VIP gratis',"navigate('referral')",6],
@@ -10767,16 +10879,12 @@ body.premium-user :is(#bx-welcome,.dr-acct) .bx-av{
   box-shadow:0 0 0 3px rgba(245,196,81,.16),0 0 22px rgba(245,196,81,.5) !important;
   animation:gold-spin 6s linear infinite}
 body.premium-user :is(#bx-welcome,.dr-acct) .bx-av .av-img{border-radius:inherit}
-body.premium-user :is(#bx-welcome,.dr-acct) .bx-av::after{
-  content:'VIP';position:absolute;right:-8px;top:-9px;z-index:3;pointer-events:none;
-  font:800 9px/1 var(--font-display,inherit);letter-spacing:.06em;padding:3px 6px;border-radius:999px;
-  color:#2a1c00;background:linear-gradient(180deg,#fff3b0,#f5c451);box-shadow:0 0 10px rgba(245,196,81,.7)}
 </style>
 
 
 <style id="bx-v52">
 /* ═══ BAXDEV v52 ═══ */
-:root{--avb-w:3px;--avb-bg:conic-gradient(from var(--gold-a,0deg),#fff3b0,#f5c451,#b8860b,#ffe08a,#f5c451,#8a6508,#fff3b0);--avb-shadow:0 0 0 3px rgba(245,196,81,.16),0 0 22px rgba(245,196,81,.5);--avb-tag-bg:linear-gradient(180deg,#fff3b0,#f5c451);--avb-tag-fg:#2a1c00}
+:root{--avb-w:3px;--avb-bg:conic-gradient(from var(--gold-a,0deg),#fff3b0,#f5c451,#b8860b,#ffe08a,#f5c451,#8a6508,#fff3b0);--avb-shadow:0 0 0 3px rgba(245,196,81,.16),0 0 22px rgba(245,196,81,.5);--avb-deco:linear-gradient(180deg,#fff3b0,#f5c451 55%,#b8860b)}
 
 /* Cara Kerja: baris ke bawah */
 html body #page-home .steps-grid,html body .steps-grid{display:flex !important;flex-direction:column !important;overflow:visible !important;scroll-snap-type:none !important;margin:0 0 20px !important;padding:0 !important;gap:12px !important}
@@ -10791,7 +10899,6 @@ body.premium-user :is(.nav-avatar,.su-avatar,#dd-avatar,#acct-avatar-big,#bx-wel
   box-shadow:var(--avb-shadow) !important}
 html[data-avb="neon"] body.premium-user :is(.nav-avatar,.su-avatar,#bx-welcome .bx-av,.dr-acct .bx-av),html[data-avb="neon"] .avb-prev{animation:avb-pulse 2.4s ease-in-out infinite}
 @keyframes avb-pulse{50%{filter:brightness(1.25)}}
-body.premium-user :is(#bx-welcome,.dr-acct) .bx-av::after{background:var(--avb-tag-bg) !important;color:var(--avb-tag-fg) !important}
 html[data-avb="none"] body.premium-user :is(.nav-avatar,.su-avatar,#dd-avatar,#acct-avatar-big,#bx-welcome .bx-av,.dr-acct .bx-av){border:1px solid var(--m-line2) !important;background:var(--m-tile) !important;box-shadow:none !important;animation:none !important}
 html[data-avb="none"] body.premium-user :is(.nav-avatar,.su-avatar,#dd-avatar,#acct-avatar-big,#bx-welcome .bx-av,.dr-acct .bx-av)::before,html[data-avb="none"] body.premium-user :is(.nav-avatar,.su-avatar,#dd-avatar,#acct-avatar-big,#bx-welcome .bx-av,.dr-acct .bx-av)::after{display:none !important}
 .avb-prev-row{display:flex;flex-direction:column;gap:14px;margin-top:14px}
@@ -10961,7 +11068,7 @@ html body #intro-logo-img{width:clamp(120px,32vw,190px) !important;filter:bright
 
   /* aksi cepat */
   html body #bx-qa{margin:0}
-  html body #bx-qa .bx-qa-grid{gap:16px !important}
+  html body #bx-qa .bx-qa-grid{grid-template-columns:repeat(4,minmax(0,1fr)) !important;gap:16px !important}
   html body .bx-tile{min-height:132px !important;padding:20px !important;border-radius:24px !important;align-items:flex-start;text-align:left;gap:8px}
   html body .bx-tile .bx-ico{width:44px;height:44px;border-radius:14px;margin-bottom:6px}
   html body .bx-tile b{font-size:15px !important}
@@ -10982,12 +11089,10 @@ html body #intro-logo-img{width:clamp(120px,32vw,190px) !important;filter:bright
   html body #page-home #recent-list .recent-meta{font-size:11.5px !important}
   html body #page-home #recent-list .recent-item:only-child{grid-column:1 / -1;flex-direction:row;align-items:center}
 
-  /* riwayat upload: 2 kolom biar mata tidak jauh */
+  /* riwayat upload: satu kolom */
   html body .feed-section{margin:0 !important}
   html body .feed-card{padding:6px 26px !important;border-radius:26px !important}
-  html body .feed-list{display:grid;grid-template-columns:1fr 1fr;column-gap:48px}
   html body .feed-list li{padding:13px 0 !important}
-  html body .feed-list li:nth-child(-n+2){border-top:0}
   html body .feed-name{font-size:14px}
 
   /* LIBRARY & TOOLBOX */
@@ -11018,6 +11123,36 @@ html body #intro-logo-img{width:clamp(120px,32vw,190px) !important;filter:bright
   :root{--wrap:1320px}
   html body #page-home #recent-list{grid-template-columns:repeat(4,minmax(0,1fr))}
 }
+</style>
+
+<style id="bx-v55-vip">
+/* ═══ BAXDEV v55 — Avatar VIP bulat; mahkota & bintang ikut warna border (--avb-deco) ═══ */
+@keyframes avb-twinkle{0%,100%{opacity:.55;transform:scale(.94)}50%{opacity:1;transform:scale(1.06)}}
+:is(body.premium-user :is(.nav-avatar,.su-avatar,#dd-avatar,#acct-avatar-big,#bx-welcome .bx-av,.dr-acct .bx-av),.avb-prev){border-radius:50% !important;position:relative}
+:is(body.premium-user :is(.nav-avatar,.su-avatar,#dd-avatar,#acct-avatar-big,#bx-welcome .bx-av,.dr-acct .bx-av),.avb-prev)::after{content:'';position:absolute;left:50%;top:calc(var(--avb-w) * -1);width:46%;aspect-ratio:1;z-index:3;pointer-events:none;
+  transform:translate(-50%,-78%) rotate(-10deg);transform-origin:50% 100%;background:var(--avb-deco);
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M2.5 19h19l1-12-6 4.5L12 3 7.5 11.5l-6-4.5z'/%3E%3Crect x='3' y='19.8' width='18' height='2.4' rx='1.2'/%3E%3Ccircle cx='1.6' cy='6.4' r='1.5'/%3E%3Ccircle cx='12' cy='2.4' r='1.6'/%3E%3Ccircle cx='22.4' cy='6.4' r='1.5'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M2.5 19h19l1-12-6 4.5L12 3 7.5 11.5l-6-4.5z'/%3E%3Crect x='3' y='19.8' width='18' height='2.4' rx='1.2'/%3E%3Ccircle cx='1.6' cy='6.4' r='1.5'/%3E%3Ccircle cx='12' cy='2.4' r='1.6'/%3E%3Ccircle cx='22.4' cy='6.4' r='1.5'/%3E%3C/svg%3E") center/contain no-repeat}
+:is(body.premium-user :is(.nav-avatar,.su-avatar,#dd-avatar,#acct-avatar-big,#bx-welcome .bx-av,.dr-acct .bx-av),.avb-prev)::before{content:'';position:absolute;inset:-22%;z-index:3;pointer-events:none;background:var(--avb-deco);
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M86 9Q87.26 16.74 95 18Q87.26 19.26 86 27Q84.74 19.26 77 18Q84.74 16.74 86 9Z'/%3E%3Cpath d='M13 69Q13.98 75.02 20 76Q13.98 76.98 13 83Q12.02 76.98 6 76Q12.02 75.02 13 69Z'/%3E%3Cpath d='M91 61Q91.7 65.3 96 66Q91.7 66.7 91 71Q90.3 66.7 86 66Q90.3 65.3 91 61Z'/%3E%3Cpath d='M14 19.5Q14.63 23.37 18.5 24Q14.63 24.63 14 28.5Q13.37 24.63 9.5 24Q13.37 23.37 14 19.5Z'/%3E%3C/svg%3E") center/100% 100% no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M86 9Q87.26 16.74 95 18Q87.26 19.26 86 27Q84.74 19.26 77 18Q84.74 16.74 86 9Z'/%3E%3Cpath d='M13 69Q13.98 75.02 20 76Q13.98 76.98 13 83Q12.02 76.98 6 76Q12.02 75.02 13 69Z'/%3E%3Cpath d='M91 61Q91.7 65.3 96 66Q91.7 66.7 91 71Q90.3 66.7 86 66Q90.3 65.3 91 61Z'/%3E%3Cpath d='M14 19.5Q14.63 23.37 18.5 24Q14.63 24.63 14 28.5Q13.37 24.63 9.5 24Q13.37 23.37 14 19.5Z'/%3E%3C/svg%3E") center/100% 100% no-repeat;
+  animation:avb-twinkle 2.6s ease-in-out infinite}
+html[data-avb="none"] .avb-prev::before,html[data-avb="none"] .avb-prev::after{display:none}
+body.premium-user #bx-welcome .bx-av{margin-top:14px}
+.avb-prev{margin-top:20px}
+@media (prefers-reduced-motion:reduce){:is(body.premium-user :is(.nav-avatar,.su-avatar,#dd-avatar,#acct-avatar-big,#bx-welcome .bx-av,.dr-acct .bx-av),.avb-prev)::before{animation:none}}
+</style>
+
+<style id="bx-v58">
+/* ═══ BAXDEV v58 — Pengaturan satu halaman + slider pitch ═══ */
+html body .settings-layout{display:grid !important;grid-template-columns:minmax(0,1fr) !important;gap:20px !important;max-width:860px;margin-inline:auto}
+html body .settings-main{display:flex;flex-direction:column;gap:36px}
+html body .settings-section{display:flex;flex-direction:column;gap:18px;scroll-margin-top:96px}
+html body:not(.developer-mode) #settings-developer{display:none}
+.settings-heading{margin:0;font:600 12.5px var(--font-display,inherit);letter-spacing:.1em;text-transform:uppercase;color:var(--text2)}
+.pitch-row{display:flex;align-items:center;gap:14px}
+#pitch-range{flex:1;min-width:0;height:32px;margin:0;accent-color:rgb(var(--bx-t,255,255,255));cursor:pointer}
+#pitch-value{min-width:48px;text-align:right;font:600 14px var(--font);font-variant-numeric:tabular-nums;color:var(--text)}
+.pitch-reset{padding:6px 12px;font-size:12px}
+.pitch-reset[hidden]{display:none}
 </style>
 
 </body>
