@@ -7220,7 +7220,6 @@ html .subscription-overlay, html #login-overlay { background: rgba(0,0,0,.34) !i
                 btn.disabled = true;
                 S.uploading = true;
                 wrap.style.display = 'block';
-                if (window.bxBusy) bxBusy.show('Menyiapkan upload…');
                 document.getElementById('result-box').classList.remove('visible');
 
                 for (let i = 0; i < S.files.length; i++) {
@@ -7228,20 +7227,16 @@ html .subscription-overlay, html #login-overlay { background: rgba(0,0,0,.34) !i
                     const name = S.assetNames[i] || defaultAssetName(file.name);
                     setQStatus(file, 'run');
                     label.textContent = `Mengupload ${i + 1}/${S.files.length}: ${file.name}`;
-                    fill.style.width = '5%';
-                    pct.textContent = '5%';
-                    if (window.bxBusy) bxBusy.set('Memproses file…', i / S.files.length, file.name);
-                    await new Promise(r => requestAnimationFrame(() => setTimeout(r, 0)));
+                    for (let p = 0; p <= 85; p += 15) {
+                        fill.style.width = p + '%';
+                        pct.textContent = p + '%';
+                        await sleep(100)
+                    }
                     label.textContent = 'Publishing ke Roblox...';
                     const model = isModelFile(file);
                     try {
                         const speed = S.speed || 1.0;
-                        const processed = model ? file : await applyAudioEffects(file, speed, S.pitch || 0, f => {
-                            const v = 5 + f * 40;
-                            fill.style.width = v + '%';
-                            pct.textContent = Math.round(v) + '%';
-                            if (window.bxBusy) bxBusy.set('Memproses audio…', (i + .05 + f * .45) / S.files.length);
-                        });
+                        const processed = model ? file : await applyAudioEffects(file, speed, S.pitch || 0);
                         // Salin isi file ke memori dulu: file dari picker/HP bisa "berubah" atau hilang
                         // selama upload dan itu memicu error "Failed to fetch".
                         let uploadFile;
@@ -7261,7 +7256,6 @@ html .subscription-overlay, html #login-overlay { background: rgba(0,0,0,.34) !i
                         fd.append('assetType', model ? 'Model' : 'Audio');
                         fd.append('displayName', name);
                         fd.append('description', 'Uploaded via baxdev Roblox Audio Studio');
-                        if (window.bxBusy) bxBusy.set('Mengunggah ke Roblox…', (i + .55) / S.files.length);
                         const res = await postWithRetry('/api/roblox-upload', fd);
                         const responseText = await res.text();
                         let data = {};
@@ -7296,7 +7290,6 @@ html .subscription-overlay, html #login-overlay { background: rgba(0,0,0,.34) !i
                                     assetId = status.assetId;
                                 fill.style.width = Math.min(98, 86 + attempt) + '%';
                                 pct.textContent = Math.min(98, 86 + attempt) + '%';
-                                if (window.bxBusy) bxBusy.set('Menunggu pengecekan Roblox…', (i + .65 + Math.min(attempt, 9) * .035) / S.files.length);
                             }
                         }
                         fill.style.width = '100%';
@@ -7336,9 +7329,7 @@ html .subscription-overlay, html #login-overlay { background: rgba(0,0,0,.34) !i
                         toast('Gagal upload: ' + (e.message || 'Error'), 'error');
                     }
                     label.textContent = `Selesai ${i + 1}/${S.files.length}`;
-                    if (window.bxBusy) bxBusy.set(i + 1 === S.files.length ? 'Selesai' : 'Lanjut file berikutnya…', (i + 1) / S.files.length);
                 }
-                if (window.bxBusy) bxBusy.hide();
                 await sleep(900);
                 S.uploading = false;
                 wrap.style.display = 'none';
@@ -11523,85 +11514,6 @@ html body:not(.developer-mode) #settings-developer{display:none}
 })();
 </script>
 
-
-<style id="bx-busy-css">
-#bx-busy{position:fixed;inset:0;z-index:2147482000;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(6,6,8,.9);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .28s ease,visibility 0s linear .28s}
-#bx-busy.show{opacity:1;visibility:visible;pointer-events:auto;transition:opacity .28s ease}
-body.bx-busy-on{overflow:hidden}
-.bxb-card{width:min(300px,82vw);text-align:center;transform:translateY(8px) scale(.98);transition:transform .35s cubic-bezier(.22,.8,.26,1)}
-#bx-busy.show .bxb-card{transform:none}
-.bxb-logo{display:block;margin:0 auto;width:clamp(96px,30vw,140px);height:auto;filter:brightness(0) invert(1);opacity:.95}
-.bxb-word{display:none;font:700 18px/1 var(--font-display,system-ui),sans-serif;letter-spacing:.42em;padding-left:.42em;color:#f4f4f5}
-#bx-busy.no-logo .bxb-logo{display:none}
-#bx-busy.no-logo .bxb-word{display:block}
-.bxb-sub{margin-top:10px;font:500 9px/1 var(--font-display,system-ui),sans-serif;letter-spacing:.34em;padding-left:.34em;color:#8a8c92}
-.bxb-bar{position:relative;margin:26px auto 14px;height:3px;border-radius:3px;background:rgba(255,255,255,.1);overflow:hidden}
-.bxb-bar i{position:absolute;top:0;bottom:0;left:0;width:3%;border-radius:inherit;background:var(--silver-hi,#f2f2f4);transition:width .45s cubic-bezier(.22,.8,.26,1)}
-.bxb-bar i::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.75),transparent);transform:translateX(-100%);animation:bxbShine 1.4s ease-in-out infinite}
-@keyframes bxbShine{to{transform:translateX(100%)}}
-.bxb-msg{font:500 12.5px/1.4 var(--font-body,system-ui),sans-serif;color:#d8d8db}
-.bxb-meta{margin-top:6px;display:flex;justify-content:space-between;gap:12px;font:400 11px/1.3 system-ui,sans-serif;color:#7f8187}
-.bxb-file{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-@media (prefers-reduced-motion:reduce){.bxb-bar i::after{animation:none}.bxb-card{transition:none}}
-</style>
-<div id="bx-busy" role="status" aria-live="polite" aria-hidden="true">
-  <div class="bxb-card">
-    <img class="bxb-logo" alt="BAXDEV" decoding="async">
-    <div class="bxb-word">BAXDEV</div>
-    <div class="bxb-sub">AUDIO STUDIO</div>
-    <div class="bxb-bar"><i></i></div>
-    <div class="bxb-msg">Menyiapkan…</div>
-    <div class="bxb-meta"><span class="bxb-file"></span><span class="bxb-pct">0%</span></div>
-  </div>
-</div>
-<script id="bx-busy-js">
-(() => {
-  const root = document.getElementById('bx-busy');
-  if (!root) return;
-  const bar = root.querySelector('.bxb-bar i');
-  const msg = root.querySelector('.bxb-msg');
-  const pctEl = root.querySelector('.bxb-pct');
-  const fileEl = root.querySelector('.bxb-file');
-  const logo = root.querySelector('.bxb-logo');
-  const intro = document.getElementById('intro-logo-img');
-  if (intro && intro.getAttribute('src')) logo.src = intro.getAttribute('src');
-  else root.classList.add('no-logo');
-  logo.addEventListener('error', () => root.classList.add('no-logo'));
-  let shownAt = 0, timer = 0;
-  window.bxBusy = {
-    show(text) {
-      clearTimeout(timer);
-      msg.textContent = text || 'Memproses…';
-      fileEl.textContent = '';
-      bar.style.width = '3%';
-      pctEl.textContent = '0%';
-      shownAt = Date.now();
-      window.__bxPauseAmbient = true;
-      document.body.classList.add('bx-busy-on');
-      root.setAttribute('aria-hidden', 'false');
-      root.classList.add('show');
-    },
-    set(text, frac, file) {
-      if (text) msg.textContent = text;
-      if (typeof frac === 'number') {
-        const p = Math.max(3, Math.min(100, Math.round(frac * 100)));
-        bar.style.width = p + '%';
-        pctEl.textContent = p + '%';
-      }
-      if (file !== undefined) fileEl.textContent = file;
-    },
-    hide() {
-      clearTimeout(timer);
-      timer = setTimeout(() => {
-        root.classList.remove('show');
-        root.setAttribute('aria-hidden', 'true');
-        document.body.classList.remove('bx-busy-on');
-        window.__bxPauseAmbient = false;
-      }, Math.max(0, 700 - (Date.now() - shownAt)));
-    }
-  };
-})();
-</script>
 
 <style id="bx-ref-css">
 #ref-root{display:flex;flex-direction:column;gap:12px}
