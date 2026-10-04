@@ -7,9 +7,8 @@ import { requireUser, quotaBegin, quotaCommit } from "../_lib/auth.js";
 //  2. Unduh file animasi dari Roblox CDN (assetdelivery) — server-to-server,
 //     bisa ambil aset publik tanpa auth.
 //  3. Validasi format rbxm / rbxmx.
-//  4. Upload ke Roblox Open Cloud sebagai "Model" (assetType yang didukung
-//     Open Cloud v1; KeyframeSequence di dalamnya tetap bisa digunakan sebagai
-//     AnimationId di script Roblox).
+//  4. Upload ke Roblox Open Cloud sebagai "Animation" — aset akan muncul di
+//     kategori Animasi di Creator Hub, bukan Model.
 //  5. Poll operation → kembalikan assetId baru.
 //
 // Tidak ada file yang di-log, di-cache, atau disimpan di sisi server.
@@ -202,7 +201,7 @@ async function handleSpoof(context) {
   // tetap bisa dipakai sebagai AnimationId di Animate script.
   const creator = creatorType === "Group" ? { groupId } : { userId };
   const requestPayload = {
-    assetType: "Model",
+    assetType: "Animation",
     displayName,
     description: `Spoof animasi #${animId} via BAXDEV`,
     creationContext: { creator },

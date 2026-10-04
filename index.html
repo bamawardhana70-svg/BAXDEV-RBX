@@ -7,6 +7,7 @@
         <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#050505">
         <meta name="color-scheme" content="dark">
         <script>(function(){var T={aurora:{m:'#0c0414',p:[[212,190,255],[166,110,255],[137,59,220]]},senja:{m:'#140a04',p:[[255,203,190],[255,147,110],[220,115,59]]},samudra:{m:'#041214',p:[[190,255,253],[110,252,255],[59,201,220]]},mono:{m:'#050505',p:[[236,237,241],[176,178,184],[124,126,132]]},blue:{m:'#040914',p:[[190,220,255],[110,170,255],[59,110,220]]},green:{m:'#030b07',p:[[190,255,215],[95,224,160],[34,160,90]]}};window.BX_THEMES=T;var n='mono';try{n=localStorage.getItem('baxdev_theme')||'aurora'}catch(e){}if(!T[n]&&n!=='custom')n='mono';document.documentElement.setAttribute('data-theme',n);window.__bxPalette=T[n]?T[n].p:null;window.__bxThemeMeta=(T[n]&&n!=='mono')?T[n].m:null;if(T[n]&&n!=='mono'){document.querySelectorAll('meta[name="theme-color"]').forEach(function(x){x.setAttribute('content',T[n].m)})}})();</script>
+        <script>(function(){var g='glass';try{g=localStorage.getItem('baxdev_style')||'glass'}catch(e){}if(g!=='clay')g='glass';document.documentElement.setAttribute('data-style',g)})();</script>
         <script src="theme.js"></script>
         <link rel="icon" href="favicon.ico" sizes="any">
         <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
@@ -4986,6 +4987,98 @@ html .subscription-overlay, html #login-overlay { background: rgba(0,0,0,.34) !i
   document.addEventListener('DOMContentLoaded',function(){Gl.sync();A.syncUI();});
 })();
 </script>
+<style id="clay-style">
+/* ═══ GAYA CLAY — permukaan padat lembut, sudut besar, bayangan timbul/tenggelam. Ikut warna tema aktif. ═══ */
+html[data-style="clay"]{
+  --clay-bg: var(--bg2, #12141a);
+  --clay-hi: color-mix(in srgb, #fff 16%, var(--bg3, #1a1d26));
+  --clay-lo: color-mix(in srgb, #000 55%, var(--bg, #08090c));
+  --clay-face: color-mix(in srgb, var(--bg3, #1a1d26) 88%, #fff 12%);
+  --clay-out: 10px 12px 26px rgba(0,0,0,.50), -6px -6px 16px color-mix(in srgb, #fff 7%, transparent);
+  --clay-in: inset 3px 3px 7px rgba(255,255,255,.14), inset -5px -6px 12px rgba(0,0,0,.38);
+  --clay-in-deep: inset 4px 5px 10px rgba(0,0,0,.50), inset -3px -3px 8px rgba(255,255,255,.07);
+  --clay-r: 26px;
+  --lg-fill: linear-gradient(145deg, var(--clay-hi), var(--clay-face));
+  --lg-border: transparent;
+  --lg-blur: none;
+  --lg-shadow: var(--clay-out), var(--clay-in);
+  --radius: 26px; --radius-sm: 20px; --radius-xs: 14px;
+  --glow: var(--clay-out), var(--clay-in);
+  --glow-hover: 12px 16px 32px rgba(0,0,0,.55), -7px -7px 18px color-mix(in srgb, #fff 9%, transparent), var(--clay-in);
+}
+html[data-style="clay"] body{background:var(--clay-bg)}
+html[data-style="clay"] .ambient-scene{opacity:.18;filter:saturate(.6) blur(2px)}
+/* semua panel kaca → tanah liat padat, tanpa blur */
+html[data-style="clay"] :is(.card,.result-box,.settings-user,.settings-nav,.subscription-card,.developer-card,.login-card,.install-card,.access-card,.tb-card,.plan-option,.lib-note,#player-bar,#mobile-menu,#profile-dropdown,.toast-item,#google-gate .gg-card,#mt-overlay .mt-card,#ban-overlay .bo-card,.source-switch:not(.tb-cats)){
+  background:linear-gradient(145deg,var(--clay-hi),var(--clay-face)) !important;
+  border:0 !important;
+  border-radius:var(--clay-r) !important;
+  box-shadow:var(--clay-out),var(--clay-in) !important;
+  -webkit-backdrop-filter:none !important; backdrop-filter:none !important;
+}
+html[data-style="clay"] #navbar,
+html[data-style="clay"] body.premium-user:not(.developer-mode) #navbar,
+html[data-style="clay"] body.developer-mode #navbar{
+  background:linear-gradient(180deg,var(--clay-hi),var(--clay-face)) !important;
+  border:0 !important; border-radius:0 0 28px 28px;
+  box-shadow:0 12px 28px rgba(0,0,0,.5), inset 0 -3px 8px rgba(0,0,0,.35), inset 0 2px 4px rgba(255,255,255,.12) !important;
+  -webkit-backdrop-filter:none !important; backdrop-filter:none !important;
+}
+/* overlay modal: redup saja, tanpa blur */
+html[data-style="clay"] :is(.subscription-overlay,#login-overlay,.access-overlay){-webkit-backdrop-filter:none !important;backdrop-filter:none !important;background:rgba(0,0,0,.55) !important}
+/* tombol: bantal menggembung, tenggelam saat ditekan */
+html[data-style="clay"] :is(.btn,.btn-primary,.btn-outline,.google-btn,.signin-btn,.qa-btn,.ap-ctrl-btn,.sa-preset,.theme-opt,.avb-opt,.speed-chip,.source-tab,.nav-link,.m-link,.access-chip){
+  border:0 !important; border-radius:999px !important;
+  box-shadow:6px 7px 14px rgba(0,0,0,.42), -4px -4px 10px color-mix(in srgb,#fff 7%, transparent), inset 2px 2px 5px rgba(255,255,255,.16), inset -3px -4px 8px rgba(0,0,0,.30) !important;
+  transition:transform .18s ease, box-shadow .18s ease !important;
+}
+html[data-style="clay"] :is(.btn-outline,.sa-preset,.theme-opt,.avb-opt,.speed-chip,.source-tab,.nav-link,.m-link,.access-chip){background:linear-gradient(145deg,var(--clay-hi),var(--clay-face)) !important;color:var(--text)}
+html[data-style="clay"] :is(.btn-primary,.google-btn,.signin-btn){background:var(--chrome) !important;color:var(--on-accent) !important}
+html[data-style="clay"] :is(.btn,.qa-btn,.theme-opt,.avb-opt,.speed-chip,.source-tab,.sa-preset,.ap-ctrl-btn):hover{transform:translateY(-2px)}
+html[data-style="clay"] :is(.btn,.qa-btn,.theme-opt,.avb-opt,.speed-chip,.source-tab,.sa-preset,.ap-ctrl-btn,.nav-link,.m-link):active{
+  transform:translateY(1px) scale(.98);
+  box-shadow:var(--clay-in-deep) !important;
+}
+/* item aktif = tenggelam (terpilih) */
+html[data-style="clay"] :is(.nav-link.active,.m-link.active,.theme-opt.active,.avb-opt.active,.speed-chip.active,.source-tab.active,.settings-tab.active){
+  box-shadow:var(--clay-in-deep) !important;
+  background:linear-gradient(145deg,var(--clay-lo),var(--clay-face)) !important;
+  color:var(--accent-blue,var(--text)) !important;
+}
+/* input: lubang cekung */
+html[data-style="clay"] :is(input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select,.sa-input-row){
+  background:var(--clay-lo) !important;
+  border:0 !important; border-radius:18px !important;
+  box-shadow:var(--clay-in-deep) !important;
+  color:var(--text);
+}
+html[data-style="clay"] .sa-input-row input{box-shadow:none !important;background:transparent !important;border-radius:0 !important}
+html[data-style="clay"] .sa-prefix{background:transparent !important;border:0 !important}
+html[data-style="clay"] .ap-preview-btn{border-radius:0 18px 18px 0 !important;box-shadow:inset 2px 2px 5px rgba(255,255,255,.2),inset -3px -3px 8px rgba(0,0,0,.3) !important}
+html[data-style="clay"] .ap-canvas-wrap{border-radius:20px;box-shadow:var(--clay-in-deep)}
+/* toggle */
+html[data-style="clay"] .toggle{background:var(--clay-lo) !important;border:0 !important;box-shadow:var(--clay-in-deep) !important}
+html[data-style="clay"] .toggle::after{box-shadow:3px 3px 6px rgba(0,0,0,.5),inset 1px 1px 2px rgba(255,255,255,.5)}
+html[data-style="clay"] .toggle.on{background:color-mix(in srgb,var(--accent-blue,#9cc9ff) 55%,var(--clay-lo)) !important}
+/* avatar & ikon bulat */
+html[data-style="clay"] :is(.nav-avatar,.su-avatar,.um-cover,.connect-icon,.player-play){border:0 !important;box-shadow:var(--clay-out),var(--clay-in) !important}
+html[data-style="clay"] .progress-fill,html[data-style="clay"] .um-progress span{border-radius:999px}
+/* kartu toolbox: gambar ikut membulat */
+html[data-style="clay"] .tb-thumb{border-radius:20px 20px 0 0}
+html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
+/* pemilih gaya */
+.style-picker{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+.style-opt{display:flex;flex-direction:column;gap:10px;align-items:stretch;padding:12px;border-radius:20px;cursor:pointer;text-align:left;font:600 12.5px var(--font);color:var(--text);background:var(--surf,rgba(255,255,255,.05));border:1px solid var(--glass-border);transition:transform .2s ease,border-color .2s ease}
+.style-opt:hover{transform:translateY(-1px)}
+.style-opt.active{border-color:var(--accent-blue);box-shadow:0 0 0 1px var(--accent-blue) inset}
+.style-prev{height:62px;border-radius:16px;position:relative;overflow:hidden}
+.style-prev[data-s="glass"]{background:radial-gradient(circle at 25% 30%,rgba(166,110,255,.55),transparent 55%),radial-gradient(circle at 80% 75%,rgba(80,200,255,.45),transparent 55%),#0b0d14}
+.style-prev[data-s="glass"]::after{content:"";position:absolute;inset:11px 16px;border-radius:14px;background:linear-gradient(135deg,rgba(255,255,255,.34),rgba(255,255,255,.08));border:1px solid rgba(255,255,255,.4);box-shadow:inset 0 1px 0 rgba(255,255,255,.5);backdrop-filter:blur(8px)}
+.style-prev[data-s="clay"]{background:#1a1d26}
+.style-prev[data-s="clay"]::after{content:"";position:absolute;inset:11px 16px;border-radius:20px;background:linear-gradient(145deg,#3a3f50,#262a37);box-shadow:6px 7px 12px rgba(0,0,0,.5),-3px -3px 8px rgba(255,255,255,.07),inset 2px 2px 4px rgba(255,255,255,.16),inset -3px -4px 7px rgba(0,0,0,.35)}
+.style-name{display:flex;align-items:center;justify-content:space-between}
+@media(max-width:420px){.style-picker{grid-template-columns:1fr}}
+</style>
 </head>
     <body class="intro-playing">
 <script>(function(){try{var m=location.search.match(/[?&]ref=([A-Za-z0-9]{6,12})(?:&|$)/);if(m){localStorage.setItem("baxdev_ref",m[1].toUpperCase());var u=location.pathname+location.search.replace(/([?&])ref=[^&]*&?/,"$1").replace(/[?&]$/,"")+location.hash;history.replaceState(null,"",u)}}catch(e){}})();</script>
@@ -6041,6 +6134,20 @@ html .subscription-overlay, html #login-overlay { background: rgba(0,0,0,.34) !i
                         <!-- Lanjutan -->
                         <div class="settings-section" id="settings-advanced">
                             <h2 class="settings-heading">Tampilan &amp; Lanjutan</h2>
+                            <div class="card">
+                                <div class="setting-name">Gaya tampilan</div>
+                                <div class="setting-desc">Pilih bahan antarmuka. Liquid Glass tembus pandang dengan blur, Clay lembut seperti tanah liat dengan bayangan timbul. Warna tetap ikut Tema warna.</div>
+                                <div class="style-picker" role="group" aria-label="Gaya tampilan">
+                                    <button type="button" class="style-opt" data-sv="glass" aria-pressed="false" onclick="setStyle('glass')">
+                                        <span class="style-prev" data-s="glass"></span>
+                                        <span class="style-name">Liquid Glass</span>
+                                    </button>
+                                    <button type="button" class="style-opt" data-sv="clay" aria-pressed="false" onclick="setStyle('clay')">
+                                        <span class="style-prev" data-s="clay"></span>
+                                        <span class="style-name">Clay</span>
+                                    </button>
+                                </div>
+                            </div>
                             <div class="card">
                                 <div class="setting-name">Tema warna</div>
                                 <div class="setting-desc">Ganti warna seluruh tampilan: navbar, kartu, tombol, pop-up, dan animasi latar.</div>
@@ -9167,6 +9274,292 @@ html .subscription-overlay, html #login-overlay { background: rgba(0,0,0,.34) !i
                 });
             }
 
+            // ── RBXM BINARY PARSER ───────────────────────────────────
+            // LZ4 block decompression (no frame header — raw block data)
+            function lz4Decompress(srcBuf, srcOff, srcLen, dstLen) {
+                const src = new Uint8Array(srcBuf, srcOff, srcLen);
+                const dst = new Uint8Array(dstLen);
+                let si = 0, di = 0;
+                while (si < src.length) {
+                    const tok = src[si++];
+                    // Literal run
+                    let litLen = tok >> 4;
+                    if (litLen === 15) { let b; do { b = src[si++]; litLen += b; } while (b === 255); }
+                    dst.set(src.subarray(si, si + litLen), di);
+                    si += litLen; di += litLen;
+                    if (si >= src.length) break;
+                    // Match copy
+                    const mOff = src[si] | (src[si + 1] << 8); si += 2;
+                    let mLen = (tok & 0xF) + 4;
+                    if ((tok & 0xF) === 15) { let b; do { b = src[si++]; mLen += b; } while (b === 255); }
+                    let cp = di - mOff;
+                    for (let i = 0; i < mLen; i++) dst[di++] = dst[cp++];
+                }
+                return dst.buffer;
+            }
+
+            // Byte de-interleave + big-endian reconstruct → Uint32Array
+            function rbxDeinterleave(bytes, off, n) {
+                const out = new Uint32Array(n);
+                for (let i = 0; i < n; i++) {
+                    out[i] = (
+                        (bytes[off + i]           << 24) |
+                        (bytes[off + n     + i]   << 16) |
+                        (bytes[off + n * 2 + i]   <<  8) |
+                         bytes[off + n * 3 + i]
+                    ) >>> 0;
+                }
+                return out;
+            }
+
+            // Delta-accumulate interleaved unsigned int32s (referent IDs)
+            function rbxDecodeRefs(bytes, off, n) {
+                const raw = rbxDeinterleave(bytes, off, n);
+                const refs = new Int32Array(n);
+                let acc = 0;
+                for (let i = 0; i < n; i++) { acc += raw[i]; refs[i] = acc; }
+                return refs;
+            }
+
+            // Bit-rotate-right-1 + interleaved floats
+            function rbxDecodeFloats(bytes, off, n) {
+                const raw = rbxDeinterleave(bytes, off, n);
+                const f32 = new Float32Array(n);
+                const tmp = new DataView(new ArrayBuffer(4));
+                for (let i = 0; i < n; i++) {
+                    const r = raw[i];
+                    // Encoding was rotate-left-1; decode: rotate-right-1
+                    tmp.setUint32(0, ((r >>> 1) | ((r & 1) << 31)) >>> 0, true);
+                    f32[i] = tmp.getFloat32(0, true);
+                }
+                return f32;
+            }
+
+            function rbxParseInst(buf, classMap, instances) {
+                const dv = new DataView(buf);
+                const b  = new Uint8Array(buf);
+                let o = 0;
+                const classId = dv.getUint32(o, true); o += 4;
+                const nameLen = dv.getUint32(o, true); o += 4;
+                const className = new TextDecoder().decode(b.slice(o, o + nameLen)); o += nameLen;
+                o++; // isService byte
+                const count = dv.getUint32(o, true); o += 4;
+                const refIds = rbxDecodeRefs(b, o, count);
+                classMap[classId] = { className, refIds };
+                for (const ref of refIds) instances[ref] = { className, classId };
+            }
+
+            // Predefined CFrame rotation matrices (IDs 1-36 → 3x3 rows)
+            // Most animation poses use type 0 (custom); table covers common ids.
+            const RBX_ROT = (() => {
+                const I = [1,0,0, 0,1,0, 0,0,1];
+                const tbl = {};
+                // Populated with known axis-aligned orientations
+                const raw = [
+                    [2,  1,0,0,  0,1,0,  0,0,1],
+                    [3,  1,0,0,  0,0,-1, 0,1,0],
+                    [5,  1,0,0,  0,-1,0, 0,0,-1],
+                    [6,  1,0,0,  0,0,1,  0,-1,0],
+                    [7,  0,1,0,  1,0,0,  0,0,-1],
+                    [9,  0,0,1,  1,0,0,  0,1,0],
+                    [10, 0,-1,0, 1,0,0,  0,0,1],
+                    [11, 0,0,-1, 1,0,0,  0,-1,0],
+                    [13, -1,0,0, 0,1,0,  0,0,-1],
+                    [14, -1,0,0, 0,0,-1, 0,-1,0],
+                    [16, -1,0,0, 0,-1,0, 0,0,1],
+                    [17, -1,0,0, 0,0,1,  0,1,0],
+                    [20, 0,1,0,  0,0,1,  1,0,0],
+                    [22, 0,0,-1, 0,1,0,  1,0,0],
+                    [23, 0,-1,0, 0,0,-1, 1,0,0],
+                    [24, 0,0,1,  0,-1,0, 1,0,0],
+                    [25, 0,1,0,  -1,0,0, 0,0,1],
+                    [27, 0,0,-1, -1,0,0, 0,1,0],
+                    [28, 0,-1,0, -1,0,0, 0,0,-1],
+                    [29, 0,0,1,  -1,0,0, 0,-1,0],
+                    [31, 0,0,1,  0,1,0,  -1,0,0],
+                    [32, 0,1,0,  0,0,-1, -1,0,0],
+                    [34, 0,0,-1, 0,-1,0, -1,0,0],
+                    [35, 0,-1,0, 0,0,1,  -1,0,0],
+                ];
+                for (const [id, ...m] of raw) tbl[id] = m;
+                for (let id = 1; id <= 36; id++) if (!tbl[id]) tbl[id] = I;
+                return tbl;
+            })();
+
+            function rbxParseProp(buf, classMap, propData) {
+                const dv = new DataView(buf);
+                const b  = new Uint8Array(buf);
+                let o = 0;
+
+                const classId  = dv.getUint32(o, true); o += 4;
+                const nameLen  = dv.getUint32(o, true); o += 4;
+                const propName = new TextDecoder().decode(b.slice(o, o + nameLen)); o += nameLen;
+                const pType    = b[o++];
+
+                const cls = classMap[classId];
+                if (!cls) return;
+                const n   = cls.refIds.length;
+                const key = classId + '.' + propName;
+                const vals = [];
+
+                if (pType === 0x01) {           // String
+                    for (let i = 0; i < n; i++) {
+                        const len = dv.getUint32(o, true); o += 4;
+                        vals.push(new TextDecoder().decode(b.slice(o, o + len))); o += len;
+                    }
+                } else if (pType === 0x02) {     // Bool
+                    for (let i = 0; i < n; i++) vals.push(b[o++] !== 0);
+                } else if (pType === 0x04) {     // Float32 (interleaved + bit-rotated)
+                    const f = rbxDecodeFloats(b, o, n);
+                    for (let i = 0; i < n; i++) vals.push(f[i]);
+                    o += n * 4;
+                } else if (pType === 0x10) {     // CFrame / CoordinateFrame
+                    // 1. Rotation type per instance
+                    const rotTypes = b.slice(o, o + n); o += n;
+                    // 2. Custom-rotation floats (type 0 instances only, 9 floats each)
+                    let custom = 0;
+                    for (let i = 0; i < n; i++) if (rotTypes[i] === 0) custom++;
+                    let rotF = null;
+                    if (custom > 0) { rotF = rbxDecodeFloats(b, o, custom * 9); o += custom * 9 * 4; }
+                    // 3. Position X, Y, Z — three separate interleaved arrays
+                    const xF = rbxDecodeFloats(b, o, n); o += n * 4;
+                    const yF = rbxDecodeFloats(b, o, n); o += n * 4;
+                    const zF = rbxDecodeFloats(b, o, n); o += n * 4;
+                    let ri = 0;
+                    for (let i = 0; i < n; i++) {
+                        let r;
+                        if (rotTypes[i] === 0 && rotF) {
+                            const base = ri++ * 9;
+                            r = [rotF[base],rotF[base+1],rotF[base+2], rotF[base+3],rotF[base+4],rotF[base+5], rotF[base+6],rotF[base+7],rotF[base+8]];
+                        } else {
+                            r = RBX_ROT[rotTypes[i]] || [1,0,0, 0,1,0, 0,0,1];
+                        }
+                        vals.push({ x:xF[i],y:yF[i],z:zF[i], r00:r[0],r01:r[1],r02:r[2], r10:r[3],r11:r[4],r12:r[5], r20:r[6],r21:r[7],r22:r[8] });
+                    }
+                }
+
+                if (vals.length) propData[key] = { classId, vals };
+            }
+
+            function rbxParsePrnt(buf, parentOf) {
+                const dv = new DataView(buf);
+                const b  = new Uint8Array(buf);
+                let o = 1; // skip version byte
+                const n    = dv.getInt32(o, true); o += 4;
+                const kids = rbxDecodeRefs(b, o, n); o += n * 4;
+                const pars = rbxDecodeRefs(b, o, n);
+                for (let i = 0; i < n; i++) parentOf[kids[i]] = pars[i];
+            }
+
+            function rbxBuildAnim(classMap, instances, propData, parentOf) {
+                // Find class IDs by name
+                let kfsId = null, kfId = null, poseId = null;
+                for (const [id, cls] of Object.entries(classMap)) {
+                    const n = parseInt(id);
+                    if (cls.className === 'KeyframeSequence') kfsId = n;
+                    else if (cls.className === 'Keyframe') kfId = n;
+                    else if (cls.className === 'Pose') poseId = n;
+                }
+                if (kfsId === null) throw new Error('KeyframeSequence tidak ditemukan dalam rbxm');
+
+                const isLoop   = propData[kfsId + '.Loop']?.vals[0] ?? false;
+                const kfRefs   = classMap[kfId]?.refIds || [];
+                const kfTimes  = propData[kfId + '.Time']?.vals || [];
+                const kfTimeOf = {};
+                for (let i = 0; i < kfRefs.length; i++) kfTimeOf[kfRefs[i]] = kfTimes[i] ?? 0;
+
+                const poseRefs  = classMap[poseId]?.refIds || [];
+                const poseNames = propData[poseId + '.Name']?.vals || [];
+                const poseCFs   = propData[poseId + '.CFrame']?.vals || [];
+
+                const poseInfo = {};  // refId -> {name, cf}
+                for (let i = 0; i < poseRefs.length; i++)
+                    poseInfo[poseRefs[i]] = { name: poseNames[i] || ('Pose' + i), cf: poseCFs[i] || null };
+
+                // Build parent-child maps for poses
+                const poseKfParent   = {}; // poseRef -> kfRef (direct Keyframe parent)
+                const posePoseParent = {}; // poseRef -> poseRef (direct Pose parent)
+                const poseChildren   = {}; // poseRef -> [childPoseRef]
+                for (const poseRef of poseRefs) {
+                    const par = parentOf[poseRef];
+                    if (par === undefined) continue;
+                    const parInst = instances[par];
+                    if (parInst?.className === 'Keyframe') {
+                        poseKfParent[poseRef] = par;
+                    } else if (parInst?.className === 'Pose') {
+                        posePoseParent[poseRef] = par;
+                        if (!poseChildren[par]) poseChildren[par] = [];
+                        poseChildren[par].push(poseRef);
+                    }
+                }
+
+                // Flatten pose tree recursively
+                function flatPoses(pRef, parentName, out) {
+                    const p = poseInfo[pRef];
+                    if (!p) return;
+                    out.push({ name: p.name, parentName, cf: p.cf });
+                    for (const ch of (poseChildren[pRef] || [])) flatPoses(ch, p.name, out);
+                }
+
+                const hierMap = {};
+                const keyframes = [];
+
+                for (const kfRef of kfRefs) {
+                    const time  = kfTimeOf[kfRef] ?? 0;
+                    const poses = {};
+                    const roots = poseRefs.filter(r => poseKfParent[r] === kfRef);
+                    for (const root of roots) {
+                        const flat = [];
+                        flatPoses(root, null, flat);
+                        for (const { name, parentName, cf } of flat) {
+                            poses[name] = cf;
+                            if (!hierMap[name]) hierMap[name] = parentName;
+                        }
+                    }
+                    keyframes.push({ time, poses });
+                }
+
+                keyframes.sort((a, b) => a.time - b.time);
+                const duration  = keyframes.at(-1)?.time || 0;
+                const hierarchy = Object.entries(hierMap).map(([name, parentName]) => ({ name, parentName }));
+                return { keyframes, duration, loop: isLoop, hierarchy };
+            }
+
+            function parseRbxmAnimation(buf) {
+                const magic = new TextDecoder('latin1').decode(new Uint8Array(buf, 0, 8));
+                if (magic !== '<roblox!') throw new Error('Bukan file rbxm valid');
+                const dv = new DataView(buf);
+                let off = 32; // skip 32-byte header
+
+                const classMap  = {};
+                const instances = {};
+                const propData  = {};
+                const parentOf  = {};
+
+                while (off + 16 <= buf.byteLength) {
+                    const typeStr  = new TextDecoder('latin1').decode(new Uint8Array(buf, off, 4)); off += 4;
+                    const compLen  = dv.getUint32(off, true); off += 4;
+                    const uncompLen = dv.getUint32(off, true); off += 4;
+                    off += 4; // reserved
+                    if (typeStr === 'END ') break;
+
+                    const rawOff = off;
+                    const rawLen = compLen > 0 ? compLen : uncompLen;
+                    off += rawLen;
+
+                    const chunkBuf = compLen > 0
+                        ? lz4Decompress(buf, rawOff, compLen, uncompLen)
+                        : buf.slice(rawOff, rawOff + uncompLen);
+
+                    if      (typeStr === 'INST') rbxParseInst(chunkBuf, classMap, instances);
+                    else if (typeStr === 'PROP') rbxParseProp(chunkBuf, classMap, propData);
+                    else if (typeStr === 'PRNT') rbxParsePrnt(chunkBuf, parentOf);
+                }
+
+                return rbxBuildAnim(classMap, instances, propData, parentOf);
+            }
+
+            // ── XML PARSER ───────────────────────────────────────────
             function apParseXml(xmlStr) {
                 const doc = new DOMParser().parseFromString(xmlStr, 'text/xml');
                 if (doc.querySelector('parsererror')) throw new Error('XML parse error');
@@ -9492,13 +9885,20 @@ html .subscription-overlay, html #login-overlay { background: rgba(0,0,0,.34) !i
                     }
 
                     const buf = await res.arrayBuffer();
-                    const head = new TextDecoder('latin1').decode(buf.slice(0, 120));
-                    if (!head.includes('<roblox')) {
-                        throw new Error('Format biner (rbxm) belum didukung preview — tapi animasi tetap bisa di-spoof');
-                    }
+                    const magic8 = new TextDecoder('latin1').decode(buf.slice(0, 8));
 
                     if (status) status.textContent = 'Parsing animasi...';
-                    const { keyframes, duration, loop, hierarchy } = apParseXml(new TextDecoder().decode(buf));
+                    let parsed;
+                    if (magic8 === '<roblox!') {
+                        // Binary rbxm format
+                        parsed = parseRbxmAnimation(buf);
+                    } else {
+                        // XML rbxmx format
+                        const xmlStr = new TextDecoder().decode(buf);
+                        if (!xmlStr.includes('<roblox')) throw new Error('Format tidak dikenal — bukan file animasi Roblox');
+                        parsed = apParseXml(xmlStr);
+                    }
+                    const { keyframes, duration, loop, hierarchy } = parsed;
 
                     if (AP.rafId) { cancelAnimationFrame(AP.rafId); AP.rafId = null; }
                     AP.keyframes = keyframes;
@@ -10254,6 +10654,24 @@ html .subscription-overlay, html #login-overlay { background: rgba(0,0,0,.34) !i
                 const btn = document.querySelector('.theme-opt[data-tv="custom"]');
                 if (btn) btn.classList.toggle('locked', !isVIP());
             }
+            // ── GAYA TAMPILAN (glass / clay) ──────────────────────
+            function applyStyle(name, persist) {
+                if (name !== 'clay') name = 'glass';
+                document.documentElement.setAttribute('data-style', name);
+                if (persist) {
+                    try { localStorage.setItem('baxdev_style', name); } catch (e) {}
+                }
+                document.querySelectorAll('.style-opt').forEach(btn => {
+                    const on = btn.dataset.sv === name;
+                    btn.classList.toggle('active', on);
+                    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+                });
+            }
+            function setStyle(name) {
+                applyStyle(name, true);
+                toast(name === 'clay' ? 'Gaya Clay aktif' : 'Gaya Liquid Glass aktif', 'success');
+            }
+            applyStyle(document.documentElement.getAttribute('data-style') || 'glass', false);
             (function initThemeUI() {
                 const input = document.getElementById('theme-color');
                 if (input) input.addEventListener('input', () => setCustomColor(input.value));
@@ -12228,6 +12646,50 @@ html body .lib-act .lib-lbl{overflow:hidden;text-overflow:clip}
 @container (max-width:172px){
   html body .lib-act .lib-lbl{display:none !important}
   html body .lib-act svg{width:15px !important;height:15px !important}
+}
+</style>
+<style id="navbar-fullwidth">
+/* ═══ NAVBAR PC (≥1100px) — edge-to-edge: logo mepet kiri, menu mengisi tengah rata, akun mepet kanan ═══
+   Ditaruh paling akhir supaya menang atas versi pil melayang (v42/v44/v46). */
+@media (min-width:1100px){
+  html body #navbar,
+  html body.bx-scrolled #navbar{
+    top:0 !important; left:0 !important; right:0 !important; bottom:auto !important;
+    width:100% !important; max-width:none !important; transform:none !important;
+    border-radius:0 !important; border-top:0 !important; border-left:0 !important; border-right:0 !important;
+    padding:0 clamp(18px,2.4vw,44px) !important; gap:0 !important;
+    flex-direction:row !important; align-items:center !important;
+  }
+  html body #navbar{height:64px !important}
+  html body.bx-scrolled #navbar{height:56px !important}
+  html body #navbar::after{left:0 !important; right:0 !important}
+  html body #nav-logo-wrap{
+    flex:0 0 auto; margin:0 clamp(16px,2.2vw,36px) 0 0 !important;
+    padding:0 clamp(14px,1.6vw,26px) 0 0 !important;
+  }
+  html body .nav-links{
+    flex:1 1 0 !important; min-width:0; width:auto !important;
+    display:flex !important; flex-direction:row !important; align-items:center; justify-content:center;
+    gap:clamp(4px,.5vw,10px) !important; margin:0 !important; padding:0 !important;
+  }
+  html body .nav-link{
+    flex:1 1 0; min-width:0; max-width:170px; width:auto !important;
+    justify-content:center !important; overflow:hidden; text-overflow:ellipsis;
+    padding:10px clamp(7px,.9vw,16px) !important;
+  }
+  html body .nav-right{flex:0 0 auto !important; margin-left:clamp(16px,2.2vw,36px) !important}
+}
+/* PC kecil: rapatkan supaya 8 menu tetap muat tanpa terpotong */
+@media (min-width:1100px) and (max-width:1279px){
+  html body .nav-link{font-size:12.5px !important; gap:6px !important; padding:9px 6px !important}
+  html body .nav-link svg{width:15px !important; height:15px !important}
+}
+/* Layar lebar: menu boleh melebar supaya benar-benar mengisi sampai ke kanan */
+@media (min-width:1600px){html body .nav-link{max-width:230px; font-size:14px}}
+/* Clay: bar penuh dengan sudut bawah membulat */
+@media (min-width:1100px){
+  html[data-style="clay"] body #navbar,
+  html[data-style="clay"] body.bx-scrolled #navbar{border-radius:0 0 28px 28px !important}
 }
 </style>
 </body>
