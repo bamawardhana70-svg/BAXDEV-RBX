@@ -24,7 +24,11 @@ const POLL_DELAY_MS = 1500;
 
 // Tipe yang boleh diunggah lewat endpoint ini. Model hanya .rbxm / .rbxmx (format native Roblox);
 // content type-nya harus persis model/x-rbxm karena browser tidak mengenal ekstensi ini.
-const ASSET_TYPES = new Set(["Audio", "Model"]);
+const ASSET_TYPES = new Set(["Audio", "Model", "Decal"]);
+const NOUNS = { Audio: "audio", Model: "model", Decal: "gambar" };
+// Decal: format gambar yang diterima Open Cloud Assets API.
+const DECAL_TYPES = { png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", bmp: "image/bmp", tga: "image/tga" };
+const decalExt = (name) => String(name || "").split(".").pop().toLowerCase();
 const MODEL_EXT = /\.rbxmx?$/i;
 const MODEL_CONTENT_TYPE = "model/x-rbxm";
 const RBXM_MAGIC = "<roblox!";   // biner: 8 byte pertama
@@ -33,6 +37,15 @@ const RBXMX_TAG = "<roblox";     // XML: muncul di awal dokumen (setelah <?xml .
 async function looksLikeRbxm(file) {
   const head = new TextDecoder("latin1").decode(await file.slice(0, 256).arrayBuffer());
   return head.startsWith(RBXM_MAGIC) || head.includes(RBXMX_TAG);
+}
+
+// Cek isi file cocok dengan ekstensinya (TGA tidak punya magic number, jadi hanya dicek lewat ekstensi).
+async function looksLikeImage(file, ext) {
+  const b = new Uint8Array(await file.slice(0, 8).arrayBuffer());
+  if (ext === "png") return b[0] === 0x89 && b[1] === 0x50 && b[2] === 0x4e && b[3] === 0x47;
+  if (ext === "jpg" || ext === "jpeg") return b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff;
+  if (ext === "bmp") return b[0] === 0x42 && b[1] === 0x4d;
+  return true;
 }
 
 function sleep(ms) {
@@ -86,14 +99,14 @@ async function handleUpload(context) {
   const creatorType = String(form.get("creatorType") || "User").trim();
   const groupId = String(form.get("groupId") || "").trim();
   const assetType = String(form.get("assetType") || "Audio");
-  const noun = assetType === "Model" ? "model" : "audio";
+  const noun = NOUNS[assetType] || "audio";
   // Clamped to 30 chars here too (not just client-side) so this endpoint is
   // safe even if something else calls it directly.
   const displayName = String(form.get("displayName") || "Untitled").trim().slice(0, 30) || "Untitled";
   const description = String(form.get("description") || "");
 
   if (!ASSET_TYPES.has(assetType)) {
-    return json({ ok: false, message: "Tipe asset tidak didukung. Yang tersedia: Audio dan Model." }, 400);
+    return json({ ok: false, message: "Tipe asset tidak didukung. Yang tersedia: Audio, Model, dan Decal." }, 400);
   }
   if (!(file instanceof File)) {
     return json({ ok: false, message: `File ${noun} tidak ditemukan di request.` }, 400);
@@ -117,6 +130,16 @@ async function handleUpload(context) {
     }
     if (!(await looksLikeRbxm(file))) {
       return json({ ok: false, message: "Isi file bukan model Roblox yang valid. Ekspor ulang dari Roblox Studio (Save to File As → .rbxm)." }, 400);
+    }
+  }
+
+  if (assetType === "Decal") {
+    const ext = decalExt(file.name);
+    if (!DECAL_TYPES[ext]) {
+      return json({ ok: false, message: "Gambar harus berformat PNG, JPG, BMP, atau TGA." }, 400);
+    }
+    if (!(await looksLikeImage(file, ext))) {
+      return json({ ok: false, message: `Isi file bukan gambar ${ext.toUpperCase()} yang valid.` }, 400);
     }
   }
 
@@ -160,6 +183,8 @@ async function handleUpload(context) {
   upstream.append("request", JSON.stringify(requestPayload));
   if (assetType === "Model") {
     upstream.append("fileContent", file.slice(0, file.size, MODEL_CONTENT_TYPE), file.name);
+  } else if (assetType === "Decal") {
+    upstream.append("fileContent", file.slice(0, file.size, DECAL_TYPES[decalExt(file.name)]), file.name);
   } else {
     upstream.append("fileContent", file, file.name || "audio");
   }

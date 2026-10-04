@@ -4839,30 +4839,6 @@ body.premium-user :is(.nav-avatar, .su-avatar, #dd-avatar, #acct-avatar-big) {
 @keyframes tb-pulse{50%{opacity:.45}}
 .tb-more{display:flex;justify-content:center;margin:18px 0 6px}
 @media (max-width:640px){.tb-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}}
-/* ── SPOOF ANIMASI ─────────────────────────────────── */
-.sa-prefix{font-size:12px;color:var(--text3);white-space:nowrap;padding:0 10px 0 12px;line-height:40px;background:var(--surf-hi);border-right:1px solid var(--glass-border);border-radius:10px 0 0 10px;flex-shrink:0}
-.sa-input-row{display:flex;border-radius:10px;overflow:hidden;border:1px solid var(--glass-border);background:var(--surface)}
-.sa-input-row input{flex:1;min-width:0;border:0;background:transparent;color:var(--text1);font-size:13px;padding:0 10px;height:40px;outline:none}
-.sa-input-row input::placeholder{color:var(--text3)}
-.sa-input-row input:focus{box-shadow:none}
-.sa-result-id{font-family:monospace;font-size:18px;font-weight:700;color:var(--text1);word-break:break-all;margin:6px 0 12px}
-/* ── ANIM PREVIEW ──────────────────────────────────────────── */
-.ap-preview-btn{display:flex;align-items:center;gap:5px;padding:0 14px;height:40px;font-size:12.5px;font-weight:600;letter-spacing:.02em;background:var(--chrome,#4a90d9);color:#fff;border:0;border-radius:0 10px 10px 0;cursor:pointer;flex-shrink:0;transition:opacity .15s,background .15s}
-.ap-preview-btn:hover{opacity:.85}
-.ap-preview-btn:disabled{opacity:.45;cursor:not-allowed}
-.ap-card{}
-.ap-canvas-wrap{position:relative;width:100%;border-radius:10px;overflow:hidden;background:#0e1218;margin-bottom:2px}
-#ap-canvas{display:block;width:100%;touch-action:none;cursor:grab}
-#ap-canvas:active{cursor:grabbing}
-.ap-controls{display:flex;align-items:center;gap:8px;margin-top:10px}
-.ap-ctrl-btn{width:34px;height:34px;border-radius:8px;border:1px solid var(--glass-border);background:var(--surf-hi);color:var(--text1);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s,color .15s}
-.ap-ctrl-btn:hover{background:var(--chrome,#4a90d9);color:#fff;border-color:transparent}
-#ap-timeline{flex:1;min-width:60px;accent-color:var(--chrome,#4a90d9);cursor:pointer;height:4px}
-.ap-time-label{font-size:11.5px;color:var(--text3);white-space:nowrap;min-width:38px;text-align:right;font-variant-numeric:tabular-nums}
-.ap-meta{font-size:11px;color:var(--text3);margin-top:7px;line-height:1.6}
-.ap-status{font-size:12px;color:var(--text3);margin-top:5px;min-height:1.2em}
-.ap-hint{font-size:11px;color:var(--text3);margin-top:4px}
-.ap-loop-row{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text2);cursor:pointer}
 </style>
 <style id="liquid-glass-clear">
 /* ═══ LIQUID GLASS BENING — panel melayang tembus pandang + blur, bukan abu-abu solid ═══ */
@@ -5027,15 +5003,15 @@ html[data-style="clay"] body.developer-mode #navbar{
 /* overlay modal: redup saja, tanpa blur */
 html[data-style="clay"] :is(.subscription-overlay,#login-overlay,.access-overlay){-webkit-backdrop-filter:none !important;backdrop-filter:none !important;background:rgba(0,0,0,.55) !important}
 /* tombol: bantal menggembung, tenggelam saat ditekan */
-html[data-style="clay"] :is(.btn,.btn-primary,.btn-outline,.google-btn,.signin-btn,.qa-btn,.ap-ctrl-btn,.sa-preset,.theme-opt,.avb-opt,.speed-chip,.source-tab,.nav-link,.m-link,.access-chip){
+html[data-style="clay"] :is(.btn,.btn-primary,.btn-outline,.google-btn,.signin-btn,.qa-btn,.theme-opt,.avb-opt,.speed-chip,.source-tab,.nav-link,.m-link,.access-chip){
   border:0 !important; border-radius:999px !important;
   box-shadow:6px 7px 14px rgba(0,0,0,.42), -4px -4px 10px color-mix(in srgb,#fff 7%, transparent), inset 2px 2px 5px rgba(255,255,255,.16), inset -3px -4px 8px rgba(0,0,0,.30) !important;
   transition:transform .18s ease, box-shadow .18s ease !important;
 }
-html[data-style="clay"] :is(.btn-outline,.sa-preset,.theme-opt,.avb-opt,.speed-chip,.source-tab,.nav-link,.m-link,.access-chip){background:linear-gradient(145deg,var(--clay-hi),var(--clay-face)) !important;color:var(--text)}
+html[data-style="clay"] :is(.btn-outline,.theme-opt,.avb-opt,.speed-chip,.source-tab,.nav-link,.m-link,.access-chip){background:linear-gradient(145deg,var(--clay-hi),var(--clay-face)) !important;color:var(--text)}
 html[data-style="clay"] :is(.btn-primary,.google-btn,.signin-btn){background:var(--chrome) !important;color:var(--on-accent) !important}
-html[data-style="clay"] :is(.btn,.qa-btn,.theme-opt,.avb-opt,.speed-chip,.source-tab,.sa-preset,.ap-ctrl-btn):hover{transform:translateY(-2px)}
-html[data-style="clay"] :is(.btn,.qa-btn,.theme-opt,.avb-opt,.speed-chip,.source-tab,.sa-preset,.ap-ctrl-btn,.nav-link,.m-link):active{
+html[data-style="clay"] :is(.btn,.qa-btn,.theme-opt,.avb-opt,.speed-chip,.source-tab):hover{transform:translateY(-2px)}
+html[data-style="clay"] :is(.btn,.qa-btn,.theme-opt,.avb-opt,.speed-chip,.source-tab,.nav-link,.m-link):active{
   transform:translateY(1px) scale(.98);
   box-shadow:var(--clay-in-deep) !important;
 }
@@ -5046,16 +5022,12 @@ html[data-style="clay"] :is(.nav-link.active,.m-link.active,.theme-opt.active,.a
   color:var(--accent-blue,var(--text)) !important;
 }
 /* input: lubang cekung */
-html[data-style="clay"] :is(input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select,.sa-input-row){
+html[data-style="clay"] :is(input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select){
   background:var(--clay-lo) !important;
   border:0 !important; border-radius:18px !important;
   box-shadow:var(--clay-in-deep) !important;
   color:var(--text);
 }
-html[data-style="clay"] .sa-input-row input{box-shadow:none !important;background:transparent !important;border-radius:0 !important}
-html[data-style="clay"] .sa-prefix{background:transparent !important;border:0 !important}
-html[data-style="clay"] .ap-preview-btn{border-radius:0 18px 18px 0 !important;box-shadow:inset 2px 2px 5px rgba(255,255,255,.2),inset -3px -3px 8px rgba(0,0,0,.3) !important}
-html[data-style="clay"] .ap-canvas-wrap{border-radius:20px;box-shadow:var(--clay-in-deep)}
 /* toggle */
 html[data-style="clay"] .toggle{background:var(--clay-lo) !important;border:0 !important;box-shadow:var(--clay-in-deep) !important}
 html[data-style="clay"] .toggle::after{box-shadow:3px 3px 6px rgba(0,0,0,.5),inset 1px 1px 2px rgba(255,255,255,.5)}
@@ -5074,8 +5046,8 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
 .style-prev{height:62px;border-radius:16px;position:relative;overflow:hidden}
 .style-prev[data-s="glass"]{background:radial-gradient(circle at 25% 30%,rgba(166,110,255,.55),transparent 55%),radial-gradient(circle at 80% 75%,rgba(80,200,255,.45),transparent 55%),#0b0d14}
 .style-prev[data-s="glass"]::after{content:"";position:absolute;inset:11px 16px;border-radius:14px;background:linear-gradient(135deg,rgba(255,255,255,.34),rgba(255,255,255,.08));border:1px solid rgba(255,255,255,.4);box-shadow:inset 0 1px 0 rgba(255,255,255,.5);backdrop-filter:blur(8px)}
-.style-prev[data-s="clay"]{background:#1a1d26}
-.style-prev[data-s="clay"]::after{content:"";position:absolute;inset:11px 16px;border-radius:20px;background:linear-gradient(145deg,#3a3f50,#262a37);box-shadow:6px 7px 12px rgba(0,0,0,.5),-3px -3px 8px rgba(255,255,255,.07),inset 2px 2px 4px rgba(255,255,255,.16),inset -3px -4px 7px rgba(0,0,0,.35)}
+.style-prev[data-s="clay"]{background:#eee6da}
+.style-prev[data-s="clay"]::after{content:"";position:absolute;inset:11px 16px;border-radius:20px;background:linear-gradient(145deg,#fbf7f1,#e3d9ca);box-shadow:6px 7px 12px rgba(96,74,52,.28),-3px -3px 8px rgba(255,255,255,.9),inset 2px 2px 4px rgba(255,255,255,.8),inset -3px -4px 7px rgba(96,74,52,.14)}
 .style-name{display:flex;align-items:center;justify-content:space-between}
 @media(max-width:420px){.style-picker{grid-template-columns:1fr}}
 </style>
@@ -5147,11 +5119,11 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                     </svg>
                     Model
                 </button>
-                <button class="nav-link" onclick="navigate('animasi')">
+                <button class="nav-link" onclick="navigate('decal')">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07M8.46 8.46a5 5 0 0 0 0 7.07"/>
+                        <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.09-3.09a2 2 0 0 0-2.82 0L6 21"/>
                     </svg>
-                    Animasi
+                    Decal
                 </button>
                 <button class="nav-link" onclick="navigate('toolbox')">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -5291,6 +5263,49 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                 <button type="button" class="btn btn-primary" id="access-go" onclick="accessSubmit()">Beri Akses</button>
             </div>
         </div>
+        <div id="trim-overlay" class="access-overlay" hidden onclick="if(event.target===this)closeTrim()">
+            <div class="access-card" role="dialog" aria-modal="true" aria-labelledby="trim-title">
+                <div class="access-head">
+                    <h2 id="trim-title">Potong Audio</h2>
+                    <button type="button" class="access-x" aria-label="Tutup" onclick="closeTrim()">&times;</button>
+                </div>
+                <p class="access-hint" id="trim-name"></p>
+                <canvas id="trim-wave" class="trim-wave" role="img" aria-label="Gelombang audio dengan bagian terpilih"></canvas>
+                <div class="trim-row">
+                    <label for="trim-start">Mulai <b id="trim-start-val">0:00.0</b></label>
+                    <input type="range" id="trim-start" min="0" max="1" step="0.1" value="0" oninput="trimInput('start')">
+                </div>
+                <div class="trim-row">
+                    <label for="trim-end">Selesai <b id="trim-end-val">0:00.0</b></label>
+                    <input type="range" id="trim-end" min="0" max="1" step="0.1" value="1" oninput="trimInput('end')">
+                </div>
+                <div class="access-result" id="trim-info" role="status"></div>
+                <div class="trim-actions">
+                    <button type="button" class="btn btn-outline" id="trim-play" onclick="trimPlay()">Putar potongan</button>
+                    <button type="button" class="btn btn-outline" onclick="trimReset()">Reset</button>
+                    <button type="button" class="btn btn-primary" onclick="trimApply()">Terapkan</button>
+                </div>
+            </div>
+        </div>
+        <div id="chk-overlay" class="access-overlay" hidden onclick="if(event.target===this)closeCheck()">
+            <div class="access-card" role="dialog" aria-modal="true" aria-labelledby="chk-title">
+                <div class="access-head">
+                    <h2 id="chk-title">Cek Status Asset</h2>
+                    <button type="button" class="access-x" aria-label="Tutup" onclick="closeCheck()">&times;</button>
+                </div>
+                <p class="access-hint">Lihat status moderasi banyak asset sekaligus (audio, model, decal). Berguna untuk tahu mana yang sudah disetujui, masih direview, atau ditolak.</p>
+                <div class="access-label">Asset ID <span class="access-sub">bebas format, maks 200</span></div>
+                <textarea id="chk-ids" rows="4" placeholder="Tempel banyak ID sekaligus, misalnya:&#10;1837879082&#10;9046541234, 7723451122&#10;rbxassetid://5523311890"></textarea>
+                <div class="trim-actions">
+                    <button type="button" class="btn btn-outline" onclick="checkFromLibrary()">Ambil dari Library</button>
+                    <button type="button" class="btn btn-primary" id="chk-go" onclick="checkRun()">Cek Status</button>
+                </div>
+                <div class="access-result" id="chk-summary" role="status"></div>
+                <div class="access-list" id="chk-list"><div class="access-empty">Belum ada hasil.</div></div>
+                <button type="button" class="btn btn-outline" id="chk-copy" onclick="checkCopyRejected()" hidden>Salin ID yang ditolak</button>
+                <p class="access-note">Memakai API key dengan izin <b>asset:read</b>. Hanya asset milik akun atau grup pemilik key yang bisa dicek.</p>
+            </div>
+        </div>
         <div id="imp-overlay" class="access-overlay" hidden onclick="if(event.target===this)closeImport()">
             <div class="access-card" role="dialog" aria-modal="true" aria-labelledby="imp-title">
                 <div class="access-head">
@@ -5334,11 +5349,11 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                 </svg>
                 Model
             </div>
-            <div class="m-link" onclick="navigate('animasi');closeMenu()">
+            <div class="m-link" onclick="navigate('decal');closeMenu()">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07M8.46 8.46a5 5 0 0 0 0 7.07"/>
+                    <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.09-3.09a2 2 0 0 0-2.82 0L6 21"/>
                 </svg>
-                Animasi
+                Decal
             </div>
             <div class="m-link" onclick="navigate('toolbox');closeMenu()">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -5660,6 +5675,22 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                         <span class="drop-tag">RBXMX</span>
                     </div>
                 </div>
+                <div class="drop-zone" id="decal-drop-zone" style="display:none">
+                    <input type="file" id="decal-input" accept=".png,.jpg,.jpeg,.bmp,.tga,image/png,image/jpeg,image/bmp" multiple>
+                    <div class="drop-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.09-3.09a2 2 0 0 0-2.82 0L6 21"/>
+                        </svg>
+                    </div>
+                    <div class="drop-title">Drop gambar di sini</div>
+                    <div class="drop-sub">atau klik untuk pilih file. Maksimal 20 MB per gambar.</div>
+                    <div class="drop-types">
+                        <span class="drop-tag">PNG</span>
+                        <span class="drop-tag">JPG</span>
+                        <span class="drop-tag">BMP</span>
+                        <span class="drop-tag">TGA</span>
+                    </div>
+                </div>
                 <div class="file-queue" id="file-queue"></div>
                 <section class="upload-status" id="upload-status" aria-labelledby="upload-status-title" hidden>
                     <div class="section-title" id="upload-status-title">Status upload</div>
@@ -5751,93 +5782,6 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                     </button>
                 </div>
             </div>
-            <!-- ANIMASI SPOOF -->
-            <div class="page" id="page-animasi">
-                <h1 class="page-title">Spoof Animasi</h1>
-                <div class="page-sub">Ambil animasi Roblox by ID → publish ulang ke akunmu → dapat ID baru</div>
-                <div class="card" style="margin-bottom:14px">
-                    <div class="field-group">
-                        <div class="field-label">Animation ID Sumber</div>
-                        <div class="sa-input-row">
-                            <span class="sa-prefix">rbxassetid://</span>
-                            <input type="text" id="sa-anim-id" inputmode="numeric" placeholder="Tempel ID atau rbxassetid://" autocomplete="off" oninput="saStripPrefix(this)">
-                            <button class="ap-preview-btn" id="ap-trigger-btn" onclick="apTrigger()">
-                                <svg viewBox="0 0 24 24" fill="currentColor" width="13" height="13"><path d="M8 5v14l11-7z"/></svg>
-                                Preview
-                            </button>
-                        </div>
-                        <div style="font-size:11.5px;color:var(--text3);margin-top:6px;line-height:1.6">ID animasi yang ingin di-spoof. Hanya animasi publik yang bisa diambil.</div>
-                    </div>
-                    <div class="field-group" style="margin-bottom:0">
-                        <div class="field-label">Nama Asset Baru <span style="font-weight:400;color:var(--text3)">(opsional)</span></div>
-                        <input type="text" id="sa-anim-name" placeholder="Otomatis dari ID kalau kosong" maxlength="30" autocomplete="off">
-                    </div>
-                </div>
-                <!-- ANIM PREVIEW CARD -->
-                <div class="card ap-card" id="ap-card" style="display:none;margin-bottom:14px">
-                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-                        <div class="section-title" style="margin:0">Preview Animasi</div>
-                        <label class="ap-loop-row">
-                            <input type="checkbox" id="ap-loop-ck" checked onchange="apSetLoop(this.checked)">
-                            Loop
-                        </label>
-                    </div>
-                    <div class="ap-canvas-wrap">
-                        <canvas id="ap-canvas"></canvas>
-                    </div>
-                    <div class="ap-controls">
-                        <button class="ap-ctrl-btn" id="ap-play-btn" onclick="apTogglePlay()" title="Play / Pause">
-                            <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M8 5v14l11-7z"/></svg>
-                        </button>
-                        <input type="range" id="ap-timeline" min="0" max="100" step="0.1" value="0" oninput="apSeek(this.value)">
-                        <span class="ap-time-label" id="ap-time-label">0.00s</span>
-                    </div>
-                    <div class="ap-meta" id="ap-meta"></div>
-                    <div class="ap-status" id="ap-status"></div>
-                    <div class="ap-hint">Drag untuk orbit · Scroll untuk zoom</div>
-                </div>
-                <div class="result-box" id="sa-result-box" style="display:none">
-                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="17" height="17" style="color:var(--success)">
-                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
-                        </svg>
-                        <span style="font-size:12.5px;font-weight:600;color:var(--success)">Animasi berhasil di-spoof!</span>
-                    </div>
-                    <div class="sa-result-id" id="sa-result-id">rbxassetid://0000000000</div>
-                    <div style="font-size:11.5px;color:var(--text2);margin-bottom:10px">ID baru milik akunmu — pakai di script Roblox</div>
-                    <div style="display:flex;gap:7px;flex-wrap:wrap">
-                        <button class="copy-btn" onclick="saCopyId()">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-                            </svg>
-                            Salin ID
-                        </button>
-                        <button class="copy-btn" id="sa-result-full-btn" onclick="saCopyFullId()">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-                            </svg>
-                            Salin rbxassetid://
-                        </button>
-                    </div>
-                </div>
-                <div class="progress-wrap" id="sa-progress-wrap" style="display:none">
-                    <div style="display:flex;justify-content:space-between">
-                        <span class="progress-label" id="sa-progress-label">Mengambil animasi...</span>
-                        <span class="progress-label" id="sa-progress-pct"></span>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="sa-progress-fill" style="width:0%"></div>
-                    </div>
-                </div>
-                <div style="display:flex;gap:8px;flex-wrap:wrap">
-                    <button class="btn btn-primary" onclick="saSpoof()" id="sa-spoof-btn">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07M8.46 8.46a5 5 0 0 0 0 7.07"/>
-                        </svg>
-                        Spoof &amp; Publish
-                    </button>
-                </div>
-            </div>
             <!-- TOOLBOX -->
             <div class="page" id="page-toolbox">
                 <h1 class="page-title">Toolbox</h1>
@@ -5868,7 +5812,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
             <!-- LIBRARY -->
             <div class="page" id="page-library">
                 <h1 class="page-title">Library</h1>
-                <div class="page-sub">Semua audio dan model yang sudah diupload ke Roblox</div>
+                <div class="page-sub">Semua audio, model, dan decal yang sudah diupload ke Roblox</div>
                 <div class="library-toolbar">
                     <div class="search-wrap">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -5881,6 +5825,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                         <option value="all">Semua jenis</option>
                         <option value="audio">Musik</option>
                         <option value="model">Model</option>
+                        <option value="decal">Decal</option>
                     </select>
                     <select id="lib-filter" onchange="filterLibrary()" style="width:auto">
                         <option value="all">Semua</option>
@@ -5898,6 +5843,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                     <button type="button" class="btn btn-outline" onclick="openAccess()" title="Beri Akses Map / Teman" aria-label="Beri Akses Map / Teman"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span class="lib-tl">Akses Map</span></button>
                     <button type="button" class="btn btn-outline" id="lib-sel-btn" onclick="libSelToggleMode()" title="Pilih Beberapa Audio" aria-label="Pilih Beberapa Audio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span class="lib-tl" id="lib-sel-lbl">Pilih Audio</span></button>
                     <button type="button" class="btn btn-outline" onclick="openImport()" title="Impor Musik Lama dari Akun" aria-label="Impor Musik Lama dari Akun"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span class="lib-tl">Impor</span></button>
+                    <button type="button" class="btn btn-outline" onclick="openCheck()" title="Cek Status Moderasi Asset" aria-label="Cek Status Moderasi Asset"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg><span class="lib-tl">Cek Status</span></button>
                 </div>
                 <div class="lib-selbar" id="lib-selbar" hidden>
                     <span class="lib-selcount" id="lib-selcount">0 dipilih</span>
@@ -6692,16 +6638,16 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                     syncQuotaDay();
             });
             function navigate(page) {
-                // "Model" memakai halaman upload yang sama dalam mode model; "Upload" khusus musik.
+                // "Model" dan "Decal" memakai halaman upload yang sama dalam mode masing-masing; "Upload" khusus musik.
                 let view = page;
-                if (page === 'model' || page === 'upload') {
-                    const wantModel = page === 'model';
-                    if ((S.source === 'model') !== wantModel) {
+                if (page === 'model' || page === 'decal' || page === 'upload') {
+                    const want = page === 'upload' ? 'audio' : page;
+                    if (sourceKind(S.source) !== want) {
                         if (S.uploading && S.files.length) {
                             toast('Antrean sedang diproses, tunggu sampai selesai', 'info');
                             return;
                         }
-                        setUploadSource(wantModel ? 'model' : 'file');
+                        setUploadSource(page === 'upload' ? 'file' : page);
                     }
                     view = 'upload';
                 }
@@ -6713,7 +6659,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                     home: 0,
                     upload: 1,
                     model: 2,
-                    animasi: 3,
+                    decal: 3,
                     toolbox: 4,
                     library: 5,
                     settings: 6,
@@ -7074,6 +7020,8 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
             const modelInput = document.getElementById('model-input');
             bindDropZone(dropZone, fileInput);
             bindDropZone(document.getElementById('model-drop-zone'), modelInput);
+            const decalInput = document.getElementById('decal-input');
+            bindDropZone(document.getElementById('decal-drop-zone'), decalInput);
 
             function isLimitReached() {
                 return Boolean(hasRoblox() && S.account && !S.account.unlimited && S.account.remaining <= 0);
@@ -7096,13 +7044,20 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                 const limitReached = isLimitReached();
                 updateConvertButton();
                 document.getElementById('upload-btn').disabled = !ready || limitReached;
-                document.getElementById('upload-btn-label').textContent = limitReached ? `Batas publish per ${S.account.periodLabel || 'periode'} tercapai` : (S.files.length > 1 ? `Publish ${S.files.length} audio ke Roblox` : (S.source !== 'file' ? 'Publish ke Roblox' : 'Upload & Publish ke Roblox'));
+                document.getElementById('upload-btn-label').textContent = limitReached ? `Batas publish per ${S.account.periodLabel || 'periode'} tercapai` : (S.files.length > 1 ? `Publish ${S.files.length} ${UPLOAD_TEXT[sourceKind(S.source)].noun} ke Roblox` : (S.source !== 'file' ? 'Publish ke Roblox' : 'Upload & Publish ke Roblox'));
             }
 
+            // Jenis upload dari sumber aktif: 'audio' (file/YouTube/TikTok), 'model', atau 'decal'.
+            const sourceKind = source => source === 'model' || source === 'decal' ? source : 'audio';
+            const UPLOAD_TEXT = {
+                audio: { title: 'Upload Audio', sub: 'Publish audio langsung ke Roblox Asset', noun: 'audio' },
+                model: { title: 'Upload Model', sub: 'Publish model Roblox (.rbxm) langsung ke Roblox Asset', noun: 'model' },
+                decal: { title: 'Upload Decal', sub: 'Publish gambar (PNG, JPG, BMP, TGA) jadi Decal Roblox', noun: 'gambar' }
+            };
             function setUploadSource(source) {
-                const next = source === 'youtube' || source === 'tiktok' || source === 'model' ? source : 'file';
-                // Antrean musik dan model tidak dicampur: pindah antara keduanya mengosongkan antrean.
-                if ((next === 'model') !== (S.source === 'model') && S.files.length) {
+                const next = ['youtube', 'tiktok', 'model', 'decal'].includes(source) ? source : 'file';
+                // Antrean musik, model, dan decal tidak dicampur: pindah antar jenis mengosongkan antrean.
+                if (sourceKind(next) !== sourceKind(S.source) && S.files.length) {
                     if (S.uploading) {
                         toast('Antrean sedang diproses, tunggu sampai selesai', 'info');
                         return
@@ -7110,8 +7065,9 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                     clearFiles();
                 }
                 S.source = next;
-                const model = S.source === 'model';
-                document.getElementById('source-switch').style.display = model ? 'none' : '';
+                const mode = sourceKind(S.source);
+                const asset = mode !== 'audio';
+                document.getElementById('source-switch').style.display = asset ? 'none' : '';
                 ['file', 'youtube', 'tiktok'].forEach(key => {
                     const tab = document.getElementById(`source-${key}-tab`);
                     if (!tab)
@@ -7120,12 +7076,13 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                     tab.setAttribute('aria-selected', String(S.source === key));
                 });
                 document.getElementById('drop-zone').style.display = S.source === 'file' ? '' : 'none';
-                document.getElementById('model-drop-zone').style.display = model ? '' : 'none';
+                document.getElementById('model-drop-zone').style.display = mode === 'model' ? '' : 'none';
+                document.getElementById('decal-drop-zone').style.display = mode === 'decal' ? '' : 'none';
                 document.getElementById('youtube-source').style.display = S.source === 'youtube' ? '' : 'none';
                 document.getElementById('tiktok-source').style.display = S.source === 'tiktok' ? '' : 'none';
-                document.getElementById('audio-settings').style.display = model ? 'none' : '';
-                document.getElementById('upload-title').textContent = model ? 'Upload Model' : 'Upload Audio';
-                document.getElementById('upload-sub').textContent = model ? 'Publish model Roblox (.rbxm) langsung ke Roblox Asset' : 'Publish audio langsung ke Roblox Asset';
+                document.getElementById('audio-settings').style.display = asset ? 'none' : '';
+                document.getElementById('upload-title').textContent = UPLOAD_TEXT[mode].title;
+                document.getElementById('upload-sub').textContent = UPLOAD_TEXT[mode].sub;
                 Object.entries(LINK_SOURCES).forEach(([key, cfg]) => {
                     const status = document.getElementById(cfg.statusId);
                     status.classList.toggle('visible', S.source === key && Boolean(status.textContent));
@@ -7255,15 +7212,30 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
             function isModelFile(f) {
                 return /\.rbxmx?$/i.test(f && f.name || '');
             }
-            // Menu Model hanya menerima .rbxm/.rbxmx; tab musik (file/YouTube/TikTok) hanya audio.
+            // Gambar untuk Decal dikenali dari ekstensi (TGA tidak punya MIME di banyak browser).
+            function isImageFile(f) {
+                return /\.(png|jpe?g|bmp|tga)$/i.test(f && f.name || '');
+            }
+            // 'model' | 'decal' | 'audio' — menentukan tipe asset Roblox yang dikirim.
+            function fileKind(f) {
+                return isModelFile(f) ? 'model' : isImageFile(f) ? 'decal' : 'audio';
+            }
+            const KIND_INFO = {
+                audio: { type: 'Audio', noun: 'audio', done: 'Audio berhasil dipublish!', note: 'Salin ID ini ke script Roblox kamu' },
+                model: { type: 'Model', noun: 'model', done: 'Model berhasil dipublish!', note: 'Pakai ID ini dengan InsertService:LoadAsset(ID) di game milikmu' },
+                decal: { type: 'Decal', noun: 'gambar', done: 'Decal berhasil dipublish!', note: 'Pakai di Decal.Texture atau ImageLabel.Image. Gambar masih dicek moderasi Roblox sebelum bisa tampil' }
+            };
+            // Menu Model hanya menerima .rbxm/.rbxmx, menu Decal hanya gambar; tab musik (file/YouTube/TikTok) hanya audio.
             function addFiles(files) {
-                const model = S.source === 'model';
-                const accepted = files.filter(f => model ? isModelFile(f) : f.type.startsWith('audio/'));
+                const mode = sourceKind(S.source);
+                const accepted = files.filter(f => mode === 'audio' ? f.type.startsWith('audio/') : fileKind(f) === mode);
                 if (!accepted.length) {
-                    if (!model && files.some(isModelFile))
+                    if (mode === 'audio' && files.some(isModelFile))
                         toast('File .rbxm diupload lewat menu Model', 'error');
+                    else if (mode === 'audio' && files.some(isImageFile))
+                        toast('Gambar diupload lewat menu Decal', 'error');
                     else
-                        toast(model ? 'Format tidak didukung. Pakai file .rbxm atau .rbxmx' : 'Format tidak didukung', 'error');
+                        toast({ audio: 'Format tidak didukung', model: 'Format tidak didukung. Pakai file .rbxm atau .rbxmx', decal: 'Format tidak didukung. Pakai PNG, JPG, BMP, atau TGA' }[mode], 'error');
                     return
                 }
                 const tooLarge = accepted.find(f => f.size > 20 * 1024 * 1024);
@@ -7284,7 +7256,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                 });
                 renderFileQueue();
                 updateUploadButton();
-                if (!model) {
+                if (mode === 'audio') {
                     // Auto-detect format dari file pertama
                     const ext = accepted[0].name.split('.').pop().toLowerCase();
                     const fmtMap = { mp3: 'mp3', ogg: 'ogg', wav: 'wav', flac: 'flac', aac: 'aac', m4a: 'aac' };
@@ -7293,6 +7265,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                         sel.value = fmtMap[ext] || 'mp3';
                 }
             }
+            const DECAL_ICON = '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.09-3.09a2 2 0 0 0-2.82 0L6 21"/>';
             const MODEL_ICON = '<path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/>';
             const QSTAT = { wait: ['Menunggu', ''], run: ['Diproses', 'is-run'], ok: ['Selesai', 'is-ok'], proc: ['Diproses', 'is-run'], fail: ['Gagal', 'is-bad'] };
             function fmtDur(t) {
@@ -7315,14 +7288,14 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
             }
             function renderFileQueue() {
                 document.getElementById('file-queue').innerHTML = S.files.map( (f, i) => {
-                    const model = isModelFile(f);
-                    if (!model)
+                    const kind = fileKind(f);
+                    if (kind === 'audio')
                         probeDuration(f);
                     const st = QSTAT[f._st || 'wait'];
                     return `
     <div class="file-item">
-      <div class="file-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${model ? MODEL_ICON : '<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>'}</svg></div>
-      <div class="file-details"><div class="file-name">${escapeHtml(f.name)}</div><div class="file-size">${fmtSize(f.size)}${f._dur ? ' · ' + fmtDur(f._dur) : ''} <span class="q-chip ${st[1]}">${st[0]}</span></div><input class="batch-name-input" type="text" value="${escapeHtml(S.assetNames[i] || defaultAssetName(f.name))}" maxlength="50" aria-label="Nama asset ${i + 1}" oninput="setAssetName(${i},this.value)">${model ? '' : '<div class="bx-prev" data-pv="' + i + '"></div>'}
+      <div class="file-icon">${kind === 'decal' ? `<img src="${imageUrl(f)}" alt="">` : ''}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${kind === 'model' ? MODEL_ICON : kind === 'decal' ? DECAL_ICON : '<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>'}</svg></div>
+      <div class="file-details"><div class="file-name">${escapeHtml(f.name)}</div><div class="file-size">${fmtSize(f.size)}${f._dur ? ' · ' + (f._trim ? fmtDur(f._trim.end - f._trim.start) + ' (dipotong)' : fmtDur(f._dur)) : ''} <span class="q-chip ${st[1]}">${st[0]}</span></div><input class="batch-name-input" type="text" value="${escapeHtml(S.assetNames[i] || defaultAssetName(f.name))}" maxlength="50" aria-label="Nama asset ${i + 1}" oninput="setAssetName(${i},this.value)">${kind === 'audio' ? trimButton(f, i) + '<div class="bx-prev" data-pv="' + i + '"></div>' : ''}
       </div>
       <button class="file-rm" onclick="removeFile(${i})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>`;
@@ -7367,17 +7340,29 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
             function setAssetName(i, value) {
                 S.assetNames[i] = String(value || '').slice(0, 50)
             }
+            function imageUrl(f) {
+                return f._url || (f._url = URL.createObjectURL(f));
+            }
+            function releaseUrls(files) {
+                files.forEach(f => {
+                    if (f._url) {
+                        URL.revokeObjectURL(f._url);
+                        f._url = null;
+                    }
+                });
+            }
             function removeFile(i) {
                 if (S.uploading) {
                     toast('Antrean sedang diproses, tunggu sampai selesai', 'info');
                     return
                 }
-                S.files.splice(i, 1);
+                releaseUrls(S.files.splice(i, 1));
                 S.assetNames.splice(i, 1);
                 renderFileQueue();
                 updateUploadButton()
             }
             function clearFiles() {
+                releaseUrls(S.files);
                 S.files = [];
                 S.assetNames = [];
                 renderFileQueue();
@@ -7464,16 +7449,17 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                         await sleep(100)
                     }
                     label.textContent = 'Publishing ke Roblox...';
-                    const model = isModelFile(file);
+                    const kind = fileKind(file);
+                    const info = KIND_INFO[kind];
                     try {
                         const speed = S.speed || 1.0;
-                        const processed = model ? file : await applyAudioEffects(file, speed, S.pitch || 0);
+                        const processed = kind !== 'audio' ? file : await applyAudioEffects(file, speed, S.pitch || 0, null, file._trim);
                         // Salin isi file ke memori dulu: file dari picker/HP bisa "berubah" atau hilang
                         // selama upload dan itu memicu error "Failed to fetch".
                         let uploadFile;
                         try {
                             uploadFile = new File([await processed.arrayBuffer()], processed.name, {
-                                type: model ? 'model/x-rbxm' : (processed.type || 'audio/mpeg')
+                                type: kind === 'model' ? 'model/x-rbxm' : (processed.type || (kind === 'audio' ? 'audio/mpeg' : ''))
                             });
                         } catch (readErr) {
                             throw new Error('File tidak bisa dibaca. Pilih ulang filenya lalu coba lagi.');
@@ -7484,7 +7470,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                         fd.append('apiKey', S.roblox.apiKey);
                         fd.append('creatorType', S.roblox.creatorType || 'User');
                         fd.append('groupId', S.roblox.groupId || '');
-                        fd.append('assetType', model ? 'Model' : 'Audio');
+                        fd.append('assetType', info.type);
                         fd.append('displayName', name);
                         fd.append('description', 'Uploaded via baxdev Roblox Audio Studio');
                         const res = await postWithRetry('/api/roblox-upload', fd);
@@ -7525,7 +7511,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                         }
                         fill.style.width = '100%';
                         pct.textContent = '100%';
-                        const base = { id: Date.now() + i, name, filename: file.name, size: file.size, uploadedAt: new Date().toISOString(), speed: S.speed, kind: model ? 'model' : 'audio' };
+                        const base = { id: Date.now() + i, name, filename: file.name, size: file.size, uploadedAt: new Date().toISOString(), speed: S.speed, kind };
                         if (!assetId && opPath) {
                             // Masih diproses Roblox -> simpan sebagai "Diproses", dicek otomatis di Library
                             if (!S.account.unlimited) {
@@ -7535,7 +7521,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                             }
                             addLibEntry(Object.assign(base, { assetId: null, status: 'proc', operationPath: opPath }), null);
                             setQStatus(file, 'proc');
-                            toast(`Terkirim. Roblox masih memproses ${model ? 'model' : 'audio'} ini, statusnya dicek otomatis di Library`, 'info');
+                            toast(`Terkirim. Roblox masih memproses ${info.noun} ini, statusnya dicek otomatis di Library`, 'info');
                         } else if (!assetId) {
                             throw new Error('Roblox belum mengembalikan Asset ID. Coba upload lagi.');
                         } else {
@@ -7546,15 +7532,15 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                             }
                             const entry = Object.assign(base, { assetId, status: 'done' });
                             addLibEntry(entry, { name: String(name).slice(0, 100), filename: String(file.name).slice(0, 160), size: file.size, assetId: String(assetId).slice(0, 30), status: 'done', speed: Number(S.speed) || 1 });
-                            document.getElementById('result-asset-id').textContent = (model ? '' : 'rbxassetid://') + assetId;
-                            document.getElementById('result-full-btn').style.display = model ? 'none' : '';
-                            document.getElementById('result-note').textContent = model ? 'Pakai ID ini dengan InsertService:LoadAsset(ID) di game milikmu' : 'Salin ID ini ke script Roblox kamu';
+                            document.getElementById('result-asset-id').textContent = (kind === 'model' ? '' : 'rbxassetid://') + assetId;
+                            document.getElementById('result-full-btn').style.display = kind === 'model' ? 'none' : '';
+                            document.getElementById('result-note').textContent = info.note;
                             document.getElementById('result-box').classList.add('visible');
                             setQStatus(file, 'ok');
-                            toast(model ? 'Model berhasil dipublish!' : 'Audio berhasil dipublish!', 'success');
+                            toast(info.done, 'success');
                         }
                     } catch (e) {
-                        addLibEntry({ id: Date.now() + i, assetId: null, name, filename: file.name, size: file.size, kind: model ? 'model' : 'audio', status: 'fail', reason: String(e.message || 'Error').slice(0, 160), uploadedAt: new Date().toISOString() },
+                        addLibEntry({ id: Date.now() + i, assetId: null, name, filename: file.name, size: file.size, kind, status: 'fail', reason: String(e.message || 'Error').slice(0, 160), uploadedAt: new Date().toISOString() },
                             { name: String(name).slice(0, 100), filename: String(file.name).slice(0, 160), size: file.size, status: 'fail', error: String(e.message || 'Error').slice(0, 160) });
                         setQStatus(file, 'fail');
                         toast('Gagal upload: ' + (e.message || 'Error'), 'error');
@@ -7565,10 +7551,12 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                 S.uploading = false;
                 wrap.style.display = 'none';
                 btn.disabled = false;
+                releaseUrls(S.files);
                 S.files = [];
                 S.assetNames = [];
                 fileInput.value = '';
                 modelInput.value = '';
+                decalInput.value = '';
                 renderFileQueue();
             }
 
@@ -7654,11 +7642,12 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                 return out;
             }
 
-            async function applyAudioEffects(file, speed, pitch, onProgress) {
+            // trim: { start, end } dalam detik (opsional) — memotong audio sebelum efek kecepatan/pitch.
+            async function applyAudioEffects(file, speed, pitch, onProgress, trim) {
                 const ext = file.name.split('.').pop().toLowerCase();
                 const robloxFormat = ['mp3', 'ogg', 'wav', 'flac'].includes(ext);
                 const noPitch = !pitch;
-                if ((!speed || speed === 1.0) && noPitch && robloxFormat)
+                if ((!speed || speed === 1.0) && noPitch && robloxFormat && !trim)
                     return file;
                 if (!window.lamejs)
                     throw new Error('Encoder audio belum siap. Muat ulang halaman lalu coba lagi.');
@@ -7672,13 +7661,26 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                     const channels = Math.min(decoded.numberOfChannels, 2);
                     const pitchRatio = Math.pow(2, (pitch || 0) / 12);
                     const rate = (speed || 1) * pitchRatio;
-                    const outputLength = Math.max(1, Math.ceil(decoded.length / rate));
+                    const from = trim ? Math.max(0, Math.min(trim.start, decoded.duration - .1)) : 0;
+                    const to = trim ? Math.min(trim.end, decoded.duration) : decoded.duration;
+                    const spanSamples = Math.max(1, Math.round((to - from) * decoded.sampleRate));
+                    const outputLength = Math.max(1, Math.ceil(spanSamples / rate));
                     const offline = new OfflineAudioContext(channels,outputLength,decoded.sampleRate);
                     const source = offline.createBufferSource();
                     source.buffer = decoded;
                     source.playbackRate.value = rate;
-                    source.connect(offline.destination);
-                    source.start(0);
+                    if (trim) {
+                        // Fade-out 15 ms di ujung potongan supaya tidak ada bunyi "klik".
+                        const gain = offline.createGain();
+                        const outSec = outputLength / decoded.sampleRate;
+                        gain.gain.setValueAtTime(1, Math.max(0, outSec - .015));
+                        gain.gain.linearRampToValueAtTime(0, outSec);
+                        source.connect(gain);
+                        gain.connect(offline.destination);
+                    } else {
+                        source.connect(offline.destination);
+                    }
+                    source.start(0, from);
                     const rendered = await offline.startRendering();
                     let data = Array.from({length: channels}, (_, ch) => rendered.getChannelData(ch));
                     if (!noPitch)
@@ -7747,21 +7749,21 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                     note.innerHTML = parts.join(' ');
                     note.style.display = parts.length ? '' : 'none';
                 }
-                const items = S.library.filter(i => (i.name || '').toLowerCase().includes(q) && (filter === 'all' || i.status === filter) && (kind === 'all' || (kind === 'model') === (i.kind === 'model')));
+                const items = S.library.filter(i => (i.name || '').toLowerCase().includes(q) && (filter === 'all' || i.status === filter) && (kind === 'all' || libKind(i) === kind));
                 if (!items.length) {
                     grid.innerHTML = `<div class="empty-lib"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg><p>${S.library.length ? 'Tidak ada hasil' : 'Library kosong'}</p><span>${S.library.length ? 'Coba kata kunci lain' : 'Upload audio pertama kamu'}</span></div>`;
                     return;
                 }
                 const selOn = libSelMode;
                 grid.innerHTML = items.map(i => {
-                    const pickable = i.assetId && i.kind !== 'model' && i.status === 'done';
+                    const pickable = i.assetId && libKind(i) === 'audio' && i.status === 'done';
                     const picked = pickable && libSel.has(String(i.assetId));
                     const cls = 'lib-card' + (selOn ? (pickable ? ' is-pick' : ' is-off') : '') + (picked ? ' is-sel' : '');
                     const click = selOn && pickable ? ` onclick="libSelToggle('${i.assetId}')"` : '';
                     return `
     <div class="${cls}"${click}>
       ${selOn && pickable ? `<input type="checkbox" class="lib-check" tabindex="-1" ${picked ? 'checked' : ''}>` : ''}
-      <div class="lib-wave">${i.kind === 'model' ? `<svg class="lib-model-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-label="Model">${MODEL_ICON}</svg>` : Array(7).fill('<span style="height:6px"></span>').join('')}</div>
+      <div class="lib-wave">${libKind(i) !== 'audio' ? `<svg class="lib-model-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-label="${libKind(i) === 'decal' ? 'Decal' : 'Model'}">${libKind(i) === 'decal' ? DECAL_ICON : MODEL_ICON}</svg>` : Array(7).fill('<span style="height:6px"></span>').join('')}</div>
       <div class="lib-body">
         <div class="lib-name" title="${escapeHtml(i.name || 'Tanpa nama')}">${escapeHtml(i.name || 'Tanpa nama')}</div>
         <div class="lib-meta">
@@ -7770,11 +7772,11 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
         </div>
         ${i.assetId ? `<div class="lib-id">${i.assetId}</div>` : ''}
         ${i.status === 'proc' ? '<div class="lib-reason">Masih diproses Roblox</div>' : ''}
-        ${i.kind !== 'model' && Array.isArray(i.maps) && i.maps.length ? `<div class="lib-maps" title="${escapeHtml(i.maps.join(', '))}">Izin map: ${i.maps.length} (${escapeHtml(i.maps.slice(0, 2).join(', '))}${i.maps.length > 2 ? '…' : ''})</div>` : ''}
+        ${libKind(i) === 'audio' && Array.isArray(i.maps) && i.maps.length ? `<div class="lib-maps" title="${escapeHtml(i.maps.join(', '))}">Izin map: ${i.maps.length} (${escapeHtml(i.maps.slice(0, 2).join(', '))}${i.maps.length > 2 ? '…' : ''})</div>` : ''}
       </div>
       <div class="lib-actions"${selOn ? ' hidden' : ''}>
         ${i.assetId ? `<button class="lib-act" aria-label="Salin ID" onclick="copyLib('${i.assetId}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span class="lib-lbl">Salin</span></button>` : ''}
-        ${i.assetId && i.kind !== 'model' && i.status === 'done' ? `<button class="lib-act" aria-label="Atur izin map" onclick="openAccess('${i.assetId}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span class="lib-lbl">Izin</span></button>` : ''}
+        ${i.assetId && libKind(i) === 'audio' && i.status === 'done' ? `<button class="lib-act" aria-label="Atur izin map" onclick="openAccess('${i.assetId}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span class="lib-lbl">Izin</span></button>` : ''}
         <button class="lib-act lib-del" aria-label="Hapus" onclick="deleteLib(${i.id})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg><span class="lib-lbl">Hapus</span></button>
       </div>
     </div>`;
@@ -7782,6 +7784,251 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                 libSelUpdate();
                 renderRecentFromLibrary();
             }
+            // ── POTONG AUDIO (per file, sebelum upload) ──
+            const TRIM_MIN_GAP = .5; // detik; potongan terpendek yang boleh
+            const TRIM = { file: null, dur: 0, start: 0, end: 0, peaks: null, audio: null, url: null, stopAt: 0 };
+            function trimButton(f, i) {
+                const label = f._trim ? `${fmtTrim(f._trim.start)}–${fmtTrim(f._trim.end)}` : 'Potong';
+                return `<button type="button" class="trim-btn${f._trim ? ' is-on' : ''}" onclick="openTrim(${i})" aria-label="Potong audio ${i + 1}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg>${label}</button>`;
+            }
+            function fmtTrim(t) {
+                const m = Math.floor(t / 60);
+                return m + ':' + (t - m * 60).toFixed(1).padStart(4, '0');
+            }
+            async function openTrim(i) {
+                if (S.uploading) {
+                    toast('Antrean sedang diproses, tunggu sampai selesai', 'info');
+                    return;
+                }
+                const f = S.files[i];
+                if (!f || fileKind(f) !== 'audio')
+                    return;
+                Object.assign(TRIM, { file: f, dur: f._dur || 0, peaks: null, start: f._trim ? f._trim.start : 0, end: f._trim ? f._trim.end : (f._dur || 0) });
+                document.getElementById('trim-name').textContent = f.name;
+                document.getElementById('trim-info').innerHTML = '<div class="access-ok">Memuat gelombang audio...</div>';
+                document.getElementById('trim-overlay').hidden = false;
+                trimSync();
+                const token = f;
+                try {
+                    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                    const buf = await ctx.decodeAudioData(await f.arrayBuffer());
+                    await ctx.close();
+                    if (TRIM.file !== token)
+                        return;
+                    TRIM.dur = buf.duration;
+                    f._dur = buf.duration;
+                    if (!f._trim)
+                        TRIM.end = buf.duration;
+                    const data = buf.getChannelData(0);
+                    const bins = 240, step = Math.max(1, Math.floor(data.length / bins));
+                    TRIM.peaks = Array.from({ length: bins }, (_, b) => {
+                        let max = 0;
+                        for (let k = b * step; k < Math.min(data.length, (b + 1) * step); k += 16)
+                            max = Math.max(max, Math.abs(data[k]));
+                        return max;
+                    });
+                    document.getElementById('trim-info').innerHTML = '';
+                } catch (e) {
+                    if (TRIM.file === token)
+                        document.getElementById('trim-info').innerHTML = '<div class="access-err">Gelombang tidak bisa ditampilkan, tapi potongan tetap bisa diatur lewat slider.</div>';
+                }
+                if (TRIM.file === token)
+                    trimSync();
+            }
+            function trimSync() {
+                const a = document.getElementById('trim-start'), b = document.getElementById('trim-end');
+                const max = Math.max(TRIM.dur, 1);
+                a.max = b.max = String(max);
+                a.value = String(TRIM.start);
+                b.value = String(TRIM.end);
+                document.getElementById('trim-start-val').textContent = fmtTrim(TRIM.start);
+                document.getElementById('trim-end-val').textContent = fmtTrim(TRIM.end);
+                trimDraw();
+            }
+            function trimInput(which) {
+                const a = Number(document.getElementById('trim-start').value), b = Number(document.getElementById('trim-end').value);
+                if (which === 'start')
+                    TRIM.start = Math.min(a, Math.max(0, b - TRIM_MIN_GAP));
+                else
+                    TRIM.end = Math.max(b, Math.min(TRIM.dur, a + TRIM_MIN_GAP));
+                trimStop();
+                trimSync();
+            }
+            function trimDraw() {
+                const cv = document.getElementById('trim-wave');
+                const w = cv.clientWidth || 300, h = cv.clientHeight || 84, dpr = window.devicePixelRatio || 1;
+                if (cv.width !== Math.round(w * dpr) || cv.height !== Math.round(h * dpr)) {
+                    cv.width = Math.round(w * dpr);
+                    cv.height = Math.round(h * dpr);
+                }
+                const c = cv.getContext('2d');
+                c.setTransform(dpr, 0, 0, dpr, 0, 0);
+                c.clearRect(0, 0, w, h);
+                const color = getComputedStyle(cv).getPropertyValue('--accent-blue').trim() || '#aaa';
+                const peaks = TRIM.peaks;
+                if (!peaks || !TRIM.dur)
+                    return;
+                const bar = w / peaks.length, from = TRIM.start / TRIM.dur * w, to = TRIM.end / TRIM.dur * w;
+                c.fillStyle = color;
+                peaks.forEach((p, k) => {
+                    const x = k * bar;
+                    c.globalAlpha = x + bar > from && x < to ? 1 : .22;
+                    const bh = Math.max(2, p * (h - 8));
+                    c.fillRect(x, (h - bh) / 2, Math.max(1, bar - 1), bh);
+                });
+                c.globalAlpha = 1;
+            }
+            function trimStop() {
+                if (TRIM.audio) {
+                    TRIM.audio.pause();
+                    TRIM.audio.src = '';
+                    TRIM.audio = null;
+                }
+                if (TRIM.url) {
+                    URL.revokeObjectURL(TRIM.url);
+                    TRIM.url = null;
+                }
+                document.getElementById('trim-play').textContent = 'Putar potongan';
+            }
+            function trimPlay() {
+                if (TRIM.audio) {
+                    trimStop();
+                    return;
+                }
+                TRIM.url = URL.createObjectURL(TRIM.file);
+                const audio = TRIM.audio = new Audio(TRIM.url);
+                audio.currentTime = TRIM.start;
+                audio.ontimeupdate = () => {
+                    if (audio.currentTime >= TRIM.end)
+                        trimStop();
+                };
+                audio.onended = trimStop;
+                audio.onerror = () => {
+                    trimStop();
+                    toast('Audio tidak bisa diputar di browser ini', 'error');
+                };
+                audio.play().then(() => {
+                    document.getElementById('trim-play').textContent = 'Berhenti';
+                }).catch(trimStop);
+            }
+            function trimReset() {
+                trimStop();
+                TRIM.start = 0;
+                TRIM.end = TRIM.dur;
+                trimSync();
+            }
+            function trimApply() {
+                const f = TRIM.file;
+                if (!f)
+                    return;
+                const full = TRIM.start < .05 && TRIM.end > TRIM.dur - .05;
+                if (full)
+                    delete f._trim;
+                else
+                    f._trim = { start: TRIM.start, end: TRIM.end };
+                closeTrim();
+                renderFileQueue();
+            }
+            function closeTrim() {
+                trimStop();
+                TRIM.file = null;
+                document.getElementById('trim-overlay').hidden = true;
+            }
+            document.addEventListener('keydown', e => {
+                if (e.key === 'Escape' && !document.getElementById('trim-overlay').hidden)
+                    closeTrim();
+                if (e.key === 'Escape' && !document.getElementById('chk-overlay').hidden)
+                    closeCheck();
+            });
+
+            // ── CEK STATUS MODERASI ASSET (banyak ID sekaligus) ──
+            const CHK_STATE = { Approved: 'Disetujui', Reviewing: 'Direview', Rejected: 'Ditolak', Unknown: 'Tidak diketahui' };
+            const CHK_MAX = 200;
+            const CHK_BATCH = 40; // sama dengan batas per request di server
+            let chkItems = [];
+            let chkBusy = false;
+            function openCheck() {
+                if (!requireRoblox('cek status asset'))
+                    return;
+                document.getElementById('chk-overlay').hidden = false;
+            }
+            function closeCheck() {
+                document.getElementById('chk-overlay').hidden = true;
+            }
+            function checkFromLibrary() {
+                const ids = S.library.filter(i => i.assetId && i.status === 'done').map(i => String(i.assetId));
+                if (!ids.length) {
+                    toast('Belum ada asset published di Library', 'info');
+                    return;
+                }
+                document.getElementById('chk-ids').value = ids.slice(0, CHK_MAX).join('\n');
+                if (ids.length > CHK_MAX)
+                    toast(`Library punya ${ids.length} asset, diambil ${CHK_MAX} terbaru`, 'info');
+            }
+            function checkRender() {
+                const list = document.getElementById('chk-list');
+                list.innerHTML = chkItems.length ? chkItems.map(x => x.ok ? `
+                    <div class="access-item chk-item"><span class="access-name">${escapeHtml(x.name)}${x.type ? ` <small>${escapeHtml(x.type)}</small>` : ''}</span>
+                    <span class="access-id">${escapeHtml(x.id)}</span><span class="chk-st ${x.state.toLowerCase()}">${CHK_STATE[x.state]}</span></div>` : `
+                    <div class="access-item chk-item"><span class="access-name chk-reason">${escapeHtml(x.reason || 'Gagal dicek')}</span>
+                    <span class="access-id">${escapeHtml(x.id)}</span><span class="chk-st unknown">Gagal</span></div>`).join('')
+                    : '<div class="access-empty">Belum ada hasil.</div>';
+                const count = state => chkItems.filter(x => x.ok && x.state === state).length;
+                const failed = chkItems.filter(x => !x.ok).length;
+                document.getElementById('chk-summary').innerHTML = chkItems.length
+                    ? `<div class="access-ok">${count('Approved')} disetujui · ${count('Reviewing')} direview · ${count('Rejected')} ditolak${failed ? ` · ${failed} gagal dicek` : ''}</div>` : '';
+                document.getElementById('chk-copy').hidden = !count('Rejected');
+            }
+            async function checkRun() {
+                if (chkBusy)
+                    return;
+                const ids = Array.from(new Set(String(document.getElementById('chk-ids').value).match(/\d{5,19}/g) || []));
+                const summary = document.getElementById('chk-summary');
+                if (!ids.length) {
+                    summary.innerHTML = '<div class="access-err">Tidak ada Asset ID yang terbaca. Tempel angka ID.</div>';
+                    return;
+                }
+                if (ids.length > CHK_MAX) {
+                    summary.innerHTML = `<div class="access-err">Maksimal ${CHK_MAX} ID sekali cek. Bagi jadi beberapa kali.</div>`;
+                    return;
+                }
+                const btn = document.getElementById('chk-go');
+                chkBusy = true;
+                btn.disabled = true;
+                chkItems = [];
+                try {
+                    for (let i = 0; i < ids.length; i += CHK_BATCH) {
+                        btn.textContent = `Mengecek ${Math.min(i + CHK_BATCH, ids.length)}/${ids.length}...`;
+                        const res = await fetch('/api/roblox-asset-check', {
+                            method: 'POST',
+                            headers: { 'content-type': 'application/json' },
+                            body: JSON.stringify({ apiKey: S.roblox.apiKey, assetIds: ids.slice(i, i + CHK_BATCH) })
+                        });
+                        const data = await res.json().catch(() => ({}));
+                        if (!Array.isArray(data.items)) {
+                            checkRender();
+                            summary.innerHTML = `<div class="access-err">${escapeHtml(data.message || 'Gagal mengecek status.')}${chkItems.length ? ' Hasil yang sudah masuk tetap ditampilkan.' : ''}</div>`;
+                            return;
+                        }
+                        chkItems.push(...data.items);
+                        checkRender();
+                    }
+                } catch (e) {
+                    summary.innerHTML = '<div class="access-err">Koneksi bermasalah. Coba lagi.</div>';
+                } finally {
+                    chkBusy = false;
+                    btn.disabled = false;
+                    btn.textContent = 'Cek Status';
+                }
+            }
+            function checkCopyRejected() {
+                const ids = chkItems.filter(x => x.ok && x.state === 'Rejected').map(x => x.id);
+                if (!ids.length)
+                    return;
+                navigator.clipboard.writeText(ids.join('\n'));
+                toast(`${ids.length} ID yang ditolak disalin`, 'success');
+            }
+
             // ── PILIH BANYAK AUDIO DI LIBRARY ──
             let libSelMode = false;
             const libSel = new Set();
@@ -7820,6 +8067,10 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                 const ids = Array.from(libSel);
                 openAccess(ids);
             }
+            // Entri lama tanpa `kind` dianggap audio.
+            function libKind(i) {
+                return i.kind === 'model' || i.kind === 'decal' ? i.kind : 'audio';
+            }
             function filterLibrary() {
                 renderLibrary()
             }
@@ -7831,7 +8082,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
             }
             function copyAllPublished() {
                 const kind = document.getElementById('lib-kind').value;
-                const done = S.library.filter(i => i.status === 'done' && i.assetId && (kind === 'all' || (kind === 'model') === (i.kind === 'model')));
+                const done = S.library.filter(i => i.status === 'done' && i.assetId && (kind === 'all' || libKind(i) === kind));
                 if (!done.length) { toast('Belum ada asset yang dipublish', 'info'); return; }
                 const text = done.map(i => `${i.assetId} = ${i.name || 'Tanpa nama'}`).join('\n');
                 navigator.clipboard.writeText(text);
@@ -7855,7 +8106,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                 ta.value = cur.join(', ');
             }
             function accessAudios() {
-                return S.library.filter(i => i.kind !== 'model' && i.status === 'done' && i.assetId);
+                return S.library.filter(i => libKind(i) === 'audio' && i.status === 'done' && i.assetId);
             }
             function openAccess(preselectId) {
                 if (!requireRoblox('memberi akses audio')) return;
@@ -9104,840 +9355,6 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                 }
             });
 
-            // ── SPOOF ANIMASI ─────────────────────────────────────
-            let SA = { running: false, assetId: null };
-
-            function saStripPrefix(input) {
-                // Strip rbxassetid:// prefix if pasted
-                input.value = input.value.replace(/rbxassetid:\/\//gi, '').replace(/[^0-9]/g, '');
-            }
-
-            function saSetProgress(label, pct) {
-                const wrap = document.getElementById('sa-progress-wrap');
-                const lbl  = document.getElementById('sa-progress-label');
-                const fill = document.getElementById('sa-progress-fill');
-                const pctEl = document.getElementById('sa-progress-pct');
-                if (wrap) wrap.style.display = label ? '' : 'none';
-                if (lbl)  lbl.textContent  = label || '';
-                if (fill) fill.style.width = pct != null ? pct + '%' : '0%';
-                if (pctEl) pctEl.textContent = pct != null ? pct + '%' : '';
-            }
-
-            function saSetResult(assetId) {
-                SA.assetId = assetId;
-                const box = document.getElementById('sa-result-box');
-                const idEl = document.getElementById('sa-result-id');
-                if (!box || !idEl) return;
-                idEl.textContent = 'rbxassetid://' + assetId;
-                box.style.display = '';
-            }
-
-            async function saSpoof() {
-                if (!requireGoogle('spoof animasi')) return;
-                if (SA.running) return;
-
-                const animIdRaw = (document.getElementById('sa-anim-id')?.value || '').replace(/\D/g, '').trim();
-                if (!animIdRaw || animIdRaw.length < 5) {
-                    toast('Isi Animation ID sumber dulu', 'info');
-                    return;
-                }
-
-                const { roblox } = S;
-                if (!roblox?.userId || !roblox?.apiKey) {
-                    toast('Hubungkan akun Roblox di Pengaturan dulu', 'info');
-                    navigate('settings');
-                    return;
-                }
-
-                const displayName = (document.getElementById('sa-anim-name')?.value || '').trim().slice(0, 30)
-                    || ('Anim_' + animIdRaw).slice(0, 30);
-
-                SA.running = true;
-                document.getElementById('sa-spoof-btn').disabled = true;
-                document.getElementById('sa-result-box').style.display = 'none';
-                saSetProgress('Mengambil animasi dari Roblox...', 20);
-
-                try {
-                    const token = window.BX?.getToken ? await window.BX.getToken() : null;
-                    if (!token) {
-                        toast('Gagal ambil token login. Coba login ulang.', 'error');
-                        return;
-                    }
-
-                    saSetProgress('Meng-upload ke akun Roblox...', 55);
-
-                    const res = await fetch('/api/roblox-anim-spoof', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': 'Bearer ' + token
-                        },
-                        body: JSON.stringify({
-                            animId:      animIdRaw,
-                            userId:      roblox.userId,
-                            apiKey:      roblox.apiKey,
-                            displayName,
-                            creatorType: roblox.creatorType || 'User',
-                            groupId:     roblox.groupId   || ''
-                        })
-                    });
-
-                    const data = await res.json().catch(() => ({}));
-
-                    if (!res.ok || !data.ok) {
-                        if (data.code === 'quota_exceeded') {
-                            toast(data.message || 'Kuota hari ini habis.', 'error');
-                        } else {
-                            toast(data.message || `Gagal (HTTP ${res.status}).`, 'error');
-                        }
-                        saSetProgress(null, null);
-                        return;
-                    }
-
-                    saSetProgress('Selesai!', 100);
-                    setTimeout(() => saSetProgress(null, null), 800);
-
-                    if (data.pending) {
-                        toast('Animasi terkirim, masih diproses Roblox. Cek Library sebentar lagi.', 'info');
-                        return;
-                    }
-
-                    if (data.assetId) {
-                        saSetResult(data.assetId);
-                        toast('Animasi berhasil di-spoof!', 'success');
-                        if (data.quota) refreshAccountState();
-                    } else {
-                        toast('Terkirim ke Roblox tapi ID belum tersedia. Cek Library.', 'info');
-                    }
-
-                } catch (err) {
-                    saSetProgress(null, null);
-                    toast('Koneksi bermasalah: ' + (err?.message || 'coba lagi.'), 'error');
-                } finally {
-                    SA.running = false;
-                    document.getElementById('sa-spoof-btn').disabled = false;
-                }
-            }
-
-            async function saCopyId() {
-                if (!SA.assetId) return;
-                try { await navigator.clipboard.writeText(SA.assetId); } catch {
-                    const ta = document.createElement('textarea');
-                    ta.value = SA.assetId;
-                    ta.style.cssText = 'position:fixed;opacity:0';
-                    document.body.appendChild(ta); ta.select();
-                    try { document.execCommand('copy'); } catch {}
-                    ta.remove();
-                }
-                toast('ID disalin', 'success');
-            }
-
-            async function saCopyFullId() {
-                if (!SA.assetId) return;
-                const full = 'rbxassetid://' + SA.assetId;
-                try { await navigator.clipboard.writeText(full); } catch {
-                    const ta = document.createElement('textarea');
-                    ta.value = full;
-                    ta.style.cssText = 'position:fixed;opacity:0';
-                    document.body.appendChild(ta); ta.select();
-                    try { document.execCommand('copy'); } catch {}
-                    ta.remove();
-                }
-                toast('rbxassetid:// disalin', 'success');
-            }
-
-            // ── ANIM PREVIEW (AP) ─────────────────────────────────
-            const AP = {
-                loaded: false, loading: false,
-                renderer: null, scene: null, camera: null,
-                rig: {}, hierarchy: [],
-                keyframes: [], duration: 0, loopAnim: true,
-                playing: false, time: 0, lastTs: 0, rafId: null,
-                theta: 0.45, phi: 1.12, radius: 7,
-                drag: false, lx: 0, ly: 0,
-            };
-
-            function apLoadThree() {
-                return new Promise((res, rej) => {
-                    if (window.THREE) { res(); return; }
-                    if (AP.loading) {
-                        const iv = setInterval(() => { if (window.THREE) { clearInterval(iv); res(); } }, 80);
-                        setTimeout(() => { clearInterval(iv); rej(new Error('timeout')); }, 15000);
-                        return;
-                    }
-                    AP.loading = true;
-                    const s = document.createElement('script');
-                    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
-                    s.onload  = () => { AP.loading = false; res(); };
-                    s.onerror = () => { AP.loading = false; rej(new Error('Gagal memuat Three.js')); };
-                    document.head.appendChild(s);
-                });
-            }
-
-            // ── RBXM BINARY PARSER ───────────────────────────────────
-            // LZ4 block decompression (no frame header — raw block data)
-            function lz4Decompress(srcBuf, srcOff, srcLen, dstLen) {
-                const src = new Uint8Array(srcBuf, srcOff, srcLen);
-                const dst = new Uint8Array(dstLen);
-                let si = 0, di = 0;
-                while (si < src.length) {
-                    const tok = src[si++];
-                    // Literal run
-                    let litLen = tok >> 4;
-                    if (litLen === 15) { let b; do { b = src[si++]; litLen += b; } while (b === 255); }
-                    dst.set(src.subarray(si, si + litLen), di);
-                    si += litLen; di += litLen;
-                    if (si >= src.length) break;
-                    // Match copy
-                    const mOff = src[si] | (src[si + 1] << 8); si += 2;
-                    let mLen = (tok & 0xF) + 4;
-                    if ((tok & 0xF) === 15) { let b; do { b = src[si++]; mLen += b; } while (b === 255); }
-                    let cp = di - mOff;
-                    for (let i = 0; i < mLen; i++) dst[di++] = dst[cp++];
-                }
-                return dst.buffer;
-            }
-
-            // Byte de-interleave + big-endian reconstruct → Uint32Array
-            function rbxDeinterleave(bytes, off, n) {
-                const out = new Uint32Array(n);
-                for (let i = 0; i < n; i++) {
-                    out[i] = (
-                        (bytes[off + i]           << 24) |
-                        (bytes[off + n     + i]   << 16) |
-                        (bytes[off + n * 2 + i]   <<  8) |
-                         bytes[off + n * 3 + i]
-                    ) >>> 0;
-                }
-                return out;
-            }
-
-            // Delta-accumulate interleaved unsigned int32s (referent IDs)
-            function rbxDecodeRefs(bytes, off, n) {
-                const raw = rbxDeinterleave(bytes, off, n);
-                const refs = new Int32Array(n);
-                let acc = 0;
-                for (let i = 0; i < n; i++) { acc += raw[i]; refs[i] = acc; }
-                return refs;
-            }
-
-            // Bit-rotate-right-1 + interleaved floats
-            function rbxDecodeFloats(bytes, off, n) {
-                const raw = rbxDeinterleave(bytes, off, n);
-                const f32 = new Float32Array(n);
-                const tmp = new DataView(new ArrayBuffer(4));
-                for (let i = 0; i < n; i++) {
-                    const r = raw[i];
-                    // Encoding was rotate-left-1; decode: rotate-right-1
-                    tmp.setUint32(0, ((r >>> 1) | ((r & 1) << 31)) >>> 0, true);
-                    f32[i] = tmp.getFloat32(0, true);
-                }
-                return f32;
-            }
-
-            function rbxParseInst(buf, classMap, instances) {
-                const dv = new DataView(buf);
-                const b  = new Uint8Array(buf);
-                let o = 0;
-                const classId = dv.getUint32(o, true); o += 4;
-                const nameLen = dv.getUint32(o, true); o += 4;
-                const className = new TextDecoder().decode(b.slice(o, o + nameLen)); o += nameLen;
-                o++; // isService byte
-                const count = dv.getUint32(o, true); o += 4;
-                const refIds = rbxDecodeRefs(b, o, count);
-                classMap[classId] = { className, refIds };
-                for (const ref of refIds) instances[ref] = { className, classId };
-            }
-
-            // Predefined CFrame rotation matrices (IDs 1-36 → 3x3 rows)
-            // Most animation poses use type 0 (custom); table covers common ids.
-            const RBX_ROT = (() => {
-                const I = [1,0,0, 0,1,0, 0,0,1];
-                const tbl = {};
-                // Populated with known axis-aligned orientations
-                const raw = [
-                    [2,  1,0,0,  0,1,0,  0,0,1],
-                    [3,  1,0,0,  0,0,-1, 0,1,0],
-                    [5,  1,0,0,  0,-1,0, 0,0,-1],
-                    [6,  1,0,0,  0,0,1,  0,-1,0],
-                    [7,  0,1,0,  1,0,0,  0,0,-1],
-                    [9,  0,0,1,  1,0,0,  0,1,0],
-                    [10, 0,-1,0, 1,0,0,  0,0,1],
-                    [11, 0,0,-1, 1,0,0,  0,-1,0],
-                    [13, -1,0,0, 0,1,0,  0,0,-1],
-                    [14, -1,0,0, 0,0,-1, 0,-1,0],
-                    [16, -1,0,0, 0,-1,0, 0,0,1],
-                    [17, -1,0,0, 0,0,1,  0,1,0],
-                    [20, 0,1,0,  0,0,1,  1,0,0],
-                    [22, 0,0,-1, 0,1,0,  1,0,0],
-                    [23, 0,-1,0, 0,0,-1, 1,0,0],
-                    [24, 0,0,1,  0,-1,0, 1,0,0],
-                    [25, 0,1,0,  -1,0,0, 0,0,1],
-                    [27, 0,0,-1, -1,0,0, 0,1,0],
-                    [28, 0,-1,0, -1,0,0, 0,0,-1],
-                    [29, 0,0,1,  -1,0,0, 0,-1,0],
-                    [31, 0,0,1,  0,1,0,  -1,0,0],
-                    [32, 0,1,0,  0,0,-1, -1,0,0],
-                    [34, 0,0,-1, 0,-1,0, -1,0,0],
-                    [35, 0,-1,0, 0,0,1,  -1,0,0],
-                ];
-                for (const [id, ...m] of raw) tbl[id] = m;
-                for (let id = 1; id <= 36; id++) if (!tbl[id]) tbl[id] = I;
-                return tbl;
-            })();
-
-            function rbxParseProp(buf, classMap, propData) {
-                const dv = new DataView(buf);
-                const b  = new Uint8Array(buf);
-                let o = 0;
-
-                const classId  = dv.getUint32(o, true); o += 4;
-                const nameLen  = dv.getUint32(o, true); o += 4;
-                const propName = new TextDecoder().decode(b.slice(o, o + nameLen)); o += nameLen;
-                const pType    = b[o++];
-
-                const cls = classMap[classId];
-                if (!cls) return;
-                const n   = cls.refIds.length;
-                const key = classId + '.' + propName;
-                const vals = [];
-
-                if (pType === 0x01) {           // String
-                    for (let i = 0; i < n; i++) {
-                        const len = dv.getUint32(o, true); o += 4;
-                        vals.push(new TextDecoder().decode(b.slice(o, o + len))); o += len;
-                    }
-                } else if (pType === 0x02) {     // Bool
-                    for (let i = 0; i < n; i++) vals.push(b[o++] !== 0);
-                } else if (pType === 0x04) {     // Float32 (interleaved + bit-rotated)
-                    const f = rbxDecodeFloats(b, o, n);
-                    for (let i = 0; i < n; i++) vals.push(f[i]);
-                    o += n * 4;
-                } else if (pType === 0x10) {     // CFrame / CoordinateFrame
-                    // 1. Rotation type per instance
-                    const rotTypes = b.slice(o, o + n); o += n;
-                    // 2. Custom-rotation floats (type 0 instances only, 9 floats each)
-                    let custom = 0;
-                    for (let i = 0; i < n; i++) if (rotTypes[i] === 0) custom++;
-                    let rotF = null;
-                    if (custom > 0) { rotF = rbxDecodeFloats(b, o, custom * 9); o += custom * 9 * 4; }
-                    // 3. Position X, Y, Z — three separate interleaved arrays
-                    const xF = rbxDecodeFloats(b, o, n); o += n * 4;
-                    const yF = rbxDecodeFloats(b, o, n); o += n * 4;
-                    const zF = rbxDecodeFloats(b, o, n); o += n * 4;
-                    let ri = 0;
-                    for (let i = 0; i < n; i++) {
-                        let r;
-                        if (rotTypes[i] === 0 && rotF) {
-                            const base = ri++ * 9;
-                            r = [rotF[base],rotF[base+1],rotF[base+2], rotF[base+3],rotF[base+4],rotF[base+5], rotF[base+6],rotF[base+7],rotF[base+8]];
-                        } else {
-                            r = RBX_ROT[rotTypes[i]] || [1,0,0, 0,1,0, 0,0,1];
-                        }
-                        vals.push({ x:xF[i],y:yF[i],z:zF[i], r00:r[0],r01:r[1],r02:r[2], r10:r[3],r11:r[4],r12:r[5], r20:r[6],r21:r[7],r22:r[8] });
-                    }
-                }
-
-                if (vals.length) propData[key] = { classId, vals };
-            }
-
-            function rbxParsePrnt(buf, parentOf) {
-                const dv = new DataView(buf);
-                const b  = new Uint8Array(buf);
-                let o = 1; // skip version byte
-                const n    = dv.getInt32(o, true); o += 4;
-                const kids = rbxDecodeRefs(b, o, n); o += n * 4;
-                const pars = rbxDecodeRefs(b, o, n);
-                for (let i = 0; i < n; i++) parentOf[kids[i]] = pars[i];
-            }
-
-            function rbxBuildAnim(classMap, instances, propData, parentOf) {
-                // Find class IDs by name
-                let kfsId = null, kfId = null, poseId = null;
-                for (const [id, cls] of Object.entries(classMap)) {
-                    const n = parseInt(id);
-                    if (cls.className === 'KeyframeSequence') kfsId = n;
-                    else if (cls.className === 'Keyframe') kfId = n;
-                    else if (cls.className === 'Pose') poseId = n;
-                }
-                if (kfsId === null) throw new Error('KeyframeSequence tidak ditemukan dalam rbxm');
-
-                const isLoop   = propData[kfsId + '.Loop']?.vals[0] ?? false;
-                const kfRefs   = classMap[kfId]?.refIds || [];
-                const kfTimes  = propData[kfId + '.Time']?.vals || [];
-                const kfTimeOf = {};
-                for (let i = 0; i < kfRefs.length; i++) kfTimeOf[kfRefs[i]] = kfTimes[i] ?? 0;
-
-                const poseRefs  = classMap[poseId]?.refIds || [];
-                const poseNames = propData[poseId + '.Name']?.vals || [];
-                const poseCFs   = propData[poseId + '.CFrame']?.vals || [];
-
-                const poseInfo = {};  // refId -> {name, cf}
-                for (let i = 0; i < poseRefs.length; i++)
-                    poseInfo[poseRefs[i]] = { name: poseNames[i] || ('Pose' + i), cf: poseCFs[i] || null };
-
-                // Build parent-child maps for poses
-                const poseKfParent   = {}; // poseRef -> kfRef (direct Keyframe parent)
-                const posePoseParent = {}; // poseRef -> poseRef (direct Pose parent)
-                const poseChildren   = {}; // poseRef -> [childPoseRef]
-                for (const poseRef of poseRefs) {
-                    const par = parentOf[poseRef];
-                    if (par === undefined) continue;
-                    const parInst = instances[par];
-                    if (parInst?.className === 'Keyframe') {
-                        poseKfParent[poseRef] = par;
-                    } else if (parInst?.className === 'Pose') {
-                        posePoseParent[poseRef] = par;
-                        if (!poseChildren[par]) poseChildren[par] = [];
-                        poseChildren[par].push(poseRef);
-                    }
-                }
-
-                // Flatten pose tree recursively
-                function flatPoses(pRef, parentName, out) {
-                    const p = poseInfo[pRef];
-                    if (!p) return;
-                    out.push({ name: p.name, parentName, cf: p.cf });
-                    for (const ch of (poseChildren[pRef] || [])) flatPoses(ch, p.name, out);
-                }
-
-                const hierMap = {};
-                const keyframes = [];
-
-                for (const kfRef of kfRefs) {
-                    const time  = kfTimeOf[kfRef] ?? 0;
-                    const poses = {};
-                    const roots = poseRefs.filter(r => poseKfParent[r] === kfRef);
-                    for (const root of roots) {
-                        const flat = [];
-                        flatPoses(root, null, flat);
-                        for (const { name, parentName, cf } of flat) {
-                            poses[name] = cf;
-                            if (!hierMap[name]) hierMap[name] = parentName;
-                        }
-                    }
-                    keyframes.push({ time, poses });
-                }
-
-                keyframes.sort((a, b) => a.time - b.time);
-                const duration  = keyframes.at(-1)?.time || 0;
-                const hierarchy = Object.entries(hierMap).map(([name, parentName]) => ({ name, parentName }));
-                return { keyframes, duration, loop: isLoop, hierarchy };
-            }
-
-            function parseRbxmAnimation(buf) {
-                const magic = new TextDecoder('latin1').decode(new Uint8Array(buf, 0, 8));
-                if (magic !== '<roblox!') throw new Error('Bukan file rbxm valid');
-                const dv = new DataView(buf);
-                let off = 32; // skip 32-byte header
-
-                const classMap  = {};
-                const instances = {};
-                const propData  = {};
-                const parentOf  = {};
-
-                while (off + 16 <= buf.byteLength) {
-                    const typeStr  = new TextDecoder('latin1').decode(new Uint8Array(buf, off, 4)); off += 4;
-                    const compLen  = dv.getUint32(off, true); off += 4;
-                    const uncompLen = dv.getUint32(off, true); off += 4;
-                    off += 4; // reserved
-                    if (typeStr === 'END ') break;
-
-                    const rawOff = off;
-                    const rawLen = compLen > 0 ? compLen : uncompLen;
-                    off += rawLen;
-
-                    const chunkBuf = compLen > 0
-                        ? lz4Decompress(buf, rawOff, compLen, uncompLen)
-                        : buf.slice(rawOff, rawOff + uncompLen);
-
-                    if      (typeStr === 'INST') rbxParseInst(chunkBuf, classMap, instances);
-                    else if (typeStr === 'PROP') rbxParseProp(chunkBuf, classMap, propData);
-                    else if (typeStr === 'PRNT') rbxParsePrnt(chunkBuf, parentOf);
-                }
-
-                return rbxBuildAnim(classMap, instances, propData, parentOf);
-            }
-
-            // ── XML PARSER ───────────────────────────────────────────
-            function apParseXml(xmlStr) {
-                const doc = new DOMParser().parseFromString(xmlStr, 'text/xml');
-                if (doc.querySelector('parsererror')) throw new Error('XML parse error');
-                const kfSeq = doc.querySelector('Item[class="KeyframeSequence"]');
-                if (!kfSeq) throw new Error('KeyframeSequence tidak ditemukan');
-
-                const loopEl = kfSeq.querySelector(':scope > Properties > bool[name="Loop"]');
-                const isLoop = loopEl ? loopEl.textContent.trim() === 'true' : false;
-
-                function parseCF(propsEl) {
-                    const cf = propsEl?.querySelector('CoordinateFrame[name="CFrame"]');
-                    if (!cf) return null;
-                    const g = (t) => parseFloat(cf.querySelector(t)?.textContent || '0');
-                    return { x:g('X'),y:g('Y'),z:g('Z'), r00:g('R00'),r01:g('R01'),r02:g('R02'), r10:g('R10'),r11:g('R11'),r12:g('R12'), r20:g('R20'),r21:g('R21'),r22:g('R22') };
-                }
-
-                function parsePoseTree(poseEl, parentName) {
-                    const props = poseEl.querySelector(':scope > Properties');
-                    const name = props?.querySelector('string[name="Name"]')?.textContent?.trim();
-                    if (!name) return [];
-                    const cf = parseCF(props);
-                    const rows = [{ name, parentName: parentName || null, cf }];
-                    for (const ch of poseEl.querySelectorAll(':scope > Item[class="Pose"]'))
-                        rows.push(...parsePoseTree(ch, name));
-                    return rows;
-                }
-
-                const kfEls = [...kfSeq.querySelectorAll(':scope > Item[class="Keyframe"]')];
-                if (!kfEls.length) throw new Error('Tidak ada keyframe dalam animasi');
-
-                const hierMap = {};
-                const keyframes = kfEls.map(kfEl => {
-                    const time = parseFloat(kfEl.querySelector(':scope > Properties > float[name="Time"]')?.textContent || '0');
-                    const poses = {};
-                    for (const rp of kfEl.querySelectorAll(':scope > Item[class="Pose"]')) {
-                        for (const entry of parsePoseTree(rp, null)) {
-                            poses[entry.name] = entry.cf;
-                            if (!hierMap[entry.name]) hierMap[entry.name] = entry.parentName;
-                        }
-                    }
-                    return { time, poses };
-                }).sort((a, b) => a.time - b.time);
-
-                const hierarchy = Object.entries(hierMap).map(([name, parentName]) => ({ name, parentName }));
-                const duration = keyframes.at(-1)?.time || 0;
-                return { keyframes, duration, loop: isLoop, hierarchy };
-            }
-
-            function apCFtoThree(cf) {
-                const T = window.THREE;
-                const mat = new T.Matrix4().set(
-                    cf.r00, cf.r01, cf.r02, cf.x,
-                    cf.r10, cf.r11, cf.r12, cf.y,
-                    cf.r20, cf.r21, cf.r22, cf.z,
-                    0, 0, 0, 1
-                );
-                const pos = new T.Vector3(), quat = new T.Quaternion(), sc = new T.Vector3();
-                mat.decompose(pos, quat, sc);
-                return { pos, quat };
-            }
-
-            function apInitScene() {
-                const T = window.THREE;
-                const canvas = document.getElementById('ap-canvas');
-                if (!canvas) return;
-                const W = canvas.parentElement.clientWidth || 400;
-                const H = Math.round(Math.min(W * 0.62, 300));
-                canvas.style.height = H + 'px';
-
-                const renderer = new T.WebGLRenderer({ canvas, antialias: true });
-                renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-                renderer.setSize(W, H, false);
-                renderer.shadowMap.enabled = true;
-                renderer.shadowMap.type = T.PCFSoftShadowMap;
-
-                const scene = new T.Scene();
-                scene.background = new T.Color(0x0c1118);
-                scene.fog = new T.FogExp2(0x0c1118, 0.055);
-
-                const camera = new T.PerspectiveCamera(48, W / H, 0.1, 100);
-
-                scene.add(new T.AmbientLight(0x8899bb, 0.55));
-                const sun = new T.DirectionalLight(0xffffff, 1.05);
-                sun.position.set(5, 9, 6); sun.castShadow = true;
-                sun.shadow.mapSize.width = sun.shadow.mapSize.height = 512;
-                scene.add(sun);
-                scene.add(Object.assign(new T.DirectionalLight(0x4466cc, 0.3), { position: new T.Vector3(-4, 2, -5) }));
-
-                const floorMesh = new T.Mesh(new T.PlaneGeometry(14, 14), new T.MeshLambertMaterial({ color: 0x141e2c }));
-                floorMesh.rotation.x = -Math.PI / 2; floorMesh.receiveShadow = true;
-                scene.add(floorMesh);
-                scene.add(new T.GridHelper(14, 28, 0x1e2e40, 0x162030));
-
-                AP.renderer = renderer; AP.scene = scene; AP.camera = camera;
-                AP.loaded = true;
-                apUpdateCamera();
-
-                // Orbit controls
-                canvas.addEventListener('mousedown', e => { AP.drag=true; AP.lx=e.clientX; AP.ly=e.clientY; });
-                canvas.addEventListener('mousemove', e => {
-                    if (!AP.drag) return;
-                    AP.theta -= (e.clientX - AP.lx) * 0.009;
-                    AP.phi = Math.max(0.12, Math.min(1.48, AP.phi + (e.clientY - AP.ly) * 0.009));
-                    AP.lx = e.clientX; AP.ly = e.clientY;
-                    apUpdateCamera();
-                });
-                document.addEventListener('mouseup', () => { AP.drag = false; });
-                canvas.addEventListener('touchstart', e => {
-                    const t = e.touches[0]; AP.drag=true; AP.lx=t.clientX; AP.ly=t.clientY;
-                    e.preventDefault();
-                }, { passive: false });
-                canvas.addEventListener('touchmove', e => {
-                    if (!AP.drag || !e.touches[0]) return;
-                    const t = e.touches[0];
-                    AP.theta -= (t.clientX - AP.lx) * 0.011;
-                    AP.phi = Math.max(0.12, Math.min(1.48, AP.phi + (t.clientY - AP.ly) * 0.011));
-                    AP.lx = t.clientX; AP.ly = t.clientY;
-                    apUpdateCamera(); e.preventDefault();
-                }, { passive: false });
-                canvas.addEventListener('wheel', e => {
-                    AP.radius = Math.max(3, Math.min(14, AP.radius - e.deltaY * 0.012));
-                    apUpdateCamera(); e.preventDefault();
-                }, { passive: false });
-            }
-
-            function apUpdateCamera() {
-                const T = window.THREE;
-                const { theta, phi, radius } = AP;
-                AP.camera.position.set(
-                    radius * Math.sin(phi) * Math.sin(theta),
-                    radius * Math.cos(phi) + 2.4,
-                    radius * Math.sin(phi) * Math.cos(theta)
-                );
-                AP.camera.lookAt(new T.Vector3(0, 2.0, 0));
-            }
-
-            function apBoneColor(name) {
-                const n = name.toLowerCase().replace(/\s/g,'');
-                if (n.includes('head')) return 0xd4a876;
-                if (n.includes('hand')) return 0xd4a876;
-                if (n.includes('foot')) return 0x182440;
-                if (n.includes('lowerarm') || n.includes('forearm')) return 0x2a5ab8;
-                if (n.includes('lowerleg') || n.includes('shin')) return 0x1f4898;
-                if (n.includes('arm') || n.includes('shoulder')) return 0x3468c4;
-                if (n.includes('leg') || n.includes('thigh')) return 0x2858b0;
-                if (n.includes('uppertorso') || n === 'torso') return 0x3870cc;
-                if (n.includes('lowertorso') || n.includes('waist')) return 0x2e60b8;
-                if (n.includes('rootpart')) return 0x223344;
-                return 0x445566;
-            }
-
-            function apBoneSize(name) {
-                const n = name.toLowerCase().replace(/\s/g,'');
-                if (n === 'humanoidrootpart') return [0.55, 0.45, 0.32];
-                if (n.includes('head')) return [0.44, 0.44, 0.44];
-                if (n.includes('uppertorso')) return [0.9, 0.6, 0.44];
-                if (n.includes('lowertorso')) return [0.78, 0.28, 0.42];
-                if (n === 'torso') return [0.9, 0.92, 0.44];
-                if (n.includes('upperarm') || (n.includes('arm') && n.includes('upper'))) return [0.28, 0.5, 0.28];
-                if (n.includes('lowerarm') || n.includes('forearm')) return [0.25, 0.45, 0.25];
-                if (n.includes('hand')) return [0.26, 0.22, 0.18];
-                if (n.includes('upperleg') || (n.includes('leg') && n.includes('upper'))) return [0.32, 0.52, 0.32];
-                if (n.includes('lowerleg') || n.includes('shin')) return [0.28, 0.5, 0.28];
-                if (n.includes('foot')) return [0.28, 0.2, 0.36];
-                if (n.includes('arm')) return [0.28, 0.88, 0.28];
-                if (n.includes('leg')) return [0.32, 1.0, 0.32];
-                return [0.28, 0.28, 0.28];
-            }
-
-            function apBuildRig() {
-                const T = window.THREE;
-                for (const name in AP.rig) {
-                    const obj = AP.rig[name];
-                    if (obj.parent) obj.parent.remove(obj);
-                }
-                AP.rig = {};
-
-                for (const { name } of AP.hierarchy) {
-                    const obj = new T.Object3D();
-                    obj.name = name;
-                    const isRoot = name === 'HumanoidRootPart';
-                    const [sx, sy, sz] = apBoneSize(name);
-                    const geom = new T.BoxGeometry(sx, sy, sz);
-                    const mat = new T.MeshPhongMaterial({
-                        color: apBoneColor(name), shininess: 28,
-                        transparent: isRoot, opacity: isRoot ? 0.18 : 1
-                    });
-                    const mesh = new T.Mesh(geom, mat);
-                    mesh.position.y = -sy * 0.5;
-                    mesh.castShadow = true; mesh.receiveShadow = true;
-                    obj.add(mesh);
-                    AP.rig[name] = obj;
-                }
-
-                // Parent hierarchy
-                for (const { name, parentName } of AP.hierarchy) {
-                    const obj = AP.rig[name];
-                    const parent = parentName && AP.rig[parentName] ? AP.rig[parentName] : AP.scene;
-                    parent.add(obj);
-                }
-            }
-
-            function apApplyTime(t) {
-                const kfs = AP.keyframes;
-                if (!kfs.length) return;
-                let ai = 0, bi = kfs.length - 1;
-                for (let i = 0; i < kfs.length - 1; i++) {
-                    if (kfs[i].time <= t) ai = i;
-                    if (kfs[i + 1].time >= t) { bi = i + 1; break; }
-                }
-                const kfa = kfs[ai], kfb = kfs[bi];
-                const span = kfb.time - kfa.time;
-                const fac  = span > 0.00001 ? Math.max(0, Math.min(1, (t - kfa.time) / span)) : 0;
-                const T = window.THREE;
-                for (const name in AP.rig) {
-                    const cfA = kfa.poses[name], cfB = kfb.poses[name];
-                    if (!cfA && !cfB) continue;
-                    let pos, quat;
-                    if (!cfA || !cfB) { ({ pos, quat } = apCFtoThree(cfA || cfB)); }
-                    else if (span < 0.00001) { ({ pos, quat } = apCFtoThree(cfA)); }
-                    else {
-                        const { pos: p0, quat: q0 } = apCFtoThree(cfA);
-                        const { pos: p1, quat: q1 } = apCFtoThree(cfB);
-                        pos = p0.clone().lerp(p1, fac);
-                        quat = q0.clone().slerp(q1, fac);
-                    }
-                    AP.rig[name].position.copy(pos);
-                    AP.rig[name].quaternion.copy(quat);
-                }
-            }
-
-            function apLoop(ts) {
-                AP.rafId = requestAnimationFrame(apLoop);
-                const dt = AP.lastTs ? Math.min((ts - AP.lastTs) / 1000, 0.1) : 0;
-                AP.lastTs = ts;
-                if (AP.playing && AP.duration > 0) {
-                    AP.time += dt;
-                    if (AP.time >= AP.duration) {
-                        if (AP.loopAnim) { AP.time %= AP.duration; }
-                        else { AP.time = AP.duration; AP.playing = false; apSyncControls(); }
-                    }
-                    apApplyTime(AP.time);
-                    apSyncTimeline();
-                }
-                if (AP.renderer && AP.scene && AP.camera)
-                    AP.renderer.render(AP.scene, AP.camera);
-            }
-
-            function apStartLoop() {
-                if (AP.rafId) return;
-                AP.lastTs = 0;
-                AP.rafId = requestAnimationFrame(apLoop);
-            }
-
-            function apSyncControls() {
-                const btn = document.getElementById('ap-play-btn');
-                if (!btn) return;
-                if (AP.playing) {
-                    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';
-                } else {
-                    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M8 5v14l11-7z"/></svg>';
-                }
-            }
-
-            function apSyncTimeline() {
-                const slider = document.getElementById('ap-timeline');
-                const label  = document.getElementById('ap-time-label');
-                if (slider && AP.duration > 0) slider.value = (AP.time / AP.duration * 100).toFixed(1);
-                if (label) label.textContent = AP.time.toFixed(2) + 's';
-            }
-
-            function apTogglePlay() { AP.playing = !AP.playing; apSyncControls(); }
-            function apSetLoop(v)  { AP.loopAnim = v; }
-            function apSeek(pct)   {
-                AP.time = (parseFloat(pct) / 100) * AP.duration;
-                if (!AP.rafId) { apApplyTime(AP.time); if (AP.renderer) AP.renderer.render(AP.scene, AP.camera); }
-                apSyncTimeline();
-            }
-
-            async function apTrigger() {
-                if (!requireGoogle('preview animasi')) return;
-                const animIdRaw = (document.getElementById('sa-anim-id')?.value || '').replace(/\D/g,'').trim();
-                if (!animIdRaw || animIdRaw.length < 4) { toast('Isi Animation ID dulu', 'info'); return; }
-
-                const trigBtn = document.getElementById('ap-trigger-btn');
-                const card    = document.getElementById('ap-card');
-                const status  = document.getElementById('ap-status');
-                const meta    = document.getElementById('ap-meta');
-
-                if (trigBtn) { trigBtn.disabled = true; trigBtn.textContent = '...'; }
-                if (card)    card.style.display = '';
-                if (status)  { status.textContent = 'Memuat Three.js...'; status.style.color = 'var(--text3)'; }
-                if (meta)    meta.textContent = '';
-
-                try {
-                    await apLoadThree();
-
-                    if (!AP.loaded) {
-                        apInitScene();
-                    } else if (AP.renderer) {
-                        const canvas = document.getElementById('ap-canvas');
-                        if (canvas) {
-                            const W = canvas.parentElement.clientWidth || 400;
-                            const H = Math.round(Math.min(W * 0.62, 300));
-                            AP.renderer.setSize(W, H, false);
-                            AP.camera.aspect = W / H;
-                            AP.camera.updateProjectionMatrix();
-                            canvas.style.height = H + 'px';
-                        }
-                    }
-
-                    if (status) status.textContent = 'Mengambil animasi dari Roblox...';
-
-                    const token = window.BX?.getToken ? await window.BX.getToken() : null;
-                    if (!token) throw new Error('Login dulu untuk menggunakan preview');
-
-                    const res = await fetch('/api/roblox-anim-proxy?animId=' + animIdRaw, {
-                        headers: { 'Authorization': 'Bearer ' + token }
-                    });
-                    if (!res.ok) {
-                        const err = await res.json().catch(() => ({}));
-                        throw new Error(err.message || 'HTTP ' + res.status);
-                    }
-
-                    const buf = await res.arrayBuffer();
-                    const magic8 = new TextDecoder('latin1').decode(buf.slice(0, 8));
-
-                    if (status) status.textContent = 'Parsing animasi...';
-                    let parsed;
-                    if (magic8 === '<roblox!') {
-                        // Binary rbxm format
-                        parsed = parseRbxmAnimation(buf);
-                    } else {
-                        // XML rbxmx format
-                        const xmlStr = new TextDecoder().decode(buf);
-                        if (!xmlStr.includes('<roblox')) throw new Error('Format tidak dikenal — bukan file animasi Roblox');
-                        parsed = apParseXml(xmlStr);
-                    }
-                    const { keyframes, duration, loop, hierarchy } = parsed;
-
-                    if (AP.rafId) { cancelAnimationFrame(AP.rafId); AP.rafId = null; }
-                    AP.keyframes = keyframes;
-                    AP.duration  = duration;
-                    AP.loopAnim  = loop;
-                    AP.hierarchy = hierarchy;
-                    AP.time = 0; AP.playing = false;
-
-                    apBuildRig();
-                    apApplyTime(0);
-
-                    const loopCk = document.getElementById('ap-loop-ck');
-                    if (loopCk) loopCk.checked = loop;
-
-                    if (meta) meta.textContent = duration.toFixed(2) + 's · ' + keyframes.length + ' keyframe · ' + hierarchy.length + ' bone';
-
-                    const slider = document.getElementById('ap-timeline');
-                    if (slider) slider.value = 0;
-
-                    if (status) status.textContent = '';
-
-                    apStartLoop();
-                    AP.playing = true;
-                    apSyncControls();
-                    apSyncTimeline();
-
-                    // Scroll preview into view
-                    requestAnimationFrame(() => card?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }));
-
-                } catch (err) {
-                    if (status) { status.textContent = err.message || 'Gagal memuat preview'; status.style.color = 'var(--error, #e05)'; }
-                } finally {
-                    if (trigBtn) {
-                        trigBtn.disabled = false;
-                        trigBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor" width="13" height="13"><path d="M8 5v14l11-7z"/></svg> Preview';
-                    }
-                }
-            }
-
             // ── INIT ──────────────────────────────────────────────
             function escapeHtml(value) {
                 return String(value ?? '').replace(/[&<>'"]/g, ch => ({
@@ -10712,6 +10129,8 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                 const TAU = Math.PI * 2;
                 const METEOR_COUNT = 34;
                 const STAR_COUNT = 90;
+                const CLAY_DARKEN = .5; // faktor penggelap palet di gaya clay
+                let headColor = '255,255,255';
                 const FALL_ANGLE = .5; // radian dari garis vertikal, jatuh ke kiri-bawah
                 const FALL_X = -Math.sin(FALL_ANGLE);
                 const FALL_Y = Math.cos(FALL_ANGLE);
@@ -10789,7 +10208,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                         const color = palettes[meteor.color].join(',');
                         const alpha = meteor.alpha * fade;
                         const trail = context.createLinearGradient(headX, headY, tailX, tailY);
-                        trail.addColorStop(0, `rgba(255,255,255,${alpha})`);
+                        trail.addColorStop(0, `rgba(${headColor},${alpha})`);
                         trail.addColorStop(.25, `rgba(${color},${alpha * .55})`);
                         trail.addColorStop(1, `rgba(${color},0)`);
                         context.strokeStyle = trail;
@@ -10798,7 +10217,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                         context.moveTo(headX, headY);
                         context.lineTo(tailX, tailY);
                         context.stroke();
-                        context.fillStyle = `rgba(255,255,255,${alpha})`;
+                        context.fillStyle = `rgba(${headColor},${alpha})`;
                         context.beginPath();
                         context.arc(headX, headY, meteor.thickness * .9, 0, TAU);
                         context.fill();
@@ -10806,7 +10225,11 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                 }
                 function draw() {
                     context.clearRect(0, 0, width, height);
-                    const palettes = window.__bxPalette || [[236, 237, 241], [176, 178, 184], [124, 126, 132]];
+                    const base = window.__bxPalette || [[236, 237, 241], [176, 178, 184], [124, 126, 132]];
+                    // Gaya clay berlatar terang: bintang & meteor dipakai versi gelap dari palet tema
+                    const light = document.documentElement.getAttribute('data-style') === 'clay';
+                    const palettes = light ? base.map(c => c.map(v => Math.round(v * CLAY_DARKEN))) : base;
+                    headColor = light ? palettes[0].join(',') : '255,255,255';
                     drawGlows(palettes);
                     drawStars(palettes);
                     drawMeteors(palettes);
@@ -11720,7 +11143,7 @@ html body .section-heading{margin:26px 4px 12px !important}
 </style>
 <script id="bx-v47-js">
 (function(){
-  var T=['Beranda','Upload','Model','Toolbox','Library','Pengaturan','Referal'],N=['home','upload','model','toolbox','library','settings','referral'];
+  var T=['Beranda','Upload','Model','Decal','Toolbox','Library','Pengaturan','Referal'],N=['home','upload','model','decal','toolbox','library','settings','referral'];
   var $=function(i){return document.getElementById(i)};
   var IC={burger:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>',
     music:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>',
@@ -11764,11 +11187,11 @@ html body .section-heading{margin:26px 4px 12px !important}
       var qa=home.querySelector('.quick-actions');
       var tiles=[['music','Upload Musik','Convert & publish jadi asset Roblox',"navigate('upload')"],
         [null,'Upload Model','Upload .rbxm jadi asset',"navigate('model')",2],
-        [null,'Toolbox','Cari model & aset Roblox',"navigate('toolbox')",3],
-        [null,'Library','Kelola audio tersimpan',"navigate('library')",4],
-        [null,'Pengaturan','Tema, upload, dan lainnya',"navigate('settings')",5],
+        [null,'Toolbox','Cari model & aset Roblox',"navigate('toolbox')",4],
+        [null,'Library','Kelola audio tersimpan',"navigate('library')",5],
+        [null,'Pengaturan','Tema, upload, dan lainnya',"navigate('settings')",6],
         ['star','Beli VIP','Upload lebih banyak & tema bebas',"openSubscriptionModal()"],
-        [null,'Referal','Undang teman, dapat VIP gratis',"navigate('referral')",6],
+        [null,'Referal','Undang teman, dapat VIP gratis',"navigate('referral')",7],
         ['chat','Hubungi Owner','Tanya lewat WhatsApp',"var a=document.getElementById('home-contact-owner');if(a)a.click()"]];
       var sec=document.createElement('div');sec.id='bx-qa';
       sec.innerHTML='<div class="section-heading"><h2 class="section-title">Aksi cepat</h2></div><div class="bx-qa-grid">'+tiles.map(function(x){
@@ -12511,7 +11934,7 @@ html body:not(.developer-mode) #settings-developer{display:none}
     mounted = [];
     document.querySelectorAll('#file-queue .bx-prev[data-pv]').forEach(function (box) {
       var f = files[+box.getAttribute('data-pv')];
-      if (!f || (typeof isModelFile === 'function' && isModelFile(f))) return;
+      if (!f || (typeof fileKind === 'function' && fileKind(f) !== 'audio')) return;
       var st = getSt(f);
       box.innerHTML = '<div class="pv"><button type="button" class="pv-btn" aria-label="Putar preview">' +
         '<svg class="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg>' +
@@ -12691,6 +12114,125 @@ html body .lib-act .lib-lbl{overflow:hidden;text-overflow:clip}
   html[data-style="clay"] body #navbar,
   html[data-style="clay"] body.bx-scrolled #navbar{border-radius:0 0 28px 28px !important}
 }
+
+/* ── Decal, potong audio, cek status ── */
+.file-icon img{width:100%;height:100%;object-fit:cover;border-radius:inherit;display:block}
+.file-icon img + svg{display:none}
+.trim-btn{display:inline-flex;align-items:center;gap:6px;margin-top:8px;padding:6px 12px;border-radius:999px;border:1px solid var(--glass-border);background:var(--surf);color:var(--text2);font:600 12px var(--font);cursor:pointer;transition:background .2s ease,color .2s ease}
+.trim-btn svg{width:14px;height:14px}
+.trim-btn:hover{background:var(--surf-hi);color:var(--text)}
+.trim-btn.is-on{color:var(--text);border-color:var(--accent-blue)}
+.trim-wave{display:block;width:100%;height:84px;margin:4px 0 12px;border-radius:14px;background:var(--surf)}
+.trim-row{display:flex;flex-direction:column;gap:6px;margin-bottom:12px;font-size:12.5px;color:var(--text2)}
+.trim-row b{margin-left:6px;color:var(--text);font-variant-numeric:tabular-nums}
+.trim-row input[type=range]{width:100%}
+.trim-actions{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 12px}
+.chk-item small{margin-left:6px;color:var(--text3);font-weight:500}
+.chk-reason{color:var(--text3)}
+.chk-st{flex:none;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700;background:rgba(128,128,128,.16);color:var(--text2)}
+.chk-st.approved{background:rgba(46,158,106,.16);color:#2e9e6a}
+.chk-st.reviewing{background:rgba(210,154,42,.18);color:#c58a1f}
+.chk-st.rejected{background:rgba(217,83,79,.16);color:#d9534f}
+</style>
+<style id="clay-light">
+/* ═══ CLAY TERANG — palet terang berwarna lembut (bukan hitam). Warna dasar mengikuti tema aktif, background animasi tetap terlihat. ═══ */
+html[data-style="clay"]{color-scheme:light;--cl-tint:var(--accent-blue,#d9d4cc)}
+html[data-style="clay"] body{
+  --cl-base:color-mix(in srgb,var(--cl-tint) 26%,#f3ede4);
+  --cl-acc:color-mix(in srgb,var(--cl-tint) 38%,#231d1a);
+  --cl-ink:#2a2420; --cl-ink2:#5a5047; --cl-ink3:#857a6f;
+  --cl-shade:rgba(96,74,52,.24); --cl-lite:rgba(255,255,255,.92);
+  --clay-bg:var(--cl-base);
+  --clay-hi:color-mix(in srgb,#fff 62%,var(--cl-base));
+  --clay-face:color-mix(in srgb,#fff 24%,var(--cl-base));
+  --clay-lo:color-mix(in srgb,#000 9%,var(--cl-base));
+  --clay-out:9px 11px 22px var(--cl-shade),-7px -7px 16px var(--cl-lite);
+  --clay-in:inset 3px 3px 7px rgba(255,255,255,.85),inset -5px -6px 12px rgba(96,74,52,.14);
+  --clay-in-deep:inset 4px 5px 10px rgba(96,74,52,.26),inset -3px -3px 8px rgba(255,255,255,.85);
+  --glow:var(--clay-out),var(--clay-in);
+  --glow-hover:11px 14px 28px rgba(96,74,52,.30),-8px -8px 18px var(--cl-lite),var(--clay-in);
+  --lg-shadow:var(--clay-out),var(--clay-in);
+  --bg:var(--cl-base); --bg2:var(--clay-face); --bg3:var(--clay-hi);
+  --text:var(--cl-ink); --text1:var(--cl-ink); --text2:var(--cl-ink2); --text3:var(--cl-ink3);
+  --accent-blue:var(--cl-acc); --silver:var(--cl-acc); --silver-hi:var(--cl-ink); --silver-lo:var(--cl-ink2);
+  --chrome:linear-gradient(145deg,color-mix(in srgb,var(--cl-acc) 78%,#fff),var(--cl-acc));
+  --on-accent:#fff;
+  --glass-border:rgba(96,74,52,.14); --glass-strong:rgba(255,255,255,.55);
+  --surf:rgba(255,255,255,.45); --surf-hi:rgba(255,255,255,.7); --surface:rgba(255,255,255,.45); --surface-hover:rgba(255,255,255,.7);
+  --m-line:rgba(96,74,52,.14); --m-line2:rgba(96,74,52,.22); --m-tile:rgba(255,255,255,.5);
+  background:var(--clay-bg) !important; color:var(--cl-ink);
+}
+/* background animasi: terang, terlihat penuh, tidak ditimpa overlay gelap */
+html[data-style="clay"] body::before{display:none !important}
+html[data-style="clay"] .ambient-scene,
+html[data-style="clay"] body.premium-user:not(.developer-mode) .ambient-scene{
+  opacity:1 !important; filter:none !important;
+  background:radial-gradient(ellipse at 85% 8%,color-mix(in srgb,var(--cl-tint) 42%,#fff) 0%,transparent 58%),
+             radial-gradient(ellipse at 6% 96%,color-mix(in srgb,var(--cl-tint) 34%,#fff4e6) 0%,transparent 56%),
+             var(--cl-base,#efe8df) !important;
+}
+html[data-style="clay"] .ambient-scene::after{background:none !important}
+html[data-style="clay"] #ambient-canvas{opacity:1}
+/* kartu & panel: tanah liat terang, sedikit tembus supaya animasi latar tetap terbaca */
+html[data-style="clay"] :is(.card,.result-box,.settings-user,.settings-nav,.subscription-card,.developer-card,.login-card,.install-card,.access-card,.tb-card,.plan-option,.lib-note,#player-bar,#mobile-menu,#profile-dropdown,.toast-item,#google-gate .gg-card,#mt-overlay .mt-card,#ban-overlay .bo-card,.source-switch:not(.tb-cats),.library-toolbar,.home-info,.stat-card,.plan-card,.bx-tile,.acct-profile-card,#bx-welcome){
+  border:0 !important; border-radius:var(--clay-r) !important; box-shadow:var(--clay-out),var(--clay-in) !important;
+  -webkit-backdrop-filter:none !important; backdrop-filter:none !important;
+  background:linear-gradient(145deg,color-mix(in srgb,var(--clay-hi) 94%,transparent),color-mix(in srgb,var(--clay-face) 94%,transparent)) !important;
+  color:var(--cl-ink);
+}
+html[data-style="clay"] #navbar,
+html[data-style="clay"] body.premium-user:not(.developer-mode) #navbar,
+html[data-style="clay"] body.developer-mode #navbar{
+  background:linear-gradient(180deg,color-mix(in srgb,var(--clay-hi) 94%,transparent),color-mix(in srgb,var(--clay-face) 94%,transparent)) !important;
+  box-shadow:0 10px 24px var(--cl-shade),inset 0 -3px 8px rgba(96,74,52,.12),inset 0 2px 4px rgba(255,255,255,.9) !important;
+}
+html[data-style="clay"] :is(.subscription-overlay,#login-overlay,.access-overlay){background:rgba(70,55,40,.35) !important}
+/* dialog: opak penuh supaya isi halaman di belakang tidak tembus */
+html[data-style="clay"] :is(.access-card,.login-card,.subscription-card,#profile-dropdown,#google-gate .gg-card,#mt-overlay .mt-card,#ban-overlay .bo-card){background:linear-gradient(145deg,var(--clay-hi),var(--clay-face)) !important}
+/* tombol */
+html[data-style="clay"] :is(.btn,.btn-primary,.btn-outline,.google-btn,.signin-btn,.qa-btn,.theme-opt,.avb-opt,.speed-chip,.source-tab,.nav-link,.m-link,.access-chip){
+  box-shadow:6px 7px 14px var(--cl-shade),-5px -5px 11px var(--cl-lite),inset 2px 2px 5px rgba(255,255,255,.8),inset -3px -4px 8px rgba(96,74,52,.12) !important;
+}
+html[data-style="clay"] :is(.btn-outline,.theme-opt,.avb-opt,.speed-chip,.source-tab,.nav-link,.m-link,.access-chip){color:var(--cl-ink) !important}
+html[data-style="clay"] :is(.btn-primary,.google-btn,.signin-btn){background:var(--chrome) !important;color:#fff !important}
+html[data-style="clay"] :is(.btn,.qa-btn,.theme-opt,.avb-opt,.speed-chip,.source-tab,.nav-link,.m-link):active{box-shadow:var(--clay-in-deep) !important}
+html[data-style="clay"] :is(.nav-link.active,.m-link.active,.theme-opt.active,.avb-opt.active,.speed-chip.active,.source-tab.active,.settings-tab.active){
+  background:linear-gradient(145deg,var(--clay-lo),var(--clay-face)) !important; color:var(--cl-ink) !important; font-weight:700; box-shadow:var(--clay-in-deep) !important;
+}
+/* teks yang sebelumnya putih di tema gelap */
+html[data-style="clay"] :is(.workspace-note,.hero-eyebrow,.slash,.breadcrumb,.developer-trigger){color:var(--cl-ink3) !important}
+html[data-style="clay"] .hero-description{color:var(--cl-ink2) !important}
+html[data-style="clay"] .workspace-heading{color:var(--cl-ink3) !important}
+html[data-style="clay"] .workspace-heading b{color:var(--cl-ink) !important}
+html[data-style="clay"] #login-nav-btn.nav-signin{background:var(--chrome) !important;color:#fff !important;border:0 !important}
+/* logo putih → gelap supaya terbaca di latar terang */
+html[data-style="clay"] :is(#nav-logo,#intro-logo-img,#bx-logo img,#bx-drawer .dr-head img,#google-gate .gg-card>img){filter:brightness(0) opacity(.78) !important}
+/* header & drawer HP */
+html[data-style="clay"]{--bx-t:96,74,52;--bx-nav:243,237,228;--bx-bg:243,237,228}
+html[data-style="clay"] :is(#bx-burger,#bx-logo,.dr-x){background:linear-gradient(145deg,var(--clay-hi),var(--clay-face)) !important;border:0 !important;box-shadow:var(--clay-out),var(--clay-in) !important;color:var(--cl-ink) !important}
+html[data-style="clay"] #bx-title{color:var(--cl-ink) !important}
+html[data-style="clay"] #bx-drawer{background:linear-gradient(160deg,var(--clay-hi),var(--clay-face)) !important;border:0 !important;box-shadow:12px 0 30px var(--cl-shade) !important;-webkit-backdrop-filter:none !important;backdrop-filter:none !important;color:var(--cl-ink)}
+html[data-style="clay"] .dr-acct{background:var(--clay-lo) !important;border:0 !important;box-shadow:var(--clay-in-deep)}
+html[data-style="clay"] .dr-item{color:var(--cl-ink2) !important}
+html[data-style="clay"] .dr-item.active{color:var(--cl-ink) !important;background:var(--clay-lo) !important;border:0 !important;box-shadow:var(--clay-in-deep)}
+html[data-style="clay"] #bx-scrim{background:rgba(70,55,40,.35) !important;-webkit-backdrop-filter:none;backdrop-filter:none}
+/* area drop & teks sub-judul */
+html[data-style="clay"] .page-sub{color:var(--cl-ink2) !important}
+html[data-style="clay"] .drop-zone{background:var(--clay-lo) !important;border:2px dashed rgba(96,74,52,.28) !important;box-shadow:var(--clay-in-deep) !important;color:var(--cl-ink)}
+html[data-style="clay"] .drop-icon{background:linear-gradient(145deg,var(--clay-hi),var(--clay-face)) !important;border:0 !important;box-shadow:var(--clay-out),var(--clay-in) !important;color:var(--cl-ink2) !important}
+html[data-style="clay"] body .source-switch .source-tab.active,html[data-style="clay"] body .source-tab.active{
+  background:linear-gradient(145deg,var(--clay-lo),var(--clay-face)) !important;color:var(--cl-ink) !important;font-weight:700;box-shadow:var(--clay-in-deep) !important;border:0 !important}
+html[data-style="clay"] .empty-lib{background:var(--clay-lo) !important;border:0 !important;border-radius:var(--clay-r) !important;box-shadow:var(--clay-in-deep) !important;color:var(--cl-ink3) !important}
+html[data-style="clay"] .empty-lib :is(p,span,div){color:var(--cl-ink2) !important}
+/* input */
+html[data-style="clay"] :is(input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select){background:var(--clay-lo) !important;color:var(--cl-ink) !important}
+html[data-style="clay"] ::placeholder{color:var(--cl-ink3);opacity:1}
+html[data-style="clay"] .toggle{background:var(--clay-lo) !important}
+html[data-style="clay"] .toggle.on{background:color-mix(in srgb,var(--cl-acc) 60%,var(--clay-lo)) !important}
+html[data-style="clay"] .toggle::after{box-shadow:2px 3px 6px rgba(96,74,52,.35),inset 1px 1px 2px rgba(255,255,255,.9)}
+html[data-style="clay"] .page-title{text-shadow:1px 2px 3px rgba(255,255,255,.9);color:var(--cl-ink)}
+html[data-style="clay"] .studio-hero h1 span{background-image:linear-gradient(90deg,var(--cl-ink),var(--cl-acc)) !important}
+html[data-style="clay"] .progress-fill,html[data-style="clay"] .um-progress span{background:var(--chrome)}
 </style>
 </body>
 </html>
