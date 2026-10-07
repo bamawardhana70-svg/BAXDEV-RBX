@@ -200,12 +200,18 @@ html[data-theme="green"] .btn.danger{background:rgba(255,90,90,.08)}
           <input id="codeText" maxlength="24" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Contoh: PROMO7">
         </div>
       </div>
+      <div class="row two" style="margin-top:12px">
+        <div><label for="codeTier">Paket kode</label>
+          <select id="codeTier"><option value="vip">VIP</option><option value="plus">VIP Plus</option></select>
+        </div>
+      </div>
       <div class="row three" style="margin-top:12px">
         <div><label for="codeDur">Durasi premium</label><input id="codeDur" type="number" inputmode="numeric" min="1" value="24"></div>
         <div><label for="codeUnit">Satuan</label>
           <select id="codeUnit">
-            <option value="1">Jam</option>
-            <option value="24">Hari</option>
+            <option value="1">Menit</option>
+            <option value="60" selected>Jam</option>
+            <option value="1440">Hari</option>
           </select>
         </div>
         <div><label for="codeMax">Maks. pemakai</label><input id="codeMax" type="number" inputmode="numeric" min="1" value="1"></div>
@@ -213,7 +219,7 @@ html[data-theme="green"] .btn.danger{background:rgba(255,90,90,.08)}
       <div style="margin-top:14px"><button class="btn primary" id="codeBtn" type="button">Buat kode</button></div>
       <div class="msg" id="codeMsg" role="status"></div>
       <div id="codeList" style="margin-top:8px"></div>
-      <p class="note" style="margin-top:10px">Tiap akun Google hanya bisa memakai satu kode satu kali. Setelah kuota pemakai habis, kode otomatis tidak bisa dipakai lagi. Masa premium ditambahkan ke Roblox User ID pemakai.</p>
+      <p class="note" style="margin-top:10px">Tiap akun Google hanya bisa memakai satu kode satu kali. Setelah kuota pemakai habis, kode otomatis tidak bisa dipakai lagi. Kode VIP menambah masa VIP, kode VIP Plus menambah masa VIP Plus, ke Roblox User ID pemakai. Satuan durasi: menit, jam, atau hari.</p>
     </div>
 
     <div class="card">
@@ -381,7 +387,7 @@ async function removeUpload(key){
   catch(e){ fail($("upMsg"),e); }
 }
 
-function hoursLabel(h){return h>=24&&h%24===0?(h/24)+" hari":h+" jam"}
+function hoursLabel(h){const m=Math.round(h*60);return m%1440===0?(m/1440)+" hari":m%60===0?(m/60)+" jam":m+" menit"}
 function renderCodes(){
   const all = Object.values(codeMap).filter(Boolean).sort((a,b)=>b.createdAt-a.createdAt);
   $("statCodes").textContent = all.filter(c=>c.uses<c.maxUses).length;
@@ -392,7 +398,7 @@ function renderCodes(){
     const who = users.length?" · "+users.slice(0,REDEEMERS_SHOWN).join(", ")+(users.length>REDEEMERS_SHOWN?" +"+(users.length-REDEEMERS_SHOWN):""):"";
     return '<div class="item"><div><div class="id mono">'+esc(c.code)+
       '<span class="badge '+(full?'off':'ok')+'">'+esc(c.uses)+'/'+esc(c.maxUses)+' dipakai</span>'+
-      '<span class="badge">'+esc(hoursLabel(c.hours))+'</span></div>'+
+      '<span class="badge">'+esc(c.tier==="plus"?"VIP Plus":"VIP")+' · '+esc(hoursLabel(c.hours))+'</span></div>'+
       '<div class="meta">Dibuat '+esc(fmtTime(c.createdAt))+esc(who)+'</div></div>'+
       '<div class="actions"><button class="btn small" type="button" data-copy="'+esc(c.code)+'">Salin</button>'+
       '<button class="btn danger" type="button" data-delcode="'+esc(c.code)+'">Hapus</button></div></div>';
@@ -620,17 +626,18 @@ function makeCode(){
 async function createCode(){
   const typed = $("codeText").value.replace(/\s+/g,"").toUpperCase();
   const code = typed || makeCode();
-  const hours = Number($("codeDur").value) * Number($("codeUnit").value);
+  const minutes = Number($("codeDur").value) * Number($("codeUnit").value);
+  const hours = Math.round(minutes/60*1e6)/1e6, tier = $("codeTier").value==="plus"?"plus":"vip";
   const maxUses = Number($("codeMax").value);
   if(!/^[A-Z0-9-]{4,24}$/.test(code)){say($("codeMsg"),"Kode 4–24 karakter: huruf, angka, atau tanda hubung.","err");return}
   if(codeMap[code]){say($("codeMsg"),"Kode "+code+" sudah ada.","err");return}
-  if(!Number.isInteger(hours)||hours<1||hours>MAX_CODE_HOURS){say($("codeMsg"),"Durasi harus 1 jam sampai "+(MAX_CODE_HOURS/24)+" hari (bilangan bulat).","err");return}
+  if(!Number.isInteger(minutes)||minutes<1||minutes>MAX_CODE_HOURS*60){say($("codeMsg"),"Durasi harus 1 menit sampai "+(MAX_CODE_HOURS/24)+" hari (bilangan bulat).","err");return}
   if(!Number.isInteger(maxUses)||maxUses<1||maxUses>MAX_CODE_USES){say($("codeMsg"),"Maks. pemakai harus 1 sampai "+MAX_CODE_USES+".","err");return}
   $("codeBtn").disabled = true; say($("codeMsg"),"Membuat kode...");
   try{
-    await set(ref(db,"codes/"+code),{ code, hours, maxUses, uses: 0, createdAt: Date.now() });
+    await set(ref(db,"codes/"+code),{ code, hours, tier, maxUses, uses: 0, createdAt: Date.now() });
     $("codeText").value = "";
-    say($("codeMsg"),"Kode "+code+" dibuat: "+hoursLabel(hours)+", maks. "+maxUses+" pemakai.","ok");
+    say($("codeMsg"),"Kode "+code+" dibuat ("+(tier==="plus"?"VIP Plus":"VIP")+"): "+hoursLabel(hours)+", maks. "+maxUses+" pemakai.","ok");
   }catch(e){ fail($("codeMsg"),e); }
   finally{ $("codeBtn").disabled = false; }
 }

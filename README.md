@@ -26,6 +26,7 @@ functions/api/
   roblox-profile.js              Nama + avatar Roblox (avatar di pojok kanan atas dan Settings)
   roblox-my-audio.js             Impor musik lama dari akun Roblox ke Library (cek ID, scan best-effort)
   tool.js                        Sajikan tool VIP Plus (Image to Mesh, SkyBox 360) setelah cek VIP Plus / Owner
+                                 Tema halaman utama dikirim ke iframe tool lewat postMessage (bx:'theme'); upload mesh (GLB → Model) lewat roblox-upload.js
 _tools/                          Sumber HTML kedua tool (modul JS, BUKAN file statis)
   youtube-download.js            Convert link YouTube ke MP3
   youtube-title.js               Ambil judul asli video (oEmbed YouTube)
@@ -111,7 +112,7 @@ API Key Roblox tidak ikut dikirim. Owner melihatnya di kartu **Riwayat upload** 
 Setelah update, publish ulang `database.rules.json`.
 
 ### Kode akses premium
-- Owner: `/owner` → kartu **Kode akses premium**. Isi teks kode sendiri (4–24 karakter: huruf, angka, tanda hubung; kosongkan untuk kode acak), durasi premium (jam atau hari, maks 365 hari), dan **maks. pemakai**. Tersimpan di `codes/<kode>`.
+- Owner: `/owner` → kartu **Kode akses premium**. Pilih **paket kode** (VIP atau VIP Plus), isi teks kode sendiri (4–24 karakter: huruf, angka, tanda hubung; kosongkan untuk kode acak), durasi (menit, jam, atau hari; 1 menit sampai 365 hari), dan **maks. pemakai**. Tersimpan di `codes/<kode>`.
 - Pengguna: Pengaturan → Akun → **Tukar kode**. Butuh login Google dan Roblox User ID terhubung. Masa aktif ditambahkan ke `vip/<userId>`; kalau sudah VIP, masa aktifnya diperpanjang, dan VIP permanen tidak diubah.
 - Tiap akun Google hanya bisa memakai satu kode satu kali (`redeems/<kode>/<uid>`). Kalau pemakai sudah mencapai batas, kode otomatis habis.
 - Penambahan hitungan pemakai, pencatatan pemakai, dan pemberian VIP ditulis dalam satu update atomik, dan **Security Rules** yang memvalidasinya. Setelah mengubah rules, publish ulang `database.rules.json`.
@@ -200,3 +201,4 @@ Data disimpan di Firebase `config/payment` dan langsung dipakai tombol Buy VIP. 
 - **Dihapus:** menu Toolbox (`/api/roblox-toolbox`) dan menu Upload Decal. Library tetap menampilkan Decal lama.
 - **Wajib:** paste ulang `database.rules.json` ke Firebase Console → Realtime Database → Rules → Publish (field `plusUntil`, `tier`, harga baru). Harga lama (`p7`/`p15`/`p30`) diabaikan; simpan sekali di /owner supaya node `config/payment` memakai kunci baru.
 - **Batasan:** status VIP terikat ke Roblox User ID yang diketik pengguna (read publik `vip/<id>`), sama seperti sebelumnya.
+- **Kode akses v68:** kode punya `tier` (`vip`/`plus`; tanpa `tier` = VIP) dan `hours` boleh pecahan (menit = jam/60). Kode VIP Plus menambah `plusUntil` (VIP ikut naik); kode VIP menambah `expiresAt` saja. Akun VIP permanen tidak bisa menukar kode (beri Plus lewat /owner). **Publish ulang `database.rules.json`.**

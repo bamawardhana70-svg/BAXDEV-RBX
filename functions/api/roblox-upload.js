@@ -22,21 +22,30 @@ import { requireUser, quotaBegin, quotaCommit } from "../_lib/auth.js";
 const POLL_ATTEMPTS = 6;
 const POLL_DELAY_MS = 1500;
 
-// Tipe yang boleh diunggah lewat endpoint ini. Model hanya .rbxm / .rbxmx (format native Roblox);
-// content type-nya harus persis model/x-rbxm karena browser tidak mengenal ekstensi ini.
+// Tipe yang boleh diunggah lewat endpoint ini. Model: .rbxm / .rbxmx (format native Roblox, content type
+// harus persis model/x-rbxm karena browser tidak mengenal ekstensi ini) dan .glb (hasil Image to Mesh,
+// diimpor Roblox sebagai Model berisi MeshPart).
 const ASSET_TYPES = new Set(["Audio", "Model", "Decal"]);
 const NOUNS = { Audio: "audio", Model: "model", Decal: "gambar" };
 // Decal: format gambar yang diterima Open Cloud Assets API.
 const DECAL_TYPES = { png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", bmp: "image/bmp", tga: "image/tga" };
 const decalExt = (name) => String(name || "").split(".").pop().toLowerCase();
-const MODEL_EXT = /\.rbxmx?$/i;
+const MODEL_EXT = /\.(rbxmx?|glb)$/i;
 const MODEL_CONTENT_TYPE = "model/x-rbxm";
+const GLB_EXT = /\.glb$/i;
+const GLB_CONTENT_TYPE = "model/gltf-binary";
+const GLB_MAGIC = "glTF";        // biner: 4 byte pertama
 const RBXM_MAGIC = "<roblox!";   // biner: 8 byte pertama
 const RBXMX_TAG = "<roblox";     // XML: muncul di awal dokumen (setelah <?xml ...?> bila ada)
 
 async function looksLikeRbxm(file) {
   const head = new TextDecoder("latin1").decode(await file.slice(0, 256).arrayBuffer());
   return head.startsWith(RBXM_MAGIC) || head.includes(RBXMX_TAG);
+}
+
+async function looksLikeGlb(file) {
+  const head = new TextDecoder("latin1").decode(await file.slice(0, 4).arrayBuffer());
+  return head === GLB_MAGIC;
 }
 
 // Cek isi file cocok dengan ekstensinya (TGA tidak punya magic number, jadi hanya dicek lewat ekstensi).
@@ -126,9 +135,13 @@ async function handleUpload(context) {
   }
   if (assetType === "Model") {
     if (!MODEL_EXT.test(file.name || "")) {
-      return json({ ok: false, message: "Model harus berformat .rbxm atau .rbxmx." }, 400);
+      return json({ ok: false, message: "Model harus berformat .rbxm, .rbxmx, atau .glb." }, 400);
     }
-    if (!(await looksLikeRbxm(file))) {
+    if (GLB_EXT.test(file.name)) {
+      if (!(await looksLikeGlb(file))) {
+        return json({ ok: false, message: "Isi file bukan GLB yang valid. Buat ulang mesh lalu coba lagi." }, 400);
+      }
+    } else if (!(await looksLikeRbxm(file))) {
       return json({ ok: false, message: "Isi file bukan model Roblox yang valid. Ekspor ulang dari Roblox Studio (Save to File As → .rbxm)." }, 400);
     }
   }
@@ -182,7 +195,8 @@ async function handleUpload(context) {
   // filename maupun content-type eksplisit.
   upstream.append("request", JSON.stringify(requestPayload));
   if (assetType === "Model") {
-    upstream.append("fileContent", file.slice(0, file.size, MODEL_CONTENT_TYPE), file.name);
+    const type = GLB_EXT.test(file.name) ? GLB_CONTENT_TYPE : MODEL_CONTENT_TYPE;
+    upstream.append("fileContent", file.slice(0, file.size, type), file.name);
   } else if (assetType === "Decal") {
     upstream.append("fileContent", file.slice(0, file.size, DECAL_TYPES[decalExt(file.name)]), file.name);
   } else {

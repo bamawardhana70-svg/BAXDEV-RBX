@@ -6929,6 +6929,8 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                 const vipUntil = premium && tier !== 'owner' && S.remoteVip === true && untilMs ? ` · sampai ${new Date(untilMs).toLocaleString('id-ID', {day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'})}` : '';
                 const usage = tier === 'owner' ? 'Owner · semua fitur tanpa batas' : account.unlimited ? `Publish tanpa batas (${tier === 'plus' ? 'VIP Plus' : 'VIP'})${vipUntil}` : `${account.used || 0}/${account.limit || FREE_UPLOAD_LIMIT} publish hari ini`;
                 const planButton = planButtonState(tier);
+                document.body.classList.toggle('plus-user', tier === 'plus');
+                document.body.classList.toggle('owner-user', tier === 'owner');
                 const homeCard = document.getElementById('home-plan-card');
                 if (homeCard)
                     homeCard.classList.toggle('premium', premium);
@@ -6946,7 +6948,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                 const accountBadge = document.getElementById('acct-plan-badge');
                 if (accountBadge) {
                     accountBadge.textContent = title;
-                    accountBadge.className = `profile-badge ${premium ? 'badge-pro' : 'badge-free'}`;
+                    accountBadge.className = `profile-badge ${premium ? 'badge-pro badge-' + tier : 'badge-free'}`;
                 }
                 const accountTitle = document.getElementById('acct-plan-title');
                 const accountUsage = document.getElementById('acct-plan-usage');
@@ -6962,7 +6964,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                 const ddPlan = document.getElementById('dd-plan');
                 if (ddPlan) {
                     ddPlan.textContent = { owner: 'Owner', plus: 'VIP Plus', vip: 'VIP', free: 'Free' }[tier];
-                    ddPlan.className = `profile-badge ${premium ? 'badge-pro' : 'badge-free'}`;
+                    ddPlan.className = `profile-badge ${premium ? 'badge-pro badge-' + tier : 'badge-free'}`;
                 }
                 syncBrowserTheme();
                 if (typeof syncThemeLock === 'function') syncThemeLock();
@@ -7221,7 +7223,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
             }
             const KIND_INFO = {
                 audio: { type: 'Audio', noun: 'audio', done: 'Audio berhasil dipublish!', note: 'Salin ID ini ke script Roblox kamu' },
-                model: { type: 'Model', noun: 'model', done: 'Model berhasil dipublish!', note: 'Pakai ID ini dengan InsertService:LoadAsset(ID) di game milikmu' }
+                model: { type: 'Model', noun: 'model', done: 'Model berhasil dipublish!', note: 'Pakai ID ini dengan InsertService:LoadAsset(ID) di game milikmu. File .rbxm disimpan Roblox sebagai Package (ikon link di Creator Hub), bukan Model biasa.' }
             };
             // Menu Model hanya menerima .rbxm/.rbxmx; tab musik (file/YouTube/TikTok) hanya audio.
             function addFiles(files) {
@@ -8805,20 +8807,43 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                 const text = ['Konfirmasi pembelian', `User ID: ${order.userId}`, `Kode pesanan: ${order.code}`, `Paket: ${planLabel(order)}`, `Nominal: ${formatRupiah(order.amount)}`].join('\n');
                 return `https://wa.me/${PAYMENT.adminWhatsapp}?text=${encodeURIComponent(text)}`;
             }
-            function renderPlanChoice() {
+            // Menu pilihan paket: tab VIP / VIP Plus, lalu pilihan durasi untuk tab yang aktif.
+            let planTab = null;
+            const PLAN_INFO = {
+                vip: { title: 'VIP', desc: 'Publish tanpa batas, batch 5 audio, tema bebas.' },
+                plus: { title: 'VIP Plus', desc: 'Semua fitur VIP tanpa limit, plus tool Image to Mesh dan SkyBox 360, dan border avatar khusus VIP Plus.' }
+            };
+            function renderPlanChoice(tab) {
                 const tier = accountTier();
                 const untilMs = tier === 'plus' && S.plusUntil ? S.plusUntil : S.vipExpiresAt;
                 const until = (tier === 'vip' || tier === 'plus') && S.remoteVip === true && untilMs ? new Date(untilMs).toLocaleString('id-ID', {day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'}) : '';
-                const group = (planTier, title, desc) => `
-                    <div class="field-label">${title}</div>
-                    <div class="setting-desc" style="margin-bottom:8px">${desc}</div>
-                    <div class="plan-options" style="margin-bottom:16px">
-                        ${PAYMENT.plans.filter(p => p.tier === planTier).map(plan => `<button type="button" class="plan-option" data-tier="${plan.tier}" data-days="${plan.days}"><strong>${escapeHtml(plan.label)}</strong><span>${formatRupiah(plan.price)}</span></button>`).join('')}
-                    </div>`;
+                const tabs = isPermanentVip() ? ['plus'] : ['vip', 'plus'];
+                if (tab && tabs.includes(tab))
+                    planTab = tab;
+                if (!tabs.includes(planTab))
+                    planTab = tier === 'plus' ? 'plus' : tabs[0];
+                const info = PLAN_INFO[planTab];
+                const plans = PAYMENT.plans.filter(p => p.tier === planTab);
                 document.getElementById('payment-body').innerHTML = `
                     ${until ? `<p>${tier === 'plus' ? 'VIP Plus' : 'VIP'} aktif sampai ${escapeHtml(until)}. Paket yang kamu beli ditambahkan setelah masa aktif paket yang sama, jadi boleh beli lebih dari sekali.</p>` : ''}
-                    ${isPermanentVip() ? '' : group('vip', 'VIP', 'Publish tanpa batas, batch 5 audio, tema bebas.')}
-                    ${group('plus', 'VIP Plus', 'Semua fitur VIP tanpa limit, plus tool Image to Mesh dan SkyBox 360.')}`;
+                    ${tabs.length > 1 ? `<div class="plan-tabs" role="tablist" aria-label="Jenis paket">
+                        ${tabs.map(t => `<button type="button" role="tab" id="plan-tab-${t}" class="plan-tab plan-tab-${t}${t === planTab ? ' on' : ''}" aria-selected="${t === planTab}" data-tier="${t}">${escapeHtml(PLAN_INFO[t].title)}</button>`).join('')}
+                    </div>` : ''}
+                    <div role="tabpanel" aria-labelledby="plan-tab-${planTab}">
+                        <div class="field-label">${escapeHtml(info.title)}</div>
+                        <div class="setting-desc" style="margin-bottom:8px">${escapeHtml(info.desc)}</div>
+                        <div class="plan-options" style="margin-bottom:16px">
+                            ${plans.map(plan => `<button type="button" class="plan-option" data-tier="${plan.tier}" data-days="${plan.days}"><strong>${escapeHtml(plan.label)}</strong><span>${formatRupiah(plan.price)}</span></button>`).join('')}
+                        </div>
+                    </div>`;
+                document.querySelectorAll('#payment-body .plan-tab').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        renderPlanChoice(btn.dataset.tier);
+                        const active = document.getElementById('plan-tab-' + planTab);
+                        if (active)
+                            active.focus();
+                    });
+                });
                 document.querySelectorAll('#payment-body .plan-option').forEach(btn => {
                     btn.addEventListener('click', () => choosePlan(btn.dataset.tier, Number(btn.dataset.days)));
                 });
@@ -8922,8 +8947,14 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                     if (vip && !vip.expiresAt)
                         throw new Error('Akun ini sudah VIP permanen, kode tidak perlu ditukar.');
                     const now = Date.now();
+                    const isPlusCode = entry.tier === 'plus';
+                    const durMs = Math.round(entry.hours * HOUR_MS);
+                    const oldPlus = vip && typeof vip.plusUntil === 'number' ? vip.plusUntil : null;
+                    // Kode VIP Plus menambah plusUntil (VIP ikut naik); kode VIP menambah expiresAt dan membiarkan plusUntil.
+                    const plusStart = oldPlus && oldPlus > now ? oldPlus : now;
+                    const plusUntil = isPlusCode ? plusStart + durMs : oldPlus;
                     const start = vip && vip.expiresAt > now ? vip.expiresAt : now;
-                    const expiresAt = start + entry.hours * HOUR_MS;
+                    const expiresAt = isPlusCode ? Math.max((vip && vip.expiresAt) || 0, plusUntil) : start + durMs;
                     const res = await fetch(`${base}/.json${query}`, {
                         method: 'PATCH',
                         headers: {
@@ -8940,7 +8971,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                                 expiresAt,
                                 note: (vip && vip.note) || 'Tukar kode',
                                 code,
-                                ...(vip && typeof vip.plusUntil === 'number' ? { plusUntil: vip.plusUntil } : {})
+                                ...(typeof plusUntil === 'number' ? { plusUntil } : {})
                             }
                         })
                     });
@@ -8952,16 +8983,10 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                     }
                     S.remoteVip = true;
                     S.vipExpiresAt = expiresAt;
-                    S.plusUntil = vip && typeof vip.plusUntil === 'number' ? vip.plusUntil : null;
+                    S.plusUntil = typeof plusUntil === 'number' ? plusUntil : null;
                     refreshAccountState();
                     input.value = '';
-                    const until = new Date(expiresAt).toLocaleString('id-ID', {
-                        day: 'numeric',
-                        month: 'short',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                    });
-                    setRedeemMsg(`Berhasil. VIP aktif sampai ${until}.`, 'success');
+                    setRedeemMsg(`Berhasil. ${isPlusCode ? 'VIP Plus' : 'VIP'} aktif sampai ${new Date(isPlusCode ? plusUntil : expiresAt).toLocaleString('id-ID', {day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'})}.`, 'success');
                     toast('Kode berhasil ditukar', 'success');
                 } catch (e) {
                     setRedeemMsg(e.message || 'Gagal menukar kode.', 'error');
@@ -9224,7 +9249,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
             // HTML tool disajikan /api/tool setelah server memeriksa VIP Plus / Owner, lalu dijalankan di iframe sandbox
             // tanpa allow-same-origin: tool tidak bisa membaca localStorage, token, atau API key halaman ini.
             const TOOLS = {
-                mesh: { title: 'Image to Mesh', desc: 'Ubah gambar jadi mesh 3D untuk Roblox Studio, ekspor glTF atau OBJ.' },
+                mesh: { title: 'Image to Mesh', desc: 'Ubah gambar jadi mesh 3D untuk Roblox Studio, ekspor glTF atau OBJ, atau upload langsung ke Roblox.' },
                 skybox: { title: 'SkyBox 360', desc: 'Ubah panorama 360° jadi enam sisi SkyBox, publish ke Roblox, dan salin script Studio.' }
             };
             const SKYBOX_FACES = ['Front', 'Back', 'Left', 'Right', 'Top', 'Bottom'];
@@ -9271,6 +9296,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                     frame.setAttribute('sandbox', 'allow-scripts allow-downloads');
                     frame.setAttribute('allow', 'clipboard-write; fullscreen');
                     frame.setAttribute('allowfullscreen', '');
+                    frame.addEventListener('load', () => pushToolTheme(frame));
                     frame.srcdoc = html;
                     toolHost(name).replaceChildren(frame);
                     toolState[name] = { frame };
@@ -9323,17 +9349,17 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                         toolOpen(name);
                 });
             }
-            // Upload satu sisi SkyBox sebagai Decal lewat /api/roblox-upload (API key tetap di halaman ini, tidak masuk ke tool).
-            async function toolUploadDecal(blob, filename, displayName) {
+            // Upload hasil tool (sisi SkyBox = Decal, mesh = Model GLB) lewat /api/roblox-upload (API key tetap di halaman ini, tidak masuk ke tool).
+            async function toolUploadAsset(blob, filename, displayName, assetType, mime, source) {
                 const fd = new FormData();
-                fd.append('file', new File([blob], filename, { type: 'image/png' }), filename);
+                fd.append('file', new File([blob], filename, { type: mime }), filename);
                 fd.append('userId', S.roblox.userId);
                 fd.append('apiKey', S.roblox.apiKey);
                 fd.append('creatorType', S.roblox.creatorType || 'User');
                 fd.append('groupId', S.roblox.groupId || '');
-                fd.append('assetType', 'Decal');
+                fd.append('assetType', assetType);
                 fd.append('displayName', displayName);
-                fd.append('description', 'Uploaded via baxdev SkyBox 360');
+                fd.append('description', 'Uploaded via baxdev ' + source);
                 const res = await postWithRetry('/api/roblox-upload', fd);
                 const text = await res.text();
                 let data = {};
@@ -9395,7 +9421,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                             const size = files[face].size;
                             send({ type: 'state', face, text: 'Mengunggah...' });
                             try {
-                                const out = await toolUploadDecal(files[face], filename, name);
+                                const out = await toolUploadAsset(files[face], filename, name, 'Decal', 'image/png', 'SkyBox 360');
                                 const base = { id: Date.now() + index, name, filename, size, uploadedAt: new Date().toISOString(), speed: 1, kind: 'decal' };
                                 if (out.assetId) {
                                     addLibEntry(Object.assign(base, { assetId: out.assetId, status: 'done' }), { name, filename, size, assetId: String(out.assetId).slice(0, 30), status: 'done', speed: 1 });
@@ -9421,15 +9447,66 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                     send({ type: 'error', message: e.message || 'Publish gagal.' });
                 }
             }
-            // Pesan dari iframe tool: hanya diterima dari iframe SkyBox milik halaman ini (origin sandbox "null", jadi dicek lewat window sumbernya).
+            // Upload satu mesh GLB sebagai Model. Roblox mengimpornya jadi Model berisi MeshPart.
+            async function toolPublishMesh(win, req) {
+                const send = msg => win.postMessage(Object.assign({ bx: 'publish', id: req.id }, msg), '*');
+                try {
+                    if (!isVipPlus())
+                        throw new Error('Fitur ini khusus VIP Plus.');
+                    if (!hasRoblox())
+                        throw new Error('Isi Roblox User ID & API Key di Pengaturan dulu.');
+                    if (S.roblox.creatorType === 'Group' && !S.roblox.groupId)
+                        throw new Error('Isi Group ID dulu di pengaturan Roblox sebelum publish ke Group.');
+                    const file = req.files && req.files.Mesh;
+                    if (!(file instanceof Blob) || file.size === 0 || file.size > 20 * 1024 * 1024)
+                        throw new Error('File mesh tidak valid (kosong atau lebih dari 20 MB).');
+                    const name = String(req.name || '').replace(/[^\w .-]+/g, '').trim().slice(0, 30) || 'Image Mesh';
+                    const filename = name.replace(/\s+/g, '_') + '.glb';
+                    const base = { id: Date.now(), name, filename, size: file.size, uploadedAt: new Date().toISOString(), speed: 1, kind: 'model' };
+                    try {
+                        const out = await toolUploadAsset(file, filename, name, 'Model', 'model/gltf-binary', 'Image to Mesh');
+                        if (out.assetId) {
+                            addLibEntry(Object.assign(base, { assetId: out.assetId, status: 'done' }), { name, filename, size: file.size, assetId: String(out.assetId).slice(0, 30), status: 'done', speed: 1 });
+                            send({ type: 'done', results: { Mesh: { assetId: out.assetId } } });
+                        } else if (out.opPath) {
+                            addLibEntry(Object.assign(base, { assetId: null, status: 'proc', operationPath: out.opPath }), null);
+                            send({ type: 'done', results: { Mesh: { error: 'Masih diproses Roblox. ID-nya akan muncul di Library.' } } });
+                        } else {
+                            throw new Error('Roblox belum mengembalikan Asset ID.');
+                        }
+                    } catch (e) {
+                        const reason = String(e.message || 'Error').slice(0, 160);
+                        addLibEntry({ id: Date.now(), assetId: null, name, filename, size: file.size, kind: 'model', status: 'fail', reason, uploadedAt: new Date().toISOString() },
+                            { name, filename, size: file.size, status: 'fail', error: reason });
+                        send({ type: 'done', results: { Mesh: { error: reason } } });
+                    }
+                } catch (e) {
+                    send({ type: 'error', message: e.message || 'Upload gagal.' });
+                }
+            }
+            // Pesan dari iframe tool: hanya diterima dari iframe milik halaman ini (origin sandbox "null", jadi dicek lewat window sumbernya).
             window.addEventListener('message', e => {
                 const d = e.data;
                 if (!d || d.bx !== 'publish' || d.type !== 'request' || typeof d.id !== 'string')
                     return;
-                const st = toolState.skybox;
-                if (st && st.frame && st.frame.contentWindow === e.source)
+                const fromTool = name => toolState[name] && toolState[name].frame && toolState[name].frame.contentWindow === e.source;
+                if (fromTool('skybox'))
                     toolPublishSkybox(e.source, d);
+                else if (fromTool('mesh'))
+                    toolPublishMesh(e.source, d);
             });
+            // Tema: iframe tool tidak bisa membaca CSS halaman ini, jadi warna dasar + palet dikirim lewat postMessage.
+            function toolThemePayload() {
+                const mono = (window.BX_THEMES && window.BX_THEMES.mono && window.BX_THEMES.mono.p) || [[236, 237, 241], [176, 178, 184], [124, 126, 132]];
+                return { bx: 'theme', bg: window.__bxThemeMeta || '#050505', p: window.__bxPalette || mono };
+            }
+            function pushToolTheme(frame) {
+                if (frame && frame.contentWindow)
+                    frame.contentWindow.postMessage(toolThemePayload(), '*');
+            }
+            function pushToolThemeAll() {
+                Object.keys(toolState).forEach(name => pushToolTheme(toolState[name] && toolState[name].frame));
+            }
             window.toolsReady = true;
 
             // ── INIT ──────────────────────────────────────────────
@@ -10115,6 +10192,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                 });
                 syncCustomPanel(name);
                 if (typeof syncBrowserTheme === 'function') syncBrowserTheme();
+                if (typeof pushToolThemeAll === 'function') pushToolThemeAll();
             }
             function setTheme(name) {
                 if (name === 'custom' && !isVIP()) {
@@ -11230,6 +11308,30 @@ html body .page.page-tool{max-width:960px;padding-top:16px;padding-bottom:16px}
 .tool-lock .page-title,.tool-lock .page-sub{margin:0}
 .tool-lock .btn{margin-top:6px}
 @media (max-width:1099px){html body .page.page-tool{padding-left:10px;padding-right:10px}.tool-frame{border-radius:18px}}
+
+/* Border avatar per role. Emas = VIP (bawaan). VIP Plus = biru-ungu, Owner = merah.
+   Hanya menggantikan gaya bawaan "gold"; kalau pengguna memilih gaya lain di Pengaturan, pilihannya dipakai. */
+html[data-avb="gold"] body.plus-user{
+  --avb-bg:conic-gradient(from var(--gold-a,0deg),#e0f2fe,#38bdf8,#4f46e5,#c084fc,#38bdf8,#312e81,#e0f2fe);
+  --avb-shadow:0 0 0 3px rgba(99,102,241,.2),0 0 24px rgba(56,189,248,.55);
+  --avb-deco:linear-gradient(180deg,#e0f2fe,#38bdf8 55%,#4f46e5)}
+html[data-avb="gold"] body.owner-user{
+  --avb-bg:conic-gradient(from var(--gold-a,0deg),#fee2e2,#f87171,#b91c1c,#fecaca,#ef4444,#7f1d1d,#fee2e2);
+  --avb-shadow:0 0 0 3px rgba(239,68,68,.2),0 0 24px rgba(239,68,68,.55);
+  --avb-deco:linear-gradient(180deg,#fee2e2,#f87171 55%,#b91c1c)}
+/* Bentuk bingkai per role (bukan cuma warna). VIP = lingkaran + mahkota.
+   VIP Plus = kotak membulat + cincin ganda + berlian + cincin putus-putus berputar.
+   Owner = lingkaran + cincin ganda + bintang. Gaya "Tanpa border" tetap dihormati. */
+@keyframes plus-orbit{to{transform:rotate(360deg)}}
+html:not([data-avb="none"]) body.plus-user.premium-user :is(.nav-avatar,.su-avatar,#dd-avatar,#acct-avatar-big,#bx-welcome .bx-av,.dr-acct .bx-av){border-radius:32% !important;outline:2px solid rgba(129,140,248,.65);outline-offset:4px}
+html:not([data-avb="none"]) body.plus-user.premium-user :is(.nav-avatar,.su-avatar,#dd-avatar,#acct-avatar-big,#bx-welcome .bx-av,.dr-acct .bx-av) img{border-radius:inherit !important}
+html:not([data-avb="none"]) body.plus-user.premium-user :is(.nav-avatar,.su-avatar,#dd-avatar,#acct-avatar-big,#bx-welcome .bx-av,.dr-acct .bx-av)::after{width:30%;transform:translate(-50%,-70%);-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 3h12l4 6-10 12L2 9z'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 3h12l4 6-10 12L2 9z'/%3E%3C/svg%3E") center/contain no-repeat}
+html:not([data-avb="none"]) body.plus-user.premium-user :is(.nav-avatar,.su-avatar,#dd-avatar,#acct-avatar-big,#bx-welcome .bx-av,.dr-acct .bx-av)::before{inset:-17%;border-radius:36%;background:none !important;-webkit-mask:none;mask:none;border:1px dashed rgba(129,140,248,.75);animation:plus-orbit 18s linear infinite}
+html:not([data-avb="none"]) body.owner-user.premium-user :is(.nav-avatar,.su-avatar,#dd-avatar,#acct-avatar-big,#bx-welcome .bx-av,.dr-acct .bx-av){outline:2px solid rgba(248,113,113,.75);outline-offset:4px}
+html:not([data-avb="none"]) body.owner-user.premium-user :is(.nav-avatar,.su-avatar,#dd-avatar,#acct-avatar-big,#bx-welcome .bx-av,.dr-acct .bx-av)::after{width:32%;transform:translate(-50%,-72%);-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='m12 1.5 3.1 6.8 7.4.8-5.5 5 1.6 7.3L12 17.6l-6.6 3.8L7 14.1 1.5 9.1l7.4-.8z'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='m12 1.5 3.1 6.8 7.4.8-5.5 5 1.6 7.3L12 17.6l-6.6 3.8L7 14.1 1.5 9.1l7.4-.8z'/%3E%3C/svg%3E") center/contain no-repeat}
+@media (prefers-reduced-motion:reduce){html:not([data-avb="none"]) body.plus-user.premium-user :is(.nav-avatar,.su-avatar,#dd-avatar,#acct-avatar-big,#bx-welcome .bx-av,.dr-acct .bx-av)::before{animation:none}}
+.badge-plus{background:rgba(99,102,241,.16)!important;color:#a5b4fc!important;border-color:rgba(129,140,248,.4)!important}
+.badge-owner{background:rgba(239,68,68,.16)!important;color:#fca5a5!important;border-color:rgba(248,113,113,.4)!important}
 </style>
 <script id="bx-v47-js">
 (function(){
@@ -11765,6 +11867,31 @@ html[data-avb="none"] .avb-prev::before,html[data-avb="none"] .avb-prev::after{d
 body.premium-user #bx-welcome .bx-av{margin-top:14px}
 .avb-prev{margin-top:20px}
 @media (prefers-reduced-motion:reduce){:is(body.premium-user :is(.nav-avatar,.su-avatar,#dd-avatar,#acct-avatar-big,#bx-welcome .bx-av,.dr-acct .bx-av),.avb-prev)::before{animation:none}}
+</style>
+
+<style id="bx-v69-plus">
+/* ═══ BAXDEV v69 — Border VIP Plus dibuat jauh beda dari VIP: bingkai kotak membulat, cincin aurora berputar
+   (cyan → indigo → magenta), cincin ganda, dan berlian. Berlaku untuk semua gaya border kecuali "Tanpa border". ═══ */
+@property --plus-a { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+@keyframes plus-spin { to { --plus-a: 360deg; } }
+html:not([data-avb="none"]) body.plus-user.premium-user { --avb-deco: linear-gradient(180deg, #e0f2fe, #22d3ee 50%, #d946ef); }
+html:not([data-avb="none"]) body.plus-user.premium-user :is(.nav-avatar,.su-avatar,#dd-avatar,#acct-avatar-big,#bx-welcome .bx-av,.dr-acct .bx-av) {
+  background: linear-gradient(#070d18, #070d18) padding-box, conic-gradient(from var(--plus-a), #22d3ee, #6366f1, #d946ef, #f472b6, #22d3ee) border-box !important;
+  box-shadow: 0 0 0 3px rgba(99,102,241,.28), 0 0 26px rgba(34,211,238,.55), 0 0 56px rgba(217,70,239,.3) !important;
+  outline: 2px solid rgba(217,70,239,.7); outline-offset: 4px;
+  animation: plus-spin 6s linear infinite;
+}
+html:not([data-avb="none"]) body.plus-user.premium-user :is(.nav-avatar,.su-avatar,#dd-avatar,#acct-avatar-big,#bx-welcome .bx-av,.dr-acct .bx-av)::before { border-color: rgba(34,211,238,.85); }
+@media (prefers-reduced-motion: reduce) {
+  html:not([data-avb="none"]) body.plus-user.premium-user :is(.nav-avatar,.su-avatar,#dd-avatar,#acct-avatar-big,#bx-welcome .bx-av,.dr-acct .bx-av) { animation: none; }
+}
+/* Tab pilihan paket (VIP / VIP Plus) */
+.plan-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; margin: 0 0 16px; border-radius: 16px; background: rgba(0,0,0,.35); box-shadow: inset 0 0 0 1px rgba(var(--bx-t,255,255,255),.14); }
+.plan-tab { min-height: 44px; border: 0; border-radius: 12px; background: transparent; color: var(--text2, rgba(255,255,255,.7)); font: inherit; font-weight: 650; cursor: pointer; transition: background .2s, color .2s; }
+.plan-tab:hover { color: var(--text, #fff); }
+.plan-tab.on { background: rgba(var(--bx-t,255,255,255),.16); color: var(--text, #fff); box-shadow: inset 0 0 0 1px rgba(var(--bx-t,255,255,255),.3); }
+.plan-tab-plus.on { background: linear-gradient(135deg, rgba(34,211,238,.22), rgba(217,70,239,.22)); box-shadow: inset 0 0 0 1px rgba(129,140,248,.6); }
+.plan-tab:focus-visible { outline: 2px solid var(--text, #fff); outline-offset: 2px; }
 </style>
 
 <style id="bx-v58">

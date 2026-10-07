@@ -487,6 +487,23 @@ async function publishSkyboxFaces() {
 }
 
 // ── Wiring ──
+// Tema dari halaman induk: warna dasar + palet 3 warna (terang, sedang, gelap).
+function applyBxTheme(data) {
+  if (!data || !/^#[0-9a-fA-F]{6}$/.test(data.bg) || !Array.isArray(data.p) || data.p.length !== 3) return;
+  const p = data.p.map(color => Array.isArray(color) && color.length === 3 ? color.map(v => Math.max(0, Math.min(255, Math.round(Number(v) || 0)))) : null);
+  if (p.some(color => !color)) return;
+  const rgb = color => 'rgb(' + color.join(',') + ')', rgba = (color, alpha) => 'rgba(' + color.join(',') + ',' + alpha + ')';
+  const set = (name, value) => document.documentElement.style.setProperty(name, value);
+  const light = p[0];
+  set('--bg', data.bg); set('--text', rgb(light)); set('--muted', rgba(light, .64)); set('--faint', rgba(light, .4));
+  set('--g1', rgba(light, .12)); set('--g2', rgba(light, .035)); set('--line', rgba(light, .17));
+  set('--rim1', rgba(light, .7)); set('--rim2', rgba(light, .26)); set('--hl', rgba(light, .14)); set('--field', rgba(light, .07));
+  set('--inner', 'inset 0 1px 0 ' + rgba(light, .28) + ',inset 0 0 24px ' + rgba(light, .035));
+  set('--btn', rgb(light)); set('--btn-ink', data.bg); set('--blob', rgba(p[1], .26));
+}
+addEventListener('message', e => {
+  if (e.source === window.parent && e.data && e.data.bx === 'theme') applyBxTheme(e.data);
+});
 $('source-file').addEventListener('change', e => chooseSkyboxImage(e.target.files[0]));
 const dropZone = $('drop-zone');
 dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });

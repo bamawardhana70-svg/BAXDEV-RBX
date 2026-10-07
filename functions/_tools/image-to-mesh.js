@@ -143,6 +143,18 @@ h1{margin:14px 0 8px;font-size:clamp(34px,6vw,56px);font-weight:300;letter-spaci
   background:linear-gradient(180deg,var(--glass-hi),var(--glass));backdrop-filter:blur(14px) saturate(170%);-webkit-backdrop-filter:blur(14px) saturate(170%);box-shadow:inset 0 1px 0 var(--rim-hi),inset 0 0 0 1px var(--rim-lo),0 8px 20px rgba(0,0,0,.25)}
 .vp-reset svg{width:15px;height:15px}.vp-reset:active{transform:scale(.96)}.vp-reset:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .model3d-viewport.has-model .vp-reset{display:inline-flex}
+/* upload ke Roblox */
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none;filter:none}
+.up-field{display:grid;gap:6px;margin:0 0 14px}
+.up-field label{font-size:13px;font-weight:600;color:var(--ink-2)}
+.up-field input{min-height:46px;padding:0 16px;border:0;border-radius:16px;background:var(--well);color:var(--ink);font:inherit;box-shadow:inset 0 1px 3px rgba(0,0,0,.25),inset 0 0 0 1px var(--rim-lo)}
+.up-field input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.up-list{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:8px}
+.up-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px 10px 16px;border-radius:16px;background:var(--well);box-shadow:inset 0 0 0 1px var(--rim-lo)}
+.up-row div{min-width:0}
+.up-row b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px}
+.up-row small{color:var(--ink-2);font:12px ui-monospace,Menlo,Consolas,monospace}
+.up-row .btn{flex:none;min-height:40px;padding:8px 16px;font-size:13px}
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
   :root{--glass:rgba(48,48,48,.88);--glass-hi:rgba(70,70,70,.94)}
   
@@ -248,6 +260,18 @@ h1{margin:14px 0 8px;font-size:clamp(34px,6vw,56px);font-weight:300;letter-spaci
     </div>
     <p class="model3d-export-note">Ekspor putih polos, tanpa tekstur dan tanpa warna vertex. Untuk glTF, simpan file .gltf dan .bin dalam satu folder. OBJ ikut menyertakan file .mtl. Saat optimasi aktif, ekspor memakai satu material.</p>
   </section>
+
+  <section class="card" aria-labelledby="t-up">
+    <h2 id="t-up">Upload ke Roblox</h2>
+    <p class="card-sub">Mesh dikirim sebagai GLB dan diimpor Roblox menjadi Model berisi MeshPart. Memakai API Key dan User ID dari Pengaturan BAXDEV.</p>
+    <div class="up-field"><label for="up-name">Nama aset</label><input type="text" id="up-name" maxlength="30" autocomplete="off" placeholder="Nama di Roblox"></div>
+    <div class="model3d-export">
+      <button type="button" class="btn btn-primary" id="up-btn" disabled>Upload ke Roblox</button>
+      <button type="button" class="btn" id="new-btn" disabled>Mesh baru</button>
+    </div>
+    <div class="model3d-status" id="up-status" role="status" aria-live="polite">Buat mesh dulu untuk mengaktifkan upload.</div>
+    <ul class="up-list" id="up-list" hidden></ul>
+  </section>
 </main>
 <script>
 let model3dFile = null;
@@ -336,13 +360,20 @@ function prepareModel3DGrid(bitmap,removeBg,tolerance,budget) {
   for(let i=0;i<mask.length;i++) mask[i]=pixels[i*4+3]>=16?1:0;
   return {width:finalCanvas.width,height:finalCanvas.height,pixels,mask,filled:finalScan.filled,triangles:finalScan.triangles};
 }
+function disposeModel3DMesh() {
+  const state=model3dRenderState;
+  if(!state?.mesh) return;
+  state.scene.remove(state.mesh);state.mesh.geometry.dispose();
+  state.mesh.material.forEach(material=>{material.map?.dispose();material.dispose()});
+  state.mesh=null;
+}
 async function buildModel3D() {
   if(!model3dFile) return;
   const token=++model3dBuildToken;
   model3dGrid=null;model3dMeshData=null;updateModel3DOptimizeUI(0);
   document.getElementById('model3d-export').hidden=true;
   document.getElementById('model3d-viewport').classList.remove('has-model');
-  if(model3dRenderState?.mesh){model3dRenderState.scene.remove(model3dRenderState.mesh);model3dRenderState.mesh.geometry.dispose();model3dRenderState.mesh.material.forEach(material=>{material.map?.dispose();material.dispose()});model3dRenderState.mesh=null}
+  disposeModel3DMesh();syncModel3DActions();
   setModel3DStatus('Menganalisis gambar dan membentuk siluet...');
   let bitmap;
   try {
@@ -363,8 +394,9 @@ function setModel3DBudget(button) {
 }
 function chooseModel3DFile(file) {
   if(!file) return;
-  if(!/^image\\/(png|jpeg|webp)$/.test(file.type)||file.size>15*1024*1024){model3dFile=null;model3dGrid=null;model3dMeshData=null;document.getElementById('model3d-export').hidden=true;document.getElementById('model3d-viewport').classList.remove('has-model');setModel3DStatus('Pilih PNG, JPG, atau WebP maksimal 15 MB.','error');return}
+  if(!/^image\\/(png|jpeg|webp)$/.test(file.type)||file.size>15*1024*1024){model3dFile=null;model3dGrid=null;model3dMeshData=null;document.getElementById('model3d-export').hidden=true;document.getElementById('model3d-viewport').classList.remove('has-model');syncModel3DActions();setModel3DStatus('Pilih PNG, JPG, atau WebP maksimal 15 MB.','error');return}
   model3dFile=file;
+  document.getElementById('up-name').value=model3DBaseName().slice(0,30);
   document.getElementById('model3d-file-name').textContent=file.name;
   document.getElementById('model3d-file-meta').textContent=\`\${(file.size/1048576).toFixed(2)} MB · Gambar diproses lokal\`;
   buildModel3D();
@@ -691,6 +723,7 @@ async function rebuildModel3D(token=model3dBuildToken) {
   updateModel3DOptimizeUI(model3dOpt.triangles);
   setModel3DStatus(model3dOpt.on?(model3dOpt.over?'Mesh siap, tetapi masih di atas target Roblox. Lihat kartu Optimasi Roblox.':'Mesh putih polos siap dan sudah dioptimasi untuk Roblox.'):'Mesh putih polos padat tanpa tekstur siap.','success');
   setModel3DRendering(model3dPageActive);
+  syncModel3DActions();
 }
 function scheduleModel3DRebuild() {
   document.getElementById('model3d-depth-value').textContent=\`\${Number(document.getElementById('model3d-depth').value).toFixed(1)} studs\`;
@@ -765,7 +798,121 @@ function exportModel3DOBJ() {
   setModel3DStatus('OBJ dan MTL putih polos tanpa tekstur diunduh.','success');
 }
 
-document.getElementById('model3d-file').addEventListener('change',event=>chooseModel3DFile(event.target.files[0]));
+/* ── GLB, upload ke Roblox, mesh baru, tema ── */
+function createModel3DGLB() {
+  const out=createModel3DGLTF(),doc=JSON.parse(out.json);
+  delete doc.buffers[0].uri;
+  const json=new TextEncoder().encode(JSON.stringify(doc)),bin=new Uint8Array(out.binary);
+  const jsonLen=json.length+(4-json.length%4)%4,binLen=bin.length+(4-bin.length%4)%4,total=12+8+jsonLen+8+binLen;
+  const buffer=new ArrayBuffer(total),view=new DataView(buffer),bytes=new Uint8Array(buffer);
+  view.setUint32(0,0x46546C67,true);view.setUint32(4,2,true);view.setUint32(8,total,true);
+  view.setUint32(12,jsonLen,true);view.setUint32(16,0x4E4F534A,true);
+  bytes.set(json,20);bytes.fill(0x20,20+json.length,20+jsonLen);
+  const binAt=20+jsonLen;
+  view.setUint32(binAt,binLen,true);view.setUint32(binAt+4,0x004E4942,true);
+  bytes.set(bin,binAt+8);
+  return new Blob([buffer],{type:'model/gltf-binary'});
+}
+let model3dUploading=false;
+function setModel3DUploadStatus(message,type='') {
+  const node=document.getElementById('up-status');
+  node.textContent=message;
+  node.className='model3d-status'+(type?' '+type:'');
+}
+function syncModel3DActions() {
+  document.getElementById('up-btn').disabled=!model3dMeshData||model3dUploading;
+  document.getElementById('new-btn').disabled=model3dUploading||(!model3dMeshData&&!model3dFile);
+}
+/* Kirim GLB ke halaman induk (BAXDEV). API key Roblox tidak pernah masuk ke tool ini. */
+function requestModel3DPublish(blob,name) {
+  return new Promise((resolve,reject)=>{
+    if(window.parent===window){reject(new Error('Upload hanya tersedia di dalam BAXDEV.'));return}
+    const id='pub-'+Date.now()+'-'+Math.random().toString(36).slice(2);
+    const finish=(error,results)=>{clearTimeout(timer);removeEventListener('message',onMessage);if(error) reject(error);else resolve(results)};
+    const timer=setTimeout(()=>finish(new Error('Upload melewati batas waktu. Cek Library BAXDEV untuk hasilnya.')),4*60*1000);
+    function onMessage(event){
+      const data=event.data;
+      if(event.source!==window.parent||!data||data.bx!=='publish'||data.id!==id) return;
+      if(data.type==='done') finish(null,data.results||{});
+      else if(data.type==='error') finish(new Error(data.message||'Upload gagal.'));
+    }
+    addEventListener('message',onMessage);
+    window.parent.postMessage({bx:'publish',type:'request',kind:'mesh',id,name,files:{Mesh:new File([blob],name+'.glb',{type:'model/gltf-binary'})}},'*');
+  });
+}
+async function copyModel3DText(text,button) {
+  try {
+    if(navigator.clipboard&&window.isSecureContext) await navigator.clipboard.writeText(text);
+    else {const input=document.createElement('textarea');input.value=text;input.style.cssText='position:fixed;opacity:0';document.body.append(input);input.select();document.execCommand('copy');input.remove()}
+    button.textContent='Tersalin';
+  } catch { button.textContent='Gagal menyalin'; }
+  setTimeout(()=>{button.textContent='Salin ID'},1600);
+}
+function addModel3DUploadRow(name,assetId) {
+  const list=document.getElementById('up-list'),row=document.createElement('li'),text=document.createElement('div');
+  const title=document.createElement('b'),idLine=document.createElement('small'),copy=document.createElement('button');
+  row.className='up-row';title.textContent=name;idLine.textContent=assetId;
+  copy.type='button';copy.className='btn';copy.textContent='Salin ID';
+  copy.addEventListener('click',()=>copyModel3DText(assetId,copy));
+  text.append(title,idLine);row.append(text,copy);
+  list.prepend(row);list.hidden=false;
+}
+async function uploadModel3D() {
+  if(model3dUploading||!model3dMeshData) return;
+  const name=document.getElementById('up-name').value.trim()||model3DBaseName().slice(0,30);
+  model3dUploading=true;syncModel3DActions();
+  setModel3DUploadStatus('Mengunggah ke Roblox. Jangan tutup halaman ini...');
+  try {
+    const results=await requestModel3DPublish(createModel3DGLB(),name);
+    const result=results.Mesh||{},assetId=String(result.assetId||'').replace(/[^0-9]/g,'');
+    if(!assetId) throw new Error(result.error||'Roblox tidak menerima mesh ini.');
+    addModel3DUploadRow(name,assetId);
+    setModel3DUploadStatus('Berhasil. Asset ID: '+assetId+'. Kamu bisa membuat mesh lain tanpa memuat ulang halaman.','success');
+  } catch(error) {
+    setModel3DUploadStatus(error.message||'Upload gagal.','error');
+  } finally {
+    model3dUploading=false;syncModel3DActions();
+  }
+}
+function resetModel3D() {
+  if(model3dUploading) return;
+  ++model3dBuildToken;clearTimeout(model3dMeshTimer);
+  model3dFile=null;model3dGrid=null;model3dMeshData=null;
+  disposeModel3DMesh();
+  document.getElementById('model3d-export').hidden=true;
+  document.getElementById('model3d-viewport').classList.remove('has-model');
+  document.getElementById('model3d-file-name').textContent='Pilih gambar';
+  document.getElementById('model3d-file-meta').textContent='Klik untuk memilih atau tarik file ke sini. Maks. 15 MB';
+  document.getElementById('model3d-dimensions').textContent='Belum ada mesh';
+  document.getElementById('model3d-triangle-count').textContent='Siap memutar';
+  document.getElementById('up-name').value='';
+  updateModel3DOptimizeUI(0);
+  setModel3DStatus('Pilih gambar untuk membuat mesh 3D.');
+  setModel3DUploadStatus('Buat mesh dulu untuk mengaktifkan upload.');
+  syncModel3DActions();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+/* Tema dari halaman induk: warna dasar + palet 3 warna (terang, sedang, gelap). */
+function applyBxTheme(data) {
+  if(!data||!/^#[0-9a-fA-F]{6}$/.test(data.bg)||!Array.isArray(data.p)||data.p.length!==3) return;
+  const p=data.p.map(color=>Array.isArray(color)&&color.length===3?color.map(v=>Math.max(0,Math.min(255,Math.round(Number(v)||0)))):null);
+  if(p.some(color=>!color)) return;
+  const base=[1,3,5].map(i=>parseInt(data.bg.substr(i,2),16));
+  const mix=(a,b,t)=>a.map((v,i)=>Math.round(v+(b[i]-v)*t));
+  const rgb=color=>'rgb('+color.join(',')+')',rgba=(color,alpha)=>'rgba('+color.join(',')+','+alpha+')';
+  const set=(name,value)=>document.documentElement.style.setProperty(name,value);
+  set('--bg1',data.bg);set('--bg2',rgb(mix(base,p[2],.16)));
+  set('--orb1',rgb(p[1]));set('--orb2',rgb(p[2]));set('--orb3',rgb(p[0]));set('--orb4',rgb(mix(p[2],base,.5)));
+  set('--accent',rgb(p[0]));set('--accent-ink',data.bg);
+  set('--glass',rgba(p[0],.07));set('--glass-hi',rgba(p[0],.16));set('--rim-hi',rgba(p[0],.6));set('--rim-lo',rgba(p[0],.16));
+  set('--track',rgba(p[0],.17));set('--ink-2',rgba(p[0],.74));
+}
+window.addEventListener('message',event=>{
+  if(event.source===window.parent&&event.data&&event.data.bx==='theme') applyBxTheme(event.data);
+});
+document.getElementById('up-btn').addEventListener('click',uploadModel3D);
+document.getElementById('new-btn').addEventListener('click',resetModel3D);
+document.getElementById('model3d-file').addEventListener('change',event=>{const file=event.target.files[0];event.target.value='';chooseModel3DFile(file)});
 const model3DDrop=document.getElementById('model3d-drop-zone');
 model3DDrop.addEventListener('dragover',event=>{event.preventDefault();model3DDrop.classList.add('drag-over')});
 model3DDrop.addEventListener('dragleave',()=>model3DDrop.classList.remove('drag-over'));
@@ -784,7 +931,7 @@ window.addEventListener('focus',ensureModel3DLoop);
 document.getElementById('model3d-reset').addEventListener('click',resetModel3DView);
 
 
-updateModel3DOptimizeUI(0);
+updateModel3DOptimizeUI(0);syncModel3DActions();
 /* isi track slider */
 (function(){
   const paint=el=>el.style.setProperty('--fill',((el.value-el.min)/(el.max-el.min)*100)+'%');
