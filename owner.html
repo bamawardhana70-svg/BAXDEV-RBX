@@ -162,7 +162,7 @@ html[data-theme="green"] .btn.danger{background:rgba(255,90,90,.08)}
       <div id="payFields"></div>
       <div style="margin-top:14px"><button class="btn primary" id="paySave" type="button">Simpan harga &amp; QRIS</button></div>
       <div class="msg" id="payMsg" role="status"></div>
-      <p class="note" style="margin-top:10px">Hanya ada satu foto QRIS yang dipakai semua paket (7 hari, 15 hari, 1 bulan); nominal tiap paket diatur lewat harga di atas. Perubahan langsung berlaku untuk pembeli berikutnya. Pesanan yang sudah dibuat tetap memakai nominal lamanya. Foto otomatis dikecilkan supaya ringan; pakai foto QRIS yang jelas dan tidak terpotong.</p>
+      <p class="note" style="margin-top:10px">Hanya ada satu foto QRIS yang dipakai semua paket (VIP dan VIP Plus, 15 dan 30 hari); nominal tiap paket diatur lewat harga di atas. Perubahan langsung berlaku untuk pembeli berikutnya. Pesanan yang sudah dibuat tetap memakai nominal lamanya. Foto otomatis dikecilkan supaya ringan; pakai foto QRIS yang jelas dan tidak terpotong.</p>
     </div>
 
     <div class="card">
@@ -184,7 +184,12 @@ html[data-theme="green"] .btn.danger{background:rgba(255,90,90,.08)}
           </select>
         </div>
       </div>
-      <div style="margin-top:14px"><button class="btn primary" id="addBtn" type="button">Tambah ke VIP</button></div>
+      <div class="row two" style="margin-top:12px">
+        <div><label for="tier">Paket</label>
+          <select id="tier"><option value="vip">VIP</option><option value="plus">VIP Plus</option></select>
+        </div>
+      </div>
+      <div style="margin-top:14px"><button class="btn primary" id="addBtn" type="button">Tambah</button></div>
       <div class="msg" id="addMsg" role="status"></div>
     </div>
 
@@ -218,6 +223,11 @@ html[data-theme="green"] .btn.danger{background:rgba(255,90,90,.08)}
         <div><label for="dAmt">Jumlah</label><input id="dAmt" type="number" inputmode="numeric" min="1" value="1"></div>
         <div><label for="dUnit">Satuan</label>
           <select id="dUnit"><option value="1">Jam</option><option value="24" selected>Hari</option></select></div>
+      </div>
+      <div class="row two" style="margin-top:12px">
+        <div><label for="dTier">Paket yang diubah</label>
+          <select id="dTier"><option value="vip">VIP</option><option value="plus">VIP Plus</option></select>
+        </div>
       </div>
       <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
         <button class="btn primary" id="dAdd" type="button">+ Tambah durasi</button>
@@ -300,6 +310,7 @@ function fmtDate(ms){return new Date(ms).toLocaleDateString("id-ID",{day:"numeri
 function fmtTime(ms){return new Date(ms).toLocaleString("id-ID",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})}
 function rupiah(n){return "Rp"+Number(n).toLocaleString("id-ID")}
 function isActive(v){return !v.expiresAt||v.expiresAt>Date.now()}
+function plusActive(v){return isActive(v)&&typeof v.plusUntil==="number"&&(v.plusUntil===0||v.plusUntil>Date.now())}
 function withTimeout(p,ms){return new Promise((res,rej)=>{const t=setTimeout(()=>rej(Object.assign(new Error("timeout"),{code:"timeout"})),ms);p.then(v=>{clearTimeout(t);res(v)},e=>{clearTimeout(t);rej(e)})})}
 
 if (!configured) {
@@ -322,7 +333,7 @@ function renderOrders(){
   if(!pending.length){$("orders").innerHTML='<div class="empty">Belum ada pesanan yang menunggu.</div>';return}
   $("orders").innerHTML = pending.map(o=>
     '<div class="item"><div><div class="id">#'+esc(o.userId)+' · '+esc(rupiah(o.amount))+'</div>'+
-    '<div class="meta">'+esc(o.code)+' · '+esc(o.days)+' hari · '+esc(fmtTime(o.paidAt||o.createdAt))+(o.googleEmail?' · '+esc(o.googleEmail):'')+'</div></div>'+
+    '<div class="meta">'+esc(o.code)+' · '+esc(o.tier==="plus"?"VIP Plus":"VIP")+' '+esc(o.days)+' hari · '+esc(fmtTime(o.paidAt||o.createdAt))+(o.googleEmail?' · '+esc(o.googleEmail):'')+'</div></div>'+
     '<div class="actions"><button class="btn small primary" type="button" data-approve="'+esc(o.code)+'">Aktifkan</button>'+
     '<button class="btn danger" type="button" data-reject="'+esc(o.code)+'">Tolak</button></div></div>').join("");
 }
@@ -337,6 +348,7 @@ function renderVip(){
     if(!v.expiresAt) st='<span class="badge ok">Permanen</span>';
     else if(isActive(v)) st='<span class="badge ok">Sampai '+esc(fmtDate(v.expiresAt))+'</span>';
     else st='<span class="badge off">Kedaluwarsa</span>';
+    if(plusActive(v)) st+=v.plusUntil===0?'<span class="badge ok">Plus permanen</span>':'<span class="badge ok">Plus sampai '+esc(fmtDate(v.plusUntil))+'</span>';
     return '<div class="item"><div><div class="id">#'+esc(v.id)+st+'</div>'+
       '<div class="meta">'+esc(v.note||"Tanpa catatan")+(v.addedAt?" · "+esc(fmtDate(v.addedAt)):"")+'</div></div>'+
       '<div class="btns"><button class="btn small" type="button" data-dur="'+esc(v.id)+'">Durasi</button><button class="btn danger" type="button" data-remove="'+esc(v.id)+'">Hapus</button></div></div>';
@@ -388,12 +400,18 @@ function renderCodes(){
 }
 
 /* ── Data ── */
-function vipEntry(id, days, note){
-  const cur = vipMap[id];
-  const entry = { addedAt: (cur&&cur.addedAt)||Date.now(), note: note!=null&&note!==""?note:((cur&&cur.note)||"") };
-  if(days===0) entry.expiresAt = 0;
-  else if(cur && !cur.expiresAt) entry.expiresAt = 0;           // sudah permanen, tetap permanen
-  else entry.expiresAt = Math.max(Date.now(),(cur&&cur.expiresAt)||0)+days*DAY_MS;
+function vipEntry(id, days, note, tier){
+  const cur = vipMap[id] || {}, now = Date.now(), span = days*DAY_MS;
+  const vipPerm = !!vipMap[id] && !cur.expiresAt;
+  const entry = { addedAt: cur.addedAt||now, note: note!=null&&note!==""?note:(cur.note||"") };
+  if(tier==="plus"){
+    entry.plusUntil = (days===0||cur.plusUntil===0) ? 0 : Math.max(now,cur.plusUntil||0)+span;
+    // VIP Plus ikut VIP: masa VIP minimal sama dengan masa Plus
+    entry.expiresAt = (entry.plusUntil===0||vipPerm) ? 0 : Math.max(cur.expiresAt||0,entry.plusUntil);
+  }else{
+    entry.expiresAt = (days===0||vipPerm) ? 0 : Math.max(now,cur.expiresAt||0)+span;
+    if(typeof cur.plusUntil==="number") entry.plusUntil = cur.plusUntil;
+  }
   return entry;
 }
 function fail(el,e){
@@ -403,10 +421,11 @@ async function approve(code){
   const o = orderMap[code];
   if(!o||o.status!=="pending"){return}
   const updates = {};
-  updates["vip/"+o.userId] = vipEntry(String(o.userId), Number(o.days), "");
+  const tier = o.tier==="plus"?"plus":"vip";
+  updates["vip/"+o.userId] = vipEntry(String(o.userId), Number(o.days), "", tier);
   updates["orders/"+code+"/status"] = "approved";
   updates["orders/"+code+"/handledAt"] = Date.now();
-  try{ await update(ref(db),updates); say($("orderMsg"),"Roblox #"+o.userId+" sekarang VIP "+o.days+" hari.","ok"); }
+  try{ await update(ref(db),updates); say($("orderMsg"),"Roblox #"+o.userId+" sekarang "+(tier==="plus"?"VIP Plus":"VIP")+" "+o.days+" hari.","ok"); }
   catch(e){ fail($("orderMsg"),e); }
 }
 async function reject(code){
@@ -418,11 +437,11 @@ async function reject(code){
 async function add(){
   const id = $("uid").value.trim();
   if(!/^\d{1,20}$/.test(id)){say($("addMsg"),"User ID harus berupa angka (maks 20 digit).","err");return}
-  const days = Number($("days").value);
+  const days = Number($("days").value), tier = $("tier").value==="plus"?"plus":"vip";
   try{
-    await update(ref(db,"vip"),{[id]:vipEntry(id,days,$("note").value.trim().slice(0,80))});
+    await update(ref(db,"vip"),{[id]:vipEntry(id,days,$("note").value.trim().slice(0,80),tier)});
     $("uid").value="";$("note").value="";
-    say($("addMsg"),"Roblox #"+id+" sekarang VIP"+(days?" "+days+" hari.":" permanen."),"ok");
+    say($("addMsg"),"Roblox #"+id+" sekarang "+(tier==="plus"?"VIP Plus":"VIP")+(days?" "+days+" hari.":" permanen."),"ok");
   }catch(e){ fail($("addMsg"),e); }
 }
 async function removeVip(id){
@@ -491,16 +510,17 @@ async function clearInfo(){
 /* ── Harga VIP & QRIS (3 paket harga, 1 foto QRIS untuk semua paket) ── */
 let payState = null;      // isi node config/payment (null = bawaan)
 const PAY_PLANS = [
-  {k:"7",  name:"7 hari",  p:"p7",  def:25000},
-  {k:"15", name:"15 hari", p:"p15", def:35000},
-  {k:"30", name:"1 bulan", p:"p30", def:50000}
+  {p:"vip15",  name:"VIP 15 hari",      def:25000},
+  {p:"vip30",  name:"VIP 30 hari",      def:45000},
+  {p:"plus15", name:"VIP Plus 15 hari", def:35000},
+  {p:"plus30", name:"VIP Plus 30 hari", def:65000}
 ];
 let qrisDraft = undefined; // undefined = tidak diubah, null = pakai qris.jpg bawaan, string = data URL baru
 function curQris(s){ return s.qris || s.qris30 || s.qris7 || s.qris15 || null; }
 function buildPayFields(){
   $("payFields").innerHTML =
     '<div class="price-grid">' + PAY_PLANS.map(pl =>
-      '<div><label for="price'+pl.k+'">VIP '+pl.name+' (Rp)</label><input id="price'+pl.k+'" type="number" inputmode="numeric" min="1000" max="9900000" step="500" value="'+pl.def+'"></div>'
+      '<div><label for="price'+pl.p+'">'+pl.name+' (Rp)</label><input id="price'+pl.p+'" type="number" inputmode="numeric" min="1000" max="9900000" step="500" value="'+pl.def+'"></div>'
     ).join("") + '</div>' +
     '<label style="margin-top:16px">Foto QRIS (dipakai semua paket)</label>' +
     '<div class="qris-box"><img id="qrisPrev" alt="Pratinjau QRIS" src="qris.jpg">' +
@@ -516,7 +536,7 @@ function renderPay(){
   badge.textContent = payState ? "Kustom" : "Bawaan";
   badge.className = "badge " + (payState ? "ok" : "off");
   PAY_PLANS.forEach(pl => {
-    const inp = $("price"+pl.k);
+    const inp = $("price"+pl.p);
     if(document.activeElement !== inp) inp.value = s[pl.p] || pl.def;
   });
   if(qrisDraft === undefined){
@@ -573,8 +593,8 @@ async function savePay(){
   const cur = payState || {};
   const data = { updatedAt: Date.now() };
   for(const pl of PAY_PLANS){
-    const v = Math.round(Number($("price"+pl.k).value));
-    if(!ok(v)){ say($("payMsg"),"Harga VIP "+pl.name+" harus antara Rp1.000 dan Rp9.900.000.","err"); return; }
+    const v = Math.round(Number($("price"+pl.p).value));
+    if(!ok(v)){ say($("payMsg"),"Harga "+pl.name+" harus antara Rp1.000 dan Rp9.900.000.","err"); return; }
     data[pl.p] = v;
   }
   // tidak diubah: pertahankan foto yang ada (foto per-paket lama otomatis digabung jadi satu)
@@ -713,25 +733,49 @@ async function resetPw(){
 /* ── Ubah durasi VIP ── */
 async function changeDuration(sign){
   const id = $("dUid").value.trim();
-  const amt = Number($("dAmt").value), unit = Number($("dUnit").value);
+  const amt = Number($("dAmt").value), unit = Number($("dUnit").value), tier = $("dTier").value==="plus"?"plus":"vip";
   if(!/^\d{1,20}$/.test(id)){say($("dMsg"),"User ID harus berupa angka.","err");return}
   if(!(amt>0)){say($("dMsg"),"Jumlah harus lebih dari 0.","err");return}
-  const cur = vipMap[id], delta = Math.round(amt*unit*3600000);
+  const cur = vipMap[id], now = Date.now(), delta = Math.round(amt*unit*3600000);
   const label = amt+" "+(unit===24?"hari":"jam");
-  try{
+  const plusNow = cur && typeof cur.plusUntil==="number" ? cur.plusUntil : null;   // null = tanpa Plus, 0 = permanen
+  const rec = {addedAt:(cur&&cur.addedAt)||now, note:(cur&&cur.note)||""};
+  const bad = (t)=>say($("dMsg"),t,"err");
+  let msg;
+  if(tier==="plus"){
     if(sign>0){
-      if(cur && !cur.expiresAt){say($("dMsg"),"Roblox #"+id+" sudah VIP permanen.","err");return}
-      const base = Math.max(Date.now(),(cur&&cur.expiresAt)||0);
-      await update(ref(db,"vip"),{[id]:{addedAt:(cur&&cur.addedAt)||Date.now(),expiresAt:base+delta,note:(cur&&cur.note)||""}});
-      say($("dMsg"),"+"+label+" untuk Roblox #"+id+". Sekarang sampai "+fmtTime(base+delta)+".","ok");
+      if(plusNow===0){bad("Roblox #"+id+" sudah VIP Plus permanen.");return}
+      const next = Math.max(now,plusNow||0)+delta;
+      rec.plusUntil = next;
+      rec.expiresAt = (cur&&!cur.expiresAt) ? 0 : Math.max((cur&&cur.expiresAt)||0,next);
+      msg = "+"+label+" VIP Plus untuk Roblox #"+id+". Sekarang sampai "+fmtTime(next)+".";
     }else{
-      if(!cur){say($("dMsg"),"Roblox #"+id+" belum VIP.","err");return}
-      if(!cur.expiresAt){say($("dMsg"),"VIP permanen tidak bisa dikurangi. Hapus dari daftar VIP.","err");return}
-      const next = cur.expiresAt-delta;
-      const ended = next<=Date.now();
-      await update(ref(db,"vip"),{[id]:{addedAt:cur.addedAt||Date.now(),expiresAt:ended?Date.now():next,note:cur.note||""}});
-      say($("dMsg"),"−"+label+" untuk Roblox #"+id+". "+(ended?"VIP langsung berakhir.":"Sekarang sampai "+fmtTime(next)+"."),"ok");
+      if(plusNow===null){bad("Roblox #"+id+" belum VIP Plus.");return}
+      if(plusNow===0){bad("VIP Plus permanen tidak bisa dikurangi. Hapus dari daftar VIP.");return}
+      const next = plusNow-delta, ended = next<=now;
+      if(!ended) rec.plusUntil = next;
+      rec.expiresAt = (cur&&cur.expiresAt)||0;
+      msg = "−"+label+" VIP Plus untuk Roblox #"+id+". "+(ended?"VIP Plus langsung berakhir (VIP biasa tidak berubah).":"Sekarang sampai "+fmtTime(next)+".");
     }
+  }else{
+    if(sign>0){
+      if(cur && !cur.expiresAt){bad("Roblox #"+id+" sudah VIP permanen.");return}
+      const next = Math.max(now,(cur&&cur.expiresAt)||0)+delta;
+      rec.expiresAt = next;
+      if(plusNow!==null) rec.plusUntil = plusNow;
+      msg = "+"+label+" VIP untuk Roblox #"+id+". Sekarang sampai "+fmtTime(next)+".";
+    }else{
+      if(!cur){bad("Roblox #"+id+" belum VIP.");return}
+      if(!cur.expiresAt){bad("VIP permanen tidak bisa dikurangi. Hapus dari daftar VIP.");return}
+      const next = cur.expiresAt-delta, ended = next<=now;
+      rec.expiresAt = ended?now:next;
+      if(plusNow!==null) rec.plusUntil = plusNow===0 ? rec.expiresAt : Math.min(plusNow,rec.expiresAt);   // Plus tidak boleh melewati VIP
+      msg = "−"+label+" VIP untuk Roblox #"+id+". "+(ended?"VIP langsung berakhir.":"Sekarang sampai "+fmtTime(next)+".");
+    }
+  }
+  try{
+    await update(ref(db,"vip"),{[id]:rec});
+    say($("dMsg"),msg,"ok");
   }catch(e){ fail($("dMsg"),e); }
 }
 

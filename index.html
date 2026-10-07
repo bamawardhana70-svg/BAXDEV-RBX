@@ -4818,27 +4818,6 @@ body.premium-user :is(.nav-avatar, .su-avatar, #dd-avatar, #acct-avatar-big) {
 
 </style>
 <style>
-/* ── Toolbox ── */
-.tb-cats{display:flex!important;flex-wrap:nowrap!important;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
-.tb-cats::-webkit-scrollbar{display:none}
-.tb-cats .source-tab{flex:0 0 auto!important;min-width:78px;white-space:nowrap}
-.tb-note{min-height:16px;margin:0 0 12px;font-size:12px;line-height:1.5;color:var(--text2)}
-.tb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:12px}
-.tb-card{display:flex;flex-direction:column;min-width:0;overflow:hidden;background:var(--glass);border:1px solid var(--glass-border);border-radius:16px}
-.tb-thumb{aspect-ratio:1/1;display:grid;place-items:center;overflow:hidden;background:var(--surface)}
-.tb-thumb img{display:block;width:100%;height:100%;object-fit:cover}
-.tb-ph{width:36%;aspect-ratio:1/1;border-radius:12px;background:rgba(255,255,255,.07)}
-.tb-body{display:flex;flex-direction:column;gap:4px;min-width:0;padding:10px}
-.tb-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12.5px;font-weight:600;color:var(--text)}
-.tb-meta{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10.5px;color:var(--text3)}
-.tb-id{font:600 11px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.02em;color:var(--text2)}
-.tb-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
-.tb-actions .copy-btn{flex:1 1 auto;justify-content:center;min-height:32px;font-size:11px;text-decoration:none}
-.tb-skel .tb-thumb{animation:tb-pulse 1.2s ease-in-out infinite}
-.tb-skel .tb-body{min-height:96px}
-@keyframes tb-pulse{50%{opacity:.45}}
-.tb-more{display:flex;justify-content:center;margin:18px 0 6px}
-@media (max-width:640px){.tb-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}}
 </style>
 <style id="liquid-glass-clear">
 /* ═══ LIQUID GLASS BENING — panel melayang tembus pandang + blur, bukan abu-abu solid ═══ */
@@ -5035,8 +5014,6 @@ html[data-style="clay"] .toggle.on{background:color-mix(in srgb,var(--accent-blu
 /* avatar & ikon bulat */
 html[data-style="clay"] :is(.nav-avatar,.su-avatar,.um-cover,.connect-icon,.player-play){border:0 !important;box-shadow:var(--clay-out),var(--clay-in) !important}
 html[data-style="clay"] .progress-fill,html[data-style="clay"] .um-progress span{border-radius:999px}
-/* kartu toolbox: gambar ikut membulat */
-html[data-style="clay"] .tb-thumb{border-radius:20px 20px 0 0}
 html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
 /* pemilih gaya */
 .style-picker{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
@@ -5119,17 +5096,17 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                     </svg>
                     Model
                 </button>
-                <button class="nav-link" onclick="navigate('decal')">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.09-3.09a2 2 0 0 0-2.82 0L6 21"/>
+                <button class="nav-link" onclick="navigate('mesh')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round">
+                        <path d="M12 3 21 20H3z"/><path d="M12 3v17M7.5 11.5h9"/>
                     </svg>
-                    Decal
+                    Mesh
                 </button>
-                <button class="nav-link" onclick="navigate('toolbox')">
+                <button class="nav-link" onclick="navigate('skybox')">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.2-.6-.6-2.2z"/>
+                        <circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><path d="M3 12h18"/>
                     </svg>
-                    Toolbox
+                    SkyBox
                 </button>
                 <button class="nav-link" onclick="navigate('library')">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -5349,17 +5326,17 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                 </svg>
                 Model
             </div>
-            <div class="m-link" onclick="navigate('decal');closeMenu()">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.09-3.09a2 2 0 0 0-2.82 0L6 21"/>
+            <div class="m-link" onclick="navigate('mesh');closeMenu()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round">
+                    <path d="M12 3 21 20H3z"/><path d="M12 3v17M7.5 11.5h9"/>
                 </svg>
-                Decal
+                Image to Mesh
             </div>
-            <div class="m-link" onclick="navigate('toolbox');closeMenu()">
+            <div class="m-link" onclick="navigate('skybox');closeMenu()">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.2-.6-.6-2.2z"/>
+                    <circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><path d="M3 12h18"/>
                 </svg>
-                Toolbox
+                SkyBox 360
             </div>
             <div class="m-link" onclick="navigate('library');closeMenu()">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -5675,22 +5652,6 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                         <span class="drop-tag">RBXMX</span>
                     </div>
                 </div>
-                <div class="drop-zone" id="decal-drop-zone" style="display:none">
-                    <input type="file" id="decal-input" accept=".png,.jpg,.jpeg,.bmp,.tga,image/png,image/jpeg,image/bmp" multiple>
-                    <div class="drop-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.09-3.09a2 2 0 0 0-2.82 0L6 21"/>
-                        </svg>
-                    </div>
-                    <div class="drop-title">Drop gambar di sini</div>
-                    <div class="drop-sub">atau klik untuk pilih file. Maksimal 20 MB per gambar.</div>
-                    <div class="drop-types">
-                        <span class="drop-tag">PNG</span>
-                        <span class="drop-tag">JPG</span>
-                        <span class="drop-tag">BMP</span>
-                        <span class="drop-tag">TGA</span>
-                    </div>
-                </div>
                 <div class="file-queue" id="file-queue"></div>
                 <section class="upload-status" id="upload-status" aria-labelledby="upload-status-title" hidden>
                     <div class="section-title" id="upload-status-title">Status upload</div>
@@ -5782,32 +5743,13 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                     </button>
                 </div>
             </div>
-            <!-- TOOLBOX -->
-            <div class="page" id="page-toolbox">
-                <h1 class="page-title">Toolbox</h1>
-                <div class="page-sub">Cari model dan aset Roblox lain, lalu salin Asset ID-nya</div>
-                <div class="source-switch tb-cats" id="tb-cats" role="tablist" aria-label="Kategori aset">
-                    <button class="source-tab active" data-cat="10" onclick="toolboxSetCat('10')" role="tab" aria-selected="true">Model</button>
-                    <button class="source-tab" data-cat="13" onclick="toolboxSetCat('13')" role="tab" aria-selected="false">Decal</button>
-                    <button class="source-tab" data-cat="40" onclick="toolboxSetCat('40')" role="tab" aria-selected="false">MeshPart</button>
-                    <button class="source-tab" data-cat="38" onclick="toolboxSetCat('38')" role="tab" aria-selected="false">Plugin</button>
-                    <button class="source-tab" data-cat="3" onclick="toolboxSetCat('3')" role="tab" aria-selected="false">Audio</button>
-                </div>
-                <div class="library-toolbar">
-                    <div class="search-wrap">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="11" cy="11" r="8"/>
-                            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-                        </svg>
-                        <input type="text" id="tb-search" placeholder="Cari model atau ID" autocomplete="off" enterkeyhint="search">
-                    </div>
-                    <button class="btn btn-primary" id="tb-search-btn" type="button" onclick="toolboxSearch(true)">Cari</button>
-                </div>
-                <div class="tb-note" id="tb-note" role="status"></div>
-                <div class="tb-grid" id="tb-grid"></div>
-                <div class="tb-more">
-                    <button class="btn btn-outline" id="tb-more" type="button" onclick="toolboxSearch(false)" style="display:none">Muat lagi</button>
-                </div>
+            <!-- IMAGE TO MESH (VIP Plus) -->
+            <div class="page page-tool" id="page-mesh">
+                <div class="tool-host" id="tool-host-mesh"></div>
+            </div>
+            <!-- SKYBOX 360 (VIP Plus) -->
+            <div class="page page-tool" id="page-skybox">
+                <div class="tool-host" id="tool-host-skybox"></div>
             </div>
             <!-- LIBRARY -->
             <div class="page" id="page-library">
@@ -6231,16 +6173,18 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                 <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start">
                     <div>
                         <div class="plan-kicker premium-kicker">BAXDEV VIP</div>
-                        <h2>Naikkan batas publish</h2>
+                        <h2>Pilih paket</h2>
                     </div>
                     <button class="btn btn-outline" type="button" onclick="closeSubscriptionModal()">Tutup</button>
                 </div>
-                <p>Status VIP memberikan publish tanpa batas, batch sampai 5 audio, tema silver chrome, dan border premium pada profil.</p>
+                <p>VIP memberikan publish tanpa batas, batch sampai 5 audio, tema silver chrome, dan border premium pada profil. VIP Plus menambah akses tool Image to Mesh dan SkyBox 360.</p>
                 <div class="subscription-benefits">
                     <span>Publish tanpa batas</span>
                     <span>5 audio per batch</span>
                     <span>5 link YouTube/TikTok per proses</span>
                     <span>Tema silver chrome VIP</span>
+                    <span>VIP Plus: Image to Mesh</span>
+                    <span>VIP Plus: SkyBox 360</span>
                 </div>
                 <div id="payment-body"></div>
             </div>
@@ -6426,17 +6370,58 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
             function saveVipList(list) {
                 localStorage.setItem('baxdev_vip', JSON.stringify(list));
             }
+            // Owner rank: Roblox ID owner + login Google yang lolos /isAdmin (diperiksa ulang server di /api/tool dan kuota).
+            const OWNER_ROBLOX_ID = '8675322450';
+            function robloxIdNow() {
+                return String((S.roblox && S.roblox.userId) || '').trim();
+            }
+            function isOwnerRank() {
+                return S.ownerVerified === true && robloxIdNow() === OWNER_ROBLOX_ID;
+            }
             function isVIP() {
-                const uid = String((S.roblox && S.roblox.userId) || '').trim();
+                const uid = robloxIdNow();
                 if (!uid)
                     return false;
-                return (S.remoteVip === true && (!S.vipExpiresAt || S.vipExpiresAt > Date.now())) || getVipList().some(v => String(v.id) === uid && (!v.expiresAt || v.expiresAt > Date.now()));
+                return isOwnerRank() || (S.remoteVip === true && (!S.vipExpiresAt || S.vipExpiresAt > Date.now())) || getVipList().some(v => String(v.id) === uid && (!v.expiresAt || v.expiresAt > Date.now()));
+            }
+            // VIP Plus: S.plusUntil = null (tidak ada) | 0 (permanen) | timestamp. Selalu ikut VIP aktif.
+            function isVipPlus() {
+                if (isOwnerRank())
+                    return true;
+                return isVIP() && S.remoteVip === true && typeof S.plusUntil === 'number' && (S.plusUntil === 0 || S.plusUntil > Date.now());
             }
             function isPermanentVip() {
-                const uid = String((S.roblox && S.roblox.userId) || '').trim();
+                const uid = robloxIdNow();
                 if (!uid)
                     return false;
-                return (S.remoteVip === true && !S.vipExpiresAt) || getVipList().some(v => String(v.id) === uid && !v.expiresAt);
+                return isOwnerRank() || (S.remoteVip === true && !S.vipExpiresAt) || getVipList().some(v => String(v.id) === uid && !v.expiresAt);
+            }
+            function isPermanentPlus() {
+                return isOwnerRank() || (S.remoteVip === true && !S.vipExpiresAt && S.plusUntil === 0);
+            }
+            function accountTier() {
+                return isOwnerRank() ? 'owner' : isVipPlus() ? 'plus' : isVIP() ? 'vip' : 'free';
+            }
+            async function checkOwnerRank() {
+                const base = fbDbUrl();
+                const user = window.BX && window.BX.user;
+                if (!base || !user) {
+                    S.ownerVerified = false;
+                    S.ownerCheckedUid = null;
+                    return;
+                }
+                if (S.ownerCheckedUid === user.uid)
+                    return;
+                try {
+                    const token = await window.BX.getToken();
+                    if (!token)
+                        return;
+                    const res = await fetch(base + '/isAdmin.json?auth=' + encodeURIComponent(token), { cache: 'no-store' });
+                    S.ownerVerified = res.ok;
+                    S.ownerCheckedUid = user.uid;
+                } catch (e) {
+                    S.ownerVerified = false;
+                }
             }
             function fbDbUrl() {
                 const c = window.BAXDEV_FIREBASE;
@@ -6455,6 +6440,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                         return null;
                     const v = await res.json();
                     S.vipExpiresAt = v && v.expiresAt ? v.expiresAt : 0;
+                    S.plusUntil = v && typeof v.plusUntil === 'number' ? v.plusUntil : null;
                     if (v === null)
                         return false;
                     return !v.expiresAt || v.expiresAt > Date.now();
@@ -6479,6 +6465,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                             userId: String(order.userId),
                             amount: order.amount,
                             days: order.days,
+                            tier: orderTier(order),
                             status: 'pending',
                             createdAt: order.createdAt,
                             paidAt: order.paidAt,
@@ -6516,19 +6503,23 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                 }
             }
             async function checkRemoteVip() {
+                const prevOwner = S.ownerVerified;
+                await checkOwnerRank();
                 const uid = String((S.roblox && S.roblox.userId) || '').trim();
                 if (!uid) {
                     S.remoteVip = false;
                     S.vipExpiresAt = 0;
+                    S.plusUntil = null;
                     refreshAccountState();
                     if (typeof enforceThemeAccess === 'function') enforceThemeAccess();
                     return;
                 }
                 const prevExpiry = S.vipExpiresAt;
+                const prevPlus = S.plusUntil;
                 const fb = await checkFirebaseVip(uid);
                 if (fb === null)
                     return;
-                if (S.remoteVip !== fb || prevExpiry !== S.vipExpiresAt) {
+                if (S.remoteVip !== fb || prevExpiry !== S.vipExpiresAt || prevPlus !== S.plusUntil || prevOwner !== S.ownerVerified) {
                     S.remoteVip = fb;
                     refreshAccountState();
                 }
@@ -6611,6 +6602,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                 const q = getQuota();
                 S.account = {
                     plan: premium ? 'premium' : 'free',
+                    tier: accountTier(),
                     limit: FREE_UPLOAD_LIMIT,
                     used: q.count,
                     remaining: Math.max(0, FREE_UPLOAD_LIMIT - q.count),
@@ -6638,9 +6630,9 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                     syncQuotaDay();
             });
             function navigate(page) {
-                // "Model" dan "Decal" memakai halaman upload yang sama dalam mode masing-masing; "Upload" khusus musik.
+                // "Model" memakai halaman upload yang sama dalam mode model; "Upload" khusus musik.
                 let view = page;
-                if (page === 'model' || page === 'decal' || page === 'upload') {
+                if (page === 'model' || page === 'upload') {
                     const want = page === 'upload' ? 'audio' : page;
                     if (sourceKind(S.source) !== want) {
                         if (S.uploading && S.files.length) {
@@ -6659,8 +6651,8 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                     home: 0,
                     upload: 1,
                     model: 2,
-                    decal: 3,
-                    toolbox: 4,
+                    mesh: 3,
+                    skybox: 4,
                     library: 5,
                     settings: 6,
                     referral: 7
@@ -6673,8 +6665,8 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                     mls[idx].classList.add('active');
                 if (page === 'referral')
                     loadReferral();
-                if (page === 'toolbox')
-                    toolboxOpen();
+                if (page === 'mesh' || page === 'skybox')
+                    toolOpen(page);
                 if (page === 'library') {
                     renderLibrary();
                     checkPendingLibrary();
@@ -6846,6 +6838,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                 clearProfile();
                 S.roblox = {};
                 S.remoteVip = false;
+                S.plusUntil = null;
                 refreshAccountState();
                 updateAuthUI();
                 updateRobloxUI();
@@ -6910,6 +6903,15 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                 const color = window.__bxThemeMeta || (isPremium() ? '#0c0c0d' : '#050505');
                 document.querySelectorAll('meta[name="theme-color"]').forEach(meta => meta.setAttribute('content', color));
             }
+            function planButtonState(tier) {
+                if (tier === 'owner')
+                    return { label: 'Owner', disabled: true };
+                if (tier === 'plus')
+                    return isPermanentPlus() ? { label: 'VIP Plus Permanen', disabled: true } : { label: 'Perpanjang VIP Plus', disabled: false };
+                if (tier === 'vip')
+                    return { label: 'Upgrade / Perpanjang', disabled: false };
+                return { label: 'Buy VIP', disabled: false };
+            }
             function updateAccountPlanUI() {
                 const account = S.account || {
                     plan: 'free',
@@ -6921,9 +6923,12 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                 };
                 const premium = isPremium();
                 document.body.classList.toggle('premium-user', premium);
-                const title = premium ? 'VIP Plan' : 'Free Plan';
-                const vipUntil = premium && S.remoteVip === true && S.vipExpiresAt ? ` · sampai ${new Date(S.vipExpiresAt).toLocaleString('id-ID', {day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'})}` : '';
-                const usage = account.unlimited ? `Publish tanpa batas (VIP)${vipUntil}` : `${account.used || 0}/${account.limit || FREE_UPLOAD_LIMIT} publish hari ini`;
+                const tier = account.tier || 'free';
+                const title = { owner: 'Owner', plus: 'VIP Plus', vip: 'VIP Plan', free: 'Free Plan' }[tier];
+                const untilMs = tier === 'plus' && S.plusUntil ? S.plusUntil : S.vipExpiresAt;
+                const vipUntil = premium && tier !== 'owner' && S.remoteVip === true && untilMs ? ` · sampai ${new Date(untilMs).toLocaleString('id-ID', {day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'})}` : '';
+                const usage = tier === 'owner' ? 'Owner · semua fitur tanpa batas' : account.unlimited ? `Publish tanpa batas (${tier === 'plus' ? 'VIP Plus' : 'VIP'})${vipUntil}` : `${account.used || 0}/${account.limit || FREE_UPLOAD_LIMIT} publish hari ini`;
+                const planButton = planButtonState(tier);
                 const homeCard = document.getElementById('home-plan-card');
                 if (homeCard)
                     homeCard.classList.toggle('premium', premium);
@@ -6935,12 +6940,12 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                 if (homeUsage)
                     homeUsage.textContent = usage;
                 if (homeButton) {
-                    homeButton.textContent = premium ? (isPermanentVip() ? 'VIP Permanen' : 'Perpanjang VIP') : 'Buy VIP';
-                    homeButton.disabled = premium && isPermanentVip();
+                    homeButton.textContent = planButton.label;
+                    homeButton.disabled = planButton.disabled;
                 }
                 const accountBadge = document.getElementById('acct-plan-badge');
                 if (accountBadge) {
-                    accountBadge.textContent = premium ? 'VIP Plan' : 'Free Plan';
+                    accountBadge.textContent = title;
                     accountBadge.className = `profile-badge ${premium ? 'badge-pro' : 'badge-free'}`;
                 }
                 const accountTitle = document.getElementById('acct-plan-title');
@@ -6951,17 +6956,19 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                 if (accountUsage)
                     accountUsage.textContent = usage;
                 if (accountButton) {
-                    accountButton.textContent = premium ? (isPermanentVip() ? 'VIP Permanen' : 'Perpanjang VIP') : 'Buy VIP';
-                    accountButton.disabled = premium && isPermanentVip();
+                    accountButton.textContent = planButton.label;
+                    accountButton.disabled = planButton.disabled;
                 }
                 const ddPlan = document.getElementById('dd-plan');
                 if (ddPlan) {
-                    ddPlan.textContent = premium ? 'VIP' : 'Free';
+                    ddPlan.textContent = { owner: 'Owner', plus: 'VIP Plus', vip: 'VIP', free: 'Free' }[tier];
                     ddPlan.className = `profile-badge ${premium ? 'badge-pro' : 'badge-free'}`;
                 }
                 syncBrowserTheme();
                 if (typeof syncThemeLock === 'function') syncThemeLock();
                 updateUploadButton();
+                if (window.toolsReady)
+                    toolsSync();
             }
 
             function updateAccountStats() {
@@ -7020,8 +7027,6 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
             const modelInput = document.getElementById('model-input');
             bindDropZone(dropZone, fileInput);
             bindDropZone(document.getElementById('model-drop-zone'), modelInput);
-            const decalInput = document.getElementById('decal-input');
-            bindDropZone(document.getElementById('decal-drop-zone'), decalInput);
 
             function isLimitReached() {
                 return Boolean(hasRoblox() && S.account && !S.account.unlimited && S.account.remaining <= 0);
@@ -7047,16 +7052,15 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                 document.getElementById('upload-btn-label').textContent = limitReached ? `Batas publish per ${S.account.periodLabel || 'periode'} tercapai` : (S.files.length > 1 ? `Publish ${S.files.length} ${UPLOAD_TEXT[sourceKind(S.source)].noun} ke Roblox` : (S.source !== 'file' ? 'Publish ke Roblox' : 'Upload & Publish ke Roblox'));
             }
 
-            // Jenis upload dari sumber aktif: 'audio' (file/YouTube/TikTok), 'model', atau 'decal'.
-            const sourceKind = source => source === 'model' || source === 'decal' ? source : 'audio';
+            // Jenis upload dari sumber aktif: 'audio' (file/YouTube/TikTok) atau 'model'.
+            const sourceKind = source => source === 'model' ? 'model' : 'audio';
             const UPLOAD_TEXT = {
                 audio: { title: 'Upload Audio', sub: 'Publish audio langsung ke Roblox Asset', noun: 'audio' },
-                model: { title: 'Upload Model', sub: 'Publish model Roblox (.rbxm) langsung ke Roblox Asset', noun: 'model' },
-                decal: { title: 'Upload Decal', sub: 'Publish gambar (PNG, JPG, BMP, TGA) jadi Decal Roblox', noun: 'gambar' }
+                model: { title: 'Upload Model', sub: 'Publish model Roblox (.rbxm) langsung ke Roblox Asset', noun: 'model' }
             };
             function setUploadSource(source) {
-                const next = ['youtube', 'tiktok', 'model', 'decal'].includes(source) ? source : 'file';
-                // Antrean musik, model, dan decal tidak dicampur: pindah antar jenis mengosongkan antrean.
+                const next = ['youtube', 'tiktok', 'model'].includes(source) ? source : 'file';
+                // Antrean musik dan model tidak dicampur: pindah antar jenis mengosongkan antrean.
                 if (sourceKind(next) !== sourceKind(S.source) && S.files.length) {
                     if (S.uploading) {
                         toast('Antrean sedang diproses, tunggu sampai selesai', 'info');
@@ -7077,7 +7081,6 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                 });
                 document.getElementById('drop-zone').style.display = S.source === 'file' ? '' : 'none';
                 document.getElementById('model-drop-zone').style.display = mode === 'model' ? '' : 'none';
-                document.getElementById('decal-drop-zone').style.display = mode === 'decal' ? '' : 'none';
                 document.getElementById('youtube-source').style.display = S.source === 'youtube' ? '' : 'none';
                 document.getElementById('tiktok-source').style.display = S.source === 'tiktok' ? '' : 'none';
                 document.getElementById('audio-settings').style.display = asset ? 'none' : '';
@@ -7212,30 +7215,23 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
             function isModelFile(f) {
                 return /\.rbxmx?$/i.test(f && f.name || '');
             }
-            // Gambar untuk Decal dikenali dari ekstensi (TGA tidak punya MIME di banyak browser).
-            function isImageFile(f) {
-                return /\.(png|jpe?g|bmp|tga)$/i.test(f && f.name || '');
-            }
-            // 'model' | 'decal' | 'audio' — menentukan tipe asset Roblox yang dikirim.
+            // 'model' | 'audio' — menentukan tipe asset Roblox yang dikirim.
             function fileKind(f) {
-                return isModelFile(f) ? 'model' : isImageFile(f) ? 'decal' : 'audio';
+                return isModelFile(f) ? 'model' : 'audio';
             }
             const KIND_INFO = {
                 audio: { type: 'Audio', noun: 'audio', done: 'Audio berhasil dipublish!', note: 'Salin ID ini ke script Roblox kamu' },
-                model: { type: 'Model', noun: 'model', done: 'Model berhasil dipublish!', note: 'Pakai ID ini dengan InsertService:LoadAsset(ID) di game milikmu' },
-                decal: { type: 'Decal', noun: 'gambar', done: 'Decal berhasil dipublish!', note: 'Pakai di Decal.Texture atau ImageLabel.Image. Gambar masih dicek moderasi Roblox sebelum bisa tampil' }
+                model: { type: 'Model', noun: 'model', done: 'Model berhasil dipublish!', note: 'Pakai ID ini dengan InsertService:LoadAsset(ID) di game milikmu' }
             };
-            // Menu Model hanya menerima .rbxm/.rbxmx, menu Decal hanya gambar; tab musik (file/YouTube/TikTok) hanya audio.
+            // Menu Model hanya menerima .rbxm/.rbxmx; tab musik (file/YouTube/TikTok) hanya audio.
             function addFiles(files) {
                 const mode = sourceKind(S.source);
                 const accepted = files.filter(f => mode === 'audio' ? f.type.startsWith('audio/') : fileKind(f) === mode);
                 if (!accepted.length) {
                     if (mode === 'audio' && files.some(isModelFile))
                         toast('File .rbxm diupload lewat menu Model', 'error');
-                    else if (mode === 'audio' && files.some(isImageFile))
-                        toast('Gambar diupload lewat menu Decal', 'error');
                     else
-                        toast({ audio: 'Format tidak didukung', model: 'Format tidak didukung. Pakai file .rbxm atau .rbxmx', decal: 'Format tidak didukung. Pakai PNG, JPG, BMP, atau TGA' }[mode], 'error');
+                        toast({ audio: 'Format tidak didukung', model: 'Format tidak didukung. Pakai file .rbxm atau .rbxmx' }[mode], 'error');
                     return
                 }
                 const tooLarge = accepted.find(f => f.size > 20 * 1024 * 1024);
@@ -7265,6 +7261,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                         sel.value = fmtMap[ext] || 'mp3';
                 }
             }
+            // Ikon Decal masih dipakai Library untuk gambar yang sudah pernah diupload (termasuk 6 sisi SkyBox).
             const DECAL_ICON = '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.09-3.09a2 2 0 0 0-2.82 0L6 21"/>';
             const MODEL_ICON = '<path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/>';
             const QSTAT = { wait: ['Menunggu', ''], run: ['Diproses', 'is-run'], ok: ['Selesai', 'is-ok'], proc: ['Diproses', 'is-run'], fail: ['Gagal', 'is-bad'] };
@@ -7294,7 +7291,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                     const st = QSTAT[f._st || 'wait'];
                     return `
     <div class="file-item">
-      <div class="file-icon">${kind === 'decal' ? `<img src="${imageUrl(f)}" alt="">` : ''}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${kind === 'model' ? MODEL_ICON : kind === 'decal' ? DECAL_ICON : '<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>'}</svg></div>
+      <div class="file-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${kind === 'model' ? MODEL_ICON : '<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>'}</svg></div>
       <div class="file-details"><div class="file-name">${escapeHtml(f.name)}</div><div class="file-size">${fmtSize(f.size)}${f._dur ? ' · ' + (f._trim ? fmtDur(f._trim.end - f._trim.start) + ' (dipotong)' : fmtDur(f._dur)) : ''} <span class="q-chip ${st[1]}">${st[0]}</span></div><input class="batch-name-input" type="text" value="${escapeHtml(S.assetNames[i] || defaultAssetName(f.name))}" maxlength="50" aria-label="Nama asset ${i + 1}" oninput="setAssetName(${i},this.value)">${kind === 'audio' ? trimButton(f, i) + '<div class="bx-prev" data-pv="' + i + '"></div>' : ''}
       </div>
       <button class="file-rm" onclick="removeFile(${i})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
@@ -7340,29 +7337,17 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
             function setAssetName(i, value) {
                 S.assetNames[i] = String(value || '').slice(0, 50)
             }
-            function imageUrl(f) {
-                return f._url || (f._url = URL.createObjectURL(f));
-            }
-            function releaseUrls(files) {
-                files.forEach(f => {
-                    if (f._url) {
-                        URL.revokeObjectURL(f._url);
-                        f._url = null;
-                    }
-                });
-            }
             function removeFile(i) {
                 if (S.uploading) {
                     toast('Antrean sedang diproses, tunggu sampai selesai', 'info');
                     return
                 }
-                releaseUrls(S.files.splice(i, 1));
+                S.files.splice(i, 1);
                 S.assetNames.splice(i, 1);
                 renderFileQueue();
                 updateUploadButton()
             }
             function clearFiles() {
-                releaseUrls(S.files);
                 S.files = [];
                 S.assetNames = [];
                 renderFileQueue();
@@ -7551,12 +7536,10 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                 S.uploading = false;
                 wrap.style.display = 'none';
                 btn.disabled = false;
-                releaseUrls(S.files);
                 S.files = [];
                 S.assetNames = [];
                 fileInput.value = '';
                 modelInput.value = '';
-                decalInput.value = '';
                 renderFileQueue();
             }
 
@@ -8520,6 +8503,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                 updateRobloxUI();
                 updateAuthUI();
                 S.remoteVip = false;
+                S.plusUntil = null;
                 checkRemoteVip();
                 toast('Pengaturan Roblox disimpan di perangkat ini', 'success');
                 // Langsung cek API key + scope supaya salah scope ketahuan sejak awal
@@ -8536,6 +8520,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                 document.getElementById('roblox-creator-type').value = 'User';
                 updateCreatorTypeUI();
                 S.remoteVip = false;
+                S.plusUntil = null;
                 refreshAccountState();
                 updateStats();
                 updateRobloxUI();
@@ -8714,20 +8699,14 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
             }
 
             // ── PEMBAYARAN VIP (QRIS statis, diaktifkan manual oleh admin) ──
+            // Harga bawaan; owner bisa mengubahnya di /owner (Firebase config/payment: vip15, vip30, plus15, plus30).
             const PAYMENT = {
-                plans: [{
-                    days: 7,
-                    label: '7 hari',
-                    price: 25000
-                }, {
-                    days: 15,
-                    label: '15 hari',
-                    price: 35000
-                }, {
-                    days: 30,
-                    label: '1 bulan',
-                    price: 50000
-                }],
+                plans: [
+                    { tier: 'vip', days: 15, label: '15 hari', price: 25000, key: 'vip15' },
+                    { tier: 'vip', days: 30, label: '30 hari', price: 45000, key: 'vip30' },
+                    { tier: 'plus', days: 15, label: '15 hari', price: 35000, key: 'plus15' },
+                    { tier: 'plus', days: 30, label: '30 hari', price: 65000, key: 'plus30' }
+                ],
                 qris: null,
                 adminWhatsapp: '6283172657811',
                 orderTtlMs: 24 * 60 * 60 * 1000
@@ -8752,9 +8731,8 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                     const c = await res.json();
                     const snapshot = () => JSON.stringify([PAYMENT.plans.map(p => p.price), PAYMENT.qris]);
                     const before = snapshot();
-                    const priceKey = {7: 'p7', 15: 'p15', 30: 'p30'};
                     PAYMENT.plans.forEach(plan => {
-                        const v = c && Number(c[priceKey[plan.days]]);
+                        const v = c && Number(c[plan.key]);
                         if (Number.isFinite(v) && v >= 1000) plan.price = v;
                     });
                     // satu QRIS; kalau owner lama masih menyimpan foto per paket, pakai yang pertama tersedia
@@ -8808,6 +8786,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                     userId: uid,
                     amount: plan.price,
                     days: plan.days,
+                    tier: plan.tier,
                     status: 'unpaid',
                     createdAt: Date.now()
                 };
@@ -8817,24 +8796,31 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
             function formatRupiah(amount) {
                 return 'Rp' + Number(amount).toLocaleString('id-ID');
             }
-            function planLabel(days) {
-                const plan = PAYMENT.plans.find(p => p.days === days);
-                return plan ? plan.label : `${days} hari`;
+            const TIER_LABEL = { vip: 'VIP', plus: 'VIP Plus' };
+            const orderTier = order => order && order.tier === 'plus' ? 'plus' : 'vip';
+            function planLabel(order) {
+                return `${TIER_LABEL[orderTier(order)]} ${order.days} hari`;
             }
             function whatsappUrl(order) {
-                const text = ['Konfirmasi VIP', `User ID: ${order.userId}`, `Kode pesanan: ${order.code}`, `Paket: ${planLabel(order.days)}`, `Nominal: ${formatRupiah(order.amount)}`].join('\n');
+                const text = ['Konfirmasi pembelian', `User ID: ${order.userId}`, `Kode pesanan: ${order.code}`, `Paket: ${planLabel(order)}`, `Nominal: ${formatRupiah(order.amount)}`].join('\n');
                 return `https://wa.me/${PAYMENT.adminWhatsapp}?text=${encodeURIComponent(text)}`;
             }
             function renderPlanChoice() {
-                const until = isVIP() && S.remoteVip === true && S.vipExpiresAt ? new Date(S.vipExpiresAt).toLocaleString('id-ID', {day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'}) : '';
-                document.getElementById('payment-body').innerHTML = `
-                    ${until ? `<p>VIP aktif sampai ${escapeHtml(until)}. Paket yang kamu beli ditambahkan setelah masa aktif ini, jadi boleh beli lebih dari sekali.</p>` : ''}
-                    <div class="field-label">Pilih paket</div>
-                    <div class="plan-options">
-                        ${PAYMENT.plans.map(plan => `<button type="button" class="plan-option" data-days="${plan.days}"><strong>${escapeHtml(plan.label)}</strong><span>${formatRupiah(plan.price)}</span></button>`).join('')}
+                const tier = accountTier();
+                const untilMs = tier === 'plus' && S.plusUntil ? S.plusUntil : S.vipExpiresAt;
+                const until = (tier === 'vip' || tier === 'plus') && S.remoteVip === true && untilMs ? new Date(untilMs).toLocaleString('id-ID', {day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'}) : '';
+                const group = (planTier, title, desc) => `
+                    <div class="field-label">${title}</div>
+                    <div class="setting-desc" style="margin-bottom:8px">${desc}</div>
+                    <div class="plan-options" style="margin-bottom:16px">
+                        ${PAYMENT.plans.filter(p => p.tier === planTier).map(plan => `<button type="button" class="plan-option" data-tier="${plan.tier}" data-days="${plan.days}"><strong>${escapeHtml(plan.label)}</strong><span>${formatRupiah(plan.price)}</span></button>`).join('')}
                     </div>`;
+                document.getElementById('payment-body').innerHTML = `
+                    ${until ? `<p>${tier === 'plus' ? 'VIP Plus' : 'VIP'} aktif sampai ${escapeHtml(until)}. Paket yang kamu beli ditambahkan setelah masa aktif paket yang sama, jadi boleh beli lebih dari sekali.</p>` : ''}
+                    ${isPermanentVip() ? '' : group('vip', 'VIP', 'Publish tanpa batas, batch 5 audio, tema bebas.')}
+                    ${group('plus', 'VIP Plus', 'Semua fitur VIP tanpa limit, plus tool Image to Mesh dan SkyBox 360.')}`;
                 document.querySelectorAll('#payment-body .plan-option').forEach(btn => {
-                    btn.addEventListener('click', () => choosePlan(Number(btn.dataset.days)));
+                    btn.addEventListener('click', () => choosePlan(btn.dataset.tier, Number(btn.dataset.days)));
                 });
             }
             function renderPayment(order) {
@@ -8845,7 +8831,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                         <div class="card-sm pay-block">
                             <div class="field-label">Menunggu verifikasi admin</div>
                             <div class="pay-amount">${amount}</div>
-                            <div class="pay-meta">VIP ${escapeHtml(planLabel(order.days))} &middot; Kode ${escapeHtml(order.code)} &middot; Roblox #${escapeHtml(order.userId)}</div>
+                            <div class="pay-meta">${escapeHtml(planLabel(order))} &middot; Kode ${escapeHtml(order.code)} &middot; Roblox #${escapeHtml(order.userId)}</div>
                         </div>
                         <p>Kirim konfirmasi ke admin lewat WhatsApp. VIP diaktifkan setelah pembayaranmu dicek.</p>
                         <div class="pay-actions">
@@ -8857,12 +8843,12 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                 }
                 body.innerHTML = `
                     <div class="card-sm pay-block">
-                        <div class="field-label">Total bayar &middot; VIP ${escapeHtml(planLabel(order.days))}</div>
+                        <div class="field-label">Total bayar &middot; ${escapeHtml(planLabel(order))}</div>
                         <div class="pay-amount">${amount}</div>
                         <div class="pay-meta">Kode pesanan ${escapeHtml(order.code)} &middot; Roblox #${escapeHtml(order.userId)}. Simpan kode ini, admin memakainya untuk mencocokkan pembayaranmu.</div>
                     </div>
                     <div class="pay-qris">
-                        <img src="${escapeHtml(qrisFor(order.days))}" alt="Kode QRIS pembayaran VIP ${escapeHtml(planLabel(order.days))}">
+                        <img src="${escapeHtml(qrisFor(order.days))}" alt="Kode QRIS pembayaran ${escapeHtml(planLabel(order))}">
                     </div>
                     <a class="pay-save" href="${escapeHtml(qrisFor(order.days))}" download="qris-baxdev-${Number(order.days)}hari.jpg">Simpan gambar QRIS</a>
                     <ol class="pay-steps">
@@ -8953,7 +8939,8 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                                 addedAt: now,
                                 expiresAt,
                                 note: (vip && vip.note) || 'Tukar kode',
-                                code
+                                code,
+                                ...(vip && typeof vip.plusUntil === 'number' ? { plusUntil: vip.plusUntil } : {})
                             }
                         })
                     });
@@ -8965,6 +8952,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                     }
                     S.remoteVip = true;
                     S.vipExpiresAt = expiresAt;
+                    S.plusUntil = vip && typeof vip.plusUntil === 'number' ? vip.plusUntil : null;
                     refreshAccountState();
                     input.value = '';
                     const until = new Date(expiresAt).toLocaleString('id-ID', {
@@ -9111,8 +9099,8 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                 }
             }
             function openSubscriptionModal() {
-                if (isPermanentVip()) {
-                    toast('Akun kamu VIP permanen, tidak perlu beli lagi.', 'info');
+                if (isPermanentPlus()) {
+                    toast('Akunmu sudah punya akses penuh, tidak perlu beli lagi.', 'info');
                     return;
                 }
                 const uid = currentUserId();
@@ -9125,7 +9113,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                 // VIP masih aktif = perpanjang: langsung tampilkan pilihan paket, bukan pesanan lama.
                 const draw = () => {
                     const o = findActiveOrder(uid);
-                    if (o && !isVIP()) renderPayment(o);
+                    if (o && !(orderTier(o) === 'plus' ? isVipPlus() : isVIP())) renderPayment(o);
                     else renderPlanChoice();
                 };
                 draw();
@@ -9135,8 +9123,8 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                     if (changed && document.getElementById('subscription-overlay').classList.contains('visible')) draw();
                 });
             }
-            function choosePlan(days) {
-                const plan = PAYMENT.plans.find(p => p.days === days);
+            function choosePlan(tier, days) {
+                const plan = PAYMENT.plans.find(p => p.tier === tier && p.days === days);
                 const uid = currentUserId();
                 if (!plan || !uid)
                     return;
@@ -9232,128 +9220,217 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                 , 3000);
             }
 
-            // ── TOOLBOX (cari aset Roblox lewat /api/roblox-toolbox) ──
-            const TB = { cat: '10', q: '', cursor: null, loading: false, seq: 0, inited: false };
-            const TB_LABEL = { '10': 'model', '13': 'decal', '40': 'meshpart', '38': 'plugin', '3': 'audio' };
-            function toolboxNote(text) {
-                document.getElementById('tb-note').textContent = text || '';
+// ── TOOL VIP PLUS (Image to Mesh, SkyBox 360) ──
+            // HTML tool disajikan /api/tool setelah server memeriksa VIP Plus / Owner, lalu dijalankan di iframe sandbox
+            // tanpa allow-same-origin: tool tidak bisa membaca localStorage, token, atau API key halaman ini.
+            const TOOLS = {
+                mesh: { title: 'Image to Mesh', desc: 'Ubah gambar jadi mesh 3D untuk Roblox Studio, ekspor glTF atau OBJ.' },
+                skybox: { title: 'SkyBox 360', desc: 'Ubah panorama 360° jadi enam sisi SkyBox, publish ke Roblox, dan salin script Studio.' }
+            };
+            const SKYBOX_FACES = ['Front', 'Back', 'Left', 'Right', 'Top', 'Bottom'];
+            const toolState = {};
+            let toolVipRecheckAt = 0;
+            function toolHost(name) {
+                return document.getElementById('tool-host-' + name);
             }
-            function toolboxOpen() {
-                if (TB.inited)
-                    return;
-                if (window.BX && window.BX.user) {
-                    TB.inited = true;
-                    toolboxSearch(true);
+            function toolCard(name, kicker, body) {
+                toolHost(name).innerHTML = `
+                    <div class="card tool-lock">
+                        <div class="plan-kicker premium-kicker">${escapeHtml(kicker)}</div>
+                        <h1 class="page-title">${escapeHtml(TOOLS[name].title)}</h1>
+                        <div class="page-sub">${escapeHtml(TOOLS[name].desc)}</div>
+                        ${body}
+                    </div>`;
+            }
+            function toolLock(name, reason) {
+                if (reason === 'login') {
+                    toolCard(name, 'LOGIN', `<div class="setting-desc">Login Google dulu untuk memakai tool ini.</div>
+                        <button class="btn btn-primary" type="button" onclick="requireGoogle('memakai ${TOOLS[name].title}')">Login Google</button>`);
+                } else if (reason === 'roblox') {
+                    toolCard(name, 'ROBLOX', `<div class="setting-desc">Isi Roblox User ID di Pengaturan dulu supaya status VIP Plus-mu bisa dicek.</div>
+                        <button class="btn btn-primary" type="button" onclick="navigate('settings');settingsTab('roblox')">Buka Pengaturan</button>`);
                 } else {
-                    toolboxNote('Login Google dulu untuk memakai Toolbox, lalu tekan Cari.');
+                    const price = days => { const p = PAYMENT.plans.find(x => x.tier === 'plus' && x.days === days); return p ? formatRupiah(p.price) : ''; };
+                    toolCard(name, 'VIP PLUS', `<div class="setting-desc">Tool ini khusus VIP Plus. VIP Plus juga membuka semua fitur tanpa limit. 15 hari ${price(15)}, 30 hari ${price(30)}.</div>
+                        <button class="btn btn-primary" type="button" onclick="openSubscriptionModal()">Beli VIP Plus</button>`);
                 }
             }
-            function toolboxSetCat(cat) {
-                if (!TB_LABEL[cat])
-                    return;
-                TB.cat = cat;
-                document.querySelectorAll('#tb-cats .source-tab').forEach(b => {
-                    const on = b.dataset.cat === cat;
-                    b.classList.toggle('active', on);
-                    b.setAttribute('aria-selected', String(on));
-                });
-                document.getElementById('tb-search').placeholder = `Cari ${TB_LABEL[cat]} atau ID`;
-                TB.inited = true;
-                toolboxSearch(true);
-            }
-            function toolboxSkeleton(n) {
-                return Array.from({ length: n }, () => '<div class="tb-card tb-skel"><div class="tb-thumb"><div class="tb-ph"></div></div><div class="tb-body"></div></div>').join('');
-            }
-            function toolboxCard(it) {
-                const id = escapeHtml(it.id);
-                const thumb = it.thumb ? `<img src="${escapeHtml(it.thumb)}" alt="" loading="lazy" referrerpolicy="no-referrer">` : '<div class="tb-ph"></div>';
-                const meta = [it.creator ? `oleh ${it.creator}${it.verified ? ' ✓' : ''}` : '', it.likePct != null ? `${it.likePct}% suka` : ''].filter(Boolean).join(' · ');
-                const name = escapeHtml(it.name);
-                const rbx = (TB.cat === '3' || TB.cat === '13' || TB.cat === '40') ? `<button class="copy-btn" type="button" data-copy="rbxassetid://${id}" data-label="rbxassetid://">rbxassetid://</button>` : '';
-                return `<div class="tb-card"><div class="tb-thumb">${thumb}</div><div class="tb-body"><div class="tb-name" title="${name}">${name}</div><div class="tb-meta">${escapeHtml(meta) || '&nbsp;'}</div><div class="tb-id">ID ${id}</div><div class="tb-actions"><button class="copy-btn" type="button" data-copy="${id}" data-label="ID ${id}">Salin ID</button>${rbx}<a class="copy-btn" href="https://create.roblox.com/store/asset/${id}" target="_blank" rel="noopener noreferrer">Buka</a></div></div></div>`;
-            }
-            async function toolboxCopy(text, label) {
+            async function toolLoad(name) {
+                toolState[name] = { loading: true };
+                toolHost(name).innerHTML = '<div class="card tool-lock"><div class="setting-desc" role="status">Memuat ' + escapeHtml(TOOLS[name].title) + '...</div></div>';
                 try {
-                    await navigator.clipboard.writeText(text);
-                } catch {
-                    const ta = document.createElement('textarea');
-                    ta.value = text;
-                    ta.style.cssText = 'position:fixed;opacity:0';
-                    document.body.appendChild(ta);
-                    ta.select();
-                    try {
-                        document.execCommand('copy');
-                    } catch {}
-                    ta.remove();
-                }
-                toast(`${label} disalin`, 'success');
-            }
-            async function toolboxSearch(reset) {
-                if (!requireGoogle('mencari di Toolbox'))
-                    return;
-                if (TB.loading && !reset)
-                    return;
-                const grid = document.getElementById('tb-grid');
-                const more = document.getElementById('tb-more');
-                if (reset) {
-                    TB.q = document.getElementById('tb-search').value.trim();
-                    TB.cursor = null;
-                    grid.innerHTML = toolboxSkeleton(6);
-                    more.style.display = 'none';
-                } else if (!TB.cursor) {
-                    return;
-                }
-                const seq = ++TB.seq;
-                TB.loading = true;
-                toolboxNote(reset ? 'Mencari...' : 'Memuat...');
-                try {
-                    const p = new URLSearchParams({ category: TB.cat });
-                    if (TB.q)
-                        p.set('q', TB.q);
-                    if (!reset && TB.cursor)
-                        p.set('cursor', TB.cursor);
-                    const res = await fetch('/api/roblox-toolbox?' + p.toString());
-                    const data = await res.json().catch( () => ({}));
-                    if (seq !== TB.seq)
-                        return;
-                    if (!res.ok || !data.ok) {
-                        if (reset)
-                            grid.innerHTML = '';
-                        toolboxNote(data.message || `Pencarian gagal (HTTP ${res.status}).`);
+                    const res = await fetch(`/api/tool?name=${encodeURIComponent(name)}&rid=${encodeURIComponent(robloxIdNow())}`, { cache: 'no-store' });
+                    if (!res.ok) {
+                        const data = await res.json().catch(() => ({}));
+                        throw Object.assign(new Error(data.message || `Gagal memuat tool (HTTP ${res.status}).`), { code: data.code });
+                    }
+                    const html = await res.text();
+                    const frame = document.createElement('iframe');
+                    frame.className = 'tool-frame';
+                    frame.title = TOOLS[name].title;
+                    frame.setAttribute('sandbox', 'allow-scripts allow-downloads');
+                    frame.setAttribute('allow', 'clipboard-write; fullscreen');
+                    frame.setAttribute('allowfullscreen', '');
+                    frame.srcdoc = html;
+                    toolHost(name).replaceChildren(frame);
+                    toolState[name] = { frame };
+                } catch (e) {
+                    delete toolState[name];
+                    if (e.code === 'vip_plus_required') {
+                        toolLock(name, 'plus');
+                        checkRemoteVip();
                         return;
                     }
-                    const items = Array.isArray(data.items) ? data.items : [];
-                    const html = items.map(toolboxCard).join('');
-                    if (reset)
-                        grid.innerHTML = html;
-                    else
-                        grid.insertAdjacentHTML('beforeend', html);
-                    TB.cursor = data.nextCursor || null;
-                    more.style.display = TB.cursor ? '' : 'none';
-                    const total = grid.querySelectorAll('.tb-card').length;
-                    toolboxNote(total ? (TB.q ? `${total} hasil untuk “${TB.q}”` : `${total} aset populer`) : (TB.q ? `Tidak ada hasil untuk “${TB.q}”.` : 'Tidak ada aset.'));
-                } catch {
-                    if (seq !== TB.seq)
-                        return;
-                    if (reset)
-                        grid.innerHTML = '';
-                    toolboxNote('Koneksi bermasalah. Coba lagi.');
-                } finally {
-                    if (seq === TB.seq)
-                        TB.loading = false;
+                    toolCard(name, 'GAGAL', `<div class="setting-desc">${escapeHtml(e.message || 'Gagal memuat tool.')}</div>
+                        <button class="btn btn-outline" type="button" onclick="toolOpen('${name}')">Coba lagi</button>`);
                 }
             }
-            document.getElementById('tb-grid').addEventListener('click', e => {
-                const b = e.target.closest('[data-copy]');
-                if (b)
-                    toolboxCopy(b.dataset.copy, b.dataset.label || 'ID');
-            });
-            document.getElementById('tb-search').addEventListener('keydown', e => {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    toolboxSearch(true);
+            function toolOpen(name) {
+                if (!TOOLS[name])
+                    return;
+                const st = toolState[name];
+                if (!(window.BX && window.BX.user))
+                    return toolLock(name, 'login');
+                if (!robloxIdNow())
+                    return toolLock(name, 'roblox');
+                if (!isVipPlus()) {
+                    if (st && st.frame) {
+                        st.frame.remove();
+                        delete toolState[name];
+                    }
+                    toolLock(name, 'plus');
+                    // status VIP bisa baru berubah (aktivasi owner): cek ulang paling sering tiap 30 detik
+                    if (Date.now() - toolVipRecheckAt > 30000) {
+                        toolVipRecheckAt = Date.now();
+                        checkRemoteVip();
+                    }
+                    return;
                 }
+                if (st)
+                    return;   // sudah dimuat atau sedang dimuat
+                toolLoad(name);
+            }
+            // Dipanggil setelah status akun berubah: cabut tool kalau Plus habis, muat/kunci ulang halaman tool yang sedang terbuka.
+            function toolsSync() {
+                Object.keys(TOOLS).forEach(name => {
+                    const st = toolState[name];
+                    if (st && st.frame && !isVipPlus()) {
+                        st.frame.remove();
+                        delete toolState[name];
+                    }
+                    const page = document.getElementById('page-' + name);
+                    if (page && page.classList.contains('active'))
+                        toolOpen(name);
+                });
+            }
+            // Upload satu sisi SkyBox sebagai Decal lewat /api/roblox-upload (API key tetap di halaman ini, tidak masuk ke tool).
+            async function toolUploadDecal(blob, filename, displayName) {
+                const fd = new FormData();
+                fd.append('file', new File([blob], filename, { type: 'image/png' }), filename);
+                fd.append('userId', S.roblox.userId);
+                fd.append('apiKey', S.roblox.apiKey);
+                fd.append('creatorType', S.roblox.creatorType || 'User');
+                fd.append('groupId', S.roblox.groupId || '');
+                fd.append('assetType', 'Decal');
+                fd.append('displayName', displayName);
+                fd.append('description', 'Uploaded via baxdev SkyBox 360');
+                const res = await postWithRetry('/api/roblox-upload', fd);
+                const text = await res.text();
+                let data = {};
+                try {
+                    data = JSON.parse(text);
+                } catch (e) {}
+                if (!res.ok && !data.message && text)
+                    data.message = text.slice(0, 240);
+                if (!res.ok || data.ok === false)
+                    throw new Error(data.message || 'Upload gagal');
+                let assetId = data.pending ? null : data.assetId;
+                const opPath = data.operationPath || null;
+                for (let attempt = 0; !assetId && data.pending && opPath && attempt < 10; attempt++) {
+                    await sleep(1500);
+                    let statusRes;
+                    try {
+                        statusRes = await fetch('/api/roblox-asset-status', {
+                            method: 'POST',
+                            headers: { 'content-type': 'application/json' },
+                            body: JSON.stringify({ apiKey: S.roblox.apiKey, operationPath: opPath })
+                        });
+                    } catch (netErr) {
+                        continue;
+                    }
+                    const status = await statusRes.json().catch(() => ({}));
+                    if (!statusRes.ok)
+                        throw new Error(status.message || 'Gagal membaca status publish');
+                    if (status.ok === false || status.error)
+                        throw new Error(status.message || 'Roblox menolak gambar ini');
+                    if (status.done)
+                        assetId = status.assetId;
+                }
+                return { assetId: assetId || null, opPath };
+            }
+            async function toolPublishSkybox(win, req) {
+                const send = msg => win.postMessage(Object.assign({ bx: 'publish', id: req.id }, msg), '*');
+                try {
+                    if (!isVipPlus())
+                        throw new Error('Fitur ini khusus VIP Plus.');
+                    if (!hasRoblox())
+                        throw new Error('Isi Roblox User ID & API Key di Pengaturan dulu.');
+                    if (S.roblox.creatorType === 'Group' && !S.roblox.groupId)
+                        throw new Error('Isi Group ID dulu di pengaturan Roblox sebelum publish ke Group.');
+                    const files = req.files || {};
+                    for (const face of SKYBOX_FACES) {
+                        const f = files[face];
+                        if (!(f instanceof Blob) || f.size === 0 || f.size > 20 * 1024 * 1024)
+                            throw new Error(`Gambar sisi ${face} tidak valid.`);
+                    }
+                    const stamp = new Date().toTimeString().slice(0, 5).replace(':', '');
+                    const results = {};
+                    let next = 0;
+                    const worker = async () => {
+                        while (next < SKYBOX_FACES.length) {
+                            const index = next++;
+                            const face = SKYBOX_FACES[index];
+                            const name = `Skybox ${stamp} ${face}`;
+                            const filename = `Skybox_${face}.png`;
+                            const size = files[face].size;
+                            send({ type: 'state', face, text: 'Mengunggah...' });
+                            try {
+                                const out = await toolUploadDecal(files[face], filename, name);
+                                const base = { id: Date.now() + index, name, filename, size, uploadedAt: new Date().toISOString(), speed: 1, kind: 'decal' };
+                                if (out.assetId) {
+                                    addLibEntry(Object.assign(base, { assetId: out.assetId, status: 'done' }), { name, filename, size, assetId: String(out.assetId).slice(0, 30), status: 'done', speed: 1 });
+                                    results[face] = { assetId: out.assetId };
+                                    send({ type: 'state', face, text: 'Selesai' });
+                                } else if (out.opPath) {
+                                    addLibEntry(Object.assign(base, { assetId: null, status: 'proc', operationPath: out.opPath }), null);
+                                    results[face] = { error: 'Masih diproses Roblox. ID-nya akan muncul di Library.' };
+                                } else {
+                                    throw new Error('Roblox belum mengembalikan Asset ID.');
+                                }
+                            } catch (e) {
+                                const reason = String(e.message || 'Error').slice(0, 160);
+                                addLibEntry({ id: Date.now() + index, assetId: null, name, filename, size, kind: 'decal', status: 'fail', reason, uploadedAt: new Date().toISOString() },
+                                    { name, filename, size, status: 'fail', error: reason });
+                                results[face] = { error: reason };
+                            }
+                        }
+                    };
+                    await Promise.all([worker(), worker(), worker()]);
+                    send({ type: 'done', results });
+                } catch (e) {
+                    send({ type: 'error', message: e.message || 'Publish gagal.' });
+                }
+            }
+            // Pesan dari iframe tool: hanya diterima dari iframe SkyBox milik halaman ini (origin sandbox "null", jadi dicek lewat window sumbernya).
+            window.addEventListener('message', e => {
+                const d = e.data;
+                if (!d || d.bx !== 'publish' || d.type !== 'request' || typeof d.id !== 'string')
+                    return;
+                const st = toolState.skybox;
+                if (st && st.frame && st.frame.contentWindow === e.source)
+                    toolPublishSkybox(e.source, d);
             });
+            window.toolsReady = true;
 
             // ── INIT ──────────────────────────────────────────────
             function escapeHtml(value) {
@@ -10398,6 +10475,7 @@ if (!configured) {
     if (user) {
       window.closeGoogleLogin();
       if (typeof loadLibraryFromFirebase === "function") loadLibraryFromFirebase();
+      if (typeof checkRemoteVip === "function") checkRemoteVip();
       if (!was && pendingAction) {
         pendingAction = false;
         if (typeof toast === "function") toast("Berhasil login Google", "success");
@@ -10407,6 +10485,7 @@ if (!configured) {
         }
       }
     }
+    if (!user && typeof checkRemoteVip === "function") checkRemoteVip();
     syncAuthUI();
   });
 }
@@ -10556,7 +10635,9 @@ if (!configured) {
       body["referrals/board/" + rec.uid] = { total: (Number(bd && bd.total) || 0) + 1, at: now };
       if (!(vip && !vip.expiresAt)) {   // VIP permanen tidak perlu ditambah
         var start = vip && vip.expiresAt > now ? vip.expiresAt : now;
-        body["vip/" + rec.roblox] = { addedAt: (vip && vip.addedAt) || now, expiresAt: start + 21600000, note: (vip && vip.note) || "Referal" };
+        var ent = { addedAt: (vip && vip.addedAt) || now, expiresAt: start + 21600000, note: (vip && vip.note) || "Referal" };
+        if (vip && typeof vip.plusUntil === "number") ent.plusUntil = vip.plusUntil;   // jangan hapus VIP Plus milik pengundang
+        body["vip/" + rec.roblox] = ent;
       }
       await rest(".json", { method: "PATCH", body: body });
       clear();
@@ -10757,7 +10838,7 @@ html body{background:transparent !important}
   html body #page-home .qa-btn{padding:24px;border-radius:var(--g-r)}
   html body #page-home #recent-list{padding:10px 14px}
 
-  /* Library & Toolbox */
+  /* Library */
   html body .library-grid{grid-template-columns:repeat(auto-fill,minmax(230px,1fr)) !important;gap:16px !important}
   html body .library-toolbar{display:flex;align-items:center;gap:10px;padding:12px 14px;margin-bottom:16px}
   html body .library-toolbar .search-wrap{flex:1}
@@ -11141,9 +11222,18 @@ html body .section-heading{margin:26px 4px 12px !important}
 }
 @media (max-width:360px){.bx-tile b{font-size:15px}#bx-welcome{padding:24px 20px}}
 </style>
+<style id="bx-tools">
+/* Tool VIP Plus: iframe sandbox memenuhi area halaman */
+html body .page.page-tool{max-width:960px;padding-top:16px;padding-bottom:16px}
+.tool-frame{display:block;width:100%;height:calc(100vh - var(--nav-h) - 32px);height:calc(100dvh - var(--nav-h) - 32px);min-height:560px;border:0;border-radius:var(--radius);background:#000}
+.tool-lock{display:flex;flex-direction:column;align-items:flex-start;gap:8px;margin-top:24px}
+.tool-lock .page-title,.tool-lock .page-sub{margin:0}
+.tool-lock .btn{margin-top:6px}
+@media (max-width:1099px){html body .page.page-tool{padding-left:10px;padding-right:10px}.tool-frame{border-radius:18px}}
+</style>
 <script id="bx-v47-js">
 (function(){
-  var T=['Beranda','Upload','Model','Decal','Toolbox','Library','Pengaturan','Referal'],N=['home','upload','model','decal','toolbox','library','settings','referral'];
+  var T=['Beranda','Upload','Model','Image to Mesh','SkyBox 360','Library','Pengaturan','Referal'],N=['home','upload','model','mesh','skybox','library','settings','referral'];
   var $=function(i){return document.getElementById(i)};
   var IC={burger:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>',
     music:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>',
@@ -11187,7 +11277,8 @@ html body .section-heading{margin:26px 4px 12px !important}
       var qa=home.querySelector('.quick-actions');
       var tiles=[['music','Upload Musik','Convert & publish jadi asset Roblox',"navigate('upload')"],
         [null,'Upload Model','Upload .rbxm jadi asset',"navigate('model')",2],
-        [null,'Toolbox','Cari model & aset Roblox',"navigate('toolbox')",4],
+        [null,'Image to Mesh','Foto jadi mesh 3D (VIP Plus)',"navigate('mesh')",3],
+        [null,'SkyBox 360','Panorama jadi 6 sisi (VIP Plus)',"navigate('skybox')",4],
         [null,'Library','Kelola audio tersimpan',"navigate('library')",5],
         [null,'Pengaturan','Tema, upload, dan lainnya',"navigate('settings')",6],
         ['star','Beli VIP','Upload lebih banyak & tema bebas',"openSubscriptionModal()"],
@@ -11385,12 +11476,7 @@ html body #player-bar{background:var(--bx-glass-nav) !important;border:1px solid
 
 
 <style id="bx-v51-polish">
-/* ═══ BAXDEV v51 — rapi Toolbox, label tombol Library, selection terang, tanpa stroke, avatar VIP ═══ */
-
-/* Toolbox: kolom cari + tombol Cari satu baris */
-html body #page-toolbox .library-toolbar{display:flex !important;flex-wrap:nowrap !important;align-items:center;gap:10px !important}
-html body #page-toolbox .library-toolbar .search-wrap{flex:1 1 0 !important;min-width:0}
-html body #page-toolbox #tb-search-btn{flex:none !important;width:auto !important;min-height:46px;padding:0 22px !important;border-radius:16px}
+/* ═══ BAXDEV v51 — rapi label tombol Library, selection terang, tanpa stroke, avatar VIP ═══ */
 
 /* Library: tombol toolbar atas pakai teks */
 html body .lib-tools .btn{width:auto !important;height:auto !important;min-height:40px;padding:0 14px !important;gap:7px !important;border-radius:14px !important;font-size:12.5px;font-weight:600}
@@ -11640,17 +11726,12 @@ html body #intro-logo-img{width:clamp(120px,32vw,190px) !important;filter:bright
   html body .feed-list li{padding:13px 0 !important}
   html body .feed-name{font-size:14px}
 
-  /* LIBRARY & TOOLBOX */
+  /* LIBRARY */
   html body .library-toolbar{padding:12px 16px !important;gap:12px !important;border-radius:22px !important}
   html body .library-toolbar select{min-width:150px}
   html body .lib-tools{margin:0 0 16px !important}
   html body .library-grid{grid-template-columns:repeat(auto-fill,minmax(240px,1fr)) !important;gap:16px !important}
   html body .lib-card{padding:14px !important;border-radius:22px !important}
-  html body .tb-grid{grid-template-columns:repeat(auto-fill,minmax(210px,1fr)) !important;gap:16px !important}
-  html body .tb-card{border-radius:22px !important}
-  html body .tb-body{padding:14px !important;gap:6px}
-  html body .tb-name{font-size:13.5px}
-  html body .tb-cats{margin-bottom:14px}
 
   /* PENGATURAN */
   html body .settings-layout{grid-template-columns:270px minmax(0,1fr) !important;gap:26px !important}

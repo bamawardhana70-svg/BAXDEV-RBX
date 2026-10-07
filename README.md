@@ -25,7 +25,8 @@ functions/api/
   roblox-asset-status.js         Cek status upload yang masih diproses
   roblox-profile.js              Nama + avatar Roblox (avatar di pojok kanan atas dan Settings)
   roblox-my-audio.js             Impor musik lama dari akun Roblox ke Library (cek ID, scan best-effort)
-  roblox-toolbox.js              Pencarian Toolbox / Creator Store Roblox (menu Toolbox), tanpa API key
+  tool.js                        Sajikan tool VIP Plus (Image to Mesh, SkyBox 360) setelah cek VIP Plus / Owner
+_tools/                          Sumber HTML kedua tool (modul JS, BUKAN file statis)
   youtube-download.js            Convert link YouTube ke MP3
   youtube-title.js               Ambil judul asli video (oEmbed YouTube)
   tiktok-download.js             Convert link TikTok ke MP3 (API tikwm.com)
@@ -150,12 +151,12 @@ Tanpa VPS: `yt-worker/` menjalankan backend yang sama di Cloudflare Containers (
 Default-nya convert YouTube tetap lewat API key lama (api.theresav.eu); backend sendiri hanya dipakai kalau kedua env di atas diisi.
 
 ## Atur harga VIP & QRIS
-Buka `/owner` → kartu **Harga VIP & QRIS**. Isi harga paket 7 hari dan 1 bulan, upload foto QRIS baru (otomatis dikecilkan), lalu Simpan.
-Data disimpan di Firebase `config/payment` dan langsung dipakai tombol Buy VIP. Kalau belum diatur, dipakai harga 25.000 / 50.000 dan `qris.jpg`.
+Buka `/owner` → kartu **Harga VIP & QRIS**. Isi empat harga (VIP 15/30 hari, VIP Plus 15/30 hari), upload foto QRIS baru (otomatis dikecilkan), lalu Simpan.
+Data disimpan di Firebase `config/payment` dan langsung dipakai tombol Buy VIP. Kalau belum diatur, dipakai harga bawaan di bawah dan `qris.jpg`.
 **Wajib:** paste ulang `database.rules.json` di Firebase Console → Realtime Database → Rules → Publish, supaya node `config` bisa dibaca publik dan ditulis owner saja.
 
 ## Paket VIP, QRIS, dan tema
-- Paket VIP: 7 hari, 15 hari, 1 bulan. Harga tiap paket diatur di /owner (Harga VIP & QRIS). Hanya ada 1 foto QRIS yang dipakai semua paket. Data disimpan di Firebase `config/payment` (`p7`/`p15`/`p30` untuk harga, `qris` untuk foto).
+- Paket (v68): VIP 15 hari Rp25.000, VIP 30 hari Rp45.000, VIP Plus 15 hari Rp35.000, VIP Plus 30 hari Rp65.000 (paket 7 hari dihapus). Harga bisa diubah di /owner (Harga VIP & QRIS). Hanya ada 1 foto QRIS yang dipakai semua paket. Data disimpan di Firebase `config/payment` (`vip15`/`vip30`/`plus15`/`plus30` untuk harga, `qris` untuk foto).
 - Tema warna (Hitam, Biru, Hijau): Settings → Lanjutan. Berlaku untuk seluruh tampilan dan tersimpan di browser (`baxdev_theme`); halaman /owner ikut tema yang sama.
 - Beli VIP boleh berkali-kali: paket baru ditambahkan setelah masa aktif yang sekarang (owner menekan Aktifkan, masa aktif otomatis menumpuk). Tombol berubah jadi "Perpanjang VIP" saat VIP masih aktif; VIP permanen tidak perlu beli lagi.
 - Nominal pembayaran bulat sesuai harga paket (tanpa angka acak). Pesanan dicocokkan lewat kode pesanan `BX-XXXX` yang ikut terkirim di pesan WhatsApp dan tampil di /owner.
@@ -167,7 +168,6 @@ Data disimpan di Firebase `config/payment` dan langsung dipakai tombol Buy VIP. 
 - Informasi di Home: owner mengirim teks lewat /owner (kartu "Informasi di Home", disimpan di Firebase `config/info`, maks 500 karakter). Selama ada informasi, Home menampilkan itu; kalau dihapus, Home menampilkan jadwal sholat berikutnya (API AlAdhan; metode Kemenag RI untuk Indonesia). Kota mengikuti pengguna: GPS jika izin sudah diberikan, kalau belum memakai perkiraan kota dari jaringan lewat `functions/api/geo.js` (`request.cf` Cloudflare), dan Jakarta bila keduanya gagal. Tombol "Pakai lokasi presisi" meminta izin GPS. Kota dicek ulang tiap 30 menit dan saat aplikasi dibuka kembali; hitung mundur berjalan per detik. `_headers` harus mengizinkan `geolocation=(self)`. **Paste ulang `database.rules.json` ke Firebase Console** supaya node `config/info` bisa ditulis owner.
 - Tema "Warna bebas" (Settings → Lanjutan) khusus VIP: pilih warna apa saja lewat swatch atau color picker; seluruh tampilan (dan /owner) mengikuti. Logikanya ada di `theme.js`. Kalau VIP habis, tampilan kembali ke Hitam; warna pilihan tetap tersimpan dan aktif lagi saat VIP diperpanjang. Catatan: ini pengaturan tampilan di sisi browser, bukan pengaman.
 - Avatar VIP: cincin emas berputar, mahkota kecil, dan kilau di semua avatar (navbar, dropdown, Settings, Akun).
-- Menu **Toolbox** (hamburger dan navbar desktop): cari aset Roblox seperti di create.roblox.com/store/models. Kategori Model, Decal, MeshPart, Plugin, Audio; ada kolom cari, tempel ID atau link `create.roblox.com/store/asset/ID` untuk melihat satu asset, dan tombol Muat lagi. Tiap kartu punya Salin ID (untuk Audio, Decal, MeshPart juga `rbxassetid://ID`) dan Buka di Creator Store. Frontend memanggil `GET /api/roblox-toolbox?category=10&q=...&cursor=...`; endpoint itu meneruskan ke `apis.roblox.com/toolbox-service/v1/marketplace/{kategori}` dan `.../items/details` plus thumbnail dari `thumbnails.roblox.com`. Endpoint publik ini tidak butuh API key, tapi tetap wajib login Google (`requireUser`). Roblox bisa membatasi permintaan (HTTP 429); pesannya diteruskan ke halaman. Tidak ada perubahan di `database.rules.json`.
 
 ## Referal (v55)
 - Menu **Referal** (ikon hadiah): tiap user login punya link `https://domainmu/?ref=KODE`.
@@ -188,3 +188,15 @@ Data disimpan di Firebase `config/payment` dan langsung dipakai tombol Buy VIP. 
 - Rules `quota/<uid>`: hitungan hanya bisa naik 1 per publish dan hanya bisa diturunkan oleh owner lewat Console.
 - Ubah batas: `FREE_DAILY_LIMIT` di `functions/_lib/auth.js` dan `FREE_UPLOAD_LIMIT` di `index.html` (harus sama).
 - Kalau rules belum dipublish, server tidak memblokir (fail-open) dan web memakai hitungan lokal lama.
+
+## VIP Plus, Owner, dan tool baru (v68)
+- **Role:** Free, VIP, VIP Plus, Owner. VIP Plus = semua fitur VIP tanpa limit + tool **Image to Mesh** dan **SkyBox 360**. VIP biasa tidak bisa membuka kedua tool.
+- **Data:** `vip/<robloxId>` punya dua masa aktif: `expiresAt` (VIP, `0` = permanen) dan `plusUntil` (VIP Plus, `0` = permanen, kosong = tidak ada). VIP Plus selalu ikut VIP: di /owner, aktivasi Plus otomatis menaikkan `expiresAt` minimal sampai `plusUntil`. Beli VIP biasa menambah `expiresAt` saja; beli VIP Plus menambah `plusUntil` saja. Kode akses dan referal hanya menambah VIP biasa dan tetap mempertahankan `plusUntil`.
+- **Order:** field baru `tier` (`vip` / `plus`) di `orders/<kode>`. Pesanan lama tanpa `tier` dianggap VIP. Menu /owner: pilih **Paket** saat menambah VIP dan saat mengubah durasi.
+- **Owner rank:** Roblox User ID `8675322450` **dan** login Google yang lolos baca `/isAdmin` (akun owner di rules). ID saja tidak cukup karena kolom ID bisa diisi siapa saja. Owner: semua fitur, tanpa batas publish (dicek server di `functions/_lib/auth.js`, konstanta `OWNER_ROBLOX_ID`, dan di `index.html`).
+- **Penyajian tool:** HTML tool ada di `functions/_tools/*.js` dan hanya dikirim lewat `GET /api/tool?name=mesh|skybox&rid=<id>` setelah server memeriksa login Google + VIP Plus/Owner (gagal baca database = ditolak). Dimuat ke iframe `sandbox="allow-scripts allow-downloads"` tanpa akses localStorage/API key halaman, dengan CSP yang memblokir pengiriman data keluar. Jangan menaruh salinan HTML tool di folder statis.
+- **Edit tool:** file di `functions/_tools/` adalah template literal; tanda `\`, backtick, dan `${` di dalam HTML harus di-escape dengan `\`.
+- **SkyBox publish:** tool mengirim 6 PNG ke halaman utama lewat `postMessage`; halaman utama yang memanggil `/api/roblox-upload` (assetType Decal, 3 paralel) dengan API key milik pengguna, lalu mencatat hasilnya ke Library. Image to Mesh seluruhnya lokal di browser (Three.js dari cdn.jsdelivr.net).
+- **Dihapus:** menu Toolbox (`/api/roblox-toolbox`) dan menu Upload Decal. Library tetap menampilkan Decal lama.
+- **Wajib:** paste ulang `database.rules.json` ke Firebase Console → Realtime Database → Rules → Publish (field `plusUntil`, `tier`, harga baru). Harga lama (`p7`/`p15`/`p30`) diabaikan; simpan sekali di /owner supaya node `config/payment` memakai kunci baru.
+- **Batasan:** status VIP terikat ke Roblox User ID yang diketik pengguna (read publik `vip/<id>`), sama seperti sebelumnya.

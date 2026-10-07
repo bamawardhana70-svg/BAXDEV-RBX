@@ -24,6 +24,20 @@ async function isOwnerToken(token) {
   } catch { return false; }
 }
 
+// Owner rank: akun Google yang lolos /isAdmin DAN memakai Roblox User ID ini.
+// ID saja tidak cukup: kolom Roblox User ID bisa diisi siapa saja, jadi harus digabung dengan cek Google owner.
+export const OWNER_ROBLOX_ID = "8675322450";
+
+export async function isOwnerSession(token, robloxId) {
+  return String(robloxId || "").trim() === OWNER_ROBLOX_ID && await isOwnerToken(token);
+}
+
+// vip/<robloxId>: { expiresAt (0 = permanen), plusUntil? (0 = permanen), ... }. VIP Plus selalu ikut VIP.
+export function vipActive(v) { return !!v && (!v.expiresAt || v.expiresAt > Date.now()); }
+export function plusActive(v) {
+  return vipActive(v) && typeof v.plusUntil === "number" && (v.plusUntil === 0 || v.plusUntil > Date.now());
+}
+
 const JWKS_URL = "https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com";
 let jwksCache = { keys: null, at: 0 };
 
@@ -91,6 +105,25 @@ export async function requireUser(request) {
   return null;
 }
 
+// Gerbang fitur VIP Plus (dipanggil setelah requireUser lolos). Gagal baca DB = tolak (fitur berbayar, jangan fail-open).
+// Balikkan Response (tolak) atau null kalau boleh.
+export async function requireVipPlus(request, robloxId) {
+  const rid = String(robloxId || "").trim();
+  if (!/^[0-9]{1,20}$/.test(rid)) return deny(400, "roblox_required", "Isi Roblox User ID di Pengaturan dulu.");
+  const m = /^Bearer\s+(.+)$/i.exec(request.headers.get("authorization") || "");
+  if (m && await isOwnerSession(m[1], rid)) return null;
+  let v;
+  try {
+    const r = await fetch(FIREBASE_DB_URL + "/vip/" + rid + ".json", { cache: "no-store" });
+    if (!r.ok) throw new Error("vip read " + r.status);
+    v = await r.json();
+  } catch {
+    return deny(502, "vip_unavailable", "Gagal memeriksa status VIP Plus. Coba lagi.");
+  }
+  if (!plusActive(v)) return deny(403, "vip_plus_required", "Fitur ini khusus VIP Plus.");
+  return null;
+}
+
 // ── Kuota publish harian akun free (disimpan di Firebase: quota/<uid> = {day, count}) ──
 // Dihitung server-side per akun Google, jadi tidak bisa direset lewat hapus data browser / ganti Roblox ID.
 // Hari berganti 00.00 WIB (UTC+7). Pastikan FREE_DAILY_LIMIT sama dengan FREE_UPLOAD_LIMIT di index.html.
@@ -114,12 +147,10 @@ export async function quotaBegin(request, robloxId) {
     const user = await verifyIdToken(m[1], FIREBASE_PROJECT_ID);
     if (!user) return { ok: true, skip: true };
     if (/^[0-9]{1,20}$/.test(String(robloxId || ""))) {
+      if (await isOwnerSession(m[1], robloxId)) return { ok: true, vip: true };                  // owner tanpa batas
       try {
         const vr = await fetch(FIREBASE_DB_URL + "/vip/" + robloxId + ".json", { cache: "no-store" });
-        if (vr.ok) {
-          const v = await vr.json();
-          if (v && (!v.expiresAt || v.expiresAt > Date.now())) return { ok: true, vip: true };   // VIP tanpa batas
-        }
+        if (vr.ok && vipActive(await vr.json())) return { ok: true, vip: true };                  // VIP / VIP Plus tanpa batas
       } catch { /* anggap bukan VIP */ }
     }
     const q = await readQuota(user.uid, m[1]);
