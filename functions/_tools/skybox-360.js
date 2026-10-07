@@ -5,25 +5,20 @@ export default `<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'unsafe-inline'; img-src data: blob:; media-src blob:; connect-src https://cdn.jsdelivr.net blob: data:; font-src data:; base-uri 'none'; form-action 'none'">
-<meta name="color-scheme" content="dark light">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>SkyBox 360°</title>
 <style>
-:root{--bg:#050505;--text:#fff;--muted:rgba(255,255,255,.64);--faint:rgba(255,255,255,.4);--g1:rgba(255,255,255,.12);--g2:rgba(255,255,255,.035);--line:rgba(255,255,255,.17);--rim1:rgba(255,255,255,.7);--rim2:rgba(255,255,255,.26);--shadow:0 24px 60px rgba(0,0,0,.55);--inner:inset 0 1px 0 rgba(255,255,255,.28),inset 0 0 24px rgba(255,255,255,.035);--btn:#fff;--btn-ink:#000;--hl:rgba(255,255,255,.14);--blob:rgba(255,255,255,.17);--field:rgba(255,255,255,.07);color-scheme:dark;
+:root{--bg:#050505;--text:#fff;--muted:rgba(255,255,255,.64);--faint:rgba(255,255,255,.4);--g1:rgba(255,255,255,.12);--g2:rgba(255,255,255,.035);--line:rgba(255,255,255,.17);--rim1:rgba(255,255,255,.7);--rim2:rgba(255,255,255,.26);--shadow:0 24px 60px rgba(0,0,0,.55);--inner:inset 0 1px 0 rgba(255,255,255,.28),inset 0 0 24px rgba(255,255,255,.035);--btn:#fff;--btn-ink:#000;--hl:rgba(255,255,255,.14);--blob:rgba(255,255,255,.17);--field:rgba(255,255,255,.07);
 --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;--sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-@media(prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#ececee;--text:#0a0a0a;--muted:rgba(0,0,0,.6);--faint:rgba(0,0,0,.4);--g1:rgba(255,255,255,.72);--g2:rgba(255,255,255,.36);--line:rgba(255,255,255,.9);--rim1:#fff;--rim2:rgba(255,255,255,.7);--shadow:0 20px 50px rgba(0,0,0,.14);--inner:inset 0 1px 0 #fff,inset 0 0 20px rgba(255,255,255,.4);--btn:#0a0a0a;--btn-ink:#fff;--hl:rgba(255,255,255,.95);--blob:rgba(0,0,0,.13);--field:rgba(255,255,255,.6);color-scheme:light}}
-:root[data-theme="light"]{--bg:#ececee;--text:#0a0a0a;--muted:rgba(0,0,0,.6);--faint:rgba(0,0,0,.4);--g1:rgba(255,255,255,.72);--g2:rgba(255,255,255,.36);--line:rgba(255,255,255,.9);--rim1:#fff;--rim2:rgba(255,255,255,.7);--shadow:0 20px 50px rgba(0,0,0,.14);--inner:inset 0 1px 0 #fff,inset 0 0 20px rgba(255,255,255,.4);--btn:#0a0a0a;--btn-ink:#fff;--hl:rgba(255,255,255,.95);--blob:rgba(0,0,0,.13);--field:rgba(255,255,255,.6);color-scheme:light}
+@media(prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#ececee;--text:#0a0a0a;--muted:rgba(0,0,0,.6);--faint:rgba(0,0,0,.4);--g1:rgba(255,255,255,.72);--g2:rgba(255,255,255,.36);--line:rgba(255,255,255,.9);--rim1:#fff;--rim2:rgba(255,255,255,.7);--shadow:0 20px 50px rgba(0,0,0,.14);--inner:inset 0 1px 0 #fff,inset 0 0 20px rgba(255,255,255,.4);--btn:#0a0a0a;--btn-ink:#fff;--hl:rgba(255,255,255,.95);--blob:rgba(0,0,0,.13);--field:rgba(255,255,255,.6);}}
+:root[data-theme="light"]{--bg:#ececee;--text:#0a0a0a;--muted:rgba(0,0,0,.6);--faint:rgba(0,0,0,.4);--g1:rgba(255,255,255,.72);--g2:rgba(255,255,255,.36);--line:rgba(255,255,255,.9);--rim1:#fff;--rim2:rgba(255,255,255,.7);--shadow:0 20px 50px rgba(0,0,0,.14);--inner:inset 0 1px 0 #fff,inset 0 0 20px rgba(255,255,255,.4);--btn:#0a0a0a;--btn-ink:#fff;--hl:rgba(255,255,255,.95);--blob:rgba(0,0,0,.13);--field:rgba(255,255,255,.6);}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 html{-webkit-text-size-adjust:100%}
-body{margin:0;min-height:100svh;background:var(--bg);color:var(--text);font:14px/1.5 var(--sans);
+html{background:transparent}
+body{margin:0;min-height:100svh;background:transparent;color:var(--text);font:14px/1.5 var(--sans);
  padding:max(16px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(28px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left))}
 body.no-scroll{overflow:hidden}
-.bg{position:fixed;inset:0;z-index:-1;overflow:hidden;background:var(--bg)}
-.bg i{position:absolute;width:55vmax;height:55vmax;border-radius:50%;background:radial-gradient(circle,var(--blob),transparent 65%);animation:drift 22s ease-in-out infinite alternate}
-.bg i:nth-child(1){top:-20vmax;left:-15vmax}.bg i:nth-child(2){right:-20vmax;top:25vh;animation-delay:-8s}.bg i:nth-child(3){bottom:-25vmax;left:15vw;animation-delay:-14s}
-@keyframes drift{to{transform:translate(8vmax,6vmax) scale(1.15)}}
-@media(prefers-reduced-motion:reduce){.bg i{animation:none}}
 main{width:100%;max-width:880px;margin:0 auto;display:grid;gap:16px}
 .glass{position:relative;background:radial-gradient(260px circle at var(--mx,50%) var(--my,-30%),var(--hl),transparent 62%),linear-gradient(135deg,var(--g1),var(--g2));
  -webkit-backdrop-filter:blur(28px) saturate(170%);backdrop-filter:blur(28px) saturate(170%);border:1px solid var(--line);box-shadow:var(--inner),var(--shadow)}
@@ -104,14 +99,13 @@ select:focus-visible,.btn:focus-visible,.mini:focus-visible,.icon-btn:focus-visi
 </style>
 </head>
 <body>
-<div class="bg" aria-hidden="true"><i></i><i></i><i></i></div>
 <main>
   <header class="top">
     <div class="brand">
       <span class="logo glass"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18.5a4.5 4.5 0 0 1-.9-8.9A6 6 0 0 1 17.7 8.8 4.9 4.9 0 0 1 17 18.5H7Z"/></svg></span>
       <div><div class="kicker">ROBLOX TOOL / ENVIRONMENT</div><h1>SkyBox 360°</h1></div>
     </div>
-    <button type="button" class="icon-btn glass" id="theme-btn" aria-label="Ganti tema hitam / putih"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 3v18" /><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"/></svg></button>
+    <button type="button" class="icon-btn glass" id="theme-btn" hidden aria-label="Ganti tema hitam / putih"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 3v18" /><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"/></svg></button>
   </header>
   <p class="sub">Ubah satu panorama 360° menjadi enam tekstur Skybox, lihat hasilnya langsung dalam lingkungan 360°, publish ke Roblox, lalu salin script siap jalan di Command Bar Studio.</p>
 
@@ -169,7 +163,7 @@ select:focus-visible,.btn:focus-visible,.mini:focus-visible,.icon-btn:focus-visi
 
   <section class="glass card results" id="results">
     <h2>2. Asset ID Skybox</h2>
-    <p class="help">Tunggu sampai keenam ID terisi. Lalu salin script dan jalankan di Roblox Studio melalui View → Command Bar.</p>
+    <p class="help">Tunggu sampai keenam ID terisi. Lalu salin script dan jalankan di Roblox Studio melalui View → Command Bar. Script hanya mengganti ID pada Sky yang sudah ada, tidak menghapusnya.</p>
     <div class="id-list" id="id-list"></div>
     <div class="code-wrap">
       <div class="code-head"><span>Script Roblox Studio</span><button type="button" class="mini" id="copy-script-btn">Salin script</button></div>
@@ -376,36 +370,74 @@ function buildSkyboxCommandBarScript() {
   const id = key => String(skyboxAssetIds[key] || '').replace(/\\D/g, '');
   return \`-- SkyBox 360°
 -- Jalankan di Roblox Studio: View > Command Bar
+-- Mengganti ID tekstur pada Sky yang sudah ada di Lighting. Tidak ada Sky yang dihapus.
+-- Kalau Lighting belum punya Sky, satu Sky baru dibuat.
 local Lighting = game:GetService("Lighting")
-local ContentProvider = game:GetService("ContentProvider")
-local sky = Instance.new("Sky")
-sky.Name = "CustomSkybox"
-sky.SkyboxFt = "rbxassetid://\${id('Front')}"
-sky.SkyboxBk = "rbxassetid://\${id('Back')}"
-sky.SkyboxLf = "rbxassetid://\${id('Left')}"
-sky.SkyboxRt = "rbxassetid://\${id('Right')}"
-sky.SkyboxUp = "rbxassetid://\${id('Top')}"
-sky.SkyboxDn = "rbxassetid://\${id('Bottom')}"
+local InsertService = game:GetService("InsertService")
+local ChangeHistoryService = game:GetService("ChangeHistoryService")
 
--- Load all six images before swapping skies to avoid a blank/delayed sky.
-local loaded, loadError = pcall(function()
-    ContentProvider:PreloadAsync({sky})
-end)
-if not loaded then warn("Skybox preload failed: " .. tostring(loadError)) end
+local FACES = {
+    SkyboxFt = "\${id('Front')}",
+    SkyboxBk = "\${id('Back')}",
+    SkyboxLf = "\${id('Left')}",
+    SkyboxRt = "\${id('Right')}",
+    SkyboxUp = "\${id('Top')}",
+    SkyboxDn = "\${id('Bottom')}",
+}
 
-local oldSkies = {}
-for _, child in ipairs(Lighting:GetChildren()) do
-    if child:IsA("Sky") then table.insert(oldSkies, child) end
+-- Aset yang diupload sebagai Decal punya ID gambar sendiri. Ambil ID gambarnya supaya Sky pasti tampil.
+-- Kalau gagal diambil, pakai ID apa adanya.
+local function resolve(assetId)
+    local fallback = "rbxassetid://" .. assetId
+    local ok, texture = pcall(function()
+        local model = InsertService:LoadAsset(tonumber(assetId))
+        local decal = model:FindFirstChildWhichIsA("Decal", true)
+        local result = decal and decal.Texture or ""
+        model:Destroy()
+        return result
+    end)
+    if ok and type(texture) == "string" and texture ~= "" then
+        return texture
+    end
+    return fallback
 end
-sky.Parent = Lighting
-for _, oldSky in ipairs(oldSkies) do oldSky:Destroy() end
-print("SkyBox terpasang di Lighting")
-print("Front: rbxassetid://\${id('Front')}")
-print("Back: rbxassetid://\${id('Back')}")
-print("Left: rbxassetid://\${id('Left')}")
-print("Right: rbxassetid://\${id('Right')}")
-print("Top: rbxassetid://\${id('Top')}")
-print("Bottom: rbxassetid://\${id('Bottom')}")\`;
+
+local textures = {}
+for prop, assetId in pairs(FACES) do
+    if assetId == "" then
+        error("ID untuk " .. prop .. " kosong. Publish ulang SkyBox dulu. Tidak ada yang diubah.")
+    end
+    textures[prop] = resolve(assetId)
+end
+
+pcall(function() ChangeHistoryService:SetWaypoint("Sebelum ganti SkyBox") end)
+
+local skies = {}
+for _, child in ipairs(Lighting:GetChildren()) do
+    if child:IsA("Sky") then
+        table.insert(skies, child)
+    end
+end
+
+if #skies == 0 then
+    local sky = Instance.new("Sky")
+    sky.Name = "CustomSkybox"
+    sky.Parent = Lighting
+    table.insert(skies, sky)
+end
+
+for _, sky in ipairs(skies) do
+    for prop, url in pairs(textures) do
+        sky[prop] = url
+    end
+end
+
+pcall(function() ChangeHistoryService:SetWaypoint("SkyBox 360") end)
+
+print("SkyBox diperbarui pada " .. #skies .. " Sky di Lighting")
+for prop, url in pairs(textures) do
+    print(prop .. ": " .. url)
+end\`;
 }
 
 async function copyText(text, successMessage) {
@@ -500,6 +532,7 @@ function applyBxTheme(data) {
   set('--rim1', rgba(light, .7)); set('--rim2', rgba(light, .26)); set('--hl', rgba(light, .14)); set('--field', rgba(light, .07));
   set('--inner', 'inset 0 1px 0 ' + rgba(light, .28) + ',inset 0 0 24px ' + rgba(light, .035));
   set('--btn', rgb(light)); set('--btn-ink', data.bg); set('--blob', rgba(p[1], .26));
+  if (data.scheme === 'light' || data.scheme === 'dark') set('color-scheme', data.scheme);
 }
 addEventListener('message', e => {
   if (e.source === window.parent && e.data && e.data.bx === 'theme') applyBxTheme(e.data);

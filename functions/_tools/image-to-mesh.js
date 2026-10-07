@@ -5,13 +5,11 @@ export default `<!DOCTYPE html>
 <head>
 <meta charset="utf-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'unsafe-inline'; img-src data: blob:; media-src blob:; connect-src https://cdn.jsdelivr.net blob: data:; font-src data:; base-uri 'none'; form-action 'none'">
-<meta name="theme-color" content="#000000">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Image to Mesh — 3D Maker</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23000'/%3E%3Cpath d='M32 12 52 23.5 32 35 12 23.5Z' fill='%23fff'/%3E%3Cpath d='M12 23.5 32 35v21L12 44.5Z' fill='%23fff' fill-opacity='.5'/%3E%3Cpath d='M52 23.5 32 35v21l20-11.5Z' fill='%23fff' fill-opacity='.26'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23000'/%3E%3Cpath d='M32 10 54 32 32 54 10 32Z' fill='none' stroke='%23fff' stroke-width='3' stroke-linejoin='round'/%3E%3Cpath d='M17.5 26.5 37.5 46.5M24.5 19.5 44.5 39.5M17.5 37.5 37.5 17.5M24.5 44.5 44.5 24.5' stroke='%23fff' stroke-opacity='.6' stroke-width='2'/%3E%3C/svg%3E">
 <style>
 :root{
-  color-scheme:dark;
   --bg1:#000;--bg2:#101010;
   --glass:rgba(255,255,255,.07);--glass-hi:rgba(255,255,255,.16);
   --rim-hi:rgba(255,255,255,.6);--rim-lo:rgba(255,255,255,.14);
@@ -23,16 +21,10 @@ export default `<!DOCTYPE html>
 
 *{box-sizing:border-box}
 [hidden]{display:none!important}
-html{background:linear-gradient(165deg,var(--bg1),var(--bg2)) fixed,var(--bg1)}
+html{background:transparent}
 body{margin:0;min-height:100vh;min-height:100dvh;overflow-x:hidden;background:transparent;color:var(--ink);
   font:15px/1.5 "SF Pro Display","SF Pro Text",-apple-system,"Segoe UI Variable Display","Segoe UI",system-ui,sans-serif}
-body::before{content:"";position:fixed;inset:-25%;z-index:-1;pointer-events:none;filter:blur(36px) saturate(1.1);
-  background:
-    radial-gradient(34% 30% at 18% 22%,color-mix(in srgb,var(--orb1) 62%,transparent),transparent 72%),
-    radial-gradient(30% 34% at 82% 18%,color-mix(in srgb,var(--orb2) 58%,transparent),transparent 72%),
-    radial-gradient(36% 32% at 70% 82%,color-mix(in srgb,var(--orb4) 46%,transparent),transparent 72%),
-    radial-gradient(30% 28% at 24% 80%,color-mix(in srgb,var(--orb3) 40%,transparent),transparent 72%);
-  animation:drift 46s ease-in-out infinite alternate}
+body::before{display:none}
 @keyframes drift{from{transform:translate3d(-2%,-1%,0) rotate(0)}to{transform:translate3d(3%,2%,0) rotate(9deg)}}
 @media(prefers-reduced-motion:reduce){body::before{animation:none}*{transition-duration:.01ms!important}}
 
@@ -124,6 +116,7 @@ h1{margin:14px 0 8px;font-size:clamp(34px,6vw,56px);font-weight:300;letter-spaci
 .btn:hover{transform:translateY(-1px);filter:brightness(1.1)}.btn:active{transform:scale(.97)}.btn:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 .btn-primary{color:var(--accent-ink);background:linear-gradient(180deg,color-mix(in srgb,var(--accent) 94%,#fff),color-mix(in srgb,var(--accent) 76%,transparent));
   box-shadow:inset 0 1px 0 rgba(255,255,255,.7),inset 0 0 0 1px rgba(255,255,255,.3),0 10px 26px rgba(0,0,0,.28)}
+.model3d-new{margin-top:14px}
 .model3d-export-note{margin:0;color:var(--ink-2);font-size:12px;line-height:1.55}
 @media(max-width:520px){.model3d-export .btn{flex:1 1 100%}.model3d-viewport{height:clamp(280px,56vh,420px)}}
 
@@ -143,18 +136,8 @@ h1{margin:14px 0 8px;font-size:clamp(34px,6vw,56px);font-weight:300;letter-spaci
   background:linear-gradient(180deg,var(--glass-hi),var(--glass));backdrop-filter:blur(14px) saturate(170%);-webkit-backdrop-filter:blur(14px) saturate(170%);box-shadow:inset 0 1px 0 var(--rim-hi),inset 0 0 0 1px var(--rim-lo),0 8px 20px rgba(0,0,0,.25)}
 .vp-reset svg{width:15px;height:15px}.vp-reset:active{transform:scale(.96)}.vp-reset:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .model3d-viewport.has-model .vp-reset{display:inline-flex}
-/* upload ke Roblox */
+/* tombol nonaktif */
 .btn:disabled{opacity:.4;cursor:not-allowed;transform:none;filter:none}
-.up-field{display:grid;gap:6px;margin:0 0 14px}
-.up-field label{font-size:13px;font-weight:600;color:var(--ink-2)}
-.up-field input{min-height:46px;padding:0 16px;border:0;border-radius:16px;background:var(--well);color:var(--ink);font:inherit;box-shadow:inset 0 1px 3px rgba(0,0,0,.25),inset 0 0 0 1px var(--rim-lo)}
-.up-field input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.up-list{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:8px}
-.up-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px 10px 16px;border-radius:16px;background:var(--well);box-shadow:inset 0 0 0 1px var(--rim-lo)}
-.up-row div{min-width:0}
-.up-row b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px}
-.up-row small{color:var(--ink-2);font:12px ui-monospace,Menlo,Consolas,monospace}
-.up-row .btn{flex:none;min-height:40px;padding:8px 16px;font-size:13px}
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
   :root{--glass:rgba(48,48,48,.88);--glass-hi:rgba(70,70,70,.94)}
   
@@ -164,17 +147,15 @@ h1{margin:14px 0 8px;font-size:clamp(34px,6vw,56px);font-weight:300;letter-spaci
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
-  <symbol id="ico-cube" viewBox="0 0 64 64"><path d="M32 7 56 20.5v27L32 61 8 47.5v-27L32 7Z" fill="currentColor" fill-opacity=".14"/>
-<path d="M32 7 56 20.5 32 34 8 20.5 32 7Z" fill="currentColor" fill-opacity=".9"/>
-<path d="M8 20.5 32 34v27L8 47.5v-27Z" fill="currentColor" fill-opacity=".5"/>
-<path d="M56 20.5 32 34v27l24-13.5v-27Z" fill="currentColor" fill-opacity=".26"/>
-<path d="M32 7 56 20.5v27L32 61 8 47.5v-27L32 7Zm0 27v27M8 20.5 32 34l24-13.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>
-<path d="M32 15.5 44 22.4 32 29.3 20 22.4 32 15.5Z" fill="none" stroke="var(--cube-line,#000)" stroke-opacity=".45" stroke-width="1.6" stroke-linejoin="round"/></symbol>
+  <symbol id="ico-mesh" viewBox="0 0 64 64"><path d="M32 6 58 32 32 58 6 32 32 6Z" fill="currentColor" fill-opacity=".14"/>
+<path d="M12.5 25.5 38.5 51.5M19 19 45 45M25.5 12.5 51.5 38.5M12.5 38.5 38.5 12.5M19 45 45 19M25.5 51.5 51.5 25.5" fill="none" stroke="currentColor" stroke-opacity=".65" stroke-width="1.8" stroke-linecap="round"/>
+<path d="M32 6 58 32 32 58 6 32 32 6Z" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round"/>
+<circle cx="32" cy="6" r="2.6" fill="currentColor"/><circle cx="58" cy="32" r="2.6" fill="currentColor"/><circle cx="32" cy="58" r="2.6" fill="currentColor"/><circle cx="6" cy="32" r="2.6" fill="currentColor"/></symbol>
 </svg>
 
 <main class="shell" id="page-model3d">
   <header class="hero">
-    <span class="badge"><svg aria-hidden="true"><use href="#ico-cube"/></svg>Roblox mesh studio</span>
+    <span class="badge"><svg aria-hidden="true"><use href="#ico-mesh"/></svg>Roblox mesh studio</span>
     <h1>Image to Mesh</h1>
     <p>Bentuk gambar menjadi mesh timbul yang halus dan padat. Hasilnya mesh putih polos tanpa tekstur dan tanpa warna vertex. Semua diproses lokal di browser.</p>
   </header>
@@ -199,7 +180,7 @@ h1{margin:14px 0 8px;font-size:clamp(34px,6vw,56px);font-weight:300;letter-spaci
       <canvas id="model3d-canvas" aria-label="Preview 3D yang dapat diputar"></canvas>
       <button type="button" class="vp-reset" id="model3d-reset" aria-label="Reset sudut kamera"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>Reset</button>
       <div class="model3d-empty" id="model3d-empty">
-        <svg viewBox="0 0 64 64" aria-hidden="true"><use href="#ico-cube"/></svg>
+        <svg viewBox="0 0 64 64" aria-hidden="true"><use href="#ico-mesh"/></svg>
         <b>Belum ada mesh</b>
         <span>Pilih gambar di atas, hasil ekstrusi 3D tampil di sini.</span>
       </div>
@@ -259,18 +240,7 @@ h1{margin:14px 0 8px;font-size:clamp(34px,6vw,56px);font-weight:300;letter-spaci
       <button type="button" class="btn" onclick="exportModel3DOBJ()">Unduh OBJ</button>
     </div>
     <p class="model3d-export-note">Ekspor putih polos, tanpa tekstur dan tanpa warna vertex. Untuk glTF, simpan file .gltf dan .bin dalam satu folder. OBJ ikut menyertakan file .mtl. Saat optimasi aktif, ekspor memakai satu material.</p>
-  </section>
-
-  <section class="card" aria-labelledby="t-up">
-    <h2 id="t-up">Upload ke Roblox</h2>
-    <p class="card-sub">Mesh dikirim sebagai GLB dan diimpor Roblox menjadi Model berisi MeshPart. Memakai API Key dan User ID dari Pengaturan BAXDEV.</p>
-    <div class="up-field"><label for="up-name">Nama aset</label><input type="text" id="up-name" maxlength="30" autocomplete="off" placeholder="Nama di Roblox"></div>
-    <div class="model3d-export">
-      <button type="button" class="btn btn-primary" id="up-btn" disabled>Upload ke Roblox</button>
-      <button type="button" class="btn" id="new-btn" disabled>Mesh baru</button>
-    </div>
-    <div class="model3d-status" id="up-status" role="status" aria-live="polite">Buat mesh dulu untuk mengaktifkan upload.</div>
-    <ul class="up-list" id="up-list" hidden></ul>
+    <div class="model3d-export model3d-new"><button type="button" class="btn" id="new-btn" disabled>Mesh baru</button></div>
   </section>
 </main>
 <script>
@@ -396,7 +366,6 @@ function chooseModel3DFile(file) {
   if(!file) return;
   if(!/^image\\/(png|jpeg|webp)$/.test(file.type)||file.size>15*1024*1024){model3dFile=null;model3dGrid=null;model3dMeshData=null;document.getElementById('model3d-export').hidden=true;document.getElementById('model3d-viewport').classList.remove('has-model');syncModel3DActions();setModel3DStatus('Pilih PNG, JPG, atau WebP maksimal 15 MB.','error');return}
   model3dFile=file;
-  document.getElementById('up-name').value=model3DBaseName().slice(0,30);
   document.getElementById('model3d-file-name').textContent=file.name;
   document.getElementById('model3d-file-meta').textContent=\`\${(file.size/1048576).toFixed(2)} MB · Gambar diproses lokal\`;
   buildModel3D();
@@ -798,84 +767,11 @@ function exportModel3DOBJ() {
   setModel3DStatus('OBJ dan MTL putih polos tanpa tekstur diunduh.','success');
 }
 
-/* ── GLB, upload ke Roblox, mesh baru, tema ── */
-function createModel3DGLB() {
-  const out=createModel3DGLTF(),doc=JSON.parse(out.json);
-  delete doc.buffers[0].uri;
-  const json=new TextEncoder().encode(JSON.stringify(doc)),bin=new Uint8Array(out.binary);
-  const jsonLen=json.length+(4-json.length%4)%4,binLen=bin.length+(4-bin.length%4)%4,total=12+8+jsonLen+8+binLen;
-  const buffer=new ArrayBuffer(total),view=new DataView(buffer),bytes=new Uint8Array(buffer);
-  view.setUint32(0,0x46546C67,true);view.setUint32(4,2,true);view.setUint32(8,total,true);
-  view.setUint32(12,jsonLen,true);view.setUint32(16,0x4E4F534A,true);
-  bytes.set(json,20);bytes.fill(0x20,20+json.length,20+jsonLen);
-  const binAt=20+jsonLen;
-  view.setUint32(binAt,binLen,true);view.setUint32(binAt+4,0x004E4942,true);
-  bytes.set(bin,binAt+8);
-  return new Blob([buffer],{type:'model/gltf-binary'});
-}
-let model3dUploading=false;
-function setModel3DUploadStatus(message,type='') {
-  const node=document.getElementById('up-status');
-  node.textContent=message;
-  node.className='model3d-status'+(type?' '+type:'');
-}
+/* ── Mesh baru, tema ── */
 function syncModel3DActions() {
-  document.getElementById('up-btn').disabled=!model3dMeshData||model3dUploading;
-  document.getElementById('new-btn').disabled=model3dUploading||(!model3dMeshData&&!model3dFile);
-}
-/* Kirim GLB ke halaman induk (BAXDEV). API key Roblox tidak pernah masuk ke tool ini. */
-function requestModel3DPublish(blob,name) {
-  return new Promise((resolve,reject)=>{
-    if(window.parent===window){reject(new Error('Upload hanya tersedia di dalam BAXDEV.'));return}
-    const id='pub-'+Date.now()+'-'+Math.random().toString(36).slice(2);
-    const finish=(error,results)=>{clearTimeout(timer);removeEventListener('message',onMessage);if(error) reject(error);else resolve(results)};
-    const timer=setTimeout(()=>finish(new Error('Upload melewati batas waktu. Cek Library BAXDEV untuk hasilnya.')),4*60*1000);
-    function onMessage(event){
-      const data=event.data;
-      if(event.source!==window.parent||!data||data.bx!=='publish'||data.id!==id) return;
-      if(data.type==='done') finish(null,data.results||{});
-      else if(data.type==='error') finish(new Error(data.message||'Upload gagal.'));
-    }
-    addEventListener('message',onMessage);
-    window.parent.postMessage({bx:'publish',type:'request',kind:'mesh',id,name,files:{Mesh:new File([blob],name+'.glb',{type:'model/gltf-binary'})}},'*');
-  });
-}
-async function copyModel3DText(text,button) {
-  try {
-    if(navigator.clipboard&&window.isSecureContext) await navigator.clipboard.writeText(text);
-    else {const input=document.createElement('textarea');input.value=text;input.style.cssText='position:fixed;opacity:0';document.body.append(input);input.select();document.execCommand('copy');input.remove()}
-    button.textContent='Tersalin';
-  } catch { button.textContent='Gagal menyalin'; }
-  setTimeout(()=>{button.textContent='Salin ID'},1600);
-}
-function addModel3DUploadRow(name,assetId) {
-  const list=document.getElementById('up-list'),row=document.createElement('li'),text=document.createElement('div');
-  const title=document.createElement('b'),idLine=document.createElement('small'),copy=document.createElement('button');
-  row.className='up-row';title.textContent=name;idLine.textContent=assetId;
-  copy.type='button';copy.className='btn';copy.textContent='Salin ID';
-  copy.addEventListener('click',()=>copyModel3DText(assetId,copy));
-  text.append(title,idLine);row.append(text,copy);
-  list.prepend(row);list.hidden=false;
-}
-async function uploadModel3D() {
-  if(model3dUploading||!model3dMeshData) return;
-  const name=document.getElementById('up-name').value.trim()||model3DBaseName().slice(0,30);
-  model3dUploading=true;syncModel3DActions();
-  setModel3DUploadStatus('Mengunggah ke Roblox. Jangan tutup halaman ini...');
-  try {
-    const results=await requestModel3DPublish(createModel3DGLB(),name);
-    const result=results.Mesh||{},assetId=String(result.assetId||'').replace(/[^0-9]/g,'');
-    if(!assetId) throw new Error(result.error||'Roblox tidak menerima mesh ini.');
-    addModel3DUploadRow(name,assetId);
-    setModel3DUploadStatus('Berhasil. Asset ID: '+assetId+'. Kamu bisa membuat mesh lain tanpa memuat ulang halaman.','success');
-  } catch(error) {
-    setModel3DUploadStatus(error.message||'Upload gagal.','error');
-  } finally {
-    model3dUploading=false;syncModel3DActions();
-  }
+  document.getElementById('new-btn').disabled=!model3dMeshData&&!model3dFile;
 }
 function resetModel3D() {
-  if(model3dUploading) return;
   ++model3dBuildToken;clearTimeout(model3dMeshTimer);
   model3dFile=null;model3dGrid=null;model3dMeshData=null;
   disposeModel3DMesh();
@@ -885,10 +781,8 @@ function resetModel3D() {
   document.getElementById('model3d-file-meta').textContent='Klik untuk memilih atau tarik file ke sini. Maks. 15 MB';
   document.getElementById('model3d-dimensions').textContent='Belum ada mesh';
   document.getElementById('model3d-triangle-count').textContent='Siap memutar';
-  document.getElementById('up-name').value='';
   updateModel3DOptimizeUI(0);
   setModel3DStatus('Pilih gambar untuk membuat mesh 3D.');
-  setModel3DUploadStatus('Buat mesh dulu untuk mengaktifkan upload.');
   syncModel3DActions();
   window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -906,11 +800,11 @@ function applyBxTheme(data) {
   set('--accent',rgb(p[0]));set('--accent-ink',data.bg);
   set('--glass',rgba(p[0],.07));set('--glass-hi',rgba(p[0],.16));set('--rim-hi',rgba(p[0],.6));set('--rim-lo',rgba(p[0],.16));
   set('--track',rgba(p[0],.17));set('--ink-2',rgba(p[0],.74));
+  if(data.scheme==='light'||data.scheme==='dark') set('color-scheme',data.scheme);
 }
 window.addEventListener('message',event=>{
   if(event.source===window.parent&&event.data&&event.data.bx==='theme') applyBxTheme(event.data);
 });
-document.getElementById('up-btn').addEventListener('click',uploadModel3D);
 document.getElementById('new-btn').addEventListener('click',resetModel3D);
 document.getElementById('model3d-file').addEventListener('change',event=>{const file=event.target.files[0];event.target.value='';chooseModel3DFile(file)});
 const model3DDrop=document.getElementById('model3d-drop-zone');

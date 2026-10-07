@@ -5097,8 +5097,8 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                     Model
                 </button>
                 <button class="nav-link" onclick="navigate('mesh')">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round">
-                        <path d="M12 3 21 20H3z"/><path d="M12 3v17M7.5 11.5h9"/>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
+                        <path d="M12 3 21 12 12 21 3 12Z"/><path stroke-width="1.4" d="M6 9 15 18M9 6 18 15M6 15 15 6M9 18 18 9"/>
                     </svg>
                     Mesh
                 </button>
@@ -5327,8 +5327,8 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                 Model
             </div>
             <div class="m-link" onclick="navigate('mesh');closeMenu()">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round">
-                    <path d="M12 3 21 20H3z"/><path d="M12 3v17M7.5 11.5h9"/>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
+                    <path d="M12 3 21 12 12 21 3 12Z"/><path stroke-width="1.4" d="M6 9 15 18M9 6 18 15M6 15 15 6M9 18 18 9"/>
                 </svg>
                 Image to Mesh
             </div>
@@ -9249,7 +9249,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
             // HTML tool disajikan /api/tool setelah server memeriksa VIP Plus / Owner, lalu dijalankan di iframe sandbox
             // tanpa allow-same-origin: tool tidak bisa membaca localStorage, token, atau API key halaman ini.
             const TOOLS = {
-                mesh: { title: 'Image to Mesh', desc: 'Ubah gambar jadi mesh 3D untuk Roblox Studio, ekspor glTF atau OBJ, atau upload langsung ke Roblox.' },
+                mesh: { title: 'Image to Mesh', desc: 'Ubah gambar jadi mesh 3D untuk Roblox Studio, lalu ekspor sebagai glTF atau OBJ.' },
                 skybox: { title: 'SkyBox 360', desc: 'Ubah panorama 360° jadi enam sisi SkyBox, publish ke Roblox, dan salin script Studio.' }
             };
             const SKYBOX_FACES = ['Front', 'Back', 'Left', 'Right', 'Top', 'Bottom'];
@@ -9297,7 +9297,9 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                     frame.setAttribute('allow', 'clipboard-write; fullscreen');
                     frame.setAttribute('allowfullscreen', '');
                     frame.addEventListener('load', () => pushToolTheme(frame));
-                    frame.srcdoc = html;
+                    const scheme = toolScheme();
+                    frame.style.colorScheme = scheme;
+                    frame.srcdoc = html.replace('<html ', '<html style="color-scheme:' + scheme + '" ');
                     toolHost(name).replaceChildren(frame);
                     toolState[name] = { frame };
                 } catch (e) {
@@ -9447,43 +9449,6 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                     send({ type: 'error', message: e.message || 'Publish gagal.' });
                 }
             }
-            // Upload satu mesh GLB sebagai Model. Roblox mengimpornya jadi Model berisi MeshPart.
-            async function toolPublishMesh(win, req) {
-                const send = msg => win.postMessage(Object.assign({ bx: 'publish', id: req.id }, msg), '*');
-                try {
-                    if (!isVipPlus())
-                        throw new Error('Fitur ini khusus VIP Plus.');
-                    if (!hasRoblox())
-                        throw new Error('Isi Roblox User ID & API Key di Pengaturan dulu.');
-                    if (S.roblox.creatorType === 'Group' && !S.roblox.groupId)
-                        throw new Error('Isi Group ID dulu di pengaturan Roblox sebelum publish ke Group.');
-                    const file = req.files && req.files.Mesh;
-                    if (!(file instanceof Blob) || file.size === 0 || file.size > 20 * 1024 * 1024)
-                        throw new Error('File mesh tidak valid (kosong atau lebih dari 20 MB).');
-                    const name = String(req.name || '').replace(/[^\w .-]+/g, '').trim().slice(0, 30) || 'Image Mesh';
-                    const filename = name.replace(/\s+/g, '_') + '.glb';
-                    const base = { id: Date.now(), name, filename, size: file.size, uploadedAt: new Date().toISOString(), speed: 1, kind: 'model' };
-                    try {
-                        const out = await toolUploadAsset(file, filename, name, 'Model', 'model/gltf-binary', 'Image to Mesh');
-                        if (out.assetId) {
-                            addLibEntry(Object.assign(base, { assetId: out.assetId, status: 'done' }), { name, filename, size: file.size, assetId: String(out.assetId).slice(0, 30), status: 'done', speed: 1 });
-                            send({ type: 'done', results: { Mesh: { assetId: out.assetId } } });
-                        } else if (out.opPath) {
-                            addLibEntry(Object.assign(base, { assetId: null, status: 'proc', operationPath: out.opPath }), null);
-                            send({ type: 'done', results: { Mesh: { error: 'Masih diproses Roblox. ID-nya akan muncul di Library.' } } });
-                        } else {
-                            throw new Error('Roblox belum mengembalikan Asset ID.');
-                        }
-                    } catch (e) {
-                        const reason = String(e.message || 'Error').slice(0, 160);
-                        addLibEntry({ id: Date.now(), assetId: null, name, filename, size: file.size, kind: 'model', status: 'fail', reason, uploadedAt: new Date().toISOString() },
-                            { name, filename, size: file.size, status: 'fail', error: reason });
-                        send({ type: 'done', results: { Mesh: { error: reason } } });
-                    }
-                } catch (e) {
-                    send({ type: 'error', message: e.message || 'Upload gagal.' });
-                }
-            }
             // Pesan dari iframe tool: hanya diterima dari iframe milik halaman ini (origin sandbox "null", jadi dicek lewat window sumbernya).
             window.addEventListener('message', e => {
                 const d = e.data;
@@ -9492,16 +9457,25 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                 const fromTool = name => toolState[name] && toolState[name].frame && toolState[name].frame.contentWindow === e.source;
                 if (fromTool('skybox'))
                     toolPublishSkybox(e.source, d);
-                else if (fromTool('mesh'))
-                    toolPublishMesh(e.source, d);
             });
             // Tema: iframe tool tidak bisa membaca CSS halaman ini, jadi warna dasar + palet dikirim lewat postMessage.
+            // Skema warna (dark/light) iframe harus sama dengan dokumen di dalamnya, kalau beda browser mengecat latar buram.
+            function toolScheme() {
+                const m = /^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(window.__bxThemeMeta || '#050505');
+                if (!m)
+                    return 'dark';
+                const lum = (0.2126 * parseInt(m[1], 16) + 0.7152 * parseInt(m[2], 16) + 0.0722 * parseInt(m[3], 16)) / 255;
+                return lum > 0.55 ? 'light' : 'dark';
+            }
             function toolThemePayload() {
                 const mono = (window.BX_THEMES && window.BX_THEMES.mono && window.BX_THEMES.mono.p) || [[236, 237, 241], [176, 178, 184], [124, 126, 132]];
-                return { bx: 'theme', bg: window.__bxThemeMeta || '#050505', p: window.__bxPalette || mono };
+                return { bx: 'theme', bg: window.__bxThemeMeta || '#050505', p: window.__bxPalette || mono, scheme: toolScheme() };
             }
             function pushToolTheme(frame) {
-                if (frame && frame.contentWindow)
+                if (!frame)
+                    return;
+                frame.style.colorScheme = toolScheme();
+                if (frame.contentWindow)
                     frame.contentWindow.postMessage(toolThemePayload(), '*');
             }
             function pushToolThemeAll() {
@@ -11303,7 +11277,7 @@ html body .section-heading{margin:26px 4px 12px !important}
 <style id="bx-tools">
 /* Tool VIP Plus: iframe sandbox memenuhi area halaman */
 html body .page.page-tool{max-width:960px;padding-top:16px;padding-bottom:16px}
-.tool-frame{display:block;width:100%;height:calc(100vh - var(--nav-h) - 32px);height:calc(100dvh - var(--nav-h) - 32px);min-height:560px;border:0;border-radius:var(--radius);background:#000}
+.tool-frame{display:block;width:100%;height:calc(100vh - var(--nav-h) - 32px);height:calc(100dvh - var(--nav-h) - 32px);min-height:560px;border:0;border-radius:var(--radius);background:transparent}
 .tool-lock{display:flex;flex-direction:column;align-items:flex-start;gap:8px;margin-top:24px}
 .tool-lock .page-title,.tool-lock .page-sub{margin:0}
 .tool-lock .btn{margin-top:6px}
