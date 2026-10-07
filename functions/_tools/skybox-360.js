@@ -16,9 +16,10 @@ export default `<!DOCTYPE html>
 [hidden]{display:none!important}
 html{-webkit-text-size-adjust:100%}
 html{background:transparent}
-body{margin:0;min-height:100svh;background:transparent;color:var(--text);font:14px/1.5 var(--sans);
+body{margin:0;background:transparent;color:var(--text);font:14px/1.5 var(--sans);
  padding:max(16px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(28px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left))}
 body.no-scroll{overflow:hidden}
+html.autoh,html.autoh body{overflow:hidden}
 main{width:100%;max-width:880px;margin:0 auto;display:grid;gap:16px}
 .glass{position:relative;background:radial-gradient(260px circle at var(--mx,50%) var(--my,-30%),var(--hl),transparent 62%),linear-gradient(135deg,var(--g1),var(--g2));
  -webkit-backdrop-filter:blur(28px) saturate(170%);backdrop-filter:blur(28px) saturate(170%);border:1px solid var(--line);box-shadow:var(--inner),var(--shadow)}
@@ -61,6 +62,7 @@ select:focus-visible,.btn:focus-visible,.mini:focus-visible,.icon-btn:focus-visi
 .seg button[aria-pressed="true"]{background:var(--btn);color:var(--btn-ink)}.seg button:disabled{opacity:.35;cursor:not-allowed}
 .viewer{position:relative;overflow:hidden;aspect-ratio:16/10;min-height:260px;border-radius:22px;background:#000;border:1px solid var(--line)}
 .viewer.is-full{position:fixed;inset:0;z-index:100;aspect-ratio:auto;border-radius:0;border:0}
+.glass.fs-on{-webkit-backdrop-filter:none;backdrop-filter:none;transform:none}
 #view-canvas{position:absolute;inset:0;display:block;width:100%;height:100%;cursor:grab;touch-action:none;outline-offset:-3px}
 #view-canvas:active{cursor:grabbing}
 .hud{position:absolute;display:flex;gap:6px;pointer-events:none;color:#fff;font-size:11px}
@@ -91,7 +93,7 @@ select:focus-visible,.btn:focus-visible,.mini:focus-visible,.icon-btn:focus-visi
 .code-wrap{margin-top:14px}
 .code-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:7px;font-size:12px;font-weight:620}
 .code{display:block;width:100%;min-height:220px;resize:vertical;padding:14px;border:1px solid var(--line);border-radius:18px;background:rgba(0,0,0,.62);color:#f2f2f2;font:11px/1.6 var(--mono);white-space:pre;overflow:auto}
-#toast{position:fixed;left:50%;bottom:max(18px,env(safe-area-inset-bottom));z-index:200;display:grid;gap:8px;transform:translateX(-50%);pointer-events:none}
+#toast{position:absolute;left:50%;top:calc(var(--vt,0px) + var(--vh,100vh) - 18px);z-index:200;display:grid;gap:8px;transform:translate(-50%,-100%);pointer-events:none}
 .toast-item{padding:10px 18px;border-radius:999px;font-size:12px;transition:opacity .3s,transform .3s;background:rgba(20,20,20,.7);color:#fff;border:1px solid rgba(255,255,255,.2);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
 @media(max-width:720px){.faces{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.face-info{padding:7px 9px}.face-info b{font-size:10px}.id-row{grid-template-columns:56px minmax(0,1fr) auto}.viewer{aspect-ratio:4/3}}
 @media(max-width:720px) and (orientation:landscape){.faces{grid-template-columns:repeat(3,minmax(0,1fr))}}
@@ -177,13 +179,17 @@ select:focus-visible,.btn:focus-visible,.mini:focus-visible,.icon-btn:focus-visi
 // Runtime: browser (vanilla JS), berjalan di iframe sandbox milik BAXDEV.
 // Publish ke Roblox dikerjakan halaman induk lewat postMessage, jadi API key Roblox tidak pernah masuk ke tool ini.
 
+// Arah tiap sisi mengikuti cara Roblox membaca Sky (sumbu dunia Roblox, depan = -Z):
+//   SkyboxFt = menghadap -Z, SkyboxBk = +Z, SkyboxLf = +X, SkyboxRt = -X (Lf/Rt terbalik dibanding nama, memang begitu di Roblox),
+//   SkyboxUp = +Y dengan sisi atas gambar menghadap +X, SkyboxDn = -Y dengan sisi atas gambar menghadap -X.
+// normal = arah pandang, right = arah kanan gambar, up = arah atas gambar. Semua kanan = normal x up, jadi tidak ada sisi yang ter-mirror.
 const SKYBOX_FACE_DEFS = [
   {key:'Front',  label:'Front / SkyboxFt',  normal:[0,0,-1], right:[1,0,0],  up:[0,1,0]},
   {key:'Back',   label:'Back / SkyboxBk',   normal:[0,0,1],  right:[-1,0,0], up:[0,1,0]},
-  {key:'Left',   label:'Left / SkyboxLf',   normal:[-1,0,0], right:[0,0,-1], up:[0,1,0]},
-  {key:'Right',  label:'Right / SkyboxRt',  normal:[1,0,0],  right:[0,0,1],  up:[0,1,0]},
-  {key:'Top',    label:'Top / SkyboxUp',    normal:[0,1,0],  right:[1,0,0],  up:[0,0,-1]},
-  {key:'Bottom', label:'Bottom / SkyboxDn', normal:[0,-1,0], right:[1,0,0],  up:[0,0,1]}
+  {key:'Left',   label:'Left / SkyboxLf',   normal:[1,0,0],  right:[0,0,1],  up:[0,1,0]},
+  {key:'Right',  label:'Right / SkyboxRt',  normal:[-1,0,0], right:[0,0,-1], up:[0,1,0]},
+  {key:'Top',    label:'Top / SkyboxUp',    normal:[0,1,0],  right:[0,0,-1], up:[1,0,0]},
+  {key:'Bottom', label:'Bottom / SkyboxDn', normal:[0,-1,0], right:[0,0,-1], up:[-1,0,0]}
 ];
 
 let skyboxSourceFile = null;
@@ -576,11 +582,11 @@ void main(){
     if(d.z<0.) col=texture2D(uF,vec2(d.x,-d.y)/-d.z*.5+.5).rgb;
     else col=texture2D(uB,vec2(-d.x,-d.y)/d.z*.5+.5).rgb;
   }else if(b.x>=b.y){
-    if(d.x<0.) col=texture2D(uL,vec2(-d.z,-d.y)/-d.x*.5+.5).rgb;
-    else col=texture2D(uR,vec2(d.z,-d.y)/d.x*.5+.5).rgb;
+    if(d.x>0.) col=texture2D(uL,vec2(d.z,-d.y)/d.x*.5+.5).rgb;
+    else col=texture2D(uR,vec2(-d.z,-d.y)/-d.x*.5+.5).rgb;
   }else{
-    if(d.y>0.) col=texture2D(uT,vec2(d.x,d.z)/d.y*.5+.5).rgb;
-    else col=texture2D(uD,vec2(d.x,-d.z)/-d.y*.5+.5).rgb;
+    if(d.y>0.) col=texture2D(uT,vec2(-d.z,-d.x)/d.y*.5+.5).rgb;
+    else col=texture2D(uD,vec2(-d.z,d.x)/-d.y*.5+.5).rgb;
   }
   gl_FragColor=vec4(col,1.);
 }\`;
@@ -725,11 +731,33 @@ $('v-out').addEventListener('click', () => viewer?.zoom(1.25));
 $('v-reset').addEventListener('click', () => viewer?.reset());
 $('v-auto').addEventListener('click', e => e.currentTarget.setAttribute('aria-pressed', String(!!viewer?.toggleAuto())));
 function setFull(on) {
+  if (window.parent !== window) window.parent.postMessage({bx: 'fs', on: !!on}, '*');
+  $('card-viewer').classList.toggle('fs-on', on);   // backdrop-filter pada kartu bikin position:fixed relatif ke kartu
   $('viewer').classList.toggle('is-full', on); document.body.classList.toggle('no-scroll', on);
   $('v-full').setAttribute('aria-pressed', String(on)); requestAnimationFrame(() => viewer?.resize());
 }
 $('v-full').addEventListener('click', () => setFull(!$('viewer').classList.contains('is-full')));
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('viewer').classList.contains('is-full')) setFull(false); });
+
+// ── Satu scroll: tinggi iframe mengikuti isi halaman, jadi hanya halaman BAXDEV yang di-scroll ──
+(function () {
+  if (window.parent === window) return;
+  document.documentElement.classList.add('autoh');
+  let last = 0;
+  const send = () => {
+    const h = Math.ceil(document.body.getBoundingClientRect().height);
+    if (h && h !== last) { last = h; window.parent.postMessage({bx: 'height', h}, '*'); }
+  };
+  new ResizeObserver(send).observe(document.body);
+  addEventListener('load', send); send();
+  // Bagian iframe yang sedang terlihat di layar (dikirim induk) dipakai untuk posisi toast.
+  addEventListener('message', e => {
+    const d = e.data;
+    if (e.source !== window.parent || !d || d.bx !== 'view' || !Number.isFinite(d.top) || !Number.isFinite(d.h)) return;
+    document.documentElement.style.setProperty('--vt', Math.round(d.top) + 'px');
+    document.documentElement.style.setProperty('--vh', Math.round(d.h) + 'px');
+  });
+})();
 
 // ── Tema hitam / putih ──
 const themeRoot = document.documentElement;
@@ -744,7 +772,7 @@ document.addEventListener('pointermove', e => {
   const g = e.target.closest?.('.glass'); if (!g) return; const r = g.getBoundingClientRect();
   g.style.setProperty('--mx', \`\${e.clientX - r.left}px\`); g.style.setProperty('--my', \`\${e.clientY - r.top}px\`);
 }, {passive: true});
-const FACE_LOOK = {Front: [0, 0], Back: [180, 0], Left: [90, 0], Right: [-90, 0], Top: [0, 89], Bottom: [0, -89]};
+const FACE_LOOK = {Front: [0, 0], Back: [180, 0], Left: [-90, 0], Right: [90, 0], Top: [0, 89], Bottom: [0, -89]};
 $('face-grid').addEventListener('click', e => {
   const card = e.target.closest('.face'); if (!card || e.target.closest('a')) return;
   const look = FACE_LOOK[card.dataset.key]; if (!look || !viewer) return;

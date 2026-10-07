@@ -5090,11 +5090,11 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                     Upload
     
                 </button>
-                <button class="nav-link" onclick="navigate('model')">
+                <button class="nav-link" onclick="navigate('animation')">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/>
+                        <circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/>
                     </svg>
-                    Model
+                    Animasi
                 </button>
                 <button class="nav-link" onclick="navigate('mesh')">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
@@ -5165,7 +5165,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
             <div class="profile-header">
                 <div class="profile-avatar-lg" id="dd-avatar">?</div>
                 <div>
-                    <div class="profile-name" id="dd-name">–</div>
+                    <div class="name-role"><div class="profile-name" id="dd-name">–</div><span class="role-tag" data-role hidden></span></div>
                     <div class="profile-email" id="dd-email">–</div>
                     <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">
                         <span class="profile-badge badge-free" id="dd-plan">Free</span>
@@ -5320,11 +5320,11 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                 Upload
   
             </div>
-            <div class="m-link" onclick="navigate('model');closeMenu()">
+            <div class="m-link" onclick="navigate('animation');closeMenu()">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/>
+                    <circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/>
                 </svg>
-                Model
+                Animasi
             </div>
             <div class="m-link" onclick="navigate('mesh');closeMenu()">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
@@ -5636,8 +5636,8 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                         <span class="drop-tag">AAC</span>
                     </div>
                 </div>
-                <div class="drop-zone" id="model-drop-zone" style="display:none">
-                    <input type="file" id="model-input" accept=".rbxm,.rbxmx" multiple>
+                <div class="drop-zone" id="animation-drop-zone" style="display:none">
+                    <input type="file" id="animation-input" accept=".rbxm,.rbxmx" multiple>
                     <div class="drop-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <polyline points="16 16 12 12 8 16"/>
@@ -5645,8 +5645,8 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                             <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/>
                         </svg>
                     </div>
-                    <div class="drop-title">Drop file model di sini</div>
-                    <div class="drop-sub">atau klik untuk pilih file. Ekspor dari Roblox Studio lewat Save to File As.</div>
+                    <div class="drop-title">Drop file animasi di sini</div>
+                    <div class="drop-sub">atau klik untuk pilih file. Di Roblox Studio, klik kanan KeyframeSequence di Explorer lalu Save to File.</div>
                     <div class="drop-types">
                         <span class="drop-tag">RBXM</span>
                         <span class="drop-tag">RBXMX</span>
@@ -5754,7 +5754,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
             <!-- LIBRARY -->
             <div class="page" id="page-library">
                 <h1 class="page-title">Library</h1>
-                <div class="page-sub">Semua audio, model, dan decal yang sudah diupload ke Roblox</div>
+                <div class="page-sub">Semua audio, animasi, model, dan decal yang sudah diupload ke Roblox</div>
                 <div class="library-toolbar">
                     <div class="search-wrap">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -5766,6 +5766,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                     <select id="lib-kind" onchange="filterLibrary()" style="width:auto">
                         <option value="all">Semua jenis</option>
                         <option value="audio">Musik</option>
+                        <option value="animation">Animasi</option>
                         <option value="model">Model</option>
                         <option value="decal">Decal</option>
                     </select>
@@ -5851,7 +5852,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                                     <div class="acct-avatar-row">
                                         <div class="acct-avatar" id="acct-avatar-big">R</div>
                                         <div>
-                                            <div class="acct-name" id="acct-name">–</div>
+                                            <div class="name-role"><div class="acct-name" id="acct-name">–</div><span class="role-tag" data-role hidden></span></div>
                                             <div class="acct-email" id="acct-email">–</div>
                                             <div class="acct-badges">
                                                 <span class="profile-badge badge-free" id="acct-plan-badge">Free Plan</span>
@@ -6177,16 +6178,37 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                     </div>
                     <button class="btn btn-outline" type="button" onclick="closeSubscriptionModal()">Tutup</button>
                 </div>
-                <p>VIP memberikan publish tanpa batas, batch sampai 5 audio, tema silver chrome, dan border premium pada profil. VIP Plus menambah akses tool Image to Mesh dan SkyBox 360.</p>
+                <p>VIP memberikan publish tanpa batas, batch sampai 5 audio, tema silver chrome, dan border premium pada profil. VIP Plus + menambah akses tool Image to Mesh dan SkyBox 360.</p>
                 <div class="subscription-benefits">
                     <span>Publish tanpa batas</span>
                     <span>5 audio per batch</span>
                     <span>5 link YouTube/TikTok per proses</span>
                     <span>Tema silver chrome VIP</span>
-                    <span>VIP Plus: Image to Mesh</span>
-                    <span>VIP Plus: SkyBox 360</span>
+                    <span>VIP Plus +: Image to Mesh</span>
+                    <span>VIP Plus +: SkyBox 360</span>
                 </div>
                 <div id="payment-body"></div>
+            </div>
+        </div>
+        <div id="plus-gate" class="subscription-overlay" onclick="if(event.target===this)closePlusGate()">
+            <div class="subscription-card plus-gate-card" role="dialog" aria-modal="true" aria-labelledby="plus-gate-title">
+                <div class="plus-gate-lock" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+                </div>
+                <div class="plan-kicker premium-kicker">VIP PLUS +</div>
+                <h2 id="plus-gate-title">Fitur khusus VIP Plus +</h2>
+                <p><b id="plus-gate-tool">Fitur ini</b> hanya bisa dipakai oleh akun VIP Plus +. Beli VIP Plus + untuk membukanya.</p>
+                <div class="subscription-benefits">
+                    <span>Image to Mesh</span>
+                    <span>SkyBox 360</span>
+                    <span>Publish tanpa batas, 5 audio per batch</span>
+                    <span>Border avatar lingkaran khusus VIP Plus +</span>
+                </div>
+                <div class="plus-gate-prices" id="plus-gate-price"></div>
+                <div class="pay-actions">
+                    <button type="button" class="btn btn-primary" onclick="openPlusPlan()">Beli VIP Plus +</button>
+                    <button type="button" class="btn btn-outline" onclick="closePlusGate()">Nanti saja</button>
+                </div>
             </div>
         </div>
         <div id="developer-gate">
@@ -6630,9 +6652,14 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                     syncQuotaDay();
             });
             function navigate(page) {
-                // "Model" memakai halaman upload yang sama dalam mode model; "Upload" khusus musik.
+                // Image to Mesh & SkyBox 360 khusus VIP Plus +: tanpa itu, tampilkan popup beli, jangan pindah halaman.
+                if ((page === 'mesh' || page === 'skybox') && !isVipPlus()) {
+                    openPlusGate(page);
+                    return;
+                }
+                // "Animasi" memakai halaman upload yang sama dalam mode animasi; "Upload" khusus musik.
                 let view = page;
-                if (page === 'model' || page === 'upload') {
+                if (page === 'animation' || page === 'upload') {
                     const want = page === 'upload' ? 'audio' : page;
                     if (sourceKind(S.source) !== want) {
                         if (S.uploading && S.files.length) {
@@ -6650,7 +6677,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                 const idx = {
                     home: 0,
                     upload: 1,
-                    model: 2,
+                    animation: 2,
                     mesh: 3,
                     skybox: 4,
                     library: 5,
@@ -6963,9 +6990,11 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                 }
                 const ddPlan = document.getElementById('dd-plan');
                 if (ddPlan) {
-                    ddPlan.textContent = { owner: 'Owner', plus: 'VIP Plus', vip: 'VIP', free: 'Free' }[tier];
+                    ddPlan.textContent = { owner: 'Owner', plus: 'VIP Plus +', vip: 'VIP', free: 'Free' }[tier];
                     ddPlan.className = `profile-badge ${premium ? 'badge-pro badge-' + tier : 'badge-free'}`;
                 }
+                if (window.bxRoleSync)
+                    window.bxRoleSync();
                 syncBrowserTheme();
                 if (typeof syncThemeLock === 'function') syncThemeLock();
                 updateUploadButton();
@@ -7026,9 +7055,9 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
             }
             const dropZone = document.getElementById('drop-zone');
             const fileInput = document.getElementById('file-input');
-            const modelInput = document.getElementById('model-input');
+            const animationInput = document.getElementById('animation-input');
             bindDropZone(dropZone, fileInput);
-            bindDropZone(document.getElementById('model-drop-zone'), modelInput);
+            bindDropZone(document.getElementById('animation-drop-zone'), animationInput);
 
             function isLimitReached() {
                 return Boolean(hasRoblox() && S.account && !S.account.unlimited && S.account.remaining <= 0);
@@ -7054,15 +7083,15 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                 document.getElementById('upload-btn-label').textContent = limitReached ? `Batas publish per ${S.account.periodLabel || 'periode'} tercapai` : (S.files.length > 1 ? `Publish ${S.files.length} ${UPLOAD_TEXT[sourceKind(S.source)].noun} ke Roblox` : (S.source !== 'file' ? 'Publish ke Roblox' : 'Upload & Publish ke Roblox'));
             }
 
-            // Jenis upload dari sumber aktif: 'audio' (file/YouTube/TikTok) atau 'model'.
-            const sourceKind = source => source === 'model' ? 'model' : 'audio';
+            // Jenis upload dari sumber aktif: 'audio' (file/YouTube/TikTok) atau 'animation'.
+            const sourceKind = source => source === 'animation' ? 'animation' : 'audio';
             const UPLOAD_TEXT = {
                 audio: { title: 'Upload Audio', sub: 'Publish audio langsung ke Roblox Asset', noun: 'audio' },
-                model: { title: 'Upload Model', sub: 'Publish model Roblox (.rbxm) langsung ke Roblox Asset', noun: 'model' }
+                animation: { title: 'Upload Animasi', sub: 'Publish animasi (.rbxm dari Animation Editor) langsung ke Roblox Asset', noun: 'animasi' }
             };
             function setUploadSource(source) {
-                const next = ['youtube', 'tiktok', 'model'].includes(source) ? source : 'file';
-                // Antrean musik dan model tidak dicampur: pindah antar jenis mengosongkan antrean.
+                const next = ['youtube', 'tiktok', 'animation'].includes(source) ? source : 'file';
+                // Antrean musik dan animasi tidak dicampur: pindah antar jenis mengosongkan antrean.
                 if (sourceKind(next) !== sourceKind(S.source) && S.files.length) {
                     if (S.uploading) {
                         toast('Antrean sedang diproses, tunggu sampai selesai', 'info');
@@ -7082,7 +7111,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                     tab.setAttribute('aria-selected', String(S.source === key));
                 });
                 document.getElementById('drop-zone').style.display = S.source === 'file' ? '' : 'none';
-                document.getElementById('model-drop-zone').style.display = mode === 'model' ? '' : 'none';
+                document.getElementById('animation-drop-zone').style.display = mode === 'animation' ? '' : 'none';
                 document.getElementById('youtube-source').style.display = S.source === 'youtube' ? '' : 'none';
                 document.getElementById('tiktok-source').style.display = S.source === 'tiktok' ? '' : 'none';
                 document.getElementById('audio-settings').style.display = asset ? 'none' : '';
@@ -7213,27 +7242,27 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                     toast(`${converted} link ${cfg.label} berhasil dikonversi ke MP3`, 'success');
             }
 
-            // Model Roblox (.rbxm/.rbxmx) tidak dikenali browser (f.type kosong), jadi dicek dari ekstensi.
-            function isModelFile(f) {
+            // Animasi Roblox (.rbxm/.rbxmx) tidak dikenali browser (f.type kosong), jadi dicek dari ekstensi.
+            function isAnimationFile(f) {
                 return /\.rbxmx?$/i.test(f && f.name || '');
             }
-            // 'model' | 'audio' — menentukan tipe asset Roblox yang dikirim.
+            // 'animation' | 'audio' — menentukan tipe asset Roblox yang dikirim.
             function fileKind(f) {
-                return isModelFile(f) ? 'model' : 'audio';
+                return isAnimationFile(f) ? 'animation' : 'audio';
             }
             const KIND_INFO = {
                 audio: { type: 'Audio', noun: 'audio', done: 'Audio berhasil dipublish!', note: 'Salin ID ini ke script Roblox kamu' },
-                model: { type: 'Model', noun: 'model', done: 'Model berhasil dipublish!', note: 'Pakai ID ini dengan InsertService:LoadAsset(ID) di game milikmu. File .rbxm disimpan Roblox sebagai Package (ikon link di Creator Hub), bukan Model biasa.' }
+                animation: { type: 'Animation', noun: 'animasi', done: 'Animasi berhasil dipublish!', note: 'Pakai sebagai AnimationId di game milikmu. Animasi hanya bisa dimainkan di game yang dimiliki akun atau Group yang sama dengan pengunggahnya.' }
             };
-            // Menu Model hanya menerima .rbxm/.rbxmx; tab musik (file/YouTube/TikTok) hanya audio.
+            // Menu Animasi hanya menerima .rbxm/.rbxmx; tab musik (file/YouTube/TikTok) hanya audio.
             function addFiles(files) {
                 const mode = sourceKind(S.source);
                 const accepted = files.filter(f => mode === 'audio' ? f.type.startsWith('audio/') : fileKind(f) === mode);
                 if (!accepted.length) {
-                    if (mode === 'audio' && files.some(isModelFile))
-                        toast('File .rbxm diupload lewat menu Model', 'error');
+                    if (mode === 'audio' && files.some(isAnimationFile))
+                        toast('File .rbxm diupload lewat menu Animasi', 'error');
                     else
-                        toast({ audio: 'Format tidak didukung', model: 'Format tidak didukung. Pakai file .rbxm atau .rbxmx' }[mode], 'error');
+                        toast({ audio: 'Format tidak didukung', animation: 'Format tidak didukung. Pakai file .rbxm atau .rbxmx' }[mode], 'error');
                     return
                 }
                 const tooLarge = accepted.find(f => f.size > 20 * 1024 * 1024);
@@ -7265,6 +7294,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
             }
             // Ikon Decal masih dipakai Library untuk gambar yang sudah pernah diupload (termasuk 6 sisi SkyBox).
             const DECAL_ICON = '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.09-3.09a2 2 0 0 0-2.82 0L6 21"/>';
+            const ANIM_ICON = '<circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/>';
             const MODEL_ICON = '<path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/>';
             const QSTAT = { wait: ['Menunggu', ''], run: ['Diproses', 'is-run'], ok: ['Selesai', 'is-ok'], proc: ['Diproses', 'is-run'], fail: ['Gagal', 'is-bad'] };
             function fmtDur(t) {
@@ -7293,7 +7323,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                     const st = QSTAT[f._st || 'wait'];
                     return `
     <div class="file-item">
-      <div class="file-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${kind === 'model' ? MODEL_ICON : '<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>'}</svg></div>
+      <div class="file-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${kind === 'animation' ? ANIM_ICON : '<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>'}</svg></div>
       <div class="file-details"><div class="file-name">${escapeHtml(f.name)}</div><div class="file-size">${fmtSize(f.size)}${f._dur ? ' · ' + (f._trim ? fmtDur(f._trim.end - f._trim.start) + ' (dipotong)' : fmtDur(f._dur)) : ''} <span class="q-chip ${st[1]}">${st[0]}</span></div><input class="batch-name-input" type="text" value="${escapeHtml(S.assetNames[i] || defaultAssetName(f.name))}" maxlength="50" aria-label="Nama asset ${i + 1}" oninput="setAssetName(${i},this.value)">${kind === 'audio' ? trimButton(f, i) + '<div class="bx-prev" data-pv="' + i + '"></div>' : ''}
       </div>
       <button class="file-rm" onclick="removeFile(${i})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
@@ -7446,7 +7476,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                         let uploadFile;
                         try {
                             uploadFile = new File([await processed.arrayBuffer()], processed.name, {
-                                type: kind === 'model' ? 'model/x-rbxm' : (processed.type || (kind === 'audio' ? 'audio/mpeg' : ''))
+                                type: kind === 'animation' ? 'model/x-rbxm' : (processed.type || (kind === 'audio' ? 'audio/mpeg' : ''))
                             });
                         } catch (readErr) {
                             throw new Error('File tidak bisa dibaca. Pilih ulang filenya lalu coba lagi.');
@@ -7519,8 +7549,8 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                             }
                             const entry = Object.assign(base, { assetId, status: 'done' });
                             addLibEntry(entry, { name: String(name).slice(0, 100), filename: String(file.name).slice(0, 160), size: file.size, assetId: String(assetId).slice(0, 30), status: 'done', speed: Number(S.speed) || 1 });
-                            document.getElementById('result-asset-id').textContent = (kind === 'model' ? '' : 'rbxassetid://') + assetId;
-                            document.getElementById('result-full-btn').style.display = kind === 'model' ? 'none' : '';
+                            document.getElementById('result-asset-id').textContent = 'rbxassetid://' + assetId;
+                            document.getElementById('result-full-btn').style.display = '';
                             document.getElementById('result-note').textContent = info.note;
                             document.getElementById('result-box').classList.add('visible');
                             setQStatus(file, 'ok');
@@ -7541,7 +7571,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                 S.files = [];
                 S.assetNames = [];
                 fileInput.value = '';
-                modelInput.value = '';
+                animationInput.value = '';
                 renderFileQueue();
             }
 
@@ -7748,7 +7778,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                     return `
     <div class="${cls}"${click}>
       ${selOn && pickable ? `<input type="checkbox" class="lib-check" tabindex="-1" ${picked ? 'checked' : ''}>` : ''}
-      <div class="lib-wave">${libKind(i) !== 'audio' ? `<svg class="lib-model-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-label="${libKind(i) === 'decal' ? 'Decal' : 'Model'}">${libKind(i) === 'decal' ? DECAL_ICON : MODEL_ICON}</svg>` : Array(7).fill('<span style="height:6px"></span>').join('')}</div>
+      <div class="lib-wave">${libKind(i) !== 'audio' ? `<svg class="lib-model-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-label="${libKind(i) === 'decal' ? 'Decal' : libKind(i) === 'animation' ? 'Animasi' : 'Model'}">${libKind(i) === 'decal' ? DECAL_ICON : libKind(i) === 'animation' ? ANIM_ICON : MODEL_ICON}</svg>` : Array(7).fill('<span style="height:6px"></span>').join('')}</div>
       <div class="lib-body">
         <div class="lib-name" title="${escapeHtml(i.name || 'Tanpa nama')}">${escapeHtml(i.name || 'Tanpa nama')}</div>
         <div class="lib-meta">
@@ -8054,7 +8084,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
             }
             // Entri lama tanpa `kind` dianggap audio.
             function libKind(i) {
-                return i.kind === 'model' || i.kind === 'decal' ? i.kind : 'audio';
+                return i.kind === 'model' || i.kind === 'decal' || i.kind === 'animation' ? i.kind : 'audio';
             }
             function filterLibrary() {
                 renderLibrary()
@@ -8811,8 +8841,17 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
             let planTab = null;
             const PLAN_INFO = {
                 vip: { title: 'VIP', desc: 'Publish tanpa batas, batch 5 audio, tema bebas.' },
-                plus: { title: 'VIP Plus', desc: 'Semua fitur VIP tanpa limit, plus tool Image to Mesh dan SkyBox 360, dan border avatar khusus VIP Plus.' }
+                plus: { title: 'VIP Plus +', desc: 'Semua fitur VIP tanpa limit, plus tool Image to Mesh dan SkyBox 360, dan border avatar lingkaran khusus VIP Plus +.' }
             };
+            function planFromPrice(tier) {
+                const prices = PAYMENT.plans.filter(p => p.tier === tier).map(p => p.price);
+                return prices.length ? 'mulai ' + formatRupiah(Math.min(...prices)) : '';
+            }
+            function planButtonsHtml() {
+                const tiers = isPermanentVip() ? ['plus'] : ['vip', 'plus'];
+                return `<div class="field-label" style="margin-top:20px">Beli paket</div>
+                    <div class="plan-tabs plan-tabs-buy">${tiers.map(t => `<button type="button" class="plan-tab plan-tab-${t}" onclick="renderPlanChoice('${t}')"><span>${escapeHtml(PLAN_INFO[t].title)}</span><small>${escapeHtml(planFromPrice(t))}</small></button>`).join('')}</div>`;
+            }
             function renderPlanChoice(tab) {
                 const tier = accountTier();
                 const untilMs = tier === 'plus' && S.plusUntil ? S.plusUntil : S.vipExpiresAt;
@@ -8827,7 +8866,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                 document.getElementById('payment-body').innerHTML = `
                     ${until ? `<p>${tier === 'plus' ? 'VIP Plus' : 'VIP'} aktif sampai ${escapeHtml(until)}. Paket yang kamu beli ditambahkan setelah masa aktif paket yang sama, jadi boleh beli lebih dari sekali.</p>` : ''}
                     ${tabs.length > 1 ? `<div class="plan-tabs" role="tablist" aria-label="Jenis paket">
-                        ${tabs.map(t => `<button type="button" role="tab" id="plan-tab-${t}" class="plan-tab plan-tab-${t}${t === planTab ? ' on' : ''}" aria-selected="${t === planTab}" data-tier="${t}">${escapeHtml(PLAN_INFO[t].title)}</button>`).join('')}
+                        ${tabs.map(t => `<button type="button" role="tab" id="plan-tab-${t}" class="plan-tab plan-tab-${t}${t === planTab ? ' on' : ''}" aria-selected="${t === planTab}" data-tier="${t}"><span>${escapeHtml(PLAN_INFO[t].title)}</span><small>${escapeHtml(planFromPrice(t))}</small></button>`).join('')}
                     </div>` : ''}
                     <div role="tabpanel" aria-labelledby="plan-tab-${planTab}">
                         <div class="field-label">${escapeHtml(info.title)}</div>
@@ -8861,9 +8900,9 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                         <p>Kirim konfirmasi ke admin lewat WhatsApp. VIP diaktifkan setelah pembayaranmu dicek.</p>
                         <div class="pay-actions">
                             <a class="btn btn-primary" href="${escapeHtml(whatsappUrl(order))}" target="_blank" rel="noopener noreferrer">Hubungi admin</a>
-                            <button type="button" class="btn btn-outline" onclick="renderPlanChoice()">Beli paket lagi</button>
                             <button type="button" class="btn btn-outline" onclick="closeSubscriptionModal()">Tutup</button>
-                        </div>`;
+                        </div>
+                        ${planButtonsHtml()}`;
                     return;
                 }
                 body.innerHTML = `
@@ -9202,6 +9241,28 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
             function closeSubscriptionModal() {
                 document.getElementById('subscription-overlay').classList.remove('visible')
             }
+            // Popup "Khusus VIP Plus +" untuk menu SkyBox 360 / Image to Mesh.
+            function openPlusGate(page) {
+                const overlay = document.getElementById('plus-gate');
+                if (!overlay)
+                    return;
+                const tool = (typeof TOOLS !== 'undefined' && TOOLS[page]) ? TOOLS[page].title : 'Fitur ini';
+                document.getElementById('plus-gate-tool').textContent = tool;
+                const plans = PAYMENT.plans.filter(p => p.tier === 'plus');
+                document.getElementById('plus-gate-price').innerHTML = plans.map(p => `<div class="plus-gate-plan"><strong>${p.days} hari</strong><span>${formatRupiah(p.price)}</span></div>`).join('');
+                closeProfileDropdown();
+                overlay.classList.add('visible');
+            }
+            function closePlusGate() {
+                const overlay = document.getElementById('plus-gate');
+                if (overlay)
+                    overlay.classList.remove('visible');
+            }
+            function openPlusPlan() {
+                closePlusGate();
+                planTab = 'plus';
+                openSubscriptionModal();
+            }
 
             // ── PLAYER ────────────────────────────────────────────
             function togglePlay() {
@@ -9276,8 +9337,8 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                         <button class="btn btn-primary" type="button" onclick="navigate('settings');settingsTab('roblox')">Buka Pengaturan</button>`);
                 } else {
                     const price = days => { const p = PAYMENT.plans.find(x => x.tier === 'plus' && x.days === days); return p ? formatRupiah(p.price) : ''; };
-                    toolCard(name, 'VIP PLUS', `<div class="setting-desc">Tool ini khusus VIP Plus. VIP Plus juga membuka semua fitur tanpa limit. 15 hari ${price(15)}, 30 hari ${price(30)}.</div>
-                        <button class="btn btn-primary" type="button" onclick="openSubscriptionModal()">Beli VIP Plus</button>`);
+                    toolCard(name, 'VIP PLUS +', `<div class="setting-desc">Tool ini khusus VIP Plus +. VIP Plus + juga membuka semua fitur tanpa limit. 15 hari ${price(15)}, 30 hari ${price(30)}.</div>
+                        <button class="btn btn-primary" type="button" onclick="openPlusPlan()">Beli VIP Plus +</button>`);
                 }
             }
             async function toolLoad(name) {
@@ -9296,7 +9357,12 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                     frame.setAttribute('sandbox', 'allow-scripts allow-downloads');
                     frame.setAttribute('allow', 'clipboard-write; fullscreen');
                     frame.setAttribute('allowfullscreen', '');
-                    frame.addEventListener('load', () => pushToolTheme(frame));
+                    frame.addEventListener('load', () => { pushToolTheme(frame); toolViewSync(); });
+                    if (name === 'skybox') {
+                        // SkyBox melaporkan tinggi isinya lewat postMessage; iframe dibuat setinggi isi supaya cuma halaman utama yang di-scroll.
+                        frame.classList.add('tool-frame-auto');
+                        frame.setAttribute('scrolling', 'no');
+                    }
                     const scheme = toolScheme();
                     frame.style.colorScheme = scheme;
                     frame.srcdoc = html.replace('<html ', '<html style="color-scheme:' + scheme + '" ');
@@ -9345,6 +9411,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                     if (st && st.frame && !isVipPlus()) {
                         st.frame.remove();
                         delete toolState[name];
+                        document.body.classList.remove('tool-fs');
                     }
                     const page = document.getElementById('page-' + name);
                     if (page && page.classList.contains('active'))
@@ -9450,9 +9517,57 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                 }
             }
             // Pesan dari iframe tool: hanya diterima dari iframe milik halaman ini (origin sandbox "null", jadi dicek lewat window sumbernya).
+            const toolFrameOf = src => Object.keys(toolState).map(n => toolState[n] && toolState[n].frame).find(f => f && f.contentWindow === src) || null;
+            // Kirim ke tool bagian iframe yang sedang terlihat di layar (dipakai untuk posisi toast).
+            let toolViewQueued = false;
+            function toolViewSync() {
+                if (toolViewQueued)
+                    return;
+                toolViewQueued = true;
+                requestAnimationFrame(() => {
+                    toolViewQueued = false;
+                    Object.keys(toolState).forEach(n => {
+                        const f = toolState[n] && toolState[n].frame;
+                        if (!f || !f.classList.contains('tool-frame-auto') || !f.contentWindow)
+                            return;
+                        const r = f.getBoundingClientRect();
+                        const top = Math.max(0, -r.top);
+                        const bottom = Math.min(r.height, window.innerHeight - r.top);
+                        f.contentWindow.postMessage({ bx: 'view', top, h: Math.max(0, bottom - top) }, '*');
+                    });
+                });
+            }
+            window.addEventListener('scroll', toolViewSync, { passive: true, capture: true });
+            window.addEventListener('resize', toolViewSync);
             window.addEventListener('message', e => {
                 const d = e.data;
-                if (!d || d.bx !== 'publish' || d.type !== 'request' || typeof d.id !== 'string')
+                if (!d || typeof d !== 'object')
+                    return;
+                if (d.bx === 'height' && Number.isFinite(d.h)) {
+                    const f = toolFrameOf(e.source);
+                    if (f && f.classList.contains('tool-frame-auto')) {
+                        f.style.height = Math.max(240, Math.min(30000, Math.ceil(d.h))) + 'px';
+                        toolViewSync();
+                    }
+                    return;
+                }
+                if (d.bx === 'fs') {
+                    const f = toolFrameOf(e.source);
+                    if (f && f.classList.contains('tool-frame-auto')) {
+                        if (d.on) {
+                            f.parentElement.style.height = f.offsetHeight + 'px';   // tahan tinggi halaman supaya tidak lompat
+                            f.classList.add('tool-frame-full');
+                            document.body.classList.add('tool-fs');
+                        } else {
+                            f.classList.remove('tool-frame-full');
+                            f.parentElement.style.height = '';
+                            document.body.classList.remove('tool-fs');
+                        }
+                        toolViewSync();
+                    }
+                    return;
+                }
+                if (d.bx !== 'publish' || d.type !== 'request' || typeof d.id !== 'string')
                     return;
                 const fromTool = name => toolState[name] && toolState[name].frame && toolState[name].frame.contentWindow === e.source;
                 if (fromTool('skybox'))
@@ -10431,7 +10546,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                 }
                 );
                 document.getElementById('file-input').setAttribute('aria-label', 'Pilih file audio');
-                document.getElementById('model-input').setAttribute('aria-label', 'Pilih file model rbxm');
+                document.getElementById('animation-input').setAttribute('aria-label', 'Pilih file animasi rbxm');
                 document.getElementById('lib-kind').setAttribute('aria-label', 'Filter jenis asset');
                 document.getElementById('lib-search').setAttribute('aria-label', 'Cari nama asset');
                 document.getElementById('lib-filter').setAttribute('aria-label', 'Filter status asset');
@@ -11278,6 +11393,12 @@ html body .section-heading{margin:26px 4px 12px !important}
 /* Tool VIP Plus: iframe sandbox memenuhi area halaman */
 html body .page.page-tool{max-width:960px;padding-top:16px;padding-bottom:16px}
 .tool-frame{display:block;width:100%;height:calc(100vh - var(--nav-h) - 32px);height:calc(100dvh - var(--nav-h) - 32px);min-height:560px;border:0;border-radius:var(--radius);background:transparent}
+.tool-frame.tool-frame-auto{min-height:0;height:720px}
+.tool-frame.tool-frame-full{position:fixed;inset:0;z-index:3000;width:100%;height:100% !important;border-radius:0;background:#000}
+/* Saat preview layar penuh: halaman tool tidak boleh punya transform (bikin position:fixed relatif ke halaman) dan #app harus di atas navbar */
+body.tool-fs #app{z-index:3000}
+body.tool-fs .page-tool{transform:none !important;animation:none !important}
+body.tool-fs{overflow:hidden}
 .tool-lock{display:flex;flex-direction:column;align-items:flex-start;gap:8px;margin-top:24px}
 .tool-lock .page-title,.tool-lock .page-sub{margin:0}
 .tool-lock .btn{margin-top:6px}
@@ -11294,13 +11415,13 @@ html[data-avb="gold"] body.owner-user{
   --avb-shadow:0 0 0 3px rgba(239,68,68,.2),0 0 24px rgba(239,68,68,.55);
   --avb-deco:linear-gradient(180deg,#fee2e2,#f87171 55%,#b91c1c)}
 /* Bentuk bingkai per role (bukan cuma warna). VIP = lingkaran + mahkota.
-   VIP Plus = kotak membulat + cincin ganda + berlian + cincin putus-putus berputar.
+   VIP Plus = lingkaran + cincin ganda + berlian + cincin putus-putus berputar.
    Owner = lingkaran + cincin ganda + bintang. Gaya "Tanpa border" tetap dihormati. */
 @keyframes plus-orbit{to{transform:rotate(360deg)}}
-html:not([data-avb="none"]) body.plus-user.premium-user :is(.nav-avatar,.su-avatar,#dd-avatar,#acct-avatar-big,#bx-welcome .bx-av,.dr-acct .bx-av){border-radius:32% !important;outline:2px solid rgba(129,140,248,.65);outline-offset:4px}
+html:not([data-avb="none"]) body.plus-user.premium-user :is(.nav-avatar,.su-avatar,#dd-avatar,#acct-avatar-big,#bx-welcome .bx-av,.dr-acct .bx-av){border-radius:50% !important;outline:2px solid rgba(129,140,248,.65);outline-offset:4px}
 html:not([data-avb="none"]) body.plus-user.premium-user :is(.nav-avatar,.su-avatar,#dd-avatar,#acct-avatar-big,#bx-welcome .bx-av,.dr-acct .bx-av) img{border-radius:inherit !important}
 html:not([data-avb="none"]) body.plus-user.premium-user :is(.nav-avatar,.su-avatar,#dd-avatar,#acct-avatar-big,#bx-welcome .bx-av,.dr-acct .bx-av)::after{width:30%;transform:translate(-50%,-70%);-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 3h12l4 6-10 12L2 9z'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 3h12l4 6-10 12L2 9z'/%3E%3C/svg%3E") center/contain no-repeat}
-html:not([data-avb="none"]) body.plus-user.premium-user :is(.nav-avatar,.su-avatar,#dd-avatar,#acct-avatar-big,#bx-welcome .bx-av,.dr-acct .bx-av)::before{inset:-17%;border-radius:36%;background:none !important;-webkit-mask:none;mask:none;border:1px dashed rgba(129,140,248,.75);animation:plus-orbit 18s linear infinite}
+html:not([data-avb="none"]) body.plus-user.premium-user :is(.nav-avatar,.su-avatar,#dd-avatar,#acct-avatar-big,#bx-welcome .bx-av,.dr-acct .bx-av)::before{inset:-17%;border-radius:50%;background:none !important;-webkit-mask:none;mask:none;border:1px dashed rgba(129,140,248,.75);animation:plus-orbit 18s linear infinite}
 html:not([data-avb="none"]) body.owner-user.premium-user :is(.nav-avatar,.su-avatar,#dd-avatar,#acct-avatar-big,#bx-welcome .bx-av,.dr-acct .bx-av){outline:2px solid rgba(248,113,113,.75);outline-offset:4px}
 html:not([data-avb="none"]) body.owner-user.premium-user :is(.nav-avatar,.su-avatar,#dd-avatar,#acct-avatar-big,#bx-welcome .bx-av,.dr-acct .bx-av)::after{width:32%;transform:translate(-50%,-72%);-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='m12 1.5 3.1 6.8 7.4.8-5.5 5 1.6 7.3L12 17.6l-6.6 3.8L7 14.1 1.5 9.1l7.4-.8z'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='m12 1.5 3.1 6.8 7.4.8-5.5 5 1.6 7.3L12 17.6l-6.6 3.8L7 14.1 1.5 9.1l7.4-.8z'/%3E%3C/svg%3E") center/contain no-repeat}
 @media (prefers-reduced-motion:reduce){html:not([data-avb="none"]) body.plus-user.premium-user :is(.nav-avatar,.su-avatar,#dd-avatar,#acct-avatar-big,#bx-welcome .bx-av,.dr-acct .bx-av)::before{animation:none}}
@@ -11309,7 +11430,7 @@ html:not([data-avb="none"]) body.owner-user.premium-user :is(.nav-avatar,.su-ava
 </style>
 <script id="bx-v47-js">
 (function(){
-  var T=['Beranda','Upload','Model','Image to Mesh','SkyBox 360','Library','Pengaturan','Referal'],N=['home','upload','model','mesh','skybox','library','settings','referral'];
+  var T=['Beranda','Upload','Animasi','Image to Mesh','SkyBox 360','Library','Pengaturan','Referal'],N=['home','upload','animation','mesh','skybox','library','settings','referral'];
   var $=function(i){return document.getElementById(i)};
   var IC={burger:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>',
     music:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>',
@@ -11323,8 +11444,8 @@ html:not([data-avb="none"]) body.owner-user.premium-user :is(.nav-avatar,.su-ava
   }
   function fill(){
     var c=acct(),w=$('bx-welcome'),d=$('bx-dacct');
-    if(w){w.querySelector('.bx-av').innerHTML=c.av;w.querySelector('.bx-name').textContent=c.on?c.name:'Selamat datang';w.querySelector('.bx-handle').textContent=c.on?c.handle:'Hubungkan akun Roblox di Pengaturan';}
-    if(d){d.querySelector('.bx-av').innerHTML=c.av;d.querySelector('b').textContent=c.name;d.querySelector('i').textContent=c.on?c.handle:'Ketuk untuk masuk';}
+    if(w){w.querySelector('.bx-av').innerHTML=c.av;w.querySelector('.bx-name .nm').textContent=c.on?c.name:'Selamat datang';w.querySelector('.bx-handle').textContent=c.on?c.handle:'Hubungkan akun Roblox di Pengaturan';}
+    if(d){d.querySelector('.bx-av').innerHTML=c.av;d.querySelector('b .nm').textContent=c.name;d.querySelector('i').textContent=c.on?c.handle:'Ketuk untuk masuk';}
   }
   function title(){var l=document.querySelectorAll('#navbar .nav-links .nav-link'),t=$('bx-title'),dr=document.querySelectorAll('.dr-item');
     l.forEach(function(b,i){var on=b.classList.contains('active');if(on&&t)t.textContent=T[i];if(dr[i])dr[i].classList.toggle('active',on)})}
@@ -11338,7 +11459,7 @@ html:not([data-avb="none"]) body.owner-user.premium-user :is(.nav-avatar,.su-ava
     var sc=document.createElement('div');sc.id='bx-scrim';sc.onclick=function(){drawer(false)};
     var d=document.createElement('aside');d.id='bx-drawer';d.setAttribute('aria-label','Menu');
     d.innerHTML='<div class="dr-head"><img src="logo.png" alt="BAXDEV"><button type="button" class="dr-x" aria-label="Tutup">&times;</button></div>'+
-      '<button type="button" class="dr-acct" id="bx-dacct"><span class="bx-av"></span><span class="dr-meta"><b></b><i></i></span></button>';
+      '<button type="button" class="dr-acct" id="bx-dacct"><span class="bx-av"></span><span class="dr-meta"><b><span class="nm"></span><span class="role-tag" data-role hidden></span></b><i></i></span></button>';
     d.querySelector('.dr-x').onclick=function(){drawer(false)};
     d.querySelector('#bx-dacct').onclick=function(){drawer(false);var p=$('profile-nav-btn'),l=$('login-nav-btn');(p&&p.style.display!=='none'?p:l).click()};
     N.forEach(function(n,i){var x=document.createElement('button');x.type='button';x.className='dr-item';x.innerHTML='<span class="bx-ico">'+svgOf(i)+'</span>'+T[i];
@@ -11348,11 +11469,11 @@ html:not([data-avb="none"]) body.owner-user.premium-user :is(.nav-avatar,.su-ava
     window.addEventListener('resize',function(){if(innerWidth>=1100)drawer(false)});
     var home=$('page-home');
     if(home){
-      var w=document.createElement('section');w.id='bx-welcome';w.innerHTML='<div class="bx-av"></div><div class="bx-kick">Selamat datang kembali</div><h2 class="bx-name"></h2><div class="bx-handle"></div>';
+      var w=document.createElement('section');w.id='bx-welcome';w.innerHTML='<div class="bx-av"></div><div class="bx-kick">Selamat datang kembali</div><h2 class="bx-name"><span class="nm"></span><span class="role-tag" data-role hidden></span></h2><div class="bx-handle"></div>';
       home.insertBefore(w,home.firstChild);
       var qa=home.querySelector('.quick-actions');
       var tiles=[['music','Upload Musik','Convert & publish jadi asset Roblox',"navigate('upload')"],
-        [null,'Upload Model','Upload .rbxm jadi asset',"navigate('model')",2],
+        [null,'Upload Animasi','Upload animasi .rbxm jadi asset',"navigate('animation')",2],
         [null,'Image to Mesh','Foto jadi mesh 3D (VIP Plus)',"navigate('mesh')",3],
         [null,'SkyBox 360','Panorama jadi 6 sisi (VIP Plus)',"navigate('skybox')",4],
         [null,'Library','Kelola audio tersimpan',"navigate('library')",5],
@@ -12416,5 +12537,75 @@ html[data-style="clay"] .page-title{text-shadow:1px 2px 3px rgba(255,255,255,.9)
 html[data-style="clay"] .studio-hero h1 span{background-image:linear-gradient(90deg,var(--cl-ink),var(--cl-acc)) !important}
 html[data-style="clay"] .progress-fill,html[data-style="clay"] .um-progress span{background:var(--chrome)}
 </style>
+
+<style id="bx-v72">
+/* ═══ BAXDEV v72 — role di samping nama, gembok menu VIP Plus +, popup beli, tombol paket ═══ */
+.name-role{display:flex;align-items:center;gap:8px;min-width:0;flex-wrap:wrap}
+.role-tag{display:inline-flex;align-items:center;flex:none;height:20px;padding:0 9px;border-radius:999px;font:700 11px/1 var(--font,inherit);letter-spacing:.02em;white-space:nowrap;border:1px solid transparent;vertical-align:middle}
+.role-tag[hidden]{display:none !important}
+.role-vip{color:#2b1d00;background:linear-gradient(135deg,#ffe29a,#f5b83d);border-color:rgba(255,226,154,.65);box-shadow:0 0 12px rgba(245,184,61,.35)}
+.role-plus{color:#fff;background:linear-gradient(135deg,#0891b2,#6366f1 55%,#c026d3);border-color:rgba(165,180,252,.65);box-shadow:0 0 14px rgba(99,102,241,.45)}
+.role-owner{color:#fff;background:linear-gradient(135deg,#ef4444,#991b1b);border-color:rgba(252,165,165,.65);box-shadow:0 0 14px rgba(239,68,68,.45)}
+html body #bx-welcome .bx-name,.dr-meta b{display:flex;align-items:center;gap:8px;min-width:0}
+.bx-name .nm,.dr-meta b .nm{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* Gembok di menu yang butuh VIP Plus + */
+.bx-locked{position:relative}
+.bx-lock{position:absolute;top:4px;right:4px;z-index:2;width:17px;height:17px;border-radius:50%;display:grid;place-items:center;background:rgba(0,0,0,.62);border:1px solid rgba(255,255,255,.3);color:#fff;pointer-events:none}
+.bx-lock svg{width:10px;height:10px;display:block}
+.dr-item .bx-lock,.m-link .bx-lock{top:50%;right:14px;width:24px;height:24px;transform:translateY(-50%)}
+.dr-item .bx-lock svg,.m-link .bx-lock svg{width:12px;height:12px}
+.bx-tile .bx-lock{top:8px;right:8px;width:20px;height:20px}
+.bx-tile .bx-lock svg{width:11px;height:11px}
+.dk-item .bx-lock{top:1px;right:1px;width:14px;height:14px}
+.dk-item .bx-lock svg{width:8px;height:8px}
+
+/* Popup beli VIP Plus + */
+.plus-gate-card{text-align:left}
+.plus-gate-card p{margin:6px 0 0}
+.plus-gate-lock{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;margin-bottom:14px;color:#fff;background:linear-gradient(135deg,rgba(34,211,238,.25),rgba(217,70,239,.25));box-shadow:inset 0 0 0 1px rgba(129,140,248,.6),0 0 28px rgba(99,102,241,.35)}
+.plus-gate-lock svg{width:24px;height:24px}
+.plus-gate-prices{display:flex;gap:8px;flex-wrap:wrap}
+.plus-gate-plan{flex:1 1 120px;display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.06);border:1px solid rgba(129,140,248,.4)}
+.plus-gate-plan span{font-weight:700}
+
+/* Tombol paket VIP / VIP Plus + */
+.plan-tab{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:56px;padding:8px 6px}
+.plan-tab small{font-size:11px;font-weight:500;opacity:.7}
+.plan-tab-plus{background:linear-gradient(135deg,rgba(34,211,238,.14),rgba(217,70,239,.14));box-shadow:inset 0 0 0 1px rgba(129,140,248,.4)}
+.plan-tab-vip:not(.on){box-shadow:inset 0 0 0 1px rgba(245,184,61,.3)}
+.plan-tabs-buy{margin-top:8px}
+.plan-tabs-buy:has(.plan-tab:only-child){grid-template-columns:1fr}
+</style>
+
+<script id="bx-v72-js">
+(function(){
+  var LOCK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
+  var ROLE={owner:['Owner','role-owner'],plus:['VIP Plus +','role-plus'],vip:['VIP','role-vip']};
+  function tier(){try{return typeof accountTier==='function'?accountTier():'free'}catch(e){return 'free'}}
+  function plus(){try{return typeof isVipPlus==='function'&&isVipPlus()}catch(e){return false}}
+  function roles(){
+    var r=ROLE[tier()];
+    document.querySelectorAll('[data-role]').forEach(function(el){
+      if(!r){el.hidden=true;el.textContent='';el.className='role-tag';return}
+      el.hidden=false;el.textContent=r[0];el.className='role-tag '+r[1];
+    });
+  }
+  function locks(){
+    var locked=!plus(),els=[].slice.call(document.querySelectorAll('[onclick*="navigate(\'mesh\')"],[onclick*="navigate(\'skybox\')"]'));
+    document.querySelectorAll('.dr-item').forEach(function(d,i){if(i===3||i===4)els.push(d)});
+    els.forEach(function(el){
+      var lk=null;for(var i=0;i<el.children.length;i++){if(el.children[i].classList.contains('bx-lock')){lk=el.children[i];break}}
+      el.classList.toggle('bx-locked',locked);
+      if(locked&&!lk){lk=document.createElement('span');lk.className='bx-lock';lk.title='Khusus VIP Plus +';lk.innerHTML=LOCK;el.appendChild(lk)}
+      else if(!locked&&lk){lk.remove()}
+    });
+  }
+  window.bxRoleSync=function(){roles();locks()};
+  function boot(){window.bxRoleSync();setTimeout(window.bxRoleSync,400);setTimeout(window.bxRoleSync,1500)}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
+  addEventListener('load',function(){window.bxRoleSync()});
+})();
+</script>
 </body>
 </html>

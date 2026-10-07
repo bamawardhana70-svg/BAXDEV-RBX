@@ -25,8 +25,8 @@ const POLL_DELAY_MS = 1500;
 // Tipe yang boleh diunggah lewat endpoint ini. Model: .rbxm / .rbxmx (format native Roblox, content type
 // harus persis model/x-rbxm karena browser tidak mengenal ekstensi ini) dan .glb (hasil Image to Mesh,
 // diimpor Roblox sebagai Model berisi MeshPart).
-const ASSET_TYPES = new Set(["Audio", "Model", "Decal"]);
-const NOUNS = { Audio: "audio", Model: "model", Decal: "gambar" };
+const ASSET_TYPES = new Set(["Audio", "Model", "Decal", "Animation"]);
+const NOUNS = { Audio: "audio", Model: "model", Decal: "gambar", Animation: "animasi" };
 // Decal: format gambar yang diterima Open Cloud Assets API.
 const DECAL_TYPES = { png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", bmp: "image/bmp", tga: "image/tga" };
 const decalExt = (name) => String(name || "").split(".").pop().toLowerCase();
@@ -115,7 +115,7 @@ async function handleUpload(context) {
   const description = String(form.get("description") || "");
 
   if (!ASSET_TYPES.has(assetType)) {
-    return json({ ok: false, message: "Tipe asset tidak didukung. Yang tersedia: Audio, Model, dan Decal." }, 400);
+    return json({ ok: false, message: "Tipe asset tidak didukung. Yang tersedia: Audio, Animation, Model, dan Decal." }, 400);
   }
   if (!(file instanceof File)) {
     return json({ ok: false, message: `File ${noun} tidak ditemukan di request.` }, 400);
@@ -143,6 +143,15 @@ async function handleUpload(context) {
       }
     } else if (!(await looksLikeRbxm(file))) {
       return json({ ok: false, message: "Isi file bukan model Roblox yang valid. Ekspor ulang dari Roblox Studio (Save to File As → .rbxm)." }, 400);
+    }
+  }
+
+  if (assetType === "Animation") {
+    if (!/\.rbxmx?$/i.test(file.name || "")) {
+      return json({ ok: false, message: "Animasi harus berformat .rbxm atau .rbxmx (ekspor KeyframeSequence dari Roblox Studio)." }, 400);
+    }
+    if (!(await looksLikeRbxm(file))) {
+      return json({ ok: false, message: "Isi file bukan file Roblox yang valid. Ekspor ulang KeyframeSequence dari Roblox Studio (klik kanan > Save to File)." }, 400);
     }
   }
 
@@ -194,7 +203,9 @@ async function handleUpload(context) {
   // Roblox (curl --form 'request={...}') juga mengirim field ini tanpa
   // filename maupun content-type eksplisit.
   upstream.append("request", JSON.stringify(requestPayload));
-  if (assetType === "Model") {
+  if (assetType === "Animation") {
+    upstream.append("fileContent", file.slice(0, file.size, MODEL_CONTENT_TYPE), file.name);
+  } else if (assetType === "Model") {
     const type = GLB_EXT.test(file.name) ? GLB_CONTENT_TYPE : MODEL_CONTENT_TYPE;
     upstream.append("fileContent", file.slice(0, file.size, type), file.name);
   } else if (assetType === "Decal") {
