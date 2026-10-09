@@ -168,9 +168,12 @@ async function handleUpload(context) {
   // Kuota harian akun free (server-side, tidak bisa direset dari browser). VIP lolos.
   const quota = await quotaBegin(request, userId);
   if (!quota.ok) {
+    const message = quota.vip
+      ? `Kuota publish VIP 6 jam ini sudah habis (${quota.used}/${quota.limit}). Kuota reset otomatis tiap 6 jam.`
+      : `Kuota publish hari ini sudah habis (${quota.used}/${quota.limit}) dan reset besok jam 00.00 WIB. Beli VIP atau tukar kode di Pengaturan → Akun.`;
     return json({
       ok: false, code: "quota_exceeded",
-      message: `Kuota publish hari ini sudah habis (${quota.used}/${quota.limit}) dan reset besok jam 00.00 WIB. Beli VIP atau tukar kode di Pengaturan → Akun.`,
+      message,
       quota: { used: quota.used, limit: quota.limit }
     }, 429);
   }

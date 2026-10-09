@@ -124,7 +124,7 @@ export async function requireVipPlus(request, robloxId) {
   return null;
 }
 
-// ── Kuota publish harian akun free (disimpan di Firebase: quota/<uid> = {day, count}) ──
+// ── Kuota publish akun free (disimpan di Firebase: quota/<uid> = {day, count}) ──
 // Dihitung server-side per akun Google, jadi tidak bisa direset lewat hapus data browser / ganti Roblox ID.
 // Hari berganti 00.00 WIB (UTC+7). Pastikan FREE_DAILY_LIMIT sama dengan FREE_UPLOAD_LIMIT di index.html.
 export const FREE_DAILY_LIMIT = 5;
@@ -139,7 +139,22 @@ async function readQuota(uid, token) {
   return { day, used: rec && rec.day === day ? Number(rec.count) || 0 : 0 };
 }
 
-// Cek sebelum upload. { ok:false, used, limit } kalau kuota habis. Gagal baca DB / rules belum dipasang = jangan blokir (skip).
+// ── Kuota publish akun VIP / VIP Plus (disimpan di Firebase: vipq/<uid> = {period, count}) ──
+// Jendela tetap 6 jam (tidak mengikuti WIB), direset tiap kelipatan VIP_PERIOD_MS sejak epoch.
+// Pastikan VIP_PERIOD_LIMIT sama dengan VIP_UPLOAD_LIMIT di index.html.
+export const VIP_PERIOD_MS = 6 * 3600e3;
+export const VIP_PERIOD_LIMIT = 100;
+const vipPeriod = (now) => Math.floor(now / VIP_PERIOD_MS);
+
+async function readVipQuota(uid, token) {
+  const r = await fetch(FIREBASE_DB_URL + "/vipq/" + encodeURIComponent(uid) + ".json?auth=" + encodeURIComponent(token), { cache: "no-store" });
+  if (!r.ok) throw new Error("vipq read " + r.status);
+  const rec = await r.json();
+  const period = vipPeriod(Date.now());
+  return { period, used: rec && rec.period === period ? Number(rec.count) || 0 : 0 };
+}
+
+// Cek sebelum upload. { ok:false, used, limit, vip? } kalau kuota habis. Gagal baca DB / rules belum dipasang = jangan blokir (skip).
 export async function quotaBegin(request, robloxId) {
   const m = /^Bearer\s+(.+)$/i.exec(request.headers.get("authorization") || "");
   if (!m) return { ok: true, skip: true };
@@ -147,10 +162,14 @@ export async function quotaBegin(request, robloxId) {
     const user = await verifyIdToken(m[1], FIREBASE_PROJECT_ID);
     if (!user) return { ok: true, skip: true };
     if (/^[0-9]{1,20}$/.test(String(robloxId || ""))) {
-      if (await isOwnerSession(m[1], robloxId)) return { ok: true, vip: true };                  // owner tanpa batas
+      if (await isOwnerSession(m[1], robloxId)) return { ok: true, owner: true };                 // owner tanpa batas
       try {
         const vr = await fetch(FIREBASE_DB_URL + "/vip/" + robloxId + ".json", { cache: "no-store" });
-        if (vr.ok && vipActive(await vr.json())) return { ok: true, vip: true };                  // VIP / VIP Plus tanpa batas
+        if (vr.ok && vipActive(await vr.json())) {
+          const vq = await readVipQuota(user.uid, m[1]);
+          if (vq.used >= VIP_PERIOD_LIMIT) return { ok: false, used: vq.used, limit: VIP_PERIOD_LIMIT, vip: true };
+          return { ok: true, uid: user.uid, token: m[1], vip: true };                              // VIP / VIP Plus: 100 per 6 jam
+        }
       } catch { /* anggap bukan VIP */ }
     }
     const q = await readQuota(user.uid, m[1]);
@@ -163,8 +182,17 @@ export async function quotaBegin(request, robloxId) {
 
 // Catat 1 publish setelah upload berhasil. Balikkan { used, limit } atau null.
 export async function quotaCommit(q) {
-  if (!q || q.skip || q.vip || !q.uid) return null;
+  if (!q || q.skip || q.owner || !q.uid) return null;
   try {
+    if (q.vip) {
+      const cur = await readVipQuota(q.uid, q.token);   // baca ulang supaya tidak menimpa hitungan terbaru
+      const next = cur.used + 1;
+      const r = await fetch(FIREBASE_DB_URL + "/vipq/" + encodeURIComponent(q.uid) + ".json?auth=" + encodeURIComponent(q.token), {
+        method: "PUT", headers: { "content-type": "application/json" },
+        body: JSON.stringify({ period: cur.period, count: next })
+      });
+      return r.ok ? { used: next, limit: VIP_PERIOD_LIMIT } : null;
+    }
     const cur = await readQuota(q.uid, q.token);   // baca ulang supaya tidak menimpa hitungan terbaru
     const next = cur.used + 1;
     const r = await fetch(FIREBASE_DB_URL + "/quota/" + encodeURIComponent(q.uid) + ".json?auth=" + encodeURIComponent(q.token), {

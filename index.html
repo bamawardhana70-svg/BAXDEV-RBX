@@ -6,7 +6,7 @@
         <meta name="theme-color" content="#050505">
         <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#050505">
         <meta name="color-scheme" content="dark">
-        <script>(function(){var T={aurora:{m:'#0c0414',p:[[212,190,255],[166,110,255],[137,59,220]]},senja:{m:'#140a04',p:[[255,203,190],[255,147,110],[220,115,59]]},samudra:{m:'#041214',p:[[190,255,253],[110,252,255],[59,201,220]]},mono:{m:'#050505',p:[[236,237,241],[176,178,184],[124,126,132]]},blue:{m:'#040914',p:[[190,220,255],[110,170,255],[59,110,220]]},green:{m:'#030b07',p:[[190,255,215],[95,224,160],[34,160,90]]}};window.BX_THEMES=T;var n='mono';try{n=localStorage.getItem('baxdev_theme')||'aurora'}catch(e){}if(!T[n]&&n!=='custom')n='mono';document.documentElement.setAttribute('data-theme',n);window.__bxPalette=T[n]?T[n].p:null;window.__bxThemeMeta=(T[n]&&n!=='mono')?T[n].m:null;if(T[n]&&n!=='mono'){document.querySelectorAll('meta[name="theme-color"]').forEach(function(x){x.setAttribute('content',T[n].m)})}})();</script>
+        <script>(function(){var T={aurora:{m:'#0c0414',p:[[212,190,255],[166,110,255],[137,59,220]]},senja:{m:'#140a04',p:[[255,203,190],[255,147,110],[220,115,59]]},samudra:{m:'#041214',p:[[190,255,253],[110,252,255],[59,201,220]]},mono:{m:'#050505',p:[[236,237,241],[176,178,184],[124,126,132]]},blue:{m:'#040914',p:[[190,220,255],[110,170,255],[59,110,220]]},green:{m:'#030b07',p:[[190,255,215],[95,224,160],[34,160,90]]}};window.BX_THEMES=T;var n='mono';try{n=localStorage.getItem('baxdev_theme')||'mono'}catch(e){}if(!T[n]&&n!=='custom')n='mono';document.documentElement.setAttribute('data-theme',n);window.__bxPalette=T[n]?T[n].p:null;window.__bxThemeMeta=(T[n]&&n!=='mono')?T[n].m:null;if(T[n]&&n!=='mono'){document.querySelectorAll('meta[name="theme-color"]').forEach(function(x){x.setAttribute('content',T[n].m)})}})();</script>
         <script>(function(){var g='glass';try{g=localStorage.getItem('baxdev_style')||'glass'}catch(e){}if(g!=='clay')g='glass';document.documentElement.setAttribute('data-style',g)})();</script>
         <script src="theme.js"></script>
         <link rel="icon" href="favicon.ico" sizes="any">
@@ -5030,7 +5030,6 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
 </style>
 </head>
     <body class="intro-playing">
-<script>(function(){try{var m=location.search.match(/[?&]ref=([A-Za-z0-9]{6,12})(?:&|$)/);if(m){localStorage.setItem("baxdev_ref",m[1].toUpperCase());var u=location.pathname+location.search.replace(/([?&])ref=[^&]*&?/,"$1").replace(/[?&]$/,"")+location.hash;history.replaceState(null,"",u)}}catch(e){}})();</script>
 
         <div id="google-gate" class="hide" role="dialog" aria-modal="true" aria-labelledby="gg-title">
             <div class="gg-card">
@@ -5126,11 +5125,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                         <line x1="16" y1="18" x2="16" y2="22"/>
                     </svg>
                     Settings
-    
-                </button>
-                <button class="nav-link" onclick="navigate('referral')">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
-                    Referal
+
                 </button>
             </div>
             <!-- Right: only account indicators -->
@@ -5356,11 +5351,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                         <line x1="16" y1="18" x2="16" y2="22"/>
                     </svg>
                 Settings
-  
-            </div>
-            <div class="m-link" onclick="navigate('referral');closeMenu()">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
-                Referal
+
             </div>
         </div>
         <!-- ── APP ────────────────────────────────────────────── -->
@@ -5802,12 +5793,6 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                 </div>
             </div>
             <!-- SETTINGS -->
-            <!-- REFERAL -->
-            <div class="page" id="page-referral">
-                <h1 class="page-title">Referal</h1>
-                <div class="page-sub">Undang teman yang belum pernah pakai BAXDEV, tiap orang baru = +6 jam VIP buat kamu</div>
-                <div id="ref-root"><div class="card"><div class="setting-desc">Memuat...</div></div></div>
-            </div>
             <div class="page" id="page-settings">
                 <h1 class="page-title">Pengaturan</h1>
                 <div class="page-sub">Koneksi Roblox, akun, audio, tampilan, dan lainnya dalam satu halaman</div>
@@ -6239,6 +6224,8 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
         <script>
             // ── STATE ─────────────────────────────────────────────
             const FREE_UPLOAD_LIMIT = 5; // publish per hari untuk akun free; reset tengah malam waktu perangkat
+            const VIP_UPLOAD_LIMIT = 100; // publish per 6 jam untuk akun VIP/VIP Plus (harus sama dengan VIP_PERIOD_LIMIT di functions/_lib/auth.js)
+            const VIP_PERIOD_MS = 21600000; // 6 jam
             const S = {
                 library: JSON.parse(localStorage.getItem('baxdev_lib') || '[]'),
                 roblox: {},
@@ -6579,7 +6566,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
             function setOwnerHash(h) {
                 localStorage.setItem('baxdev_owner_hash', h);
             }
-            // Kuota harian disimpan per user Roblox: { [userId]: { day: 'YYYY-MM-DD', count } }. Format lama (angka total) dianggap kosong.
+            // Kuota akun free disimpan per user Roblox: { [userId]: { day: 'YYYY-MM-DD', count } }. Format lama (angka total) dianggap kosong.
             function todayKey() {
                 const d = new Date();
                 return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
@@ -6595,27 +6582,50 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
             function quotaUserKey() {
                 return String((S.roblox && S.roblox.userId) || '_none_');
             }
-            // Kuota sebenarnya ada di server (quota/<uid>, hari 00.00 WIB). Hitungan lokal cuma cadangan kalau server belum bisa dibaca.
+            // Kuota VIP/VIP Plus disimpan per user Roblox: { [userId]: { period, count } }, jendela tetap 6 jam.
+            function readVipQuotaStore() {
+                try {
+                    const v = JSON.parse(localStorage.getItem('baxdev_vipquota') || '{}');
+                    return v && typeof v === 'object' ? v : {};
+                } catch (e) {
+                    return {};
+                }
+            }
+            // Kuota sebenarnya ada di server (quota/<uid> untuk free, vipq/<uid> untuk VIP). Hitungan lokal cuma cadangan kalau server belum bisa dibaca.
             function wibDayIdx() {
                 return Math.floor((Date.now() + 25200000) / 86400000);
+            }
+            function vipPeriodIdx() {
+                return Math.floor(Date.now() / VIP_PERIOD_MS);
             }
             async function syncServerQuota() {
                 const base = fbDbUrl();
                 if (!base || !(window.BX && window.BX.user)) {
                     S.srvQuotaLoaded = false;
+                    S.srvVipQuotaLoaded = false;
                     return;
                 }
                 try {
                     const token = await window.BX.getToken();
                     if (!token)
                         return;
-                    const r = await fetch(`${base}/quota/${encodeURIComponent(window.BX.user.uid)}.json?auth=${encodeURIComponent(token)}`, { cache: 'no-store' });
-                    if (!r.ok) {
+                    const uid = window.BX.user.uid;
+                    const [qr, vr] = await Promise.all([
+                        fetch(`${base}/quota/${encodeURIComponent(uid)}.json?auth=${encodeURIComponent(token)}`, { cache: 'no-store' }),
+                        fetch(`${base}/vipq/${encodeURIComponent(uid)}.json?auth=${encodeURIComponent(token)}`, { cache: 'no-store' })
+                    ]);
+                    if (qr.ok) {
+                        S.srvQuota = await qr.json();
+                        S.srvQuotaLoaded = true;
+                    } else {
                         S.srvQuotaLoaded = false;
-                        return;
                     }
-                    S.srvQuota = await r.json();
-                    S.srvQuotaLoaded = true;
+                    if (vr.ok) {
+                        S.srvVipQuota = await vr.json();
+                        S.srvVipQuotaLoaded = true;
+                    } else {
+                        S.srvVipQuotaLoaded = false;
+                    }
                     refreshAccountState();
                 } catch (e) {}
             }
@@ -6630,7 +6640,33 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                     count: entry && typeof entry === 'object' && entry.day === todayKey() ? Number(entry.count) || 0 : 0
                 };
             }
+            function getVipQuota() {
+                if (S.srvVipQuotaLoaded) {
+                    const q = S.srvVipQuota;
+                    return { count: q && q.period === vipPeriodIdx() ? Number(q.count) || 0 : 0 };
+                }
+                const entry = readVipQuotaStore()[quotaUserKey()];
+                return {
+                    count: entry && typeof entry === 'object' && entry.period === vipPeriodIdx() ? Number(entry.count) || 0 : 0
+                };
+            }
             function incrementQuota() {
+                if (isVIP()) {
+                    if (S.srvVipQuotaLoaded) {
+                        const p = vipPeriodIdx();
+                        const c = S.srvVipQuota && S.srvVipQuota.period === p ? Number(S.srvVipQuota.count) || 0 : 0;
+                        S.srvVipQuota = { period: p, count: c + 1 };
+                        return;
+                    }
+                    const period = vipPeriodIdx();
+                    const next = { [quotaUserKey()]: { period, count: getVipQuota().count + 1 } };
+                    for (const [key, entry] of Object.entries(readVipQuotaStore())) {
+                        if (key !== quotaUserKey() && entry && typeof entry === 'object' && entry.period === period)
+                            next[key] = entry; // entri periode lain sudah tidak relevan
+                    }
+                    try { localStorage.setItem('baxdev_vipquota', JSON.stringify(next)); } catch (e) {}
+                    return;
+                }
                 if (S.srvQuotaLoaded) {
                     const d = wibDayIdx();
                     const c = S.srvQuota && S.srvQuota.day === d ? Number(S.srvQuota.count) || 0 : 0;
@@ -6647,17 +6683,19 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
             }
             function refreshAccountState() {
                 const premium = isVIP();
-                const q = getQuota();
+                const owner = isOwnerRank();
+                const limit = premium ? VIP_UPLOAD_LIMIT : FREE_UPLOAD_LIMIT;
+                const used = owner ? 0 : (premium ? getVipQuota().count : getQuota().count);
                 S.account = {
                     plan: premium ? 'premium' : 'free',
                     tier: accountTier(),
-                    limit: FREE_UPLOAD_LIMIT,
-                    used: q.count,
-                    remaining: Math.max(0, FREE_UPLOAD_LIMIT - q.count),
-                    period: 'day',
-                    periodLabel: 'hari',
+                    limit,
+                    used,
+                    remaining: owner ? Infinity : Math.max(0, limit - used),
+                    period: premium ? '6h' : 'day',
+                    periodLabel: premium ? '6 jam' : 'hari',
                     batchLimit: premium ? 5 : 1,
-                    unlimited: premium,
+                    unlimited: owner,
                     premiumUntil: 0,
                     discountPercent: 0
                 };
@@ -6707,8 +6745,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                     mesh: 3,
                     skybox: 4,
                     library: 5,
-                    settings: 6,
-                    referral: 7
+                    settings: 6
                 }[page];
                 const nls = document.querySelectorAll('.nav-link');
                 const mls = document.querySelectorAll('.m-link');
@@ -6716,8 +6753,6 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                     nls[idx].classList.add('active');
                 if (mls[idx])
                     mls[idx].classList.add('active');
-                if (page === 'referral')
-                    loadReferral();
                 if (page === 'mesh' || page === 'skybox')
                     toolOpen(page);
                 if (page === 'library') {
@@ -6980,7 +7015,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                 const title = { owner: 'Owner', plus: 'VIP Plus', vip: 'VIP Plan', free: 'Free Plan' }[tier];
                 const untilMs = tier === 'plus' && S.plusUntil ? S.plusUntil : S.vipExpiresAt;
                 const vipUntil = premium && tier !== 'owner' && S.remoteVip === true && untilMs ? ` · sampai ${new Date(untilMs).toLocaleString('id-ID', {day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'})}` : '';
-                const usage = tier === 'owner' ? 'Owner · semua fitur tanpa batas' : account.unlimited ? `Publish tanpa batas (${tier === 'plus' ? 'VIP Plus' : 'VIP'})${vipUntil}` : `${account.used || 0}/${account.limit || FREE_UPLOAD_LIMIT} publish hari ini`;
+                const usage = tier === 'owner' ? 'Owner · semua fitur tanpa batas' : `${account.used || 0}/${account.limit || FREE_UPLOAD_LIMIT} publish per ${account.periodLabel || 'hari'}${vipUntil}`;
                 const planButton = planButtonState(tier);
                 document.body.classList.toggle('plus-user', tier === 'plus');
                 document.body.classList.toggle('owner-user', tier === 'owner');
@@ -7097,8 +7132,12 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                     button.disabled = converting || limitReached;
                     button.textContent = limitReached ? 'Batas publish tercapai' : 'Convert ke MP3';
                     const hint = document.getElementById(cfg.hintId);
-                    if (hint)
+                    if (hint) {
                         hint.style.display = limitReached ? '' : 'none';
+                        if (limitReached) hint.textContent = isPremium()
+                            ? 'Kuota publish VIP 6 jam ini sudah habis. Kuota reset otomatis tiap 6 jam.'
+                            : 'Kuota publish hari ini sudah habis dan reset besok jam 00.00 WIB. Buy VIP atau tukar kode di Pengaturan → Akun.';
+                    }
                 });
             }
             function updateUploadButton() {
@@ -7185,7 +7224,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                     return;
                 refreshAccountState();
                 if (isLimitReached()) {
-                    toast('Batas publish akun free sudah tercapai. Buy VIP atau tukar kode di Pengaturan.', 'error');
+                    toast(isPremium() ? 'Kuota publish VIP 6 jam ini sudah habis. Coba lagi nanti.' : 'Batas publish akun free sudah tercapai. Buy VIP atau tukar kode di Pengaturan.', 'error');
                     return
                 }
                 const rawUrls = linkList(input.value);
@@ -7468,7 +7507,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                     return
                 }
                 if (S.account && !S.account.unlimited && S.account.remaining <= 0) {
-                    toast('Batas publish akun free sudah tercapai. Hubungi admin untuk VIP.', 'error');
+                    toast(isPremium() ? 'Kuota publish VIP 6 jam ini sudah habis. Coba lagi nanti.' : 'Batas publish akun free sudah tercapai. Hubungi admin untuk VIP.', 'error');
                     return
                 }
                 const btn = document.getElementById('upload-btn');
@@ -9058,134 +9097,6 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                 } finally {
                     redeeming = false;
                     button.disabled = false;
-                }
-            }
-            // ── Referal: link undangan, +1 hari VIP per orang baru yang masuk lewat link ──
-            const REF_MAX = 8;
-            function refEsc(t) {
-                return String(t == null ? '' : t).replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
-            }
-            async function refMakeCode(uid) {
-                const h = await sha256Hex('baxref:' + uid);
-                return BigInt('0x' + h.slice(0, 16)).toString(36).toUpperCase().padStart(8, '0').slice(0, 8);
-            }
-            let refCurrentLink = '';
-            function refLinkFor(code) {
-                return location.origin + '/?ref=' + code;
-            }
-            async function refCopy() {
-                if (!refCurrentLink)
-                    return;
-                try {
-                    await navigator.clipboard.writeText(refCurrentLink);
-                } catch (e) {
-                    const ta = document.createElement('textarea');
-                    ta.value = refCurrentLink;
-                    document.body.appendChild(ta);
-                    ta.select();
-                    try { document.execCommand('copy'); } catch (e2) {}
-                    ta.remove();
-                }
-                toast('Link undangan disalin', 'success');
-            }
-            function refShare() {
-                if (!refCurrentLink)
-                    return;
-                const text = 'Pakai BAXDEV buat upload audio ke Roblox. Daftar lewat link ini: ' + refCurrentLink;
-                if (navigator.share)
-                    navigator.share({ title: 'BAXDEV', text, url: refCurrentLink }).catch(() => {});
-                else
-                    refCopy();
-            }
-            async function loadReferral() {
-                const root = document.getElementById('ref-root');
-                if (!root)
-                    return;
-                const card = html => root.innerHTML = '<div class="card">' + html + '</div>';
-                if (!(window.BX && window.BX.user)) {
-                    card('<div class="setting-name">Login dulu</div><div class="setting-desc" style="margin:6px 0 14px">Login Google supaya kamu punya link undangan sendiri.</div><button class="btn btn-primary" onclick="openGoogleLogin(\'Login dulu untuk memakai Referal.\')">Login Google</button>');
-                    return;
-                }
-                const rid = String((S.roblox && S.roblox.userId) || '').trim();
-                if (!/^\d{1,20}$/.test(rid)) {
-                    card('<div class="setting-name">Isi Roblox User ID dulu</div><div class="setting-desc" style="margin:6px 0 14px">Hadiah VIP masuk ke akun Roblox kamu, jadi User ID harus terisi.</div><button class="btn btn-primary" onclick="navigate(\'settings\');settingsTab(\'account\')">Buka Pengaturan</button>');
-                    return;
-                }
-                const base = fbDbUrl();
-                if (!base) {
-                    card('<div class="setting-desc">Firebase belum dikonfigurasi.</div>');
-                    return;
-                }
-                card('<div class="setting-desc">Memuat...</div>');
-                try {
-                    const token = await window.BX.getToken();
-                    if (!token)
-                        throw new Error('Sesi login habis. Login Google lagi.');
-                    const q = '?auth=' + encodeURIComponent(token);
-                    const uid = window.BX.user.uid;
-                    const code = await refMakeCode(uid);
-                    const put = await fetch(`${base}/referrals/codes/${code}.json${q}`, {
-                        method: 'PUT',
-                        headers: { 'content-type': 'application/json' },
-                        body: JSON.stringify({ uid, roblox: rid, at: Date.now() })
-                    });
-                    if (!put.ok)
-                        throw new Error('Gagal menyiapkan link undangan. Coba lagi.');
-                    const getJ = p => fetch(`${base}/referrals/${p}${p.includes('?') ? '&' : '?'}auth=${encodeURIComponent(token)}`, { cache: 'no-store' }).then(r => r.ok ? r.json() : null).catch(() => null);
-                    const myName = String(window.BX.user.name || '').split(' ')[0].slice(0, 40) || 'Pengguna';
-                    fetch(`${base}/referrals/profiles/${encodeURIComponent(uid)}.json${q}`, { method: 'PUT', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ name: myName, at: Date.now() }) }).catch(() => {});
-                    const [cObj, listRaw, boardRaw, myBoard] = await Promise.all([
-                        getJ(`counts/${encodeURIComponent(uid)}.json`),
-                        getJ(`inviters/${encodeURIComponent(uid)}.json`),
-                        getJ('board.json?orderBy=%22total%22&limitToLast=10'),
-                        getJ(`board/${encodeURIComponent(uid)}.json`)
-                    ]);
-                    const top = Object.entries(boardRaw || {}).map(([id, v]) => ({ id, total: Number(v && v.total) || 0 })).filter(x => x.total > 0).sort((x, y) => y.total - x.total);
-                    const profs = await Promise.all(top.map(x => getJ(`profiles/${encodeURIComponent(x.id)}.json`)));
-                    top.forEach((x, i) => { x.name = (profs[i] && profs[i].name) || 'Pengguna'; });
-                    const nowT = Date.now();
-                    const winActive = !!(cObj && Number(cObj.until) > nowT);
-                    const count = winActive ? Number(cObj.n) || 0 : 0;
-                    const untilTxt = winActive ? new Date(Number(cObj.until)).toLocaleString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '';
-                    const list = Object.values(listRaw || {}).sort((x, y) => (y.at || 0) - (x.at || 0));
-                    const myTotal = Math.max(Number(myBoard && myBoard.total) || 0, list.length);
-                    const myIdx = top.findIndex(x => x.id === uid);
-                    refCurrentLink = refLinkFor(code);
-                    const fmt = t => new Date(t).toLocaleString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
-                    const slots = Array.from({ length: REF_MAX }, (_, i) => `<i class="${i < count ? 'on' : ''}"></i>`).join('');
-                    const board = top.length ? top.map((x, i) => `<div class="rf-row${x.id === uid ? ' me' : ''}"><span class="rf-rank r${i + 1}">${i + 1}</span><span class="rf-av">${refEsc(x.name.charAt(0).toUpperCase() || '?')}</span><span class="rf-name">${refEsc(x.name)}${x.id === uid ? '<em>kamu</em>' : ''}</span><span class="rf-score">${x.total}<small>undangan</small></span></div>`).join('') : '<div class="rf-empty">Belum ada yang masuk papan peringkat. Jadilah yang pertama!</div>';
-                    const hist = list.length ? list.map(x => `<div class="rf-row"><span class="rf-av">${refEsc((x.name || 'P').charAt(0).toUpperCase())}</span><span class="rf-name">${refEsc(x.name || 'Pengguna baru')}</span><span class="rf-date">${x.at ? fmt(x.at) : ''}</span></div>`).join('') : '<div class="rf-empty">Belum ada yang bergabung lewat link kamu.</div>';
-                    root.innerHTML = `
-                        <div class="rf-hero">
-                            <div class="rf-eyebrow">PROGRAM REFERAL</div>
-                            <div class="rf-title">Undang teman, dapat VIP gratis</div>
-                            <div class="rf-desc">Tiap orang yang <b>belum pernah memakai BAXDEV</b> lalu login Google lewat link kamu = <b>+6 jam VIP</b>. Maksimal ${REF_MAX} orang (2 hari VIP) per periode bonus.</div>
-                            <div class="rf-link"><input type="text" readonly value="${refEsc(refCurrentLink)}" onclick="this.select()"><button class="btn btn-primary" onclick="refCopy()">Salin</button></div>
-                            <button class="btn btn-outline rf-share" onclick="refShare()">Bagikan link</button>
-                        </div>
-                        <div class="rf-stats">
-                            <div><b>${myTotal}</b><span>Total diundang</span></div>
-                            <div><b>${count * 6}j</b><span>Bonus aktif</span></div>
-                            <div><b>${myIdx >= 0 ? '#' + (myIdx + 1) : '-'}</b><span>Peringkat</span></div>
-                        </div>
-                        <div class="rf-card">
-                            <div class="rf-h">Slot bonus <small>${count}/${REF_MAX}</small></div>
-                            <div class="rf-slots">${slots}</div>
-                            <div class="rf-note">${count >= REF_MAX ? 'Batas tercapai. Slot terbuka lagi setelah bonus habis (' + untilTxt + ').' : (count ? 'Bonus berjalan sampai ' + untilTxt + '.' : 'Belum ada bonus aktif. Bagikan link kamu untuk mulai.')}</div>
-                        </div>
-                        <div class="rf-card">
-                            <div class="rf-h">Leaderboard <small>Top 10 pengundang</small></div>
-                            ${board}
-                            ${myIdx < 0 && myTotal > 0 ? '<div class="rf-note">Kamu belum masuk 10 besar (' + myTotal + ' undangan tercatat).</div>' : ''}
-                            <div class="rf-note">Peringkat dihitung dari undangan yang tercatat sejak fitur ini aktif.</div>
-                        </div>
-                        <div class="rf-card">
-                            <div class="rf-h">Riwayat undangan <small>${list.length} orang</small></div>
-                            ${hist}
-                        </div>`;
-                    checkRemoteVip();
-                } catch (e) {
-                    card('<div class="setting-desc">' + refEsc(e.message || 'Gagal memuat Referal.') + '</div><div style="margin-top:12px"><button class="btn btn-outline" onclick="loadReferral()">Coba lagi</button></div>');
                 }
             }
             function openSubscriptionModal() {
@@ -10807,40 +10718,6 @@ if (!configured) {
       document.documentElement.style.overflow = b ? "hidden" : "";
     } catch (e) {}
   }
-  // ── Referal: user baru yang masuk lewat ?ref= memberi pengundangnya +1 hari VIP (1 tulis atomik, divalidasi Security Rules) ──
-  var refTries = 0;
-  async function claimReferral(u){
-    var code = ""; try { code = localStorage.getItem("baxdev_ref") || ""; } catch (e) {}
-    if (!/^[A-Z0-9]{6,12}$/.test(code)) return true;
-    var clear = function(){ try { localStorage.removeItem("baxdev_ref"); } catch (e) {} };
-    try {
-      var rec = await rest("referrals/codes/" + code + ".json");
-      if (!rec || !rec.uid || rec.uid === u.uid || !/^\d{1,20}$/.test(String(rec.roblox))) { clear(); return true; }
-      var res = await Promise.all([rest("referrals/counts/" + encodeURIComponent(rec.uid) + ".json"), rest("vip/" + rec.roblox + ".json"), rest("referrals/board/" + encodeURIComponent(rec.uid) + ".json")]);
-      var c0 = res[0], vip = res[1], bd = res[2], now = Date.now(), HR6 = 21600000;
-      var active = c0 && Number(c0.until) > now;   // jendela bonus referal masih jalan
-      if (active && Number(c0.n) >= 8) { clear(); return true; }   // batas 2 hari tercapai; tambah lagi setelah bonus habis
-      var newCount = active ? { n: Number(c0.n) + 1, until: Number(c0.until) + HR6 } : { n: 1, until: now + HR6 };
-      var body = {};
-      body["referrals/claims/" + u.uid] = { code: code, inviterUid: rec.uid, inviterRoblox: String(rec.roblox), at: now };
-      body["referrals/inviters/" + rec.uid + "/" + u.uid] = { at: now, name: String(u.name || "").split(" ")[0].slice(0, 40) };
-      body["referrals/counts/" + rec.uid] = newCount;
-      body["referrals/board/" + rec.uid] = { total: (Number(bd && bd.total) || 0) + 1, at: now };
-      if (!(vip && !vip.expiresAt)) {   // VIP permanen tidak perlu ditambah
-        var start = vip && vip.expiresAt > now ? vip.expiresAt : now;
-        var ent = { addedAt: (vip && vip.addedAt) || now, expiresAt: start + 21600000, note: (vip && vip.note) || "Referal" };
-        if (vip && typeof vip.plusUntil === "number") ent.plusUntil = vip.plusUntil;   // jangan hapus VIP Plus milik pengundang
-        body["vip/" + rec.roblox] = ent;
-      }
-      await rest(".json", { method: "PATCH", body: body });
-      clear();
-      if (typeof window.toast === "function") window.toast("Kamu bergabung lewat undangan teman", "success");
-      return true;
-    } catch (e) {
-      if (e && (e.status === 401 || e.status === 403)) { clear(); return true; }   // ditolak rules (mis. bukan akun baru)
-      return ++refTries >= 3;   // gangguan jaringan: coba lagi sebentar, jangan buat record users dulu
-    }
-  }
   // ── Catat pengguna (untuk daftar di panel owner) ──
   async function touchUser(){
     var u = window.BX.user; if (!u || !base) return;
@@ -10848,8 +10725,6 @@ if (!configured) {
     if (!/^\d{1,20}$/.test(rid)) rid = "";
     try {
       var cur = await rest("users/" + encodeURIComponent(u.uid) + ".json");
-      if (!cur) { var refOk = await claimReferral(u); if (!refOk) { setTimeout(touchUser, 4000); return; } }
-      else { try { localStorage.removeItem("baxdev_ref"); } catch (e) {} }
       var body = { email: u.email || "", name: (u.name || "").slice(0,100), robloxId: rid, lastSeen: Date.now() };
       if (!cur || !cur.firstSeen) body.firstSeen = Date.now();
       await rest("users/" + encodeURIComponent(u.uid) + ".json", { method: "PATCH", body: body });
@@ -11456,7 +11331,7 @@ html:not([data-avb="none"]) body.owner-user.premium-user :is(.nav-avatar,.su-ava
 </style>
 <script id="bx-v47-js">
 (function(){
-  var T=['Beranda','Upload','Animasi','Image to Mesh','SkyBox 360','Library','Pengaturan','Referal'],N=['home','upload','animation','mesh','skybox','library','settings','referral'];
+  var T=['Beranda','Upload','Animasi','Image to Mesh','SkyBox 360','Library','Pengaturan'],N=['home','upload','animation','mesh','skybox','library','settings'];
   var $=function(i){return document.getElementById(i)};
   var IC={burger:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>',
     music:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>',
@@ -12351,41 +12226,6 @@ html body:not(.developer-mode) #settings-developer{display:none}
 
 <style id="bx-ref-css">
 #ref-root{display:flex;flex-direction:column;gap:12px}
-.rf-hero,.rf-card{border-radius:22px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.04);padding:20px}
-.rf-hero{position:relative;overflow:hidden;padding:24px 20px;background:radial-gradient(120% 140% at 0% 0%,rgba(255,255,255,.1),transparent 55%),rgba(255,255,255,.04)}
-.rf-eyebrow{font:600 10px/1 var(--font-display,system-ui),sans-serif;letter-spacing:.3em;color:var(--silver-lo,#86888d)}
-.rf-title{margin:10px 0 6px;font:700 22px/1.2 var(--font-display,system-ui),sans-serif;color:#fff}
-.rf-desc{font-size:13px;line-height:1.55;color:#a9abb1;max-width:520px}
-.rf-desc b{color:#fff;font-weight:600}
-.rf-link{display:flex;gap:8px;margin-top:16px}
-.rf-link input{flex:1;min-width:0;height:44px;padding:0 14px;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.35);color:#e8e8ea;font-size:13px}
-.rf-link .btn{height:44px;padding:0 20px;border-radius:14px}
-.rf-share{margin-top:8px;width:100%;height:42px;border-radius:14px}
-.rf-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.rf-stats>div{border-radius:18px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.04);padding:14px 8px;text-align:center}
-.rf-stats b{display:block;font:700 22px/1 var(--font-display,system-ui),sans-serif;color:#fff}
-.rf-stats span{display:block;margin-top:6px;font-size:10px;letter-spacing:.08em;color:#8f9197}
-.rf-h{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px;font:600 14px/1 var(--font-display,system-ui),sans-serif;color:#fff}
-.rf-h small{font:400 11px system-ui;color:#8f9197}
-.rf-slots{display:grid;grid-template-columns:repeat(8,1fr);gap:5px}
-.rf-slots i{height:8px;border-radius:6px;background:rgba(255,255,255,.1)}
-.rf-slots i.on{background:var(--silver-hi,#f2f2f4);box-shadow:0 0 10px rgba(255,255,255,.25)}
-.rf-note{margin-top:10px;font-size:11.5px;line-height:1.5;color:#8f9197}
-.rf-row{display:flex;align-items:center;gap:10px;padding:10px 8px;border-radius:14px}
-.rf-row+.rf-row{margin-top:2px}
-.rf-row.me{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12)}
-.rf-rank{flex:0 0 26px;height:26px;border-radius:50%;display:grid;place-items:center;font:700 12px system-ui;color:#b5b7bc;background:rgba(255,255,255,.07)}
-.rf-rank.r1{color:#2a1f00;background:linear-gradient(180deg,#ffe7a0,#e6b34a)}
-.rf-rank.r2{color:#1b1c1f;background:linear-gradient(180deg,#f4f4f6,#aeb0b5)}
-.rf-rank.r3{color:#2a1500;background:linear-gradient(180deg,#f0c9a2,#b9774a)}
-.rf-av{flex:0 0 34px;height:34px;border-radius:50%;display:grid;place-items:center;font:700 13px system-ui;color:#fff;background:rgba(255,255,255,.12)}
-.rf-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13.5px;font-weight:500;color:#ececee}
-.rf-name em{margin-left:8px;padding:2px 7px;border-radius:999px;font:600 9px system-ui;letter-spacing:.08em;font-style:normal;text-transform:uppercase;color:#111;background:var(--silver-hi,#f2f2f4)}
-.rf-score{text-align:right;font:700 17px/1 var(--font-display,system-ui),sans-serif;color:#fff}
-.rf-score small{display:block;margin-top:3px;font:400 9px system-ui;color:#8f9197;letter-spacing:.06em}
-.rf-date{font-size:11px;color:#8f9197}
-.rf-empty{padding:14px 4px;font-size:12.5px;color:#8f9197;text-align:center}
-@media(max-width:480px){.rf-hero,.rf-card{padding:16px}.rf-title{font-size:19px}}
 </style>
 
 <style id="bx-libfix-css">

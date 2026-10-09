@@ -163,32 +163,26 @@ Data disimpan di Firebase `config/payment` dan langsung dipakai tombol Buy VIP. 
 - Nominal pembayaran bulat sesuai harga paket (tanpa angka acak). Pesanan dicocokkan lewat kode pesanan `BX-XXXX` yang ikut terkirim di pesan WhatsApp dan tampil di /owner.
 - Status upload: kalau Roblox belum selesai memproses dalam beberapa detik, track tampil "Diproses" dan dicek otomatis tiap 20 detik di Library sampai Asset ID muncul (`/api/roblox-asset-status`). Tidak ada lagi pengecekan moderasi atau Arsip; entri lama berstatus Arsip otomatis jadi "Gagal".
 - Upload animasi (`.rbxm` / `.rbxmx` dari Animation Editor): menu **Animasi** (di hamburger dan navbar desktop) membuka halaman upload dalam mode animasi dengan dropzone sendiri, terpisah dari menu **Upload** (musik: file/YouTube/TikTok). Keduanya memakai satu antrean, jadi pindah antara Upload dan Animasi mengosongkan antrean (ditolak kalau upload sedang berjalan), pengaturan kecepatan audio disembunyikan, dan Library punya filter jenis (Semua/Musik/Animasi/Model/Decal). Dikirim ke Open Cloud Assets API sebagai `assetType: Animation` (content type `model/x-rbxm`, maks 20 MB); `functions/api/roblox-upload.js` memeriksa ekstensi dan header file. ID dipakai sebagai `rbxassetid://ID` di AnimationId; animasi hanya bisa dimainkan di game milik akun atau Group yang sama dengan pengunggahnya (atur Creator Type di Pengaturan). Menu upload Model `.rbxm` dihapus karena Roblox selalu menyimpannya sebagai Package; endpoint masih menerima `Model` untuk hasil tool Image to Mesh (GLB). API key perlu scope Assets (Read + Write).
-- Limit akun free: 5 publish per hari (`FREE_UPLOAD_LIMIT` di `index.html`), reset tengah malam waktu perangkat. Hitungannya disimpan di localStorage per User ID Roblox, jadi tidak ditegakkan server: pengguna yang menghapus data browser atau memanggil `/api/*` langsung bisa melewatinya. VIP tanpa batas.
+- Limit publish: akun free 5/hari, akun VIP/VIP Plus 100/6 jam, ditegakkan di server sejak v55/kuota-VIP (detail lengkap di bagian "Kuota publish tidak bisa direset" di bawah).
 - Riwayat upload server (bagian bawah Home): 5 upload berhasil terbaru dari semua pengguna, diambil dari Firebase `feed` dan disegarkan tiap 5 detik selama Home terlihat. Hanya nama lagu dan waktu yang dipublikasikan (tanpa email, ID Roblox, atau asset ID). Ditulis oleh browser pengguna saat upload sukses. **Paste ulang `database.rules.json` ke Firebase Console** supaya node `feed` aktif. Owner bisa menghapus entri lewat Firebase Console.
 - Popup install aplikasi: muncul dari bawah tiap kunjungan selama aplikasi belum terpasang; kalau ditutup (Nanti, Esc, atau membatalkan dialog install) tidak muncul lagi selama 24 jam (`baxdev_install_dismissed_at` di localStorage). Chrome/Edge/Android memakai `beforeinstallprompt`; iOS hanya menampilkan petunjuk Tambahkan ke Layar Utama.
 - Informasi di Home: owner mengirim teks lewat /owner (kartu "Informasi di Home", disimpan di Firebase `config/info`, maks 500 karakter). Selama ada informasi, Home menampilkan itu; kalau dihapus, Home menampilkan jadwal sholat berikutnya (API AlAdhan; metode Kemenag RI untuk Indonesia). Kota mengikuti pengguna: GPS jika izin sudah diberikan, kalau belum memakai perkiraan kota dari jaringan lewat `functions/api/geo.js` (`request.cf` Cloudflare), dan Jakarta bila keduanya gagal. Tombol "Pakai lokasi presisi" meminta izin GPS. Kota dicek ulang tiap 30 menit dan saat aplikasi dibuka kembali; hitung mundur berjalan per detik. `_headers` harus mengizinkan `geolocation=(self)`. **Paste ulang `database.rules.json` ke Firebase Console** supaya node `config/info` bisa ditulis owner.
 - Tema "Warna bebas" (Settings → Lanjutan) khusus VIP: pilih warna apa saja lewat swatch atau color picker; seluruh tampilan (dan /owner) mengikuti. Logikanya ada di `theme.js`. Kalau VIP habis, tampilan kembali ke Hitam; warna pilihan tetap tersimpan dan aktif lagi saat VIP diperpanjang. Catatan: ini pengaturan tampilan di sisi browser, bukan pengaman.
 - Avatar VIP: cincin emas berputar, mahkota kecil, dan kilau di semua avatar (navbar, dropdown, Settings, Akun).
 
-## Referal (v55)
-- Menu **Referal** (ikon hadiah): tiap user login punya link `https://domainmu/?ref=KODE`.
-- Orang yang **belum pernah login/memakai BAXDEV** lalu login Google lewat link itu → pengundang otomatis dapat **+6 jam VIP** (menumpuk di atas masa aktif VIP yang ada, masuk ke akun Roblox pengundang).
-- Syarat "orang baru" dijaga Security Rules: akun belum punya record `users/<uid>`, tiap akun cuma bisa diklaim sekali, tidak bisa mengundang diri sendiri, VIP permanen tidak diubah. Batas 8 undangan = maksimal 2 hari bonus referal sekaligus. Kalau bonus referalnya sudah habis (waktunya lewat), hitungan mulai dari 0 lagi dan bisa dapat tambahan lagi. Disimpan di `referrals/counts/<uid>` = `{n, until}` (ubah angka `8` di `database.rules.json` dan `index.html` kalau mau).
-- Pengundang harus sudah mengisi Roblox User ID di Pengaturan.
-- **Wajib**: paste ulang `database.rules.json` ke Firebase Console → Realtime Database → Rules → Publish, lalu deploy ulang.
+## Menu Referal (dihapus)
+- Menu **Referal** (link undangan, bonus VIP per undangan, leaderboard) sudah dihapus total dari UI, kode JS, CSS, dan Firebase Security Rules (node `referrals/*`).
+- Kalau masih ada deploy lama yang memakai rules versi sebelumnya, paste ulang `database.rules.json` ke Firebase Console → Realtime Database → Rules → Publish supaya node `referrals` ikut tertutup.
 
-## Referal v2 + Leaderboard (v61)
-- Halaman **Referal** didesain ulang: kartu link undangan, statistik (total diundang, bonus aktif, peringkat), slot bonus 8 segmen, **Leaderboard Top 10 pengundang** (medali emas/perak/perunggu, baris "kamu" disorot), dan riwayat undangan.
-- Data baru di Firebase: `referrals/board/<uid>` = `{total, at}` (naik +1 secara atomik bersama klaim referal, divalidasi rules, dibaca semua user login, di-index `total`) dan `referrals/profiles/<uid>` = `{name, at}` (nama depan Google, ditulis pemiliknya sendiri).
-- Leaderboard menghitung undangan yang tercatat **sejak fitur ini aktif**. Untuk memberi skor awal ke pengundang lama, owner bisa mengisi `referrals/board/<uid>` manual di Firebase Console.
-- **Wajib**: paste ulang `database.rules.json` ke Firebase Console → Realtime Database → Rules → Publish, lalu deploy ulang.
-
-## Kuota publish tidak bisa direset (v55)
+## Kuota publish tidak bisa direset
 - Akun free: **5 publish per hari**, reset **00.00 WIB**. Dihitung di server (`functions/api/roblox-upload.js` + `functions/_lib/auth.js`) dan disimpan di Firebase `quota/<uid>` per akun Google, jadi hapus data browser / ganti Roblox ID / ubah kode di browser tidak mengubah hitungan.
-- VIP aktif tidak dihitung (tanpa batas).
-- Rules `quota/<uid>`: hitungan hanya bisa naik 1 per publish dan hanya bisa diturunkan oleh owner lewat Console.
-- Ubah batas: `FREE_DAILY_LIMIT` di `functions/_lib/auth.js` dan `FREE_UPLOAD_LIMIT` di `index.html` (harus sama).
+- Akun VIP/VIP Plus: **100 publish per 6 jam** (jendela tetap, reset otomatis tiap kelipatan 6 jam sejak epoch). Dihitung di server dengan cara sama, disimpan di Firebase `vipq/<uid>`.
+- Owner (Roblox User ID khusus + login Google admin) tetap tanpa batas sama sekali, tidak dicatat di `quota` maupun `vipq`.
+- Rules `quota/<uid>` dan `vipq/<uid>`: hitungan hanya bisa naik 1 per publish dan hanya bisa diturunkan oleh owner lewat Console.
+- Ubah batas free: `FREE_DAILY_LIMIT` di `functions/_lib/auth.js` dan `FREE_UPLOAD_LIMIT` di `index.html` (harus sama).
+- Ubah batas VIP: `VIP_PERIOD_LIMIT`/`VIP_PERIOD_MS` di `functions/_lib/auth.js` dan `VIP_UPLOAD_LIMIT`/`VIP_PERIOD_MS` di `index.html` (harus sama).
 - Kalau rules belum dipublish, server tidak memblokir (fail-open) dan web memakai hitungan lokal lama.
+- **Wajib**: paste ulang `database.rules.json` ke Firebase Console → Realtime Database → Rules → Publish, lalu deploy ulang, supaya node `vipq` aktif.
 
 ## VIP Plus, Owner, dan tool baru (v68)
 - **Role:** Free, VIP, VIP Plus, Owner. VIP Plus = semua fitur VIP tanpa limit + tool **Image to Mesh** dan **SkyBox 360**. VIP biasa tidak bisa membuka kedua tool.
