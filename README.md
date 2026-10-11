@@ -143,13 +143,24 @@ API key Roblox cukup memakai scope **Assets (Read + Write)**. Tombol Cek Koneksi
 
 ## Beri akses audio ke map / teman
 Library -> tombol **Beri Akses Map / Teman**. Pilih banyak audio Published, isi banyak Universe ID (koma / baris baru), lalu proses.
-Backend: `functions/api/roblox-permission.js` memanggil Open Cloud `PATCH /asset-permissions-api/v1/assets/permissions` (subjectType `Universe`, action `Use`), satu panggilan per map. API key Roblox perlu scope `asset-permissions:write`. Maks 50 audio dan 20 map per proses.
+Backend: `functions/api/roblox-permission.js` memanggil Open Cloud `PATCH /asset-permissions-api/v1/assets/permissions` (subjectType `Universe`, action `Use`), satu panggilan per map. API key Roblox perlu scope `asset-permissions:write`. Jumlah audio dan map **tanpa batas** (v81): `index.html` membagi otomatis per 50 audio x 20 map per request (batas per-request di server = subrequest Cloudflare), berurutan, dengan retry bila Roblox membalas 429 dan hasil digabung per map.
 
 ## Backend YouTube milik sendiri
 Konversi YouTube -> MP3 tidak lagi memakai API pihak ketiga. Folder `yt-backend/` berisi server kecil (yt-dlp + ffmpeg) yang kamu jalankan di VPS/Docker.
 Di Cloudflare Pages isi env `YT_BACKEND_URL` dan `YT_BACKEND_SECRET` (rahasia internal, sama dengan di server). Panduan lengkap ada di `yt-backend/README.md`.
 Tanpa VPS: `yt-worker/` menjalankan backend yang sama di Cloudflare Containers (paket Workers Paid).
 Default-nya convert YouTube tetap lewat API key lama (api.theresav.eu); backend sendiri hanya dipakai kalau kedua env di atas diisi.
+
+### Convert YouTube terasa lama (perbaikan v78)
+Gejala: status macet di "Mengonversi..." padahal file sebenarnya sudah jadi. Penyebab dan perbaikannya:
+- **Judul menahan hasil audio.** Client dulu menunggu judul (`/api/youtube-title`) dan audio bersamaan lewat `Promise.all`; judul macet = seluruh convert ikut macet. Sekarang judul punya timeout 6 dtk dan hanya ditunggu maksimal 1,5 dtk setelah audio jadi.
+- **Tanpa timeout.** Request convert bisa menggantung selamanya dan tombol terkunci. Sekarang ada batas 3 menit, pesan error yang jelas, dan penghitung detik di status.
+- **Gangguan sementara langsung gagal.** Sekarang 1x retry otomatis untuk jaringan putus, server penuh (429), dan container yang baru bangun (502/503/504). Error permanen (video >7 menit, privat, dll.) tidak diulang.
+- **Proses yatim di backend.** Saat timeout atau browser ditutup, ffmpeg bekas yt-dlp tetap hidup dan memakan CPU, sehingga convert berikutnya lambat. Sekarang seluruh process group dimatikan, dan slot `MAX_JOBS` dibebaskan saat proses benar-benar selesai.
+- **Cold start container.** `sleepAfter` jadi 10 menit, dan membuka tab YouTube memanggil `/warm` untuk membangunkan container lebih dulu.
+- **CPU kecil.** `instance_type` di `yt-worker/wrangler.jsonc` naik dari `basic` (1/4 vCPU) ke `standard-2` (1 vCPU) dan `MAX_JOBS` default jadi 3 (v80). Biaya naik; turunkan ke `standard-1` atau `basic` kalau tidak perlu.
+- Link banyak (VIP) kini diproses 2 sekaligus (VIP Plus di PC: 3).
+Setelah update: deploy ulang Pages **dan** `yt-worker` (`npx wrangler deploy`) / rebuild image `yt-backend`.
 
 ## Atur harga VIP & QRIS
 Buka `/owner` → kartu **Harga VIP & QRIS**. Isi empat harga (VIP 15/30 hari, VIP Plus 15/30 hari), upload foto QRIS baru (otomatis dikecilkan), lalu Simpan.
@@ -203,3 +214,9 @@ Data disimpan di Firebase `config/payment` dan langsung dipakai tombol Buy VIP. 
 - Border avatar VIP Plus + berbentuk lingkaran.
 - SkyBox 360: urutan & rotasi 6 sisi mengikuti konvensi Roblox (Lf = +X, Rt = -X, Up/Dn diputar), iframe auto-tinggi supaya cuma satu scroll.
 
+
+## Batas antrean per tier
+Free 1 audio/link per proses, VIP 5, **VIP Plus dan owner 10** (`VIP_QUEUE_MAX` / `PLUS_QUEUE_MAX` di `index.html`). Berlaku untuk upload file, paste link YouTube/TikTok, dan publish. Kuota publish VIP tetap 100 per 6 jam. Link diconvert 2 sekaligus; **VIP Plus di PC 3 sekaligus** (mode cepat, `convertConcurrency()` di `index.html`, dicek di sisi browser).
+
+## Cek Status Asset tanpa batas (v81)
+Jumlah ID tidak dibatasi. Client mengirim 40 ID per request; Roblox membatasi Assets API sekitar 60 request per menit per API key, jadi kalau ada balasan 429 client otomatis melambat (20 ID per 20 dtk) dan mengulang ID yang kena batas sampai 6 kali. ID yang tetap gagal tampil sebagai "Gagal" tanpa menghentikan sisanya. 500 ID kira-kira 8 menit kalau kena batas.

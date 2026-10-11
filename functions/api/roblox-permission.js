@@ -8,6 +8,8 @@ import { requireUser } from "../_lib/auth.js";
 // Satu request ke Roblox = satu subject (universe) x banyak asset, jadi fungsi ini mengulang per universe.
 // API key hanya lewat di request ini (tidak disimpan/di-log). Key perlu scope asset-permissions:write.
 
+// Batas PER REQUEST (bukan per proses): index.html membagi daftar apa pun menjadi request sebesar ini,
+// jadi dari sisi pengguna jumlah audio dan map tidak dibatasi. 20 map = 20 subrequest, aman untuk Pages.
 const MAX_ASSETS = 50;
 const MAX_UNIVERSES = 20;
 const ROBLOX_URL = "https://apis.roblox.com/asset-permissions-api/v1/assets/permissions";
@@ -38,8 +40,8 @@ async function handle({ request }) {
   const universeIds = uniqueIds(body.universeIds);
   if (!assetIds.length) return json({ ok: false, message: "Pilih minimal 1 audio." }, 400);
   if (!universeIds.length) return json({ ok: false, message: "Isi minimal 1 Universe ID." }, 400);
-  if (assetIds.length > MAX_ASSETS) return json({ ok: false, message: `Maksimal ${MAX_ASSETS} audio per proses.` }, 400);
-  if (universeIds.length > MAX_UNIVERSES) return json({ ok: false, message: `Maksimal ${MAX_UNIVERSES} map per proses.` }, 400);
+  if (assetIds.length > MAX_ASSETS) return json({ ok: false, message: `Maksimal ${MAX_ASSETS} audio per request. Client membagi otomatis; kalau memanggil API langsung, bagi per ${MAX_ASSETS}.` }, 400);
+  if (universeIds.length > MAX_UNIVERSES) return json({ ok: false, message: `Maksimal ${MAX_UNIVERSES} map per request. Client membagi otomatis; kalau memanggil API langsung, bagi per ${MAX_UNIVERSES}.` }, 400);
 
   const results = [];
   for (const universeId of universeIds) {

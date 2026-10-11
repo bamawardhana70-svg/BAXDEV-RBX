@@ -20,3 +20,4 @@ Rahasia ini hanya kunci internal kamu sendiri supaya server tidak dipakai orang 
 - IP datacenter sering diminta verifikasi "sign in to confirm you're not a bot" oleh YouTube. Kalau muncul, ekspor cookies dari browser (format cookies.txt), mount ke container, lalu set `YTDLP_COOKIES=/path/cookies.txt`. Server rumah / IP residensial biasanya lebih lancar.
 - Update rutin: rebuild image supaya yt-dlp terbaru (YouTube sering mengubah sistemnya).
 - Batas: 7 menit (`MAX_SECONDS`), 20 MB, 2 proses bersamaan (`MAX_JOBS`).
+- v78: yt-dlp + ffmpeg dimatikan sebagai satu process group saat timeout / client putus (tidak ada ffmpeg yatim), slot `MAX_JOBS` dibebaskan saat yt-dlp selesai, `--http-chunk-size 10M` melawan throttling, dan durasi tiap job dicatat di log (`convert ok 12.3s 4096000B`).

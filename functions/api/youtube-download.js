@@ -10,6 +10,10 @@ import { requireUser } from "../_lib/auth.js";
 
 const API_KEY = "U8LwW";
 
+// Batas waktu: di atas batas job backend (150 dtk) supaya pesan error backend yang tampil, bukan timeout kasar.
+const BACKEND_TIMEOUT_MS = 170000;
+const LEGACY_TIMEOUT_MS = 90000;
+
 const HOSTS = new Set(["youtube.com", "www.youtube.com", "m.youtube.com", "music.youtube.com", "youtu.be"]);
 
 function isYoutube(value) {
@@ -32,12 +36,21 @@ export async function onRequestPost(context) {
     return json({ ok: false, message: "Body permintaan tidak valid (bukan JSON)." }, 400);
   }
 
-  const url = String(body.url || "").trim();
+  const base = String((env && env.YT_BACKEND_URL) || "").trim().replace(/\/+$/, "");
+  const secret = String((env && env.YT_BACKEND_SECRET) || "").trim();
+
+  // Pemanasan: client memanggil ini saat tab YouTube dibuka supaya container tidak cold start saat Convert.
+  if (body && body.warm === true) {
+    if (base && secret && context.waitUntil) {
+      context.waitUntil(fetch(base + "/warm", { headers: { "x-backend-secret": secret }, signal: AbortSignal.timeout(15000) }).catch(() => {}));
+    }
+    return json({ ok: true, warm: Boolean(base && secret) });
+  }
+
+  const url = String((body && body.url) || "").trim();
   if (!url) return json({ ok: false, message: "url wajib diisi." }, 400);
   if (!isYoutube(url)) return json({ ok: false, message: "Link harus dari YouTube." }, 400);
 
-  const base = String((env && env.YT_BACKEND_URL) || "").trim().replace(/\/+$/, "");
-  const secret = String((env && env.YT_BACKEND_SECRET) || "").trim();
   if (!base || !secret) return legacyConvert(url);
 
   let upstream;
@@ -45,10 +58,16 @@ export async function onRequestPost(context) {
     upstream = await fetch(base + "/convert", {
       method: "POST",
       headers: { "content-type": "application/json", "x-backend-secret": secret },
-      body: JSON.stringify({ url })
+      body: JSON.stringify({ url }),
+      signal: AbortSignal.timeout(BACKEND_TIMEOUT_MS)
     });
-  } catch {
-    return json({ ok: false, message: "Tidak bisa menghubungi backend YouTube. Cek server-nya menyala." }, 502);
+  } catch (err) {
+    const timedOut = err && (err.name === "TimeoutError" || err.name === "AbortError");
+    return json({
+      ok: false,
+      message: timedOut ? "Backend YouTube terlalu lama merespons. Coba lagi." : "Tidak bisa menghubungi backend YouTube. Cek server-nya menyala.",
+      retryable: !timedOut
+    }, 502);
   }
 
   const type = upstream.headers.get("content-type") || "";
@@ -62,7 +81,12 @@ export async function onRequestPost(context) {
   let msg = "";
   try { msg = (await upstream.json()).message || ""; } catch { /* bukan JSON */ }
   if (upstream.status === 401) msg = "Rahasia backend tidak cocok. Samakan YT_BACKEND_SECRET di Pages dan di server.";
-  return json({ ok: false, message: msg || `Backend YouTube membalas HTTP ${upstream.status}.` }, upstream.status === 429 ? 429 : 502);
+  // Status 4xx dari backend diteruskan apa adanya (client tidak mengulang percuma);
+  // 429/502/503/504 (penuh atau container baru bangun) ditandai retryable supaya client mencoba sekali lagi.
+  const st = upstream.status;
+  const passthrough = st === 400 || st === 413 || st === 422 || st === 429 ? st : 502;
+  const retryable = st === 429 || st === 502 || st === 503 || st === 504;
+  return json({ ok: false, message: msg || `Backend YouTube membalas HTTP ${st}.`, retryable }, passthrough);
 }
 
 // ── Jalur default: API convert pihak ketiga dengan API key ───────────────────
@@ -71,9 +95,14 @@ async function legacyConvert(url) {
 
   let upstream;
   try {
-    upstream = await fetch(apiUrl, { headers: { "x-apikey": API_KEY } });
+    upstream = await fetch(apiUrl, { headers: { "x-apikey": API_KEY }, signal: AbortSignal.timeout(LEGACY_TIMEOUT_MS) });
   } catch (err) {
-    return json({ ok: false, message: "Gagal menghubungi API convert: " + (err && err.message ? err.message : "network error") }, 502);
+    const timedOut = err && (err.name === "TimeoutError" || err.name === "AbortError");
+    return json({
+      ok: false,
+      message: timedOut ? "API convert terlalu lama merespons. Coba lagi." : "Gagal menghubungi API convert: " + (err && err.message ? err.message : "network error"),
+      retryable: !timedOut
+    }, 502);
   }
 
   if (!upstream.ok) {
@@ -103,9 +132,10 @@ async function legacyConvert(url) {
 
   let fileRes;
   try {
-    fileRes = await fetch(downloadUrl);
+    fileRes = await fetch(downloadUrl, { signal: AbortSignal.timeout(LEGACY_TIMEOUT_MS) });
   } catch (err) {
-    return json({ ok: false, message: "Gagal mengunduh hasil convert: " + (err && err.message ? err.message : "network error") });
+    const timedOut = err && (err.name === "TimeoutError" || err.name === "AbortError");
+    return json({ ok: false, message: timedOut ? "Download hasil convert terlalu lama. Coba lagi." : "Gagal mengunduh hasil convert: " + (err && err.message ? err.message : "network error"), retryable: !timedOut }, 502);
   }
   if (!fileRes.ok) return json({ ok: false, message: `Gagal mengunduh hasil convert (HTTP ${fileRes.status}).` });
 

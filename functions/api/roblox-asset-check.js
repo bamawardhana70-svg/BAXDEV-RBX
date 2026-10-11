@@ -7,7 +7,9 @@ import { requireUser } from "../_lib/auth.js";
 // Satu GET ke Open Cloud Assets API per ID (key perlu izin asset:read dan hanya bisa
 // membaca asset milik akun/grup pemilik key). API key hanya lewat di request ini.
 
-const MAX_IDS = 40; // batas subrequest per invocation di Cloudflare Pages (free: 50)
+// Batas PER REQUEST (subrequest per invocation di Cloudflare Pages, free: 50). index.html membagi daftar ID
+// berapa pun jadi request sebesar ini dan melambat otomatis bila Roblox membalas 429 (~60 request/menit per API key).
+const MAX_IDS = 40;
 
 export async function onRequestPost(context) {
   try {
@@ -31,7 +33,7 @@ async function handle({ request }) {
 
   const ids = Array.from(new Set((Array.isArray(body.assetIds) ? body.assetIds : []).map(String).filter((id) => /^\d{1,19}$/.test(id))));
   if (!ids.length) return json({ ok: false, message: "Isi minimal 1 Asset ID." }, 400);
-  if (ids.length > MAX_IDS) return json({ ok: false, message: `Maksimal ${MAX_IDS} ID per proses.` }, 400);
+  if (ids.length > MAX_IDS) return json({ ok: false, message: `Maksimal ${MAX_IDS} ID per request. Client membagi otomatis.` }, 400);
 
   const items = await Promise.all(ids.map((id) => inspect(apiKey, id)));
   return json({ ok: true, items });
@@ -50,7 +52,7 @@ async function inspect(apiKey, id) {
     return { id, ok: false, reason: "API key ditolak (perlu izin asset:read) atau asset ini bukan milikmu." };
   }
   if (res.status === 404) return { id, ok: false, reason: "Asset tidak ditemukan." };
-  if (res.status === 429) return { id, ok: false, reason: "Terlalu banyak permintaan, coba lagi sebentar." };
+  if (res.status === 429) return { id, ok: false, rateLimited: true, reason: "Terlalu banyak permintaan, coba lagi sebentar." };
   if (!res.ok) return { id, ok: false, reason: "Roblox membalas error " + res.status + "." };
 
   let a = {};

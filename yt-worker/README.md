@@ -13,3 +13,5 @@ Hasil deploy memberi alamat `https://baxdev-yt.<akunmu>.workers.dev`.
 Lalu di Cloudflare Pages isi env: `YT_BACKEND_URL` = alamat itu, `YT_BACKEND_SECRET` = rahasia yang sama.
 
 Catatan: kalau YouTube menolak IP Cloudflare ("sign in to confirm you're not a bot"), pakai cookies (lihat ../yt-backend/README.md) atau pindah ke server rumah. Update yt-dlp dengan deploy ulang. `server.mjs` di sini salinan dari ../yt-backend.
+
+Perubahan v78: route `/warm` (membangunkan container saat tab YouTube dibuka), `sleepAfter` 10 menit, `instance_type` `standard-2`, `MAX_JOBS` 3. `server.mjs` mematikan seluruh process group yt-dlp/ffmpeg saat timeout atau client putus.
