@@ -180,25 +180,36 @@ export async function quotaBegin(request, robloxId) {
   }
 }
 
+// Tambah 1 pada counter kuota secara atomik. Dua upload paralel (multi upload) bisa selesai bersamaan;
+// baca-lalu-tulis biasa membuat salah satunya hilang. Firebase REST mendukung penulisan bersyarat:
+// GET dengan X-Firebase-ETag lalu PUT dengan if-match (412 bila data sudah berubah) -> ulangi.
+async function bumpCounter(path, token, periodKey, periodNow) {
+  const url = FIREBASE_DB_URL + path + ".json?auth=" + encodeURIComponent(token);
+  for (let attempt = 0; attempt < 6; attempt++) {
+    const g = await fetch(url, { headers: { "X-Firebase-ETag": "true" }, cache: "no-store" });
+    if (!g.ok) throw new Error(path + " read " + g.status);
+    const etag = g.headers.get("ETag");
+    const rec = await g.json();
+    const used = rec && rec[periodKey] === periodNow ? Number(rec.count) || 0 : 0;
+    const headers = { "content-type": "application/json" };
+    if (etag) headers["if-match"] = etag;   // tanpa ETag (proxy menghapusnya) jatuh ke perilaku lama
+    const w = await fetch(url, { method: "PUT", headers, body: JSON.stringify({ [periodKey]: periodNow, count: used + 1 }) });
+    if (w.ok) return used + 1;
+    if (w.status !== 412) return null;
+    await new Promise((r) => setTimeout(r, 40 + Math.random() * 120));
+  }
+  return null;
+}
+
 // Catat 1 publish setelah upload berhasil. Balikkan { used, limit } atau null.
 export async function quotaCommit(q) {
   if (!q || q.skip || q.owner || !q.uid) return null;
   try {
     if (q.vip) {
-      const cur = await readVipQuota(q.uid, q.token);   // baca ulang supaya tidak menimpa hitungan terbaru
-      const next = cur.used + 1;
-      const r = await fetch(FIREBASE_DB_URL + "/vipq/" + encodeURIComponent(q.uid) + ".json?auth=" + encodeURIComponent(q.token), {
-        method: "PUT", headers: { "content-type": "application/json" },
-        body: JSON.stringify({ period: cur.period, count: next })
-      });
-      return r.ok ? { used: next, limit: VIP_PERIOD_LIMIT } : null;
+      const used = await bumpCounter("/vipq/" + encodeURIComponent(q.uid), q.token, "period", vipPeriod(Date.now()));
+      return used == null ? null : { used, limit: VIP_PERIOD_LIMIT };
     }
-    const cur = await readQuota(q.uid, q.token);   // baca ulang supaya tidak menimpa hitungan terbaru
-    const next = cur.used + 1;
-    const r = await fetch(FIREBASE_DB_URL + "/quota/" + encodeURIComponent(q.uid) + ".json?auth=" + encodeURIComponent(q.token), {
-      method: "PUT", headers: { "content-type": "application/json" },
-      body: JSON.stringify({ day: cur.day, count: next })
-    });
-    return r.ok ? { used: next, limit: FREE_DAILY_LIMIT } : null;
+    const used = await bumpCounter("/quota/" + encodeURIComponent(q.uid), q.token, "day", wibDay(Date.now()));
+    return used == null ? null : { used, limit: FREE_DAILY_LIMIT };
   } catch { return null; }
 }

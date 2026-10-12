@@ -220,3 +220,6 @@ Free 1 audio/link per proses, VIP 5, **VIP Plus dan owner 10** (`VIP_QUEUE_MAX` 
 
 ## Cek Status Asset tanpa batas (v81)
 Jumlah ID tidak dibatasi. Client mengirim 40 ID per request; Roblox membatasi Assets API sekitar 60 request per menit per API key, jadi kalau ada balasan 429 client otomatis melambat (20 ID per 20 dtk) dan mengulang ID yang kena batas sampai 6 kali. ID yang tetap gagal tampil sebagai "Gagal" tanpa menghentikan sisanya. 500 ID kira-kira 8 menit kalau kena batas.
+
+## Upload ke Roblox 2 paralel (v82)
+Saat multi upload, 2 file dikirim ke Roblox sekaligus (`UPLOAD_CONCURRENCY` di `index.html`); satu file tetap berurutan. Progres di UI adalah rata-rata semua file, satu file yang gagal tidak menghentikan yang lain. Karena dua upload bisa selesai bersamaan, penghitung kuota publish di server (`quotaCommit` di `functions/_lib/auth.js`) sekarang memakai penulisan bersyarat Firebase (ETag + `if-match`, ulangi bila 412) supaya hitungan tidak ada yang hilang.

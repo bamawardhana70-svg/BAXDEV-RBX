@@ -7594,6 +7594,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
             }
 
             // ── UPLOAD ────────────────────────────────────────────
+            const UPLOAD_CONCURRENCY = 2;   // jumlah file yang dikirim ke Roblox bersamaan saat multi upload
             async function startUpload() {
                 if (!S.files.length)
                     return;
@@ -7630,22 +7631,33 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                 wrap.style.display = 'block';
                 document.getElementById('result-box').classList.remove('visible');
 
-                for (let i = 0; i < S.files.length; i++) {
-                    const file = S.files[i];
+                // Multi upload: 2 file dikirim ke Roblox sekaligus (satu file tetap berurutan).
+                const files = S.files.slice();
+                const total = files.length;
+                const prog = new Array(total).fill(0);
+                const active = new Set();
+                let finished = 0;
+                const paint = () => {
+                    const avg = Math.round(prog.reduce( (x, y) => x + y, 0) / total);
+                    fill.style.width = avg + '%';
+                    pct.textContent = avg + '%';
+                    label.textContent = active.size
+                        ? `Mengupload ${finished}/${total} selesai: ${Array.from(active).join(', ')}`
+                        : `Selesai ${finished}/${total}`;
+                };
+                const uploadOne = async (i) => {
+                    const file = files[i];
                     const name = S.assetNames[i] || defaultAssetName(file.name);
                     setQStatus(file, 'run');
-                    label.textContent = `Mengupload ${i + 1}/${S.files.length}: ${file.name}`;
-                    for (let p = 0; p <= 85; p += 15) {
-                        fill.style.width = p + '%';
-                        pct.textContent = p + '%';
-                        await sleep(100)
-                    }
-                    label.textContent = 'Publishing ke Roblox...';
+                    prog[i] = 10;
+                    paint();
                     const kind = fileKind(file);
                     const info = KIND_INFO[kind];
                     try {
                         const speed = S.speed || 1.0;
                         const processed = kind !== 'audio' ? file : await applyAudioEffects(file, speed, S.pitch || 0, null, file._trim);
+                        prog[i] = Math.max(prog[i], 40);
+                        paint();
                         // Salin isi file ke memori dulu: file dari picker/HP bisa "berubah" atau hilang
                         // selama upload dan itu memicu error "Failed to fetch".
                         let uploadFile;
@@ -7665,7 +7677,11 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                         fd.append('assetType', info.type);
                         fd.append('displayName', name);
                         fd.append('description', 'Uploaded via baxdev Roblox Audio Studio');
+                        prog[i] = Math.max(prog[i], 50);
+                        paint();
                         const res = await postWithRetry('/api/roblox-upload', fd);
+                        prog[i] = Math.max(prog[i], 85);
+                        paint();
                         const responseText = await res.text();
                         let data = {};
                         try {
@@ -7697,12 +7713,12 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                                     throw new Error(status.message || 'Roblox menolak file ini');
                                 if (status.done)
                                     assetId = status.assetId;
-                                fill.style.width = Math.min(98, 86 + attempt) + '%';
-                                pct.textContent = Math.min(98, 86 + attempt) + '%';
+                                prog[i] = Math.min(98, 86 + attempt);
+                                paint();
                             }
                         }
-                        fill.style.width = '100%';
-                        pct.textContent = '100%';
+                        prog[i] = 100;
+                        paint();
                         const base = { id: Date.now() + i, name, filename: file.name, size: file.size, uploadedAt: new Date().toISOString(), speed: S.speed, kind };
                         if (!assetId && opPath) {
                             // Masih diproses Roblox -> simpan sebagai "Diproses", dicek otomatis di Library
@@ -7737,17 +7753,39 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                         setQStatus(file, 'fail');
                         toast('Gagal upload: ' + (e.message || 'Error'), 'error');
                     }
-                    label.textContent = `Selesai ${i + 1}/${S.files.length}`;
+                };
+                let nextUpload = 0;
+                const uploadWorker = async () => {
+                    while (true) {
+                        const i = nextUpload++;
+                        if (i >= total)
+                            return;
+                        const shown = String(files[i].name).slice(0, 22);
+                        active.add(shown);
+                        paint();
+                        try {
+                            await uploadOne(i);
+                        } catch (e) {} finally {
+                            active.delete(shown);
+                            prog[i] = 100;
+                            finished += 1;
+                            paint();
+                        }
+                    }
+                };
+                try {
+                    await Promise.all(Array.from({ length: Math.min(total > 1 ? UPLOAD_CONCURRENCY : 1, total) }, uploadWorker));
+                } finally {
+                    await sleep(900);
+                    S.uploading = false;
+                    wrap.style.display = 'none';
+                    btn.disabled = false;
+                    S.files = [];
+                    S.assetNames = [];
+                    fileInput.value = '';
+                    animationInput.value = '';
+                    renderFileQueue();
                 }
-                await sleep(900);
-                S.uploading = false;
-                wrap.style.display = 'none';
-                btn.disabled = false;
-                S.files = [];
-                S.assetNames = [];
-                fileInput.value = '';
-                animationInput.value = '';
-                renderFileQueue();
             }
 
 
