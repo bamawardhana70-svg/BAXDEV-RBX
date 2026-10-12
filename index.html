@@ -7300,7 +7300,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                         if (i >= total)
                             return;
                         try {
-                            results[i] = { file: await convertOne(cfg, sourceKey, urls[i].href, i) };
+                            results[i] = { file: await convertOne(cfg, sourceKey, urls[i].href, i, total) };
                         } catch (e) {
                             results[i] = { error: (e && e.message) || 'gagal' };
                         }
@@ -7345,7 +7345,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                 return isVipPlus() && isDesktopDevice() ? CONVERT_CONCURRENCY_FAST : CONVERT_CONCURRENCY_NORMAL;
             }
             const sleepMs = ms => new Promise(resolve => setTimeout(resolve, ms));
-            async function convertOne(cfg, sourceKey, href, i) {
+            async function convertOne(cfg, sourceKey, href, i, total) {
                 // Judul diambil paralel, tapi TIDAK boleh menahan hasil audio yang sudah jadi.
                 const titleP = Promise.resolve().then( () => cfg.fetchTitle(href)).catch( () => null);
                 let lastErr = null;
@@ -7358,7 +7358,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                         const res = await fetch(cfg.endpoint, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ url: href }),
+                            body: JSON.stringify({ url: href, slot: i, queue: total || 1 }),
                             signal: ctrl.signal
                         });
                         if (res.status === 404)

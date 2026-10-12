@@ -151,6 +151,8 @@ Di Cloudflare Pages isi env `YT_BACKEND_URL` dan `YT_BACKEND_SECRET` (rahasia in
 Tanpa VPS: `yt-worker/` menjalankan backend yang sama di Cloudflare Containers (paket Workers Paid).
 Default-nya convert YouTube tetap lewat API key lama (api.theresav.eu); backend sendiri hanya dipakai kalau kedua env di atas diisi.
 
+Cadangan: kalau jalur utama (backend sendiri atau api.theresav.eu) gagal, `youtube-download.js` otomatis mencoba XyloAPI (`xyloapi.qzz.io`, `server1` lalu `server2`, `server3`). Kalau antrean lebih dari 3 link, tiap link dimulai dari jalur berbeda secara bergiliran (utama, server1, server2) supaya beban tersebar; yang gagal pindah ke jalur lain. Kalau backend utama sedang error, set env `XYLO_FIRST` = `1` agar XyloAPI dipakai lebih dulu dan jalur utama jadi cadangan (hapus env-nya kalau sudah pulih). Env opsional `XYLO_SERVERS` (contoh `server1,server2`) mengubah daftar server XyloAPI.
+
 ### Convert YouTube terasa lama (perbaikan v78)
 Gejala: status macet di "Mengonversi..." padahal file sebenarnya sudah jadi. Penyebab dan perbaikannya:
 - **Judul menahan hasil audio.** Client dulu menunggu judul (`/api/youtube-title`) dan audio bersamaan lewat `Promise.all`; judul macet = seluruh convert ikut macet. Sekarang judul punya timeout 6 dtk dan hanya ditunggu maksimal 1,5 dtk setelah audio jadi.
