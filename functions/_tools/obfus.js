@@ -3,12 +3,12 @@ export default String.raw`<!doctype html>
 <html lang="id">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Obfus VIP +</title>
+<title>Obfus</title>
 <style>
 :root{color-scheme:dark;--bg:#11131a;--text:#f3f5fb;--muted:#9ba4b8;--line:rgba(255,255,255,.14);--g1:rgba(255,255,255,.08);--btn:#a5b4fc;--btn-ink:#11131a;--blob:rgba(99,102,241,.22)}
 *{box-sizing:border-box}body{margin:0;padding:22px;font:14px/1.5 system-ui,sans-serif;color:var(--text);background:radial-gradient(600px 250px at 90% 0,var(--blob),transparent 70%),var(--bg)}
 .wrap{max-width:980px;margin:auto}.kicker{font-size:11px;letter-spacing:.16em;color:var(--btn);font-weight:800}h1{font-size:clamp(25px,5vw,36px);margin:5px 0}p{color:var(--muted);margin:4px 0 18px}.panel{border:1px solid var(--line);background:var(--g1);border-radius:18px;padding:16px;margin-top:14px}label{display:block;font-weight:700;margin-bottom:8px}textarea{width:100%;min-height:260px;resize:vertical;border:1px solid var(--line);border-radius:12px;background:rgba(0,0,0,.15);color:var(--text);padding:13px;font:12px/1.55 ui-monospace,monospace;outline:none}textarea:focus{border-color:var(--btn)}.out{min-height:240px}button{border:0;border-radius:10px;padding:11px 15px;font-weight:800;cursor:pointer;background:var(--btn);color:var(--btn-ink);margin:8px 7px 0 0}button.secondary{background:var(--g1);color:var(--text);border:1px solid var(--line)}.hint{font-size:12px;color:var(--muted)}#status{font-size:12px;color:var(--btn);margin-top:9px}
-</style></head><body><main class="wrap"><div class="kicker">BAXDEV / VIP PLUS</div><h1>Obfus Lua</h1><p>Samarkan nama variabel lokal dan rapikan kode Lua/Luau Roblox. Jalankan hasilnya di lingkungan uji terlebih dahulu.</p>
+</style></head><body><main class="wrap"><div class="kicker">BAXDEV / LUA TOOLS</div><h1>Obfus Lua</h1><p>Samarkan nama variabel lokal dan rapikan kode Lua/Luau Roblox. Jalankan hasilnya di lingkungan uji terlebih dahulu.</p>
 <section class="panel"><label for="src">Kode Lua / Luau</label><textarea id="src" spellcheck="false" placeholder="Tempel kode Lua/Luau di sini..."></textarea><button id="run">Obfuscate</button><button class="secondary" id="clear">Bersihkan</button><div class="hint">Mode ringan: tidak mengenkripsi kode. Hindari kode yang memakai nama lokal secara dinamis atau bergantung pada debug.getlocal.</div></section>
 <section class="panel"><label for="out">Hasil obfuscation</label><textarea id="out" class="out" spellcheck="false" readonly placeholder="Hasil akan muncul di sini..."></textarea><button id="copy">Salin hasil</button><div id="status" role="status"></div></section></main>
 <script>

@@ -5102,10 +5102,10 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                     SkyBox
                 </button>
                 <button class="nav-link" onclick="navigate('obfus')">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round">
-                        <rect x="3" y="3" width="8" height="8"/><rect x="13" y="3" width="8" height="8"/><rect x="3" y="13" width="8" height="8"/><rect x="13" y="13" width="8" height="8"/>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
+                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><path d="M1 1l22 22"/>
                     </svg>
-                    Obfus VIP +
+                    Obfus
                 </button>
                 <button class="nav-link" onclick="navigate('library')">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -5334,10 +5334,10 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                 SkyBox 360
             </div>
             <div class="m-link" onclick="navigate('obfus');closeMenu()">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round">
-                    <rect x="3" y="3" width="8" height="8"/><rect x="13" y="3" width="8" height="8"/><rect x="3" y="13" width="8" height="8"/><rect x="13" y="13" width="8" height="8"/>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><path d="M1 1l22 22"/>
                 </svg>
-                Obfus VIP +
+                Obfus
             </div>
             <div class="m-link" onclick="navigate('library');closeMenu()">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -6173,7 +6173,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                     </div>
                     <button class="btn btn-outline" type="button" onclick="closeSubscriptionModal()">Tutup</button>
                 </div>
-                <p>VIP memberikan publish tanpa batas, batch sampai 5 audio (VIP Plus sampai 10), tema silver chrome, dan border premium pada profil. VIP Plus + menambah akses tool Image to Mesh, SkyBox 360, dan Obfus VIP +.</p>
+                <p>VIP memberikan publish tanpa batas, batch sampai 5 audio (VIP Plus sampai 10), tema silver chrome, dan border premium pada profil. VIP Plus + menambah akses tool Image to Mesh, SkyBox 360, dan Obfus.</p>
                 <div class="subscription-benefits">
                     <span>Publish tanpa batas</span>
                     <span>5 audio per batch</span>
@@ -6183,7 +6183,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                     <span>Tema silver chrome VIP</span>
                     <span>VIP Plus +: Image to Mesh</span>
                     <span>VIP Plus +: SkyBox 360</span>
-                    <span>VIP Plus +: Obfus VIP +</span>
+                    <span>VIP Plus +: Obfus</span>
                 </div>
                 <div id="payment-body"></div>
             </div>
@@ -6199,7 +6199,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                 <div class="subscription-benefits">
                     <span>Image to Mesh</span>
                     <span>SkyBox 360</span>
-                    <span>Obfus VIP +</span>
+                    <span>Obfus</span>
                     <span>Publish tanpa batas, 5 audio per batch</span>
                     <span>Border avatar lingkaran khusus VIP Plus +</span>
                 </div>
@@ -9184,7 +9184,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
             let planTab = null;
             const PLAN_INFO = {
                 vip: { title: 'VIP', desc: 'Publish tanpa batas, batch 5 audio, tema bebas.' },
-                plus: { title: 'VIP Plus +', desc: 'Semua fitur VIP tanpa limit, plus tool Image to Mesh, SkyBox 360, Obfus VIP +, dan border avatar lingkaran khusus VIP Plus +.' }
+                plus: { title: 'VIP Plus +', desc: 'Semua fitur VIP tanpa limit, plus tool Image to Mesh, SkyBox 360, Obfus, dan border avatar lingkaran khusus VIP Plus +.' }
             };
             function planFromPrice(tier) {
                 const prices = PAYMENT.plans.filter(p => p.tier === tier).map(p => p.price);
@@ -9527,7 +9527,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
             const TOOLS = {
                 mesh: { title: 'Image to Mesh', desc: 'Ubah gambar jadi mesh 3D untuk Roblox Studio, lalu ekspor sebagai glTF atau OBJ.' },
                 skybox: { title: 'SkyBox 360', desc: 'Ubah panorama 360° jadi enam sisi SkyBox, publish ke Roblox, dan salin script Studio.' },
-                obfus: { title: 'Obfus VIP +', desc: 'Obfuscator Lua untuk menyamarkan nama variabel lokal dan merapikan kode Roblox Lua.' }
+                obfus: { title: 'Obfus', desc: 'Obfuscator Lua untuk menyamarkan nama variabel lokal dan merapikan kode Roblox Lua.' }
             };
             const SKYBOX_FACES = ['Front', 'Back', 'Left', 'Right', 'Top', 'Bottom'];
             // Tool yang publish gambar lewat halaman ini: keys = nama file yang boleh dikirim tool, upscale = boleh minta upscale.
@@ -9580,7 +9580,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                     frame.setAttribute('allowfullscreen', '');
                     frame.addEventListener('load', () => { pushToolTheme(frame); toolViewSync(); });
                     if (name === 'skybox' || name === 'obfus') {
-                        // SkyBox dan Obfus VIP + melaporkan tinggi isinya lewat postMessage; iframe dibuat setinggi isi supaya cuma halaman utama yang di-scroll.
+                        // SkyBox dan Obfus melaporkan tinggi isinya lewat postMessage; iframe dibuat setinggi isi supaya cuma halaman utama yang di-scroll.
                         frame.classList.add('tool-frame-auto');
                         frame.setAttribute('scrolling', 'no');
                     }
@@ -11708,7 +11708,7 @@ html:not([data-avb="none"]) body.owner-user.premium-user :is(.nav-avatar,.su-ava
 </style>
 <script id="bx-v47-js">
 (function(){
-  var T=['Beranda','Upload','Animasi','Image to Mesh','SkyBox 360','Obfus VIP +','Library','Pengaturan'],N=['home','upload','animation','mesh','skybox','obfus','library','settings'];
+  var T=['Beranda','Upload','Animasi','Image to Mesh','SkyBox 360','Obfus','Library','Pengaturan'],N=['home','upload','animation','mesh','skybox','obfus','library','settings'];
   var $=function(i){return document.getElementById(i)};
   var IC={burger:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>',
     music:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>',
@@ -11754,7 +11754,7 @@ html:not([data-avb="none"]) body.owner-user.premium-user :is(.nav-avatar,.su-ava
         [null,'Upload Animasi','Upload animasi .rbxm jadi asset',"navigate('animation')",2],
         [null,'Image to Mesh','Foto jadi mesh 3D (VIP Plus)',"navigate('mesh')",3],
         [null,'SkyBox 360','Panorama jadi 6 sisi (VIP Plus)',"navigate('skybox')",4],
-        [null,'Obfus VIP +','Samarkan kode Lua Roblox (VIP Plus)',"navigate('obfus')",5],
+        [null,'Obfus','Samarkan kode Lua Roblox (VIP Plus)',"navigate('obfus')",5],
         [null,'Library','Kelola audio tersimpan',"navigate('library')",6],
         ['star','Beli VIP','Upload lebih banyak & tema bebas',"openSubscriptionModal()"],
         ['chat','Hubungi Owner','Tanya lewat WhatsApp',"var a=document.getElementById('home-contact-owner');if(a)a.click()"]];

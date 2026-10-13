@@ -5,7 +5,7 @@ import obfusHtml from "../_tools/obfus.js";
 
 // Cloudflare Pages Function — GET /api/tool?name=mesh|skybox|obfus&rid=<Roblox User ID>
 //
-// Tool VIP Plus (Image to Mesh, SkyBox 360, Obfus VIP +) disajikan dari sini, bukan dari file statis, supaya
+// Tool VIP Plus (Image to Mesh, SkyBox 360, Obfus) disajikan dari sini, bukan dari file statis, supaya
 // HTML-nya tidak bisa diunduh tanpa login Google + status VIP Plus (atau Owner) yang diperiksa server.
 // Halaman utama memuatnya ke iframe sandbox tanpa akses ke localStorage / API key Roblox.
 
