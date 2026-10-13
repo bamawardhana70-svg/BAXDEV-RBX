@@ -162,3 +162,13 @@ Tool baru di samping Image to Mesh dan SkyBox 360, disajikan lewat `/api/tool?na
 - `functions/_tools/seamless-texture.js`: gambar jadi ubin tanpa sambungan (cross-fade tepi, lebar blend bisa diatur), preview 3 x 3 dan mode "Cek sambungan", publish 1 gambar, script Command Bar yang memasang `Texture` di keenam sisi Part terpilih.
 - `functions/_tools/_shell.js`: kerangka bersama tool baru (gaya, tema, tinggi otomatis, helper publish). Isinya tidak boleh memuat backtick, `${` atau backslash karena ditanam di template literal.
 - Publish dilakukan halaman utama (`TOOL_PUBLISH` di `index.html`), jadi API key Roblox tidak masuk ke tool. Menu desktop sekarang 8 item; di lebar 1100-1359 px ikon menu disembunyikan supaya muat.
+
+## Proses latar belakang (PWA)
+
+Modul `BxBg` (script `#bx-bg-js` di `index.html`) melacak convert, upload, dan publish tool VIP Plus. Browser membekukan halaman yang disembunyikan, jadi ini bukan eksekusi latar belakang sungguhan: saat HP mati atau aplikasi ditutup paksa, proses berhenti. Yang dikerjakan:
+
+- Pil progres di semua halaman (ketuk untuk kembali ke halaman prosesnya), judul tab `(2/5)`, dan peringatan sebelum menutup halaman saat proses berjalan.
+- Wake Lock: layar tetap menyala selama halaman terlihat dan ada proses.
+- Notifikasi selesai lewat service worker kalau halaman sedang disembunyikan (izin diminta sekali, saat proses pertama dimulai).
+- Request yang putus karena halaman sempat dibekukan diulang otomatis (maksimal 2 percobaan tambahan di luar jatah normal) di `convertOne` dan `postWithRetry`.
+- `sw.js` (cache v6) menangani klik notifikasi. Agar benar-benar jalan saat HP mati, dibutuhkan antrean di server (Cloudflare Queue + Worker) dan Roblox API key tersimpan di server; belum dibuat.

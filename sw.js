@@ -1,5 +1,5 @@
 // Service worker baxdev: shell offline ringan. API, Firebase, dan Roblox TIDAK pernah di-cache.
-const CACHE = "baxdev-shell-v5";
+const CACHE = "baxdev-shell-v6";
 const SHELL = ["/", "/favicon-192.png", "/logo.png", "/manifest.webmanifest"];
 
 self.addEventListener("install", (e) => {
@@ -30,6 +30,17 @@ self.addEventListener("fetch", (e) => {
     caches.match(req).then((hit) => {
       const net = fetch(req).then((res) => { if (res.ok) { const cp = res.clone(); caches.open(CACHE).then((c) => c.put(req, cp)); } return res; }).catch(() => hit);
       return hit || net;
+    })
+  );
+});
+
+// Ketuk notifikasi "selesai": fokus ke jendela BAXDEV yang sudah terbuka, atau buka baru.
+self.addEventListener("notificationclick", (e) => {
+  e.notification.close();
+  e.waitUntil(
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((list) => {
+      for (const c of list) { if ("focus" in c) return c.focus(); }
+      return self.clients.openWindow("/");
     })
   );
 });

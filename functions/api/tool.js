@@ -1,15 +1,15 @@
 import { requireUser, requireVipPlus } from "../_lib/auth.js";
 import meshHtml from "../_tools/image-to-mesh.js";
 import skyboxHtml from "../_tools/skybox-360.js";
-import textureHtml from "../_tools/seamless-texture.js";
+import obfusHtml from "../_tools/obfus.js";
 
-// Cloudflare Pages Function — GET /api/tool?name=mesh|skybox|texture&rid=<Roblox User ID>
+// Cloudflare Pages Function — GET /api/tool?name=mesh|skybox|obfus&rid=<Roblox User ID>
 //
-// Tool VIP Plus (Image to Mesh, SkyBox 360, Seamless Texture) disajikan dari sini, bukan dari file statis, supaya
+// Tool VIP Plus (Image to Mesh, SkyBox 360, Obfus VIP +) disajikan dari sini, bukan dari file statis, supaya
 // HTML-nya tidak bisa diunduh tanpa login Google + status VIP Plus (atau Owner) yang diperiksa server.
 // Halaman utama memuatnya ke iframe sandbox tanpa akses ke localStorage / API key Roblox.
 
-const TOOLS = { mesh: meshHtml, skybox: skyboxHtml, texture: textureHtml };
+const TOOLS = { mesh: meshHtml, skybox: skyboxHtml, obfus: obfusHtml };
 
 export async function onRequestGet({ request }) {
   const denied = await requireUser(request);

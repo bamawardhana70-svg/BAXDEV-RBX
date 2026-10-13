@@ -5101,11 +5101,11 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                     </svg>
                     SkyBox
                 </button>
-                <button class="nav-link" onclick="navigate('texture')">
+                <button class="nav-link" onclick="navigate('obfus')">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round">
                         <rect x="3" y="3" width="8" height="8"/><rect x="13" y="3" width="8" height="8"/><rect x="3" y="13" width="8" height="8"/><rect x="13" y="13" width="8" height="8"/>
                     </svg>
-                    Tekstur
+                    Obfus VIP +
                 </button>
                 <button class="nav-link" onclick="navigate('library')">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -5333,11 +5333,11 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                 </svg>
                 SkyBox 360
             </div>
-            <div class="m-link" onclick="navigate('texture');closeMenu()">
+            <div class="m-link" onclick="navigate('obfus');closeMenu()">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round">
                     <rect x="3" y="3" width="8" height="8"/><rect x="13" y="3" width="8" height="8"/><rect x="3" y="13" width="8" height="8"/><rect x="13" y="13" width="8" height="8"/>
                 </svg>
-                Seamless Texture
+                Obfus VIP +
             </div>
             <div class="m-link" onclick="navigate('library');closeMenu()">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -5748,9 +5748,9 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
             <div class="page page-tool" id="page-skybox">
                 <div class="tool-host" id="tool-host-skybox"></div>
             </div>
-            <!-- SEAMLESS TEXTURE (VIP Plus) -->
-            <div class="page page-tool" id="page-texture">
-                <div class="tool-host" id="tool-host-texture"></div>
+            <!-- OBFUS (VIP Plus) -->
+            <div class="page page-tool" id="page-obfus">
+                <div class="tool-host" id="tool-host-obfus"></div>
             </div>
             <!-- LIBRARY -->
             <div class="page" id="page-library">
@@ -6173,7 +6173,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                     </div>
                     <button class="btn btn-outline" type="button" onclick="closeSubscriptionModal()">Tutup</button>
                 </div>
-                <p>VIP memberikan publish tanpa batas, batch sampai 5 audio (VIP Plus sampai 10), tema silver chrome, dan border premium pada profil. VIP Plus + menambah akses tool Image to Mesh, SkyBox 360, dan Seamless Texture.</p>
+                <p>VIP memberikan publish tanpa batas, batch sampai 5 audio (VIP Plus sampai 10), tema silver chrome, dan border premium pada profil. VIP Plus + menambah akses tool Image to Mesh, SkyBox 360, dan Obfus VIP +.</p>
                 <div class="subscription-benefits">
                     <span>Publish tanpa batas</span>
                     <span>5 audio per batch</span>
@@ -6183,7 +6183,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                     <span>Tema silver chrome VIP</span>
                     <span>VIP Plus +: Image to Mesh</span>
                     <span>VIP Plus +: SkyBox 360</span>
-                    <span>VIP Plus +: Seamless Texture</span>
+                    <span>VIP Plus +: Obfus VIP +</span>
                 </div>
                 <div id="payment-body"></div>
             </div>
@@ -6199,7 +6199,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                 <div class="subscription-benefits">
                     <span>Image to Mesh</span>
                     <span>SkyBox 360</span>
-                    <span>Seamless Texture</span>
+                    <span>Obfus VIP +</span>
                     <span>Publish tanpa batas, 5 audio per batch</span>
                     <span>Border avatar lingkaran khusus VIP Plus +</span>
                 </div>
@@ -6737,7 +6737,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
             });
             function navigate(page) {
                 // Image to Mesh & SkyBox 360 khusus VIP Plus +: tanpa itu, tampilkan popup beli, jangan pindah halaman.
-                if (['mesh', 'skybox', 'texture'].includes(page) && !isVipPlus()) {
+                if (['mesh', 'skybox', 'obfus'].includes(page) && !isVipPlus()) {
                     openPlusGate(page);
                     return;
                 }
@@ -6764,7 +6764,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                     animation: 2,
                     mesh: 3,
                     skybox: 4,
-                    texture: 5,
+                    obfus: 5,
                     library: 6,
                     settings: 7
                 }[page];
@@ -6774,7 +6774,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                     nls[idx].classList.add('active');
                 if (mls[idx])
                     mls[idx].classList.add('active');
-                if (['mesh', 'skybox', 'texture'].includes(page))
+                if (['mesh', 'skybox', 'obfus'].includes(page))
                     toolOpen(page);
                 if (page === 'library') {
                     renderLibrary();
@@ -7324,12 +7324,15 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                             results[i] = { error: (e && e.message) || 'gagal' };
                         }
                         finished += 1;
+                        bg('progress', 'convert', finished);
                         flush();
                     }
                 };
+                bg('begin', 'convert', 'Convert', total, 'upload');
                 try {
                     await Promise.all(Array.from({ length: Math.min(convertConcurrency(), total) }, worker));
                 } finally {
+                    bg('end', 'convert', converted + '/' + total + ' link selesai dikonversi' + (failures.length ? ', ' + failures.length + ' gagal' : ''));
                     clearInterval(ticker);
                     converting = false;
                     updateConvertButton();
@@ -7364,13 +7367,25 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                 return isVipPlus() && isDesktopDevice() ? CONVERT_CONCURRENCY_FAST : CONVERT_CONCURRENCY_NORMAL;
             }
             const sleepMs = ms => new Promise(resolve => setTimeout(resolve, ms));
+            // Proses latar belakang (pil progres global, wake lock, notifikasi selesai) ada di script #bx-bg-js. Kegagalannya tidak boleh menghentikan upload.
+            function bg(method, ...args) {
+                try {
+                    if (window.BxBg)
+                        window.BxBg[method](...args);
+                } catch (e) {
+                    console.warn('BxBg.' + method, e);
+                }
+            }
+            // True kalau halaman sempat disembunyikan (pindah aplikasi, layar mati) sejak waktu tertentu.
+            const wasHiddenSince = t => Boolean(window.BxBg && window.BxBg.hiddenSince(t));
             async function convertOne(cfg, sourceKey, href, i, total) {
                 // Judul diambil paralel, tapi TIDAK boleh menahan hasil audio yang sudah jadi.
                 const titleP = Promise.resolve().then( () => cfg.fetchTitle(href)).catch( () => null);
-                let lastErr = null;
+                let lastErr = null, freeRetries = 0;
                 for (let attempt = 0; attempt < 3; attempt++) {
                     if (attempt)
                         await sleepMs(3000 * attempt);   // 3 dtk, lalu 6 dtk
+                    const attemptStart = Date.now();
                     const ctrl = new AbortController();
                     const timer = setTimeout( () => ctrl.abort(), CONVERT_TIMEOUT_MS);
                     try {
@@ -7406,6 +7421,12 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                             e = new Error('Server terlalu lama merespons (lebih dari 3 menit). Coba lagi.');
                         else if (e instanceof TypeError)
                             e.retry = true, e.message = 'Koneksi ke server terputus.';
+                        // Browser membekukan halaman di latar belakang: request putus atau timeout palsu. Ulang tanpa menghabiskan jatah percobaan.
+                        if (wasHiddenSince(attemptStart) && freeRetries < 2 && (e.name === 'AbortError' || e instanceof TypeError || /terputus|terlalu lama/.test(e.message || ''))) {
+                            freeRetries += 1;
+                            attempt -= 1;
+                            e.retry = true;
+                        }
                         lastErr = e;
                         if (!e.retry)
                             break;
@@ -7788,13 +7809,16 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                             active.delete(shown);
                             prog[i] = 100;
                             finished += 1;
+                            bg('progress', 'upload', finished);
                             paint();
                         }
                     }
                 };
+                bg('begin', 'upload', 'Upload', total, 'upload');
                 try {
                     await Promise.all(Array.from({ length: Math.min(total > 1 ? UPLOAD_CONCURRENCY : 1, total) }, uploadWorker));
                 } finally {
+                    bg('end', 'upload', finished + '/' + total + ' file selesai diupload ke Roblox');
                     await sleep(900);
                     S.uploading = false;
                     wrap.style.display = 'none';
@@ -7810,14 +7834,22 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
 
             // Kirim upload dengan timeout + retry otomatis untuk error jaringan ("Failed to fetch")
             async function postWithRetry(url, body) {
-                let lastErr;
+                let lastErr, freeRetries = 0;
                 for (let attempt = 0; attempt < 3; attempt++) {
+                    const attemptStart = Date.now();
                     const ctrl = new AbortController();
                     const timer = setTimeout( () => ctrl.abort(), 90000);
                     try {
                         return await fetch(url, { method: 'POST', body, signal: ctrl.signal });
                     } catch (e) {
                         lastErr = e;
+                        // Putus karena halaman dibekukan di latar belakang: ulang tanpa menghabiskan jatah percobaan.
+                        if (wasHiddenSince(attemptStart) && freeRetries < 2) {
+                            freeRetries += 1;
+                            attempt -= 1;
+                            await sleep(1500);
+                            continue;
+                        }
                         if (attempt < 2)
                             await sleep(1200 * (attempt + 1));
                     } finally {
@@ -9152,7 +9184,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
             let planTab = null;
             const PLAN_INFO = {
                 vip: { title: 'VIP', desc: 'Publish tanpa batas, batch 5 audio, tema bebas.' },
-                plus: { title: 'VIP Plus +', desc: 'Semua fitur VIP tanpa limit, plus tool Image to Mesh, SkyBox 360, Seamless Texture, dan border avatar lingkaran khusus VIP Plus +.' }
+                plus: { title: 'VIP Plus +', desc: 'Semua fitur VIP tanpa limit, plus tool Image to Mesh, SkyBox 360, Obfus VIP +, dan border avatar lingkaran khusus VIP Plus +.' }
             };
             function planFromPrice(tier) {
                 const prices = PAYMENT.plans.filter(p => p.tier === tier).map(p => p.price);
@@ -9495,13 +9527,13 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
             const TOOLS = {
                 mesh: { title: 'Image to Mesh', desc: 'Ubah gambar jadi mesh 3D untuk Roblox Studio, lalu ekspor sebagai glTF atau OBJ.' },
                 skybox: { title: 'SkyBox 360', desc: 'Ubah panorama 360° jadi enam sisi SkyBox, publish ke Roblox, dan salin script Studio.' },
-                texture: { title: 'Seamless Texture', desc: 'Ubah gambar jadi ubin tanpa sambungan, publish ke Roblox, dan pasang ke Part lewat script Studio.' }
+                obfus: { title: 'Obfus VIP +', desc: 'Obfuscator Lua untuk menyamarkan nama variabel lokal dan merapikan kode Roblox Lua.' }
             };
             const SKYBOX_FACES = ['Front', 'Back', 'Left', 'Right', 'Top', 'Bottom'];
             // Tool yang publish gambar lewat halaman ini: keys = nama file yang boleh dikirim tool, upscale = boleh minta upscale.
             const TOOL_PUBLISH = {
                 skybox: { keys: SKYBOX_FACES, prefix: 'Skybox', source: 'SkyBox 360', upscale: true },
-                texture: { keys: ['Tile'], prefix: 'Texture', source: 'Seamless Texture', upscale: false }
+                
             };
             const toolState = {};
             let toolVipRecheckAt = 0;
@@ -9547,8 +9579,8 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                     frame.setAttribute('allow', 'clipboard-write; fullscreen');
                     frame.setAttribute('allowfullscreen', '');
                     frame.addEventListener('load', () => { pushToolTheme(frame); toolViewSync(); });
-                    if (name === 'skybox' || name === 'texture') {
-                        // SkyBox dan Seamless Texture melaporkan tinggi isinya lewat postMessage; iframe dibuat setinggi isi supaya cuma halaman utama yang di-scroll.
+                    if (name === 'skybox' || name === 'obfus') {
+                        // SkyBox dan Obfus VIP + melaporkan tinggi isinya lewat postMessage; iframe dibuat setinggi isi supaya cuma halaman utama yang di-scroll.
                         frame.classList.add('tool-frame-auto');
                         frame.setAttribute('scrolling', 'no');
                     }
@@ -9717,6 +9749,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                 }
             }
             async function toolPublishImages(win, req, cfg) {
+                let bgTask = null;
                 const send = msg => win.postMessage(Object.assign({ bx: 'publish', id: req.id }, msg), '*');
                 try {
                     if (!isVipPlus())
@@ -9731,6 +9764,9 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                         if (!(f instanceof Blob) || f.size === 0 || f.size > 20 * 1024 * 1024)
                             throw new Error(`Gambar ${face} tidak valid.`);
                     }
+                    const toolKey = Object.keys(TOOL_PUBLISH).find(k => TOOL_PUBLISH[k] === cfg);
+                    bgTask = 'tool-' + toolKey;
+                    bg('begin', bgTask, 'Publish', cfg.keys.length, toolKey);
                     const scale = cfg.upscale && [1, 2, 4].includes(req.scale) ? req.scale : 1;
                     const baseName = String(req.name || '').replace(/[^A-Za-z0-9 _-]+/g, ' ').trim().slice(0, 40);
                     const stamp = new Date().toTimeString().slice(0, 5).replace(':', '');
@@ -9775,12 +9811,17 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                                     { name, filename, size, status: 'fail', error: reason });
                                 results[face] = { error: reason };
                             }
+                            if (bgTask)
+                                bg('progress', bgTask, Object.keys(results).length);
                         }
                     };
                     await Promise.all(Array.from({ length: scale > 1 ? 2 : 3 }, worker));
                     send({ type: 'done', results });
                 } catch (e) {
                     send({ type: 'error', message: e.message || 'Publish gagal.' });
+                } finally {
+                    if (bgTask)
+                        bg('end', bgTask, 'Publish ke Roblox selesai');
                 }
             }
             // Pesan dari iframe tool: hanya diterima dari iframe milik halaman ini (origin sandbox "null", jadi dicek lewat window sumbernya).
@@ -11667,7 +11708,7 @@ html:not([data-avb="none"]) body.owner-user.premium-user :is(.nav-avatar,.su-ava
 </style>
 <script id="bx-v47-js">
 (function(){
-  var T=['Beranda','Upload','Animasi','Image to Mesh','SkyBox 360','Seamless Texture','Library','Pengaturan'],N=['home','upload','animation','mesh','skybox','texture','library','settings'];
+  var T=['Beranda','Upload','Animasi','Image to Mesh','SkyBox 360','Obfus VIP +','Library','Pengaturan'],N=['home','upload','animation','mesh','skybox','obfus','library','settings'];
   var $=function(i){return document.getElementById(i)};
   var IC={burger:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>',
     music:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>',
@@ -11713,7 +11754,7 @@ html:not([data-avb="none"]) body.owner-user.premium-user :is(.nav-avatar,.su-ava
         [null,'Upload Animasi','Upload animasi .rbxm jadi asset',"navigate('animation')",2],
         [null,'Image to Mesh','Foto jadi mesh 3D (VIP Plus)',"navigate('mesh')",3],
         [null,'SkyBox 360','Panorama jadi 6 sisi (VIP Plus)',"navigate('skybox')",4],
-        [null,'Seamless Texture','Gambar jadi ubin tanpa sambungan (VIP Plus)',"navigate('texture')",5],
+        [null,'Obfus VIP +','Samarkan kode Lua Roblox (VIP Plus)',"navigate('obfus')",5],
         [null,'Library','Kelola audio tersimpan',"navigate('library')",6],
         ['star','Beli VIP','Upload lebih banyak & tema bebas',"openSubscriptionModal()"],
         ['chat','Hubungi Owner','Tanya lewat WhatsApp',"var a=document.getElementById('home-contact-owner');if(a)a.click()"]];
@@ -12793,7 +12834,7 @@ html body #bx-welcome .bx-name,.dr-meta b{display:flex;align-items:center;gap:8p
     });
   }
   function locks(){
-    var locked=!plus(),els=[].slice.call(document.querySelectorAll('[onclick*="navigate(\'mesh\')"],[onclick*="navigate(\'skybox\')"],[onclick*="navigate(\'texture\')"]'));
+    var locked=!plus(),els=[].slice.call(document.querySelectorAll('[onclick*="navigate(\'mesh\')"],[onclick*="navigate(\'skybox\')"],[onclick*="navigate(\'obfus\')"]'));
     document.querySelectorAll('.dr-item').forEach(function(d,i){if(i>=3&&i<=5)els.push(d)});
     els.forEach(function(el){
       var lk=null;for(var i=0;i<el.children.length;i++){if(el.children[i].classList.contains('bx-lock')){lk=el.children[i];break}}
@@ -12819,5 +12860,122 @@ html body.intro-playing.intro-flying #navbar{visibility:visible}
 html body.intro-flying #bx-logo img,html body.intro-flying #nav-logo{visibility:hidden}
 html body.intro-flying #nav-logo-wrap{opacity:1}
 </style>
+<style id="bx-bg-css">
+/* Pil progres global: proses convert/upload/publish tetap terlihat di halaman mana pun */
+#bx-bg-pill{position:fixed;left:50%;top:calc(max(var(--bx-h,0px),var(--nav-h,64px)) + env(safe-area-inset-top,0px) + 22px);transform:translateX(-50%);z-index:800;display:none;align-items:center;gap:10px;max-width:calc(100vw - 24px);padding:9px 16px 11px;border:1px solid rgba(255,255,255,.18);border-radius:999px;background:rgba(18,18,20,.88);color:#fff;font:600 12.5px/1.2 var(--font,system-ui,sans-serif);cursor:pointer;overflow:hidden;box-shadow:0 8px 28px rgba(0,0,0,.45);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
+#bx-bg-pill.on{display:flex}
+#bx-bg-pill:focus-visible{outline:2px solid #fff;outline-offset:2px}
+#bx-bg-pill .bg-dot{flex:none;width:8px;height:8px;border-radius:50%;background:#fff;animation:bx-bg-pulse 1.4s ease-in-out infinite}
+#bx-bg-pill .bg-txt{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#bx-bg-pill .bg-bar{position:absolute;left:0;bottom:0;height:3px;width:0;background:#fff;transition:width .3s}
+@keyframes bx-bg-pulse{50%{opacity:.3}}
+@media (prefers-reduced-motion:reduce){#bx-bg-pill .bg-dot{animation:none}}
+</style>
+<script id="bx-bg-js">
+// BxBg: pelacak proses latar belakang. Browser membekukan halaman yang disembunyikan, jadi ini TIDAK menjalankan apa pun
+// saat HP mati atau aplikasi ditutup. Yang dikerjakan: pil progres di semua halaman, layar tetap menyala selama
+// halaman terlihat (Wake Lock), peringatan sebelum menutup, notifikasi saat selesai ketika layar sedang di aplikasi lain,
+// dan penanda "halaman sempat disembunyikan" supaya request yang putus karena dibekukan diulang otomatis.
+(function () {
+  var tasks = {}, order = [], wakeLock = null, pill = null, ticker = 0, baseTitle = document.title, lastHiddenAt = 0;
+  var ASKED_KEY = 'bx-notif-asked';
+
+  function pageOf(t) { return document.getElementById('page-' + t.page); }
+  function active() { return order.filter(function (id) { return tasks[id]; }); }
+
+  function ensurePill() {
+    if (pill) return pill;
+    pill = document.createElement('button');
+    pill.id = 'bx-bg-pill'; pill.type = 'button';
+    pill.setAttribute('aria-live', 'polite');
+    pill.innerHTML = '<span class="bg-dot" aria-hidden="true"></span><span class="bg-txt"></span><span class="bg-bar" aria-hidden="true"></span>';
+    pill.addEventListener('click', function () {
+      var ids = active(); if (!ids.length) return;
+      if (typeof navigate === 'function') navigate(tasks[ids[0]].page);
+    });
+    document.body.appendChild(pill);
+    return pill;
+  }
+
+  function render() {
+    var ids = active();
+    if (!ids.length) { if (pill) pill.classList.remove('on'); document.title = baseTitle; return; }
+    var first = tasks[ids[0]], done = 0, total = 0;
+    ids.forEach(function (id) { done += tasks[id].done; total += tasks[id].total; });
+    var onItsPage = ids.every(function (id) { var el = pageOf(tasks[id]); return el && el.classList.contains('active'); });
+    var p = ensurePill();
+    p.classList.toggle('on', !onItsPage);
+    p.querySelector('.bg-txt').textContent = (ids.length > 1 ? 'Memproses' : first.label) + ' ' + done + '/' + total;
+    p.querySelector('.bg-bar').style.width = (total ? Math.round(done / total * 100) : 0) + '%';
+    p.setAttribute('aria-label', 'Proses berjalan, ' + done + ' dari ' + total + '. Ketuk untuk membuka.');
+    document.title = '(' + done + '/' + total + ') ' + baseTitle;
+  }
+
+  async function acquireWake() {
+    try {
+      if (!active().length || document.hidden || wakeLock || !navigator.wakeLock) return;
+      wakeLock = await navigator.wakeLock.request('screen');
+      wakeLock.addEventListener('release', function () { wakeLock = null; });
+    } catch (e) { wakeLock = null; }   // ditolak (hemat daya) atau tidak didukung: proses tetap jalan
+  }
+  function releaseWake() {
+    if (wakeLock) { wakeLock.release().catch(function () {}); wakeLock = null; }
+  }
+
+  function beforeUnload(e) {
+    if (!active().length) return;
+    e.preventDefault(); e.returnValue = '';
+  }
+  window.addEventListener('beforeunload', beforeUnload);
+
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) lastHiddenAt = Date.now();
+    else { acquireWake(); render(); }
+  });
+
+  function askPermissionOnce() {
+    try {
+      if (!('Notification' in window) || Notification.permission !== 'default') return;
+      if (localStorage.getItem(ASKED_KEY)) return;
+      localStorage.setItem(ASKED_KEY, '1');
+      Notification.requestPermission().catch(function () {});
+    } catch (e) { /* penyimpanan diblokir: lewati */ }
+  }
+
+  async function notifyDone(body) {
+    try {
+      if (!document.hidden || !('Notification' in window) || Notification.permission !== 'granted') return;
+      var reg = navigator.serviceWorker && await navigator.serviceWorker.getRegistration();
+      if (reg && reg.showNotification) await reg.showNotification('BAXDEV', { body: body, icon: 'favicon-192.png', badge: 'favicon-192.png', tag: 'bx-done' });
+      else new Notification('BAXDEV', { body: body, icon: 'favicon-192.png', tag: 'bx-done' });
+    } catch (e) { console.warn('notifikasi gagal', e); }
+  }
+
+  window.BxBg = {
+    begin: function (id, label, total, page) {
+      if (!tasks[id]) order.push(id);
+      tasks[id] = { label: label, total: Math.max(1, total | 0), done: 0, page: page || 'upload' };
+      askPermissionOnce(); acquireWake();
+      if (!ticker) ticker = setInterval(render, 800);
+      render();
+    },
+    progress: function (id, done) {
+      if (!tasks[id]) return;
+      tasks[id].done = Math.min(tasks[id].total, done | 0);
+      render();
+    },
+    end: function (id, summary) {
+      if (!tasks[id]) return;
+      delete tasks[id]; order = order.filter(function (x) { return x !== id; });
+      if (!active().length) { clearInterval(ticker); ticker = 0; releaseWake(); }
+      render();
+      if (summary) notifyDone(summary);
+    },
+    // True kalau halaman sempat disembunyikan setelah waktu t (ms epoch), atau sedang disembunyikan.
+    hiddenSince: function (t) { return document.hidden || lastHiddenAt >= t; },
+    active: function () { return active().length; }
+  };
+})();
+</script>
 </body>
 </html>
