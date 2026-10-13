@@ -25,7 +25,7 @@ function obfuscate(code){
    if(code[j]==='['){let k=j+1;while(code[k]==='='){eq+='=';k++}if(code[k]==='['){const end=']'+eq+']';const p=code.indexOf(end,k+1);i=p<0?n:p+end.length;continue}}
    while(i<n&&code[i]!=='\n')i++;continue;
   }
-  if(c==='"'||c==="'"||c==='`'){
+  if(c==='"'||c==="'"||c==='\x60'){
    const q=c;let tok=q;i++;
    while(i<n){const x=code[i++];tok+=x;if(x==='\\'&&i<n){tok+=code[i++];continue}if(x===q)break}
    tokens.push(tok);continue;
@@ -33,7 +33,7 @@ function obfuscate(code){
   if(c==='['){let j=i+1,eq='';while(code[j]==='='){eq+='=';j++}if(code[j]==='['){const end=']'+eq+']',p=code.indexOf(end,j+1);if(p>=0){tokens.push(code.slice(i,p+end.length));i=p+end.length;continue}}}
   const id=code.slice(i).match(/^[A-Za-z_][A-Za-z0-9_]*/);
   if(id){tokens.push(id[0]);i+=id[0].length;continue}
-  const num=code.slice(i).match(/^\d+(?:\.\d+)?/);if(num){tokens.push(num[0]);i+=num[0].length;continue}
+  const num=code.slice(i).match(/^(?:0[xX][0-9A-Fa-f_]+|\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)/);if(num){tokens.push(num[0]);i+=num[0].length;continue}
   const op=['...', '..','==','~=','<=','>=','+=','-=','*=','/=','//','::','->'].find(x=>code.startsWith(x,i));
   if(op){tokens.push(op);i+=op.length}else{tokens.push(c);i++}
  }
@@ -50,17 +50,19 @@ function obfuscate(code){
   }
  }
  // Replace tokens only in syntactic identifier positions; preserve member keys after . or : and table keys before =.
- const out=[];
+ const out=[];let bd=0;
  for(let k=0;k<tokens.length;k++){
   const t=tokens[k],prev=tokens[k-1],next=tokens[k+1];
-  if(names.has(t)&&prev!=='.'&&prev!==':'&&next!==':'&&next!=='='&&!(prev==='function')) out.push(names.get(t));
+  const tableKey=bd>0&&next==='='&&(prev==='{'||prev===','||prev===';');
+  if(names.has(t)&&prev!=='.'&&prev!==':'&&!tableKey) out.push(names.get(t));
   else out.push(t);
+  if(t==='{')bd++;else if(t==='}'&&bd>0)bd--;
  }
  let result='';
  for(let k=0;k<out.length;k++){
   const a=out[k],b=out[k+1]||'';
   result+=a;
-  if((/[A-Za-z0-9_]$/.test(a)&&/^[A-Za-z0-9_]/.test(b))||((a==='-'&&b==='-')||(a==='/'&&b==='/')))result+=' ';
+  if((/[A-Za-z0-9_]$/.test(a)&&/^[A-Za-z0-9_]/.test(b))||((a==='-'&&b==='-')||(a==='/'&&b==='/'))||(/^\d/.test(a)&&b.startsWith('.')))result+=' ';
  }
  return result;
 }
