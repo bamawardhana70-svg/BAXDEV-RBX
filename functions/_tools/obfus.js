@@ -6,7 +6,7 @@ export default String.raw`<!doctype html>
 <title>Obfus</title>
 <style>
 :root{color-scheme:dark;--bg:#11131a;--text:#f3f5fb;--muted:#9ba4b8;--line:rgba(255,255,255,.14);--g1:rgba(255,255,255,.08);--btn:#a5b4fc;--btn-ink:#11131a;--blob:rgba(99,102,241,.22)}
-*{box-sizing:border-box}body{margin:0;padding:22px;font:14px/1.5 system-ui,sans-serif;color:var(--text);background:radial-gradient(600px 250px at 90% 0,var(--blob),transparent 70%),var(--bg)}
+*{box-sizing:border-box}html{background:transparent}body{margin:0;padding:4px 2px 24px;font:14px/1.5 system-ui,sans-serif;color:var(--text);background:transparent}html.autoh body{overflow:hidden}
 .wrap{max-width:980px;margin:auto}.kicker{font-size:11px;letter-spacing:.16em;color:var(--btn);font-weight:800}h1{font-size:clamp(25px,5vw,36px);margin:5px 0}p{color:var(--muted);margin:4px 0 18px}.panel{border:1px solid var(--line);background:var(--g1);border-radius:18px;padding:16px;margin-top:14px}label{display:block;font-weight:700;margin-bottom:8px}textarea{width:100%;min-height:260px;resize:vertical;border:1px solid var(--line);border-radius:12px;background:rgba(0,0,0,.15);color:var(--text);padding:13px;font:12px/1.55 ui-monospace,monospace;outline:none}textarea:focus{border-color:var(--btn)}.out{min-height:240px}button{border:0;border-radius:10px;padding:11px 15px;font-weight:800;cursor:pointer;background:var(--btn);color:var(--btn-ink);margin:8px 7px 0 0}button.secondary{background:var(--g1);color:var(--text);border:1px solid var(--line)}.hint{font-size:12px;color:var(--muted)}#status{font-size:12px;color:var(--btn);margin-top:9px}
 </style></head><body><main class="wrap"><div class="kicker">BAXDEV / LUA TOOLS</div><h1>Obfus Lua</h1><p>Samarkan nama variabel lokal dan rapikan kode Lua/Luau Roblox. Jalankan hasilnya di lingkungan uji terlebih dahulu.</p>
 <section class="panel"><label for="src">Kode Lua / Luau</label><textarea id="src" spellcheck="false" placeholder="Tempel kode Lua/Luau di sini..."></textarea><button id="run">Obfuscate</button><button class="secondary" id="clear">Bersihkan</button><div class="hint">Mode ringan: tidak mengenkripsi kode. Hindari kode yang memakai nama lokal secara dinamis atau bergantung pada debug.getlocal.</div></section>
@@ -71,4 +71,14 @@ $('clear').onclick=()=>{$('src').value='';$('out').value='';$('status').textCont
 $('copy').onclick=async()=>{const v=$('out').value;if(!v){$('status').textContent='Belum ada hasil.';return}try{await navigator.clipboard.writeText(v);$('status').textContent='Hasil disalin.'}catch(e){$('out').select();document.execCommand('copy');$('status').textContent='Hasil disalin.'}};
 function applyBxTheme(data){if(!data||!/^#[0-9a-fA-F]{6}$/.test(data.bg)||!Array.isArray(data.p)||data.p.length!==3)return;const p=data.p.map(c=>Array.isArray(c)&&c.length===3?c.map(v=>Math.max(0,Math.min(255,Math.round(Number(v)||0)))):null);if(p.some(c=>!c))return;const rgb=c=>'rgb('+c.join(',')+')',rgba=(c,a)=>'rgba('+c.join(',')+','+a+')',r=document.documentElement.style,l=p[0];r.setProperty('--bg',data.bg);r.setProperty('--text',rgb(l));r.setProperty('--muted',rgba(l,.64));r.setProperty('--line',rgba(l,.17));r.setProperty('--g1',rgba(l,.08));r.setProperty('--btn',rgb(l));r.setProperty('--btn-ink',data.bg);r.setProperty('--blob',rgba(p[1],.26));if(data.scheme==='light'||data.scheme==='dark')r.setProperty('color-scheme',data.scheme)}
 addEventListener('message',e=>{if(e.source===parent&&e.data&&e.data.bx==='theme')applyBxTheme(e.data)});
+
+// Satu scroll: tinggi iframe mengikuti isi halaman (induk memakai pesan bx:height), jadi tidak ada isi yang terpotong.
+(function(){
+  if(window.parent===window)return;
+  document.documentElement.classList.add('autoh');
+  let last=0;
+  const send=()=>{const h=Math.ceil(document.body.getBoundingClientRect().height);if(h&&h!==last){last=h;window.parent.postMessage({bx:'height',h:h},'*')}};
+  new ResizeObserver(send).observe(document.body);
+  addEventListener('load',send);send();
+})();
 </script></body></html>`;
