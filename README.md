@@ -61,7 +61,7 @@ Build command dikosongkan, output directory diisi `/`.
 
 ## Catatan
 - Coba lokal: `npx wrangler pages dev .`
-- API key layanan convert YouTube ada di `functions/api/youtube-download.js` (konstanta `API_KEY`). Ganti di sana kalau berubah.
+- Convert YouTube memakai API publik XyloAPI dan NexRay (tanpa API key); lihat bagian backend YouTube di bawah.
 - Convert TikTok memakai API publik tikwm.com (`functions/api/tiktok-download.js`, tanpa API key). Ini layanan pihak ketiga tanpa jaminan uptime dan dibatasi sekitar 1 request per detik; kalau gagal, pesan errornya diteruskan ke halaman Upload.
 - Ganti nama domain: Pages → project → Custom domains.
 - Kalau `/api/*` membalas HTML atau 404, berarti folder `functions/` tidak ikut ter-upload atau project dibuat sebagai Workers.
@@ -149,79 +149,16 @@ Backend: `functions/api/roblox-permission.js` memanggil Open Cloud `PATCH /asset
 Konversi YouTube -> MP3 tidak lagi memakai API pihak ketiga. Folder `yt-backend/` berisi server kecil (yt-dlp + ffmpeg) yang kamu jalankan di VPS/Docker.
 Di Cloudflare Pages isi env `YT_BACKEND_URL` dan `YT_BACKEND_SECRET` (rahasia internal, sama dengan di server). Panduan lengkap ada di `yt-backend/README.md`.
 Tanpa VPS: `yt-worker/` menjalankan backend yang sama di Cloudflare Containers (paket Workers Paid).
-Default-nya convert YouTube tetap lewat API key lama (api.theresav.eu); backend sendiri hanya dipakai kalau kedua env di atas diisi.
+Convert YouTube mencoba beberapa jalur berurutan di `functions/api/youtube-download.js`: XyloAPI `server1`, NexRay, XyloAPI `server2`, `server3`, lalu backend sendiri (hanya kalau env di atas diisi). Jalur yang gagal otomatis pindah ke berikutnya. `api.theresav.eu` tidak dipakai lagi untuk YouTube. Kalau antrean lebih dari 3 link, tiap link dimulai dari jalur berbeda bergiliran (server1, NexRay, server2) supaya beban tersebar. Env opsional `XYLO_SERVERS` (contoh `server1,server2`) mengubah daftar server XyloAPI.
 
-Cadangan: kalau jalur utama (backend sendiri atau api.theresav.eu) gagal, `youtube-download.js` otomatis mencoba XyloAPI (`xyloapi.qzz.io`, `server1` lalu `server2`, `server3`). Kalau antrean lebih dari 3 link, tiap link dimulai dari jalur berbeda secara bergiliran (utama, server1, server2) supaya beban tersebar; yang gagal pindah ke jalur lain. Kalau backend utama sedang error, set env `XYLO_FIRST` = `1` agar XyloAPI dipakai lebih dulu dan jalur utama jadi cadangan (hapus env-nya kalau sudah pulih). Env opsional `XYLO_SERVERS` (contoh `server1,server2`) mengubah daftar server XyloAPI.
+## Upscale SkyBox sebelum upload
 
-### Convert YouTube terasa lama (perbaikan v78)
-Gejala: status macet di "Mengonversi..." padahal file sebenarnya sudah jadi. Penyebab dan perbaikannya:
-- **Judul menahan hasil audio.** Client dulu menunggu judul (`/api/youtube-title`) dan audio bersamaan lewat `Promise.all`; judul macet = seluruh convert ikut macet. Sekarang judul punya timeout 6 dtk dan hanya ditunggu maksimal 1,5 dtk setelah audio jadi.
-- **Tanpa timeout.** Request convert bisa menggantung selamanya dan tombol terkunci. Sekarang ada batas 3 menit, pesan error yang jelas, dan penghitung detik di status.
-- **Gangguan sementara langsung gagal.** Sekarang 1x retry otomatis untuk jaringan putus, server penuh (429), dan container yang baru bangun (502/503/504). Error permanen (video >7 menit, privat, dll.) tidak diulang.
-- **Proses yatim di backend.** Saat timeout atau browser ditutup, ffmpeg bekas yt-dlp tetap hidup dan memakan CPU, sehingga convert berikutnya lambat. Sekarang seluruh process group dimatikan, dan slot `MAX_JOBS` dibebaskan saat proses benar-benar selesai.
-- **Cold start container.** `sleepAfter` jadi 10 menit, dan membuka tab YouTube memanggil `/warm` untuk membangunkan container lebih dulu.
-- **CPU kecil.** `instance_type` di `yt-worker/wrangler.jsonc` naik dari `basic` (1/4 vCPU) ke `standard-2` (1 vCPU) dan `MAX_JOBS` default jadi 3 (v80). Biaya naik; turunkan ke `standard-1` atau `basic` kalau tidak perlu.
-- Link banyak (VIP) kini diproses 2 sekaligus (VIP Plus di PC: 3).
-Setelah update: deploy ulang Pages **dan** `yt-worker` (`npx wrangler deploy`) / rebuild image `yt-backend`.
+Di tool SkyBox 360 ada pilihan "Upscale sebelum upload" (Tanpa / 2× / 4×). Saat publish, tiap sisi dikirim ke `functions/api/image-upscale.js` (diteruskan ke `api.theresav.eu/api/tools/hd`, API key tetap di server, hanya VIP Plus/Owner) lalu hasilnya yang diunggah ke Roblox. Hasil WebP atau di atas 19 MB otomatis dikodekan ulang jadi JPEG. Kalau upscale suatu sisi gagal, sisi itu ditandai gagal di daftar ID (tidak diam-diam diunggah versi kecil).
 
-## Atur harga VIP & QRIS
-Buka `/owner` → kartu **Harga VIP & QRIS**. Isi empat harga (VIP 15/30 hari, VIP Plus 15/30 hari), upload foto QRIS baru (otomatis dikecilkan), lalu Simpan.
-Data disimpan di Firebase `config/payment` dan langsung dipakai tombol Buy VIP. Kalau belum diatur, dipakai harga bawaan di bawah dan `qris.jpg`.
-**Wajib:** paste ulang `database.rules.json` di Firebase Console → Realtime Database → Rules → Publish, supaya node `config` bisa dibaca publik dan ditulis owner saja.
+## Tool VIP Plus: Seamless Texture
 
-## Paket VIP, QRIS, dan tema
-- Paket (v68): VIP 15 hari Rp25.000, VIP 30 hari Rp45.000, VIP Plus 15 hari Rp35.000, VIP Plus 30 hari Rp65.000 (paket 7 hari dihapus). Harga bisa diubah di /owner (Harga VIP & QRIS). Hanya ada 1 foto QRIS yang dipakai semua paket. Data disimpan di Firebase `config/payment` (`vip15`/`vip30`/`plus15`/`plus30` untuk harga, `qris` untuk foto).
-- Tema warna (Hitam, Biru, Hijau): Settings → Lanjutan. Berlaku untuk seluruh tampilan dan tersimpan di browser (`baxdev_theme`); halaman /owner ikut tema yang sama.
-- Beli VIP boleh berkali-kali: paket baru ditambahkan setelah masa aktif yang sekarang (owner menekan Aktifkan, masa aktif otomatis menumpuk). Tombol berubah jadi "Perpanjang VIP" saat VIP masih aktif; VIP permanen tidak perlu beli lagi.
-- Nominal pembayaran bulat sesuai harga paket (tanpa angka acak). Pesanan dicocokkan lewat kode pesanan `BX-XXXX` yang ikut terkirim di pesan WhatsApp dan tampil di /owner.
-- Status upload: kalau Roblox belum selesai memproses dalam beberapa detik, track tampil "Diproses" dan dicek otomatis tiap 20 detik di Library sampai Asset ID muncul (`/api/roblox-asset-status`). Tidak ada lagi pengecekan moderasi atau Arsip; entri lama berstatus Arsip otomatis jadi "Gagal".
-- Upload animasi (`.rbxm` / `.rbxmx` dari Animation Editor): menu **Animasi** (di hamburger dan navbar desktop) membuka halaman upload dalam mode animasi dengan dropzone sendiri, terpisah dari menu **Upload** (musik: file/YouTube/TikTok). Keduanya memakai satu antrean, jadi pindah antara Upload dan Animasi mengosongkan antrean (ditolak kalau upload sedang berjalan), pengaturan kecepatan audio disembunyikan, dan Library punya filter jenis (Semua/Musik/Animasi/Model/Decal). Dikirim ke Open Cloud Assets API sebagai `assetType: Animation` (content type `model/x-rbxm`, maks 20 MB); `functions/api/roblox-upload.js` memeriksa ekstensi dan header file. ID dipakai sebagai `rbxassetid://ID` di AnimationId; animasi hanya bisa dimainkan di game milik akun atau Group yang sama dengan pengunggahnya (atur Creator Type di Pengaturan). Menu upload Model `.rbxm` dihapus karena Roblox selalu menyimpannya sebagai Package; endpoint masih menerima `Model` untuk hasil tool Image to Mesh (GLB). API key perlu scope Assets (Read + Write).
-- Limit publish: akun free 5/hari, akun VIP/VIP Plus 100/6 jam, ditegakkan di server sejak v55/kuota-VIP (detail lengkap di bagian "Kuota publish tidak bisa direset" di bawah).
-- Riwayat upload server (bagian bawah Home): 5 upload berhasil terbaru dari semua pengguna, diambil dari Firebase `feed` dan disegarkan tiap 5 detik selama Home terlihat. Hanya nama lagu dan waktu yang dipublikasikan (tanpa email, ID Roblox, atau asset ID). Ditulis oleh browser pengguna saat upload sukses. **Paste ulang `database.rules.json` ke Firebase Console** supaya node `feed` aktif. Owner bisa menghapus entri lewat Firebase Console.
-- Popup install aplikasi: muncul dari bawah tiap kunjungan selama aplikasi belum terpasang; kalau ditutup (Nanti, Esc, atau membatalkan dialog install) tidak muncul lagi selama 24 jam (`baxdev_install_dismissed_at` di localStorage). Chrome/Edge/Android memakai `beforeinstallprompt`; iOS hanya menampilkan petunjuk Tambahkan ke Layar Utama.
-- Informasi di Home: owner mengirim teks lewat /owner (kartu "Informasi di Home", disimpan di Firebase `config/info`, maks 500 karakter). Selama ada informasi, Home menampilkan itu; kalau dihapus, Home menampilkan jadwal sholat berikutnya (API AlAdhan; metode Kemenag RI untuk Indonesia). Kota mengikuti pengguna: GPS jika izin sudah diberikan, kalau belum memakai perkiraan kota dari jaringan lewat `functions/api/geo.js` (`request.cf` Cloudflare), dan Jakarta bila keduanya gagal. Tombol "Pakai lokasi presisi" meminta izin GPS. Kota dicek ulang tiap 30 menit dan saat aplikasi dibuka kembali; hitung mundur berjalan per detik. `_headers` harus mengizinkan `geolocation=(self)`. **Paste ulang `database.rules.json` ke Firebase Console** supaya node `config/info` bisa ditulis owner.
-- Tema "Warna bebas" (Settings → Lanjutan) khusus VIP: pilih warna apa saja lewat swatch atau color picker; seluruh tampilan (dan /owner) mengikuti. Logikanya ada di `theme.js`. Kalau VIP habis, tampilan kembali ke Hitam; warna pilihan tetap tersimpan dan aktif lagi saat VIP diperpanjang. Catatan: ini pengaturan tampilan di sisi browser, bukan pengaman.
-- Avatar VIP: cincin emas berputar, mahkota kecil, dan kilau di semua avatar (navbar, dropdown, Settings, Akun).
+Tool baru di samping Image to Mesh dan SkyBox 360, disajikan lewat `/api/tool?name=texture` (cek VIP Plus di server, jalan di iframe sandbox).
 
-## Menu Referal (dihapus)
-- Menu **Referal** (link undangan, bonus VIP per undangan, leaderboard) sudah dihapus total dari UI, kode JS, CSS, dan Firebase Security Rules (node `referrals/*`).
-- Kalau masih ada deploy lama yang memakai rules versi sebelumnya, paste ulang `database.rules.json` ke Firebase Console → Realtime Database → Rules → Publish supaya node `referrals` ikut tertutup.
-
-## Kuota publish tidak bisa direset
-- Akun free: **5 publish per hari**, reset **00.00 WIB**. Dihitung di server (`functions/api/roblox-upload.js` + `functions/_lib/auth.js`) dan disimpan di Firebase `quota/<uid>` per akun Google, jadi hapus data browser / ganti Roblox ID / ubah kode di browser tidak mengubah hitungan.
-- Akun VIP/VIP Plus: **100 publish per 6 jam** (jendela tetap, reset otomatis tiap kelipatan 6 jam sejak epoch). Dihitung di server dengan cara sama, disimpan di Firebase `vipq/<uid>`.
-- Owner (Roblox User ID khusus + login Google admin) tetap tanpa batas sama sekali, tidak dicatat di `quota` maupun `vipq`.
-- Rules `quota/<uid>` dan `vipq/<uid>`: hitungan hanya bisa naik 1 per publish dan hanya bisa diturunkan oleh owner lewat Console.
-- Ubah batas free: `FREE_DAILY_LIMIT` di `functions/_lib/auth.js` dan `FREE_UPLOAD_LIMIT` di `index.html` (harus sama).
-- Ubah batas VIP: `VIP_PERIOD_LIMIT`/`VIP_PERIOD_MS` di `functions/_lib/auth.js` dan `VIP_UPLOAD_LIMIT`/`VIP_PERIOD_MS` di `index.html` (harus sama).
-- Kalau rules belum dipublish, server tidak memblokir (fail-open) dan web memakai hitungan lokal lama.
-- **Wajib**: paste ulang `database.rules.json` ke Firebase Console → Realtime Database → Rules → Publish, lalu deploy ulang, supaya node `vipq` aktif.
-
-## VIP Plus, Owner, dan tool baru (v68)
-- **Role:** Free, VIP, VIP Plus, Owner. VIP Plus = semua fitur VIP tanpa limit + tool **Image to Mesh** dan **SkyBox 360**. VIP biasa tidak bisa membuka kedua tool.
-- **Data:** `vip/<robloxId>` punya dua masa aktif: `expiresAt` (VIP, `0` = permanen) dan `plusUntil` (VIP Plus, `0` = permanen, kosong = tidak ada). VIP Plus selalu ikut VIP: di /owner, aktivasi Plus otomatis menaikkan `expiresAt` minimal sampai `plusUntil`. Beli VIP biasa menambah `expiresAt` saja; beli VIP Plus menambah `plusUntil` saja. Kode akses dan referal hanya menambah VIP biasa dan tetap mempertahankan `plusUntil`.
-- **Order:** field baru `tier` (`vip` / `plus`) di `orders/<kode>`. Pesanan lama tanpa `tier` dianggap VIP. Menu /owner: pilih **Paket** saat menambah VIP dan saat mengubah durasi.
-- **Owner rank:** Roblox User ID `8675322450` **dan** login Google yang lolos baca `/isAdmin` (akun owner di rules). ID saja tidak cukup karena kolom ID bisa diisi siapa saja. Owner: semua fitur, tanpa batas publish (dicek server di `functions/_lib/auth.js`, konstanta `OWNER_ROBLOX_ID`, dan di `index.html`).
-- **Penyajian tool:** HTML tool ada di `functions/_tools/*.js` dan hanya dikirim lewat `GET /api/tool?name=mesh|skybox&rid=<id>` setelah server memeriksa login Google + VIP Plus/Owner (gagal baca database = ditolak). Dimuat ke iframe `sandbox="allow-scripts allow-downloads"` tanpa akses localStorage/API key halaman, dengan CSP yang memblokir pengiriman data keluar. Jangan menaruh salinan HTML tool di folder statis.
-- **Edit tool:** file di `functions/_tools/` adalah template literal; tanda `\`, backtick, dan `${` di dalam HTML harus di-escape dengan `\`.
-- **SkyBox publish:** tool mengirim 6 PNG ke halaman utama lewat `postMessage`; halaman utama yang memanggil `/api/roblox-upload` (assetType Decal, 3 paralel) dengan API key milik pengguna, lalu mencatat hasilnya ke Library. Image to Mesh seluruhnya lokal di browser (Three.js dari cdn.jsdelivr.net).
-- **Dihapus:** menu Toolbox (`/api/roblox-toolbox`) dan menu Upload Decal. Library tetap menampilkan Decal lama.
-- **Wajib:** paste ulang `database.rules.json` ke Firebase Console → Realtime Database → Rules → Publish (field `plusUntil`, `tier`, harga baru). Harga lama (`p7`/`p15`/`p30`) diabaikan; simpan sekali di /owner supaya node `config/payment` memakai kunci baru.
-- **Batasan:** status VIP terikat ke Roblox User ID yang diketik pengguna (read publik `vip/<id>`), sama seperti sebelumnya.
-- **Kode akses v68:** kode punya `tier` (`vip`/`plus`; tanpa `tier` = VIP) dan `hours` boleh pecahan (menit = jam/60). Kode VIP Plus menambah `plusUntil` (VIP ikut naik); kode VIP menambah `expiresAt` saja. Akun VIP permanen tidak bisa menukar kode (beri Plus lewat /owner). **Publish ulang `database.rules.json`.**
-
-## Catatan v72
-- Menu Image to Mesh & SkyBox 360 digembok untuk akun non-VIP Plus +; ditekan akan muncul popup beli VIP Plus +.
-- Role (VIP / VIP Plus + / Owner) tampil di samping nama (Home, drawer, dropdown profil, Pengaturan).
-- Border avatar VIP Plus + berbentuk lingkaran.
-- SkyBox 360: urutan & rotasi 6 sisi mengikuti konvensi Roblox (Lf = +X, Rt = -X, Up/Dn diputar), iframe auto-tinggi supaya cuma satu scroll.
-
-
-## Batas antrean per tier
-Free 1 audio/link per proses, VIP 5, **VIP Plus dan owner 10** (`VIP_QUEUE_MAX` / `PLUS_QUEUE_MAX` di `index.html`). Berlaku untuk upload file, paste link YouTube/TikTok, dan publish. Kuota publish VIP tetap 100 per 6 jam. Link diconvert 2 sekaligus; **VIP Plus di PC 3 sekaligus** (mode cepat, `convertConcurrency()` di `index.html`, dicek di sisi browser).
-
-## Cek Status Asset tanpa batas (v81)
-Jumlah ID tidak dibatasi. Client mengirim 40 ID per request; Roblox membatasi Assets API sekitar 60 request per menit per API key, jadi kalau ada balasan 429 client otomatis melambat (20 ID per 20 dtk) dan mengulang ID yang kena batas sampai 6 kali. ID yang tetap gagal tampil sebagai "Gagal" tanpa menghentikan sisanya. 500 ID kira-kira 8 menit kalau kena batas.
-
-## Upload ke Roblox 2 paralel (v82)
-Saat multi upload, 2 file dikirim ke Roblox sekaligus (`UPLOAD_CONCURRENCY` di `index.html`); satu file tetap berurutan. Progres di UI adalah rata-rata semua file, satu file yang gagal tidak menghentikan yang lain. Karena dua upload bisa selesai bersamaan, penghitung kuota publish di server (`quotaCommit` di `functions/_lib/auth.js`) sekarang memakai penulisan bersyarat Firebase (ETag + `if-match`, ulangi bila 412) supaya hitungan tidak ada yang hilang.
+- `functions/_tools/seamless-texture.js`: gambar jadi ubin tanpa sambungan (cross-fade tepi, lebar blend bisa diatur), preview 3 x 3 dan mode "Cek sambungan", publish 1 gambar, script Command Bar yang memasang `Texture` di keenam sisi Part terpilih.
+- `functions/_tools/_shell.js`: kerangka bersama tool baru (gaya, tema, tinggi otomatis, helper publish). Isinya tidak boleh memuat backtick, `${` atau backslash karena ditanam di template literal.
+- Publish dilakukan halaman utama (`TOOL_PUBLISH` di `index.html`), jadi API key Roblox tidak masuk ke tool. Menu desktop sekarang 8 item; di lebar 1100-1359 px ikon menu disembunyikan supaya muat.

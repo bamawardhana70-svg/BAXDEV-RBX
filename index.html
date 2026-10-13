@@ -5101,6 +5101,12 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                     </svg>
                     SkyBox
                 </button>
+                <button class="nav-link" onclick="navigate('texture')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round">
+                        <rect x="3" y="3" width="8" height="8"/><rect x="13" y="3" width="8" height="8"/><rect x="3" y="13" width="8" height="8"/><rect x="13" y="13" width="8" height="8"/>
+                    </svg>
+                    Tekstur
+                </button>
                 <button class="nav-link" onclick="navigate('library')">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M21 15V6"/>
@@ -5326,6 +5332,12 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                     <circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><path d="M3 12h18"/>
                 </svg>
                 SkyBox 360
+            </div>
+            <div class="m-link" onclick="navigate('texture');closeMenu()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round">
+                    <rect x="3" y="3" width="8" height="8"/><rect x="13" y="3" width="8" height="8"/><rect x="3" y="13" width="8" height="8"/><rect x="13" y="13" width="8" height="8"/>
+                </svg>
+                Seamless Texture
             </div>
             <div class="m-link" onclick="navigate('library');closeMenu()">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -5735,6 +5747,10 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
             <!-- SKYBOX 360 (VIP Plus) -->
             <div class="page page-tool" id="page-skybox">
                 <div class="tool-host" id="tool-host-skybox"></div>
+            </div>
+            <!-- SEAMLESS TEXTURE (VIP Plus) -->
+            <div class="page page-tool" id="page-texture">
+                <div class="tool-host" id="tool-host-texture"></div>
             </div>
             <!-- LIBRARY -->
             <div class="page" id="page-library">
@@ -6157,7 +6173,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                     </div>
                     <button class="btn btn-outline" type="button" onclick="closeSubscriptionModal()">Tutup</button>
                 </div>
-                <p>VIP memberikan publish tanpa batas, batch sampai 5 audio (VIP Plus sampai 10), tema silver chrome, dan border premium pada profil. VIP Plus + menambah akses tool Image to Mesh dan SkyBox 360.</p>
+                <p>VIP memberikan publish tanpa batas, batch sampai 5 audio (VIP Plus sampai 10), tema silver chrome, dan border premium pada profil. VIP Plus + menambah akses tool Image to Mesh, SkyBox 360, dan Seamless Texture.</p>
                 <div class="subscription-benefits">
                     <span>Publish tanpa batas</span>
                     <span>5 audio per batch</span>
@@ -6167,6 +6183,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                     <span>Tema silver chrome VIP</span>
                     <span>VIP Plus +: Image to Mesh</span>
                     <span>VIP Plus +: SkyBox 360</span>
+                    <span>VIP Plus +: Seamless Texture</span>
                 </div>
                 <div id="payment-body"></div>
             </div>
@@ -6182,6 +6199,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                 <div class="subscription-benefits">
                     <span>Image to Mesh</span>
                     <span>SkyBox 360</span>
+                    <span>Seamless Texture</span>
                     <span>Publish tanpa batas, 5 audio per batch</span>
                     <span>Border avatar lingkaran khusus VIP Plus +</span>
                 </div>
@@ -6719,7 +6737,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
             });
             function navigate(page) {
                 // Image to Mesh & SkyBox 360 khusus VIP Plus +: tanpa itu, tampilkan popup beli, jangan pindah halaman.
-                if ((page === 'mesh' || page === 'skybox') && !isVipPlus()) {
+                if (['mesh', 'skybox', 'texture'].includes(page) && !isVipPlus()) {
                     openPlusGate(page);
                     return;
                 }
@@ -6746,8 +6764,9 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                     animation: 2,
                     mesh: 3,
                     skybox: 4,
-                    library: 5,
-                    settings: 6
+                    texture: 5,
+                    library: 6,
+                    settings: 7
                 }[page];
                 const nls = document.querySelectorAll('.nav-link');
                 const mls = document.querySelectorAll('.m-link');
@@ -6755,7 +6774,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                     nls[idx].classList.add('active');
                 if (mls[idx])
                     mls[idx].classList.add('active');
-                if (page === 'mesh' || page === 'skybox')
+                if (['mesh', 'skybox', 'texture'].includes(page))
                     toolOpen(page);
                 if (page === 'library') {
                     renderLibrary();
@@ -9133,7 +9152,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
             let planTab = null;
             const PLAN_INFO = {
                 vip: { title: 'VIP', desc: 'Publish tanpa batas, batch 5 audio, tema bebas.' },
-                plus: { title: 'VIP Plus +', desc: 'Semua fitur VIP tanpa limit, plus tool Image to Mesh dan SkyBox 360, dan border avatar lingkaran khusus VIP Plus +.' }
+                plus: { title: 'VIP Plus +', desc: 'Semua fitur VIP tanpa limit, plus tool Image to Mesh, SkyBox 360, Seamless Texture, dan border avatar lingkaran khusus VIP Plus +.' }
             };
             function planFromPrice(tier) {
                 const prices = PAYMENT.plans.filter(p => p.tier === tier).map(p => p.price);
@@ -9475,9 +9494,15 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
             // tanpa allow-same-origin: tool tidak bisa membaca localStorage, token, atau API key halaman ini.
             const TOOLS = {
                 mesh: { title: 'Image to Mesh', desc: 'Ubah gambar jadi mesh 3D untuk Roblox Studio, lalu ekspor sebagai glTF atau OBJ.' },
-                skybox: { title: 'SkyBox 360', desc: 'Ubah panorama 360° jadi enam sisi SkyBox, publish ke Roblox, dan salin script Studio.' }
+                skybox: { title: 'SkyBox 360', desc: 'Ubah panorama 360° jadi enam sisi SkyBox, publish ke Roblox, dan salin script Studio.' },
+                texture: { title: 'Seamless Texture', desc: 'Ubah gambar jadi ubin tanpa sambungan, publish ke Roblox, dan pasang ke Part lewat script Studio.' }
             };
             const SKYBOX_FACES = ['Front', 'Back', 'Left', 'Right', 'Top', 'Bottom'];
+            // Tool yang publish gambar lewat halaman ini: keys = nama file yang boleh dikirim tool, upscale = boleh minta upscale.
+            const TOOL_PUBLISH = {
+                skybox: { keys: SKYBOX_FACES, prefix: 'Skybox', source: 'SkyBox 360', upscale: true },
+                texture: { keys: ['Tile'], prefix: 'Texture', source: 'Seamless Texture', upscale: false }
+            };
             const toolState = {};
             let toolVipRecheckAt = 0;
             function toolHost(name) {
@@ -9522,8 +9547,8 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                     frame.setAttribute('allow', 'clipboard-write; fullscreen');
                     frame.setAttribute('allowfullscreen', '');
                     frame.addEventListener('load', () => { pushToolTheme(frame); toolViewSync(); });
-                    if (name === 'skybox') {
-                        // SkyBox melaporkan tinggi isinya lewat postMessage; iframe dibuat setinggi isi supaya cuma halaman utama yang di-scroll.
+                    if (name === 'skybox' || name === 'texture') {
+                        // SkyBox dan Seamless Texture melaporkan tinggi isinya lewat postMessage; iframe dibuat setinggi isi supaya cuma halaman utama yang di-scroll.
                         frame.classList.add('tool-frame-auto');
                         frame.setAttribute('scrolling', 'no');
                     }
@@ -9627,7 +9652,71 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                 }
                 return { assetId: assetId || null, opPath };
             }
-            async function toolPublishSkybox(win, req) {
+            // Upscale satu sisi lewat /api/image-upscale (API key ada di server). Hasil dipastikan PNG/JPG di bawah batas 20 MB.
+            async function upscaleSkyboxFace(blob, scale, expectedPx) {
+                let lastErr = null;
+                for (let attempt = 0; attempt < 2; attempt++) {
+                    if (attempt)
+                        await sleep(2500);
+                    const fd = new FormData();
+                    fd.append('image', new File([blob], 'face.png', { type: 'image/png' }), 'face.png');
+                    fd.append('scale', String(scale));
+                    fd.append('rid', S.roblox.userId);
+                    try {
+                        const res = await fetch('/api/image-upscale', { method: 'POST', body: fd, signal: AbortSignal.timeout(130000) });
+                        const type = res.headers.get('content-type') || '';
+                        if (!res.ok || !/^image\//i.test(type)) {
+                            const data = await res.json().catch(() => ({}));
+                            const err = new Error(data.message || `Upscale gagal (HTTP ${res.status})`);
+                            err.retry = data.retryable === true;
+                            throw err;
+                        }
+                        return await normalizeUpscaled(await res.blob(), expectedPx);
+                    } catch (e) {
+                        if (e && (e.name === 'TimeoutError' || e.name === 'AbortError'))
+                            e = Object.assign(new Error('Upscale terlalu lama merespons.'), { retry: true });
+                        else if (e instanceof TypeError)
+                            e = Object.assign(new Error('Koneksi ke server upscale terputus.'), { retry: true });
+                        lastErr = e;
+                        if (!e.retry)
+                            break;
+                    }
+                }
+                throw lastErr || new Error('Upscale gagal');
+            }
+            // Roblox menerima PNG/JPG dan batas file 20 MB: WebP atau hasil kebesaran dikodekan ulang jadi JPEG.
+            async function normalizeUpscaled(blob, expectedPx) {
+                const LIMIT = 19 * 1024 * 1024;
+                let bitmap;
+                try {
+                    bitmap = await createImageBitmap(blob);
+                } catch (e) {
+                    throw new Error('Hasil upscale bukan gambar yang valid.');
+                }
+                try {
+                    if (bitmap.width < expectedPx || bitmap.height < expectedPx)
+                        throw new Error(`Hasil upscale hanya ${bitmap.width}×${bitmap.height}, kurang dari ${expectedPx}×${expectedPx}.`);
+                    const okType = blob.type === 'image/png' || blob.type === 'image/jpeg';
+                    if (okType && blob.size <= LIMIT)
+                        return { blob, ext: blob.type === 'image/png' ? 'png' : 'jpg', mime: blob.type };
+                    const canvas = document.createElement('canvas');
+                    canvas.width = bitmap.width;
+                    canvas.height = bitmap.height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.fillStyle = '#000';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(bitmap, 0, 0);
+                    for (const q of [0.95, 0.88, 0.8]) {
+                        const jpg = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', q));
+                        if (jpg && jpg.size <= LIMIT)
+                            return { blob: jpg, ext: 'jpg', mime: 'image/jpeg' };
+                    }
+                    throw new Error('Hasil upscale melebihi batas 20 MB Roblox.');
+                } finally {
+                    bitmap.close && bitmap.close();
+                }
+            }
+            async function toolPublishImages(win, req, cfg) {
                 const send = msg => win.postMessage(Object.assign({ bx: 'publish', id: req.id }, msg), '*');
                 try {
                     if (!isVipPlus())
@@ -9637,24 +9726,38 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                     if (S.roblox.creatorType === 'Group' && !S.roblox.groupId)
                         throw new Error('Isi Group ID dulu di pengaturan Roblox sebelum publish ke Group.');
                     const files = req.files || {};
-                    for (const face of SKYBOX_FACES) {
+                    for (const face of cfg.keys) {
                         const f = files[face];
                         if (!(f instanceof Blob) || f.size === 0 || f.size > 20 * 1024 * 1024)
-                            throw new Error(`Gambar sisi ${face} tidak valid.`);
+                            throw new Error(`Gambar ${face} tidak valid.`);
                     }
+                    const scale = cfg.upscale && [1, 2, 4].includes(req.scale) ? req.scale : 1;
+                    const baseName = String(req.name || '').replace(/[^A-Za-z0-9 _-]+/g, ' ').trim().slice(0, 40);
                     const stamp = new Date().toTimeString().slice(0, 5).replace(':', '');
                     const results = {};
                     let next = 0;
                     const worker = async () => {
-                        while (next < SKYBOX_FACES.length) {
+                        while (next < cfg.keys.length) {
                             const index = next++;
-                            const face = SKYBOX_FACES[index];
-                            const name = `Skybox ${stamp} ${face}`;
-                            const filename = `Skybox_${face}.png`;
-                            const size = files[face].size;
-                            send({ type: 'state', face, text: 'Mengunggah...' });
+                            const face = cfg.keys[index];
+                            const name = cfg.keys.length === 1 ? (baseName || cfg.prefix) : `${cfg.prefix} ${stamp} ${face}`;
+                            let filename = `${cfg.prefix}_${face}.png`;
+                            let size = files[face].size;
                             try {
-                                const out = await toolUploadAsset(files[face], filename, name, 'Decal', 'image/png', 'SkyBox 360');
+                                let payload = files[face], mime = 'image/png';
+                                if (scale > 1) {
+                                    send({ type: 'state', face, text: `Upscale ${scale}×...` });
+                                    const faceBitmap = await createImageBitmap(files[face]);
+                                    const sourcePx = faceBitmap.width;
+                                    faceBitmap.close && faceBitmap.close();
+                                    const up = await upscaleSkyboxFace(files[face], scale, sourcePx * scale);
+                                    payload = up.blob;
+                                    mime = up.mime;
+                                    filename = `${cfg.prefix}_${face}.${up.ext}`;
+                                    size = payload.size;
+                                }
+                                send({ type: 'state', face, text: 'Mengunggah...' });
+                                const out = await toolUploadAsset(payload, filename, name, 'Decal', mime, cfg.source);
                                 const base = { id: Date.now() + index, name, filename, size, uploadedAt: new Date().toISOString(), speed: 1, kind: 'decal' };
                                 if (out.assetId) {
                                     addLibEntry(Object.assign(base, { assetId: out.assetId, status: 'done' }), { name, filename, size, assetId: String(out.assetId).slice(0, 30), status: 'done', speed: 1 });
@@ -9674,7 +9777,7 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                             }
                         }
                     };
-                    await Promise.all([worker(), worker(), worker()]);
+                    await Promise.all(Array.from({ length: scale > 1 ? 2 : 3 }, worker));
                     send({ type: 'done', results });
                 } catch (e) {
                     send({ type: 'error', message: e.message || 'Publish gagal.' });
@@ -9734,8 +9837,12 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                 if (d.bx !== 'publish' || d.type !== 'request' || typeof d.id !== 'string')
                     return;
                 const fromTool = name => toolState[name] && toolState[name].frame && toolState[name].frame.contentWindow === e.source;
-                if (fromTool('skybox'))
-                    toolPublishSkybox(e.source, d);
+                for (const toolName of Object.keys(TOOL_PUBLISH)) {
+                    if (fromTool(toolName)) {
+                        toolPublishImages(e.source, d, TOOL_PUBLISH[toolName]);
+                        break;
+                    }
+                }
             });
             // Tema: iframe tool tidak bisa membaca CSS halaman ini, jadi warna dasar + palet dikirim lewat postMessage.
             // Skema warna (dark/light) iframe harus sama dengan dokumen di dalamnya, kalau beda browser mengecat latar buram.
@@ -11518,6 +11625,8 @@ html body .section-heading{margin:26px 4px 12px !important}
 @media (max-width:360px){.bx-tile b{font-size:15px}#bx-welcome{padding:24px 20px}}
 </style>
 <style id="bx-tools">
+/* Nav desktop punya 8 menu: di lebar 1100-1359 px ikon disembunyikan dan padding dipersempit supaya muat satu baris */
+@media (min-width:1100px) and (max-width:1359px){html body .nav-link svg{display:none}html body .nav-link{padding:8px 11px !important}}
 /* Tool VIP Plus: iframe sandbox memenuhi area halaman */
 html body .page.page-tool{max-width:960px;padding-top:16px;padding-bottom:16px}
 .tool-frame{display:block;width:100%;height:calc(100vh - var(--nav-h) - 32px);height:calc(100dvh - var(--nav-h) - 32px);min-height:560px;border:0;border-radius:var(--radius);background:transparent}
@@ -11558,7 +11667,7 @@ html:not([data-avb="none"]) body.owner-user.premium-user :is(.nav-avatar,.su-ava
 </style>
 <script id="bx-v47-js">
 (function(){
-  var T=['Beranda','Upload','Animasi','Image to Mesh','SkyBox 360','Library','Pengaturan'],N=['home','upload','animation','mesh','skybox','library','settings'];
+  var T=['Beranda','Upload','Animasi','Image to Mesh','SkyBox 360','Seamless Texture','Library','Pengaturan'],N=['home','upload','animation','mesh','skybox','texture','library','settings'];
   var $=function(i){return document.getElementById(i)};
   var IC={burger:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>',
     music:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>',
@@ -11604,8 +11713,8 @@ html:not([data-avb="none"]) body.owner-user.premium-user :is(.nav-avatar,.su-ava
         [null,'Upload Animasi','Upload animasi .rbxm jadi asset',"navigate('animation')",2],
         [null,'Image to Mesh','Foto jadi mesh 3D (VIP Plus)',"navigate('mesh')",3],
         [null,'SkyBox 360','Panorama jadi 6 sisi (VIP Plus)',"navigate('skybox')",4],
-        [null,'Library','Kelola audio tersimpan',"navigate('library')",5],
-        [null,'Pengaturan','Tema, upload, dan lainnya',"navigate('settings')",6],
+        [null,'Seamless Texture','Gambar jadi ubin tanpa sambungan (VIP Plus)',"navigate('texture')",5],
+        [null,'Library','Kelola audio tersimpan',"navigate('library')",6],
         ['star','Beli VIP','Upload lebih banyak & tema bebas',"openSubscriptionModal()"],
         ['chat','Hubungi Owner','Tanya lewat WhatsApp',"var a=document.getElementById('home-contact-owner');if(a)a.click()"]];
       var sec=document.createElement('div');sec.id='bx-qa';
@@ -12684,8 +12793,8 @@ html body #bx-welcome .bx-name,.dr-meta b{display:flex;align-items:center;gap:8p
     });
   }
   function locks(){
-    var locked=!plus(),els=[].slice.call(document.querySelectorAll('[onclick*="navigate(\'mesh\')"],[onclick*="navigate(\'skybox\')"]'));
-    document.querySelectorAll('.dr-item').forEach(function(d,i){if(i===3||i===4)els.push(d)});
+    var locked=!plus(),els=[].slice.call(document.querySelectorAll('[onclick*="navigate(\'mesh\')"],[onclick*="navigate(\'skybox\')"],[onclick*="navigate(\'texture\')"]'));
+    document.querySelectorAll('.dr-item').forEach(function(d,i){if(i>=3&&i<=5)els.push(d)});
     els.forEach(function(el){
       var lk=null;for(var i=0;i<el.children.length;i++){if(el.children[i].classList.contains('bx-lock')){lk=el.children[i];break}}
       el.classList.toggle('bx-locked',locked);

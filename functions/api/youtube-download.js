@@ -2,19 +2,17 @@ import { requireUser } from "../_lib/auth.js";
 
 // Cloudflare Pages Function — POST /api/youtube-download
 //
-// Default: convert lewat api.theresav.eu memakai API key milik sendiri (di bawah).
-// Opsional: kalau env YT_BACKEND_URL + YT_BACKEND_SECRET diisi, pakai backend sendiri
-// (folder yt-backend/ atau yt-worker/) sebagai gantinya.
-//
-// Cadangan: XyloAPI (xyloapi.qzz.io). Kalau jalur utama gagal, otomatis pindah ke server XyloAPI.
-// Kalau antrean lebih dari QUEUE_SPREAD_MIN link, request disebar ke 2-3 server sekaligus
-// (client mengirim slot + queue) supaya tidak menumpuk di satu server.
-// Env opsional XYLO_SERVERS = "server1,server2,server3" untuk mengubah daftar server XyloAPI.
+// Convert YouTube ke MP3 lewat beberapa jalur yang dicoba berurutan (yang gagal pindah ke berikutnya):
+//   XyloAPI server1, NexRay, XyloAPI server2, XyloAPI server3, lalu backend sendiri (kalau
+//   env YT_BACKEND_URL + YT_BACKEND_SECRET diisi; folder yt-backend/ atau yt-worker/).
+// api.theresav.eu sudah tidak dipakai di sini.
+// Kalau antrean lebih dari QUEUE_SPREAD_MIN link, tiap link dimulai dari jalur berbeda (client mengirim
+// slot + queue) supaya beban tersebar ke 3 jalur pertama.
+// Env opsional: XYLO_SERVERS = "server1,server2,server3" (daftar server XyloAPI).
 //
 // Sukses: audio/mpeg (+ header X-Audio-Title, URL-encoded). Gagal: JSON {ok:false,message}.
 
-const API_KEY = "U8LwW";
-
+const NEXRAY_API = "https://api.nexray.eu.cc/downloader/ytmp3";
 const XYLO_API = "https://xyloapi.qzz.io/api/downloader/youtube";
 const XYLO_DEFAULT_SERVERS = ["server1", "server2", "server3"];
 const XYLO_META_TIMEOUT_MS = 40000;
@@ -24,7 +22,6 @@ const SPREAD_WIDTH = 3;
 
 // Batas waktu: di atas batas job backend (150 dtk) supaya pesan error backend yang tampil, bukan timeout kasar.
 const BACKEND_TIMEOUT_MS = 170000;
-const LEGACY_TIMEOUT_MS = 90000;
 
 const HOSTS = new Set(["youtube.com", "www.youtube.com", "m.youtube.com", "music.youtube.com", "youtu.be"]);
 
@@ -66,14 +63,13 @@ export async function onRequestPost(context) {
   const slot = Number.isInteger(body.slot) && body.slot >= 0 ? body.slot : 0;
   const queue = Number.isInteger(body.queue) && body.queue > 0 ? body.queue : 1;
 
-  // Daftar jalur: utama (backend sendiri atau API lama) lalu server XyloAPI sebagai cadangan.
-  const providers = [];
-  if (base && secret) providers.push({ name: "backend", run: () => ownBackend(base, secret, url) });
-  else providers.push({ name: "legacy", run: () => legacyConvert(url) });
+  // Daftar jalur: XyloAPI dan NexRay diselang-seling supaya 3 jalur pertama berbeda penyedia; backend sendiri paling akhir.
   const xylo = xyloServers(env).map(server => ({ name: "xylo-" + server, run: () => xyloConvert(url, server) }));
-  // XYLO_FIRST=1: XyloAPI jadi jalur pertama, jalur utama jadi cadangan (dipakai saat backend utama sedang error).
-  if (String((env && env.XYLO_FIRST) || "").trim() === "1") providers.unshift(...xylo);
-  else providers.push(...xylo);
+  const providers = [];
+  if (xylo[0]) providers.push(xylo[0]);
+  providers.push({ name: "nexray", run: () => nexrayConvert(url) });
+  providers.push(...xylo.slice(1));
+  if (base && secret) providers.push({ name: "backend", run: () => ownBackend(base, secret, url) });
 
   // Antrean panjang: mulai dari jalur berbeda per link (round-robin 2-3 jalur), sisanya jadi cadangan.
   let order = providers;
@@ -137,7 +133,56 @@ async function ownBackend(base, secret, url) {
   return fail(msg || `Backend YouTube membalas HTTP ${st}.`, retryable, passthrough);
 }
 
-// ── Cadangan: XyloAPI ────────────────────────────────────────────────────────
+// ── NexRay ───────────────────────────────────────────────────────────────────
+// GET {NEXRAY_API}?url=... -> {status, result:{title, duration, filesize, url}}
+async function nexrayConvert(url) {
+  let meta;
+  try {
+    const res = await fetch(`${NEXRAY_API}?url=${encodeURIComponent(url)}`, {
+      headers: { accept: "application/json" },
+      signal: AbortSignal.timeout(XYLO_META_TIMEOUT_MS)
+    });
+    if (!res.ok) return fail(`NexRay membalas HTTP ${res.status}.`, res.status === 429 || res.status >= 500);
+    meta = await res.json();
+  } catch (err) {
+    return fail(isTimeout(err) ? "NexRay terlalu lama merespons." : "Gagal menghubungi NexRay.", true);
+  }
+
+  const data = meta && meta.status && meta.result;
+  if (!data || typeof data.url !== "string") return fail("NexRay tidak mengembalikan link audio.", true);
+  return fetchAudio(data.url, data.title, "NexRay");
+}
+
+// Unduh file audio hasil convert dan stream ke client. Mengembalikan {ok:true,response} atau {ok:false,...}.
+async function fetchAudio(link, title, label) {
+  let fileUrl;
+  try {
+    fileUrl = new URL(link);
+    if (fileUrl.protocol !== "https:") throw new Error("bad protocol");
+  } catch {
+    return fail(`${label} mengembalikan link audio yang tidak valid.`, true);
+  }
+
+  let file;
+  try {
+    file = await fetch(fileUrl.href, { signal: AbortSignal.timeout(XYLO_FILE_TIMEOUT_MS) });
+  } catch (err) {
+    return fail(isTimeout(err) ? `Download audio dari ${label} terlalu lama.` : `Gagal mengunduh audio dari ${label}.`, true);
+  }
+  if (!file.ok) return fail(`Download audio dari ${label} gagal (HTTP ${file.status}).`, file.status === 429 || file.status >= 500);
+
+  const type = (file.headers.get("content-type") || "").toLowerCase();
+  if (/^(text\/|application\/json)/.test(type)) {
+    file.body && file.body.cancel().catch(() => {});
+    return fail(`${label} tidak membalas file audio.`, true);
+  }
+
+  const headers = { "content-type": /^audio\//.test(type) ? type : "audio/mpeg", "cache-control": "no-store" };
+  if (title) headers["x-audio-title"] = encodeURIComponent(String(title));
+  return { ok: true, response: new Response(file.body, { status: 200, headers }) };
+}
+
+// ── XyloAPI ────────────────────────────────────────────────────────
 // GET {XYLO_API}?url=...&server=serverN -> {success, data:{title, links:[{label,url}]}}
 async function xyloConvert(url, server) {
   let meta;
@@ -157,82 +202,7 @@ async function xyloConvert(url, server) {
   const audio = links.find(l => l && /audio|mp3/i.test(String(l.label || "")) && typeof l.url === "string");
   if (!audio) return fail(`XyloAPI (${server}) tidak mengembalikan link audio.`, true);
 
-  let fileUrl;
-  try {
-    fileUrl = new URL(audio.url);
-    if (fileUrl.protocol !== "https:") throw new Error("bad protocol");
-  } catch {
-    return fail(`XyloAPI (${server}) mengembalikan link audio yang tidak valid.`, true);
-  }
-
-  let file;
-  try {
-    file = await fetch(fileUrl.href, { signal: AbortSignal.timeout(XYLO_FILE_TIMEOUT_MS) });
-  } catch (err) {
-    return fail(isTimeout(err) ? `Download audio dari XyloAPI (${server}) terlalu lama.` : `Gagal mengunduh audio dari XyloAPI (${server}).`, true);
-  }
-  if (!file.ok) return fail(`Download audio dari XyloAPI (${server}) gagal (HTTP ${file.status}).`, file.status === 429 || file.status >= 500);
-
-  const type = (file.headers.get("content-type") || "").toLowerCase();
-  if (/^(text\/|application\/json)/.test(type)) {
-    file.body && file.body.cancel().catch(() => {});
-    return fail(`XyloAPI (${server}) tidak membalas file audio.`, true);
-  }
-
-  const headers = { "content-type": /^audio\//.test(type) ? type : "audio/mpeg", "cache-control": "no-store" };
-  if (data.title) headers["x-audio-title"] = encodeURIComponent(String(data.title));
-  return { ok: true, response: new Response(file.body, { status: 200, headers }) };
-}
-
-// ── Jalur default: API convert pihak ketiga dengan API key ───────────────────
-async function legacyConvert(url) {
-  const apiUrl = `https://api.theresav.eu/api/download/ytmp3?url=${encodeURIComponent(url)}&format=mp3&bitrate=64k`;
-
-  let upstream;
-  try {
-    upstream = await fetch(apiUrl, { headers: { "x-apikey": API_KEY }, signal: AbortSignal.timeout(LEGACY_TIMEOUT_MS) });
-  } catch (err) {
-    const timedOut = err && (err.name === "TimeoutError" || err.name === "AbortError");
-    return fail(timedOut ? "API convert terlalu lama merespons. Coba lagi." : "Gagal menghubungi API convert: " + (err && err.message ? err.message : "network error"), !timedOut);
-  }
-
-  if (!upstream.ok) {
-    const errText = await upstream.text().catch(() => "");
-    return fail(`API convert membalas HTTP ${upstream.status}${errText ? ": " + errText.slice(0, 200) : ""}`, upstream.status === 429 || upstream.status >= 500);
-  }
-
-  const contentType = upstream.headers.get("content-type") || "";
-
-  // Upstream langsung membalas file audio.
-  if (/^audio\//i.test(contentType) || /^application\/octet-stream/i.test(contentType)) {
-    return { ok: true, response: new Response(upstream.body, { status: 200, headers: { "content-type": contentType || "audio/mpeg" } }) };
-  }
-
-  // Upstream membalas JSON berisi link download terpisah.
-  let data;
-  try { data = await upstream.json(); } catch {
-    return fail("Respons API convert bukan audio maupun JSON yang dikenali.");
-  }
-
-  const downloadUrl = data.url || data.downloadUrl || data.download_url
-    || (data.result && (data.result.url || data.result.downloadUrl))
-    || (data.data && (data.data.url || data.data.downloadUrl));
-  const title = data.title || (data.result && data.result.title) || (data.data && data.data.title) || null;
-
-  if (!downloadUrl) return fail("Tidak menemukan URL audio di respons API convert.");
-
-  let fileRes;
-  try {
-    fileRes = await fetch(downloadUrl, { signal: AbortSignal.timeout(LEGACY_TIMEOUT_MS) });
-  } catch (err) {
-    const timedOut = err && (err.name === "TimeoutError" || err.name === "AbortError");
-    return fail(timedOut ? "Download hasil convert terlalu lama. Coba lagi." : "Gagal mengunduh hasil convert: " + (err && err.message ? err.message : "network error"), !timedOut);
-  }
-  if (!fileRes.ok) return fail(`Gagal mengunduh hasil convert (HTTP ${fileRes.status}).`);
-
-  const headers = { "content-type": fileRes.headers.get("content-type") || "audio/mpeg" };
-  if (title) headers["x-audio-title"] = encodeURIComponent(title);
-  return { ok: true, response: new Response(fileRes.body, { status: 200, headers }) };
+  return fetchAudio(audio.url, data.title, `XyloAPI (${server})`);
 }
 
 export async function onRequestGet() {

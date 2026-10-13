@@ -156,7 +156,9 @@ select:focus-visible,.btn:focus-visible,.mini:focus-visible,.icon-btn:focus-visi
       <h2>Enam sisi <span class="help">· ketuk sisi untuk melihatnya di preview</span></h2>
       <div class="faces" id="face-grid"></div>
       <div class="controls" id="publish-controls" hidden>
-        <span class="help">Setiap sisi akan diunggah sebagai aset gambar Roblox.</span>
+        <span class="help" id="publish-help">Setiap sisi akan diunggah sebagai aset gambar Roblox.</span>
+        <div class="select-wrap"><label for="upscale-scale">Upscale sebelum upload</label>
+          <select id="upscale-scale"><option value="1" selected>Tanpa upscale</option><option value="2">2×</option><option value="4">4×</option></select></div>
         <button type="button" class="btn" id="publish-btn">Publish 6 sisi ke Roblox</button>
       </div>
     </div>
@@ -459,7 +461,7 @@ async function copyText(text, successMessage) {
 }
 
 // Kirim enam PNG ke halaman induk (BAXDEV) dan tunggu hasil per sisi.
-function requestPublish(files, onState) {
+function requestPublish(files, scale, onState) {
   return new Promise((resolve, reject) => {
     if (window.parent === window) { reject(new Error('Publish hanya tersedia di dalam BAXDEV.')); return; }
     const id = 'pub-' + Date.now() + '-' + Math.random().toString(36).slice(2);
@@ -476,7 +478,7 @@ function requestPublish(files, onState) {
       else if (d.type === 'error') finish(new Error(d.message || 'Publish gagal.'));
     }
     addEventListener('message', onMessage);
-    window.parent.postMessage({bx: 'publish', type: 'request', id, files}, '*');
+    window.parent.postMessage({bx: 'publish', type: 'request', id, files, scale}, '*');
   });
 }
 
@@ -493,7 +495,7 @@ async function publishSkyboxFaces() {
   let finished = 0;
   try {
     const files = Object.fromEntries(skyboxFaces.map(face => [face.key, new File([face.blob], \`Skybox_\${face.key}.png\`, {type: 'image/png'})]));
-    const results = await requestPublish(files, (face, text) => {
+    const results = await requestPublish(files, Number($('upscale-scale').value) || 1, (face, text) => {
       setSkyboxFaceState(face, text);
       if (text === 'Selesai') showProgress(8 + Math.round(++finished / SKYBOX_FACE_DEFS.length * 92));
     });
@@ -548,6 +550,14 @@ const dropZone = $('drop-zone');
 dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
 dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
 dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('drag-over'); chooseSkyboxImage(e.dataTransfer.files[0]); });
+function updateUpscaleHelp() {
+  const scale = Number($('upscale-scale').value) || 1, size = Number($('face-size').value) || 1024;
+  $('publish-help').textContent = scale > 1
+    ? 'Tiap sisi di-upscale ' + scale + '× (' + size + ' → ' + (size * scale) + ' px) lalu diunggah sebagai aset gambar Roblox. Proses lebih lama.'
+    : 'Setiap sisi akan diunggah sebagai aset gambar Roblox.';
+}
+$('upscale-scale').addEventListener('change', updateUpscaleHelp);
+$('face-size').addEventListener('change', updateUpscaleHelp);
 $('face-size').addEventListener('change', () => { if (skyboxSourceFile) { clearSkyboxFaces(); generateSkyboxFaces(); } });
 $('generate-btn').addEventListener('click', generateSkyboxFaces);
 $('publish-btn').addEventListener('click', publishSkyboxFaces);
