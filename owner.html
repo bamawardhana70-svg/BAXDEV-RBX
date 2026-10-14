@@ -293,6 +293,15 @@ html[data-theme="green"] .btn.danger{background:rgba(255,90,90,.08)}
             <select id="lcOn"><option value="1">Aktif</option><option value="0">Nonaktif (semua map di-kick)</option></select></div>
           <div><label for="lcKick">Pesan saat di-kick</label><input id="lcKick" maxlength="120" placeholder="Game ini belum terdaftar untuk memakai script ini."></div>
         </div>
+        <div style="margin-top:12px"><label for="lcBan">Hukuman untuk map tidak terdaftar</label>
+          <select id="lcBan">
+            <option value="0">Kick saja</option>
+            <option value="1">Kick + ban 1 hari</option>
+            <option value="7">Kick + ban 7 hari</option>
+            <option value="30">Kick + ban 30 hari</option>
+            <option value="-1">Kick + ban permanen</option>
+          </select>
+          <div class="note" style="margin-top:6px">Ban memakai <code>Players:BanAsync</code> dan berlaku untuk seluruh universe map itu. Hanya dijatuhkan untuk Universe ID valid yang tidak terdaftar, tidak untuk Universe 0 atau script nonaktif, dan dilewati di Studio.</div></div>
 
         <label style="margin:16px 0 6px">Map yang boleh memakai (Universe ID) <span class="badge off" id="lcUniCount">0</span></label>
         <div class="row two">
@@ -789,6 +798,7 @@ function openEditor(slug){
   $("lcCode").value = r ? (r.code||"") : "";
   $("lcOn").value = !r || r.enabled ? "1" : "0";
   $("lcKick").value = r ? (r.kickMsg||"") : "";
+  $("lcBan").value = r && r.banDays ? String(r.banDays) : "0";
   lcUni = Object.assign({}, r && r.universes || {});
   $("lcUniId").value = ""; $("lcUniLabel").value = "";
   $("lcEditor").classList.remove("hide");
@@ -824,6 +834,8 @@ async function saveScript(){
   const obj = { name: name, code: code, enabled: $("lcOn").value === "1", createdAt: prev.createdAt || now, updatedAt: now };
   const kick = $("lcKick").value.trim().slice(0,120);
   if (kick) obj.kickMsg = kick;
+  const banDays = Number($("lcBan").value) || 0;
+  if (banDays) obj.banDays = banDays;
   if (Object.keys(lcUni).length) obj.universes = lcUni;
   const btn = $("lcSave"); btn.disabled = true;
   try{
@@ -831,6 +843,7 @@ async function saveScript(){
     w["scripts/"+slug] = obj;
     const meta = { updatedAt: now };
     if (kick) meta.kickMsg = kick;
+    if (banDays && obj.enabled) meta.banDays = banDays;   // script nonaktif: kick saja, jangan ban
     w["pubmeta/"+slug] = meta;
     Object.keys(prev.universes || {}).forEach(id => { if (!lcUni[id]) w["pub/"+slug+"/"+id] = null; });
     Object.keys(lcUni).forEach(id => { w["pub/"+slug+"/"+id] = obj.enabled ? code : null; });   // salinan hanya ada kalau aktif

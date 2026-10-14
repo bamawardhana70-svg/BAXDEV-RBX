@@ -1,8 +1,9 @@
 // Lisensi script Lua (Cloudflare Pages Functions, tanpa library, TANPA secret / environment variable).
 //
 // Model data di Firebase Realtime Database (ditulis owner lewat /owner, aturannya ada di database.rules.json):
-//   scripts/<slug>          = data master (owner-only): { name, code, enabled, kickMsg, universes }
-//   pubmeta/<slug>          = { kickMsg?, updatedAt }  -> hanya penanda bahwa slug ini script lisensi (baca publik per path)
+//   scripts/<slug>          = data master (owner-only): { name, code, enabled, kickMsg, banDays?, universes }
+//   pubmeta/<slug>          = { kickMsg?, banDays?, updatedAt }  -> penanda bahwa slug ini script lisensi (baca publik per path).
+//                             banDays: -1 = ban permanen, 1..365 = ban sekian hari, tidak ada = kick saja. Tidak ada kalau script nonaktif.
 //   pub/<slug>/<universeId> = isi script Lua (string)  -> ada HANYA kalau script aktif dan Universe ID itu terdaftar
 // pub/ tidak bisa di-list (rules hanya mengizinkan baca per path persis), jadi kode hanya terbaca kalau tahu
 // nama link DAN Universe ID yang terdaftar. Server cukup membaca dua path itu lewat REST publik.
@@ -25,22 +26,45 @@ const text = (body, status) => new Response(body, {
 });
 
 // Lua yang mengeluarkan semua pemain (sekarang dan yang masuk nanti). Dikirim sebagai "script" ke map yang tidak terdaftar.
-function kickStub(message, reason) {
+// banDays (-1 permanen, >0 hari) menambahkan Players:BanAsync (berlaku untuk seluruh universe map itu). Ban dilewati di Studio,
+// dan kalau BanAsync gagal pemain tetap di-kick.
+function kickStub(message, reason, banDays) {
   const msg = String(message || DEFAULT_KICK).slice(0, 200)
     .replace(/\\/g, "\\\\").replace(/"/g, '\\"').replace(/[\r\n]+/g, " ");
-  return [
+  const safeReason = String(reason || "tidak terdaftar").replace(/[^A-Za-z0-9 :.,()_\-]/g, "");
+  const ban = Number.isInteger(banDays) && (banDays === -1 || (banDays >= 1 && banDays <= 365));
+  const lines = [
     "-- baxdev license: map tidak terdaftar",
     // Alasan hanya tampil di Output server (untuk pemilik map), tidak dikirim ke pemain.
-    'warn("[baxdev] ditolak: ' + String(reason || "tidak terdaftar").replace(/[^A-Za-z0-9 :.,()_\-]/g, "") + '")',
+    'warn("[baxdev] ditolak: ' + safeReason + '")',
     'local Players = game:GetService("Players")',
-    'local MESSAGE = "' + msg + '"',
-    "local function kick(player)",
-    "\tpcall(function() player:Kick(MESSAGE) end)",
-    "end",
-    "for _, player in ipairs(Players:GetPlayers()) do kick(player) end",
-    "Players.PlayerAdded:Connect(kick)",
-    ""
-  ].join("\n");
+    'local MESSAGE = "' + msg + '"'
+  ];
+  if (ban) {
+    lines.push(
+      'local RunService = game:GetService("RunService")',
+      "local BAN_SECONDS = " + (banDays === -1 ? "-1" : String(banDays * 86400)),
+      "local function punish(player)",
+      "	if not RunService:IsStudio() then",
+      "		local ok = pcall(function()",
+      "			Players:BanAsync({",
+      "				UserIds = { player.UserId },",
+      "				Duration = BAN_SECONDS,",
+      "				DisplayReason = MESSAGE,",
+      '				PrivateReason = "baxdev license: ' + safeReason + '",',
+      "				ApplyToUniverse = true",
+      "			})",
+      "		end)",
+      "		if ok then return end",
+      "	end",
+      "	pcall(function() player:Kick(MESSAGE) end)",
+      "end"
+    );
+  } else {
+    lines.push("local function punish(player)", "	pcall(function() player:Kick(MESSAGE) end)", "end");
+  }
+  lines.push("for _, player in ipairs(Players:GetPlayers()) do punish(player) end", "Players.PlayerAdded:Connect(punish)", "");
+  return lines.join("\n");
 }
 
 // Baca satu path publik. Balikkan { ok:false } kalau gagal; { ok:true, value } (value null = tidak ada).
@@ -112,10 +136,13 @@ export async function serveLicensedScript(request, env, slug) {
   if (!meta.value || typeof meta.value !== "object") return null;   // bukan script lisensi: biarkan route lain / 404 biasa
 
   if (typeof code.value === "string" && code.value) return text(code.value);
+  // Ban hanya untuk map dengan Universe ID valid (bukan 0, tidak ada konflik Place) yang memang tidak terdaftar.
+  // Universe 0, header hilang, atau mismatch Place cuma di-kick supaya pemilik sah yang salah setting tidak ikut ter-ban.
+  const banDays = (!reason && /^[1-9][0-9]*$/.test(universe) && Number.isInteger(meta.value.banDays)) ? meta.value.banDays : 0;
   if (!reason) {
     reason = universe === "0"
       ? "Universe 0 (place belum dipublish, GameId dan Place ID tidak bisa dipetakan ke universe)"
       : "Universe " + universe + " tidak terdaftar, atau script nonaktif";
   }
-  return text(kickStub(meta.value.kickMsg, reason));   // universe tidak terdaftar, tidak terkirim, atau script dinonaktifkan
+  return text(kickStub(meta.value.kickMsg, reason, banDays));   // universe tidak terdaftar, tidak terkirim, atau script dinonaktifkan
 }

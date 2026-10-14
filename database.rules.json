@@ -347,6 +347,9 @@
         "kickMsg": {
           ".validate": "newData.isString() && newData.val().length <= 120"
         },
+        "banDays": {
+          ".validate": "newData.isNumber() && (newData.val() === -1 || (newData.val() >= 1 && newData.val() <= 365))"
+        },
         "universes": {
           "$universeId": {
             ".validate": "$universeId.matches(/^[0-9]{1,20}$/) && newData.hasChildren(['at'])",
@@ -379,6 +382,9 @@
         ".validate": "$slug.matches(/^[a-z0-9][a-z0-9_-]{1,39}$/) && newData.hasChildren(['updatedAt'])",
         "kickMsg": {
           ".validate": "newData.isString() && newData.val().length <= 120"
+        },
+        "banDays": {
+          ".validate": "newData.isNumber() && (newData.val() === -1 || (newData.val() >= 1 && newData.val() <= 365))"
         },
         "updatedAt": {
           ".validate": "newData.isNumber()"
