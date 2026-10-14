@@ -76,14 +76,27 @@ export async function serveLicensedScript(request, env, slug) {
   if (!isValidSlug(slug)) return null;
   if (request.method !== "GET" && request.method !== "HEAD") return text("-- method tidak didukung", 405);
 
-  const universe = String(request.headers.get("x-baxdev-universe") || new URL(request.url).searchParams.get("u") || "").trim();
+  let universe = String(request.headers.get("x-baxdev-universe") || new URL(request.url).searchParams.get("u") || "").trim();
+  // Roblox mengisi header Roblox-Id (Place ID asal request) sendiri. Loader juga mengirim X-Baxdev-Place sebagai cadangan.
+  const placeId = String(request.headers.get("roblox-id") || "").trim();
+  const loaderPlace = String(request.headers.get("x-baxdev-place") || "").trim();
+  const PLACE_RE = /^[1-9][0-9]{0,19}$/;
+
+  // game.GameId bernilai 0 kalau place belum dipublish / dibuka dari file lokal Studio. Universe 0 tidak mungkin
+  // terdaftar, jadi cari Universe ID asli dari Place ID.
+  let resolvedFromPlace = false;
+  if (!universe || /^0+$/.test(universe)) {
+    const place = PLACE_RE.test(placeId) ? placeId : (PLACE_RE.test(loaderPlace) ? loaderPlace : "");
+    const real = place ? await universeOfPlace(place) : null;
+    if (real) { universe = real; resolvedFromPlace = true; }
+  }
+
   let validUniverse = /^[0-9]{1,20}$/.test(universe);
   let reason = !universe ? "header X-Baxdev-Universe tidak terkirim" : (validUniverse ? "" : "Universe ID tidak valid");
 
-  // Pengaman tambahan: kalau Roblox menyertakan header Roblox-Id (Place ID asal request) dan universe place itu
-  // berbeda dari yang diklaim loader, tolak. Tanpa header itu, atau kalau Roblox API gagal dijangkau, pengecekan dilewati.
-  const placeId = String(request.headers.get("roblox-id") || "").trim();
-  if (validUniverse && /^[1-9][0-9]{0,19}$/.test(placeId)) {
+  // Pengaman tambahan: kalau Roblox menyertakan header Roblox-Id dan universe place itu berbeda dari yang diklaim
+  // loader, tolak. Dilewati kalau header tidak ada, atau Roblox API gagal dijangkau, atau universe baru saja dicari dari place itu.
+  if (validUniverse && !resolvedFromPlace && PLACE_RE.test(placeId)) {
     const real = await universeOfPlace(placeId);
     if (real && real !== universe) {
       validUniverse = false;
@@ -101,7 +114,7 @@ export async function serveLicensedScript(request, env, slug) {
   if (typeof code.value === "string" && code.value) return text(code.value);
   if (!reason) {
     reason = universe === "0"
-      ? "Universe 0 (place belum dipublish, GameId 0)"
+      ? "Universe 0 (place belum dipublish, GameId dan Place ID tidak bisa dipetakan ke universe)"
       : "Universe " + universe + " tidak terdaftar, atau script nonaktif";
   }
   return text(kickStub(meta.value.kickMsg, reason));   // universe tidak terdaftar, tidak terkirim, atau script dinonaktifkan

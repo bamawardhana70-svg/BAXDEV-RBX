@@ -151,7 +151,7 @@ Universe ID **tidak ada di link**: loader mengirimnya lewat header HTTP `X-Baxde
 - Universe tidak terdaftar, tidak mengirim header Universe, atau script dinonaktifkan: server membalas Lua yang **meng-kick semua pemain** (yang ada dan yang masuk). Pesan kick bisa diatur per script.
 - Nama link tidak ada: diteruskan ke 404 biasa. Database tidak terjangkau: HTTP 502 (loader hanya `warn`, tidak meng-kick siapa pun).
 - Tiap script punya link sendiri. Tambah/cabut Universe ID di script yang sudah tersimpan berlaku langsung.
-- Kartu menampilkan **loader** siap pakai. Tempel sebagai `Script` di `ServerScriptService` map pembeli. Loader memakai `game.GameId` (Universe ID).
+- Kartu menampilkan **loader** siap pakai. Tempel sebagai `Script` di `ServerScriptService` map pembeli. Loader memakai `game.GameId` (Universe ID) dan mengirim `game.PlaceId` lewat header `X-Baxdev-Place`. Kalau `GameId` bernilai 0 (place belum dipublish / file lokal Studio), server mencari Universe ID asli dari Place ID lewat API publik Roblox. Place yang benar-benar belum pernah dipublish (GameId dan PlaceId sama-sama 0) tetap ditolak: publish dulu.
 
 ### Tanpa secret: cara kerja data
 Tidak ada environment variable atau secret baru di Cloudflare. Data di Firebase Realtime Database:

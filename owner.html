@@ -710,7 +710,7 @@ function lcLoaderOf(slug){
     "-- Wajib: Game Settings > Security > Allow HTTP Requests = ON, dan ServerScriptService.LoadStringEnabled = true",
     'local HttpService = game:GetService("HttpService")',
     'local URL = "' + lcLinkOf(slug) + '"',
-    'local HEADERS = { ["X-Baxdev-Universe"] = tostring(game.GameId) }',
+    'local HEADERS = { ["X-Baxdev-Universe"] = tostring(game.GameId), ["X-Baxdev-Place"] = tostring(game.PlaceId) }',
     "",
     "local source",
     "for attempt = 1, 3 do",
