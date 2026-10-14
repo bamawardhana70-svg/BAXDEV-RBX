@@ -83,7 +83,21 @@ function deny(status, code, message) {
 }
 
 // Balikkan Response (tolak) kalau belum login Google; null kalau lolos.
+// Hanya terima request dari halaman situs ini di browser. Browser selalu mengirim Sec-Fetch-Site (dan Origin untuk POST),
+// sedangkan curl / skrip biasa tidak. Ini menyaring tembakan langsung yang polos, BUKAN pengaman mutlak: klien yang
+// sengaja memalsukan header ini masih bisa lolos, jadi kuota, ban, dan cek token tetap jadi pagar utama.
+function sameOriginBrowser(request) {
+  const site = request.headers.get("sec-fetch-site");
+  if (site) return site === "same-origin";
+  const origin = request.headers.get("origin");
+  if (!origin) return false;
+  try { return new URL(origin).host === new URL(request.url).host; } catch { return false; }
+}
+
 export async function requireUser(request) {
+  if (!sameOriginBrowser(request)) {
+    return deny(403, "forbidden_origin", "Permintaan hanya diterima dari situs resmi.");
+  }
   const m = /^Bearer\s+(.+)$/i.exec(request.headers.get("authorization") || "");
   if (isScheduledMaintenance() && !(m && await isOwnerToken(m[1]))) {
     return deny(503, "maintenance", MAINTENANCE_TEXT);

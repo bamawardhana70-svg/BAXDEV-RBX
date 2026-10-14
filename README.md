@@ -215,3 +215,10 @@ Modul `BxBg` (script `#bx-bg-js` di `index.html`) melacak convert, upload, dan p
 - Notifikasi selesai lewat service worker kalau halaman sedang disembunyikan (izin diminta sekali, saat proses pertama dimulai).
 - Request yang putus karena halaman sempat dibekukan diulang otomatis (maksimal 2 percobaan tambahan di luar jatah normal) di `convertOne` dan `postWithRetry`.
 - `sw.js` (cache v6) menangani klik notifikasi. Agar benar-benar jalan saat HP mati, dibutuhkan antrean di server (Cloudflare Queue + Worker) dan Roblox API key tersimpan di server; belum dibuat.
+
+
+## Pagar endpoint /api (v100)
+
+Semua endpoint yang memakai `requireUser` (`functions/_lib/auth.js`) sekarang hanya menerima request dari halaman situs ini di browser: header `Sec-Fetch-Site` harus `same-origin` (atau `Origin` sama dengan host situs bila header itu tidak ada). `curl` / skrip polos ditolak `403 forbidden_origin`.
+
+Ini penyaring, bukan pengaman mutlak: klien yang sengaja memalsukan header itu tetap bisa mencoba, tetapi tetap butuh token Google yang valid, dan kuota, ban, serta maintenance tetap berlaku. Pengaman yang benar-benar mengikat request ke aplikasi asli adalah Firebase App Check (butuh reCAPTCHA site key dari Firebase Console); belum dipasang.
