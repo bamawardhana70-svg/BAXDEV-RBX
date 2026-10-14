@@ -25,11 +25,13 @@ const text = (body, status) => new Response(body, {
 });
 
 // Lua yang mengeluarkan semua pemain (sekarang dan yang masuk nanti). Dikirim sebagai "script" ke map yang tidak terdaftar.
-function kickStub(message) {
+function kickStub(message, reason) {
   const msg = String(message || DEFAULT_KICK).slice(0, 200)
     .replace(/\\/g, "\\\\").replace(/"/g, '\\"').replace(/[\r\n]+/g, " ");
   return [
     "-- baxdev license: map tidak terdaftar",
+    // Alasan hanya tampil di Output server (untuk pemilik map), tidak dikirim ke pemain.
+    'warn("[baxdev] ditolak: ' + String(reason || "tidak terdaftar").replace(/[^A-Za-z0-9 :.,()_\-]/g, "") + '")',
     'local Players = game:GetService("Players")',
     'local MESSAGE = "' + msg + '"',
     "local function kick(player)",
@@ -76,13 +78,17 @@ export async function serveLicensedScript(request, env, slug) {
 
   const universe = String(request.headers.get("x-baxdev-universe") || new URL(request.url).searchParams.get("u") || "").trim();
   let validUniverse = /^[0-9]{1,20}$/.test(universe);
+  let reason = !universe ? "header X-Baxdev-Universe tidak terkirim" : (validUniverse ? "" : "Universe ID tidak valid");
 
   // Pengaman tambahan: kalau Roblox menyertakan header Roblox-Id (Place ID asal request) dan universe place itu
   // berbeda dari yang diklaim loader, tolak. Tanpa header itu, atau kalau Roblox API gagal dijangkau, pengecekan dilewati.
   const placeId = String(request.headers.get("roblox-id") || "").trim();
   if (validUniverse && /^[1-9][0-9]{0,19}$/.test(placeId)) {
     const real = await universeOfPlace(placeId);
-    if (real && real !== universe) validUniverse = false;
+    if (real && real !== universe) {
+      validUniverse = false;
+      reason = "Universe " + universe + " tidak cocok dengan Place " + placeId + " (universe asli " + real + ")";
+    }
   }
 
   const [meta, code] = await Promise.all([
@@ -93,5 +99,10 @@ export async function serveLicensedScript(request, env, slug) {
   if (!meta.value || typeof meta.value !== "object") return null;   // bukan script lisensi: biarkan route lain / 404 biasa
 
   if (typeof code.value === "string" && code.value) return text(code.value);
-  return text(kickStub(meta.value.kickMsg));   // universe tidak terdaftar, tidak ada "u", atau script dinonaktifkan
+  if (!reason) {
+    reason = universe === "0"
+      ? "Universe 0 (place belum dipublish, GameId 0)"
+      : "Universe " + universe + " tidak terdaftar, atau script nonaktif";
+  }
+  return text(kickStub(meta.value.kickMsg, reason));   // universe tidak terdaftar, tidak terkirim, atau script dinonaktifkan
 }

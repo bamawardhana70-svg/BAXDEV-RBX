@@ -297,7 +297,7 @@ html[data-theme="green"] .btn.danger{background:rgba(255,90,90,.08)}
         <label style="margin:16px 0 6px">Map yang boleh memakai (Universe ID) <span class="badge off" id="lcUniCount">0</span></label>
         <div class="row two">
           <div><input id="lcUniId" inputmode="numeric" autocomplete="off" placeholder="Universe ID, contoh: 123456789"></div>
-          <div style="display:flex;gap:8px"><input id="lcUniLabel" maxlength="60" placeholder="Label (opsional): nama map / pembeli"><button class="btn primary" id="lcUniAdd" type="button" style="white-space:nowrap">Tambah</button></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap"><input id="lcUniLabel" maxlength="60" placeholder="Label (opsional)" style="flex:1 1 140px;min-width:0"><button class="btn primary" id="lcUniAdd" type="button" style="white-space:nowrap">Tambah</button></div>
         </div>
         <div id="lcUniList" class="scrollbox" style="margin-top:10px"></div>
 
@@ -803,6 +803,17 @@ async function saveScript(){
   const name = $("lcName").value.trim();
   const code = $("lcCode").value;
   const msg = $("lcMsg");
+  const pend = $("lcUniId").value.trim().replace(/\s+/g, "");
+  if (pend) {   // ID sudah diketik tapi belum ditekan Tambah: ikut dimasukkan supaya tidak hilang
+    if (!/^[0-9]{1,20}$/.test(pend)) return say(msg, "Universe ID di kolom harus angka saja (tanpa tanda < >).", "err");
+    if (!lcUni[pend]) {
+      const rec = { at: Date.now() }, lb = $("lcUniLabel").value.trim().slice(0,60);
+      if (lb) rec.label = lb;
+      lcUni[pend] = rec;
+    }
+    $("lcUniId").value = ""; $("lcUniLabel").value = "";
+    renderUniList();
+  }
   if (!name) return say(msg, "Isi nama script.", "err");
   if (!LC_SLUG_RE.test(slug)) return say(msg, "Nama link: 2-40 karakter, huruf kecil, angka, - atau _, diawali huruf/angka.", "err");
   if (LC_RESERVED.has(slug)) return say(msg, "Nama link \u201c"+slug+"\u201d dipakai situs. Pilih nama lain.", "err");
