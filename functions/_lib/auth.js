@@ -5,6 +5,15 @@
 const FIREBASE_PROJECT_ID = "baxdev-rbx";
 const FIREBASE_DB_URL = "https://baxdev-rbx-default-rtdb.asia-southeast1.firebasedatabase.app";
 
+// Proof-of-work (tanpa setup, tanpa secret, tanpa layanan tambahan).
+// Setiap request /api/* harus membawa header  X-BX-Pow: <ts>.<nonce>  dengan
+//   SHA-256("bx1|<ts>|<METHOD>|<path>|<nonce>")  yang diawali minimal POW_BITS bit nol.
+// Browser mencarinya di Web Worker (index.html). Rata-rata 2^POW_BITS hash per request.
+// Naikkan POW_BITS untuk memperberat skrip massal (tiap +1 bit = 2x kerja); klien menyesuaikan sendiri
+// lewat respons 403 (field "bits"), jadi cukup ubah angka ini di server.
+export const POW_ENFORCE = true;
+export const POW_BITS = 16;
+const POW_WINDOW_S = 120;   // toleransi selisih jam klien-server
 // Maintenance terjadwal: setiap hari 00.00 - 05.00 WIB (UTC+7, tanpa DST).
 export const MAINTENANCE_TEXT =
   "Saat ini layanan sedang dalam proses pemeliharaan.\n" +
@@ -39,7 +48,7 @@ export function plusActive(v) {
 }
 
 const JWKS_URL = "https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com";
-let jwksCache = { keys: null, at: 0 };
+const jwksCache = {};   // url -> { keys, at }
 
 function b64urlToBytes(s) {
   s = s.replace(/-/g, "+").replace(/_/g, "/");
@@ -51,33 +60,95 @@ function b64urlToBytes(s) {
 }
 function b64urlToJson(s) { return JSON.parse(new TextDecoder().decode(b64urlToBytes(s))); }
 
-async function getKeys() {
-  if (jwksCache.keys && Date.now() - jwksCache.at < 3600e3) return jwksCache.keys;
-  const res = await fetch(JWKS_URL, { cf: { cacheTtl: 3600, cacheEverything: true } });
+async function loadKeys(url) {
+  const res = await fetch(url, { cf: { cacheTtl: 3600, cacheEverything: true } });
   if (!res.ok) throw new Error("jwks");
   const data = await res.json();
-  jwksCache = { keys: data.keys || [], at: Date.now() };
-  return jwksCache.keys;
+  jwksCache[url] = { keys: data.keys || [], at: Date.now() };
+  return jwksCache[url].keys;
 }
 
-export async function verifyIdToken(token, projectId) {
+// Cari kunci publik by kid. Cache 1 jam; kid tak dikenal baru memicu muat ulang bila cache sudah >5 menit (rotasi kunci).
+async function findKey(url, kid) {
+  const c = jwksCache[url];
+  let keys = c && Date.now() - c.at < 3600e3 ? c.keys : await loadKeys(url);
+  let jwk = keys.find((k) => k.kid === kid);
+  if (!jwk && jwksCache[url] && Date.now() - jwksCache[url].at > 300e3) {
+    keys = await loadKeys(url);
+    jwk = keys.find((k) => k.kid === kid);
+  }
+  return jwk || null;
+}
+
+// Urai JWT RS256 tanpa memeriksa tanda tangan. null kalau bentuknya salah.
+function parseJwt(token) {
   const parts = String(token || "").split(".");
   if (parts.length !== 3) return null;
   let header, payload;
   try { header = b64urlToJson(parts[0]); payload = b64urlToJson(parts[1]); } catch { return null; }
-  if (header.alg !== "RS256" || !header.kid) return null;
-  const now = Math.floor(Date.now() / 1000);
-  if (payload.aud !== projectId || payload.iss !== "https://securetoken.google.com/" + projectId) return null;
-  if (!payload.sub || typeof payload.exp !== "number" || payload.exp < now - 30 || payload.iat > now + 300) return null;
-  const jwk = (await getKeys()).find((k) => k.kid === header.kid);
-  if (!jwk) return null;
-  const key = await crypto.subtle.importKey("jwk", jwk, { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" }, false, ["verify"]);
-  const ok = await crypto.subtle.verify("RSASSA-PKCS1-v1_5", key, b64urlToBytes(parts[2]), new TextEncoder().encode(parts[0] + "." + parts[1]));
-  return ok ? { uid: payload.sub, email: payload.email || "" } : null;
+  if (!header || !payload || header.alg !== "RS256" || !header.kid) return null;
+  return { parts, header, payload };
 }
 
-function deny(status, code, message) {
-  return new Response(JSON.stringify({ ok: false, code, message }), {
+async function signatureValid(jwt, jwksUrl) {
+  const jwk = await findKey(jwksUrl, jwt.header.kid);
+  if (!jwk) return false;
+  const key = await crypto.subtle.importKey("jwk", jwk, { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" }, false, ["verify"]);
+  return crypto.subtle.verify("RSASSA-PKCS1-v1_5", key, b64urlToBytes(jwt.parts[2]), new TextEncoder().encode(jwt.parts[0] + "." + jwt.parts[1]));
+}
+
+const timeValid = (p, now) => typeof p.exp === "number" && p.exp >= now - 30 && !(p.iat > now + 300);
+
+export async function verifyIdToken(token, projectId) {
+  const jwt = parseJwt(token);
+  if (!jwt) return null;
+  const p = jwt.payload;
+  const now = Math.floor(Date.now() / 1000);
+  if (p.aud !== projectId || p.iss !== "https://securetoken.google.com/" + projectId) return null;
+  if (!p.sub || !timeValid(p, now)) return null;
+  return (await signatureValid(jwt, JWKS_URL)) ? { uid: p.sub, email: p.email || "" } : null;
+}
+
+// ── Proof-of-work ──
+// Replay: pasangan (ts, method, path, nonce) yang sama hanya diterima sekali per isolate (best effort;
+// isolate Cloudflare bisa berganti, jadi ini pelengkap, bukan jaminan).
+const powSeen = new Map();   // msg -> kedaluwarsa (ms)
+
+async function leadingZeroBits(msg) {
+  const d = new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(msg)));
+  let bits = 0;
+  for (let i = 0; i < d.length; i++) {
+    if (d[i] === 0) { bits += 8; continue; }
+    bits += Math.clz32(d[i]) - 24;
+    break;
+  }
+  return bits;
+}
+
+// Balikkan Response (tolak) bila PoW tidak sah; null bila lolos.
+async function checkPow(request) {
+  const nowS = Math.floor(Date.now() / 1000);
+  const info = { bits: POW_BITS, now: nowS };
+  const m = /^(\d{10})\.([0-9a-z]{1,24})$/.exec(request.headers.get("x-bx-pow") || "");
+  if (!m) return deny(403, "pow_required", "Verifikasi keamanan belum selesai. Muat ulang halaman lalu coba lagi.", info);
+  const ts = Number(m[1]);
+  if (Math.abs(nowS - ts) > POW_WINDOW_S) return deny(403, "pow_stale", "Jam perangkat tidak sinkron. Coba lagi.", info);
+  let path;
+  try { path = new URL(request.url).pathname; } catch { return deny(400, "bad_request", "URL tidak valid."); }
+  const msg = "bx1|" + ts + "|" + request.method.toUpperCase() + "|" + path + "|" + m[2];
+  if ((await leadingZeroBits(msg)) < POW_BITS) return deny(403, "pow_failed", "Verifikasi keamanan gagal. Muat ulang halaman lalu coba lagi.", info);
+  const nowMs = Date.now();
+  if (powSeen.size > 4000) {
+    for (const [k, exp] of powSeen) if (exp < nowMs) powSeen.delete(k);
+    if (powSeen.size > 8000) powSeen.clear();
+  }
+  if (powSeen.has(msg)) return deny(403, "pow_replay", "Permintaan ganda ditolak. Coba lagi.", info);
+  powSeen.set(msg, nowMs + POW_WINDOW_S * 2000);
+  return null;
+}
+
+function deny(status, code, message, extra) {
+  return new Response(JSON.stringify({ ok: false, code, message, ...(extra || {}) }), {
     status, headers: { "content-type": "application/json", "cache-control": "no-store" }
   });
 }
@@ -85,7 +156,8 @@ function deny(status, code, message) {
 // Balikkan Response (tolak) kalau belum login Google; null kalau lolos.
 // Hanya terima request dari halaman situs ini di browser. Browser selalu mengirim Sec-Fetch-Site (dan Origin untuk POST),
 // sedangkan curl / skrip biasa tidak. Ini menyaring tembakan langsung yang polos, BUKAN pengaman mutlak: klien yang
-// sengaja memalsukan header ini masih bisa lolos, jadi kuota, ban, dan cek token tetap jadi pagar utama.
+// sengaja memalsukan header ini masih bisa lolos. Lapisan berikutnya adalah proof-of-work di atas: tiap request
+// harus membayar kerja CPU, jadi tembakan massal jadi mahal (bukan mustahil).
 function sameOriginBrowser(request) {
   const site = request.headers.get("sec-fetch-site");
   if (site) return site === "same-origin";
@@ -97,6 +169,10 @@ function sameOriginBrowser(request) {
 export async function requireUser(request) {
   if (!sameOriginBrowser(request)) {
     return deny(403, "forbidden_origin", "Permintaan hanya diterima dari situs resmi.");
+  }
+  if (POW_ENFORCE) {
+    const powDeny = await checkPow(request);
+    if (powDeny) return powDeny;
   }
   const m = /^Bearer\s+(.+)$/i.exec(request.headers.get("authorization") || "");
   if (isScheduledMaintenance() && !(m && await isOwnerToken(m[1]))) {

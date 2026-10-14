@@ -221,4 +221,14 @@ Modul `BxBg` (script `#bx-bg-js` di `index.html`) melacak convert, upload, dan p
 
 Semua endpoint yang memakai `requireUser` (`functions/_lib/auth.js`) sekarang hanya menerima request dari halaman situs ini di browser: header `Sec-Fetch-Site` harus `same-origin` (atau `Origin` sama dengan host situs bila header itu tidak ada). `curl` / skrip polos ditolak `403 forbidden_origin`.
 
-Ini penyaring, bukan pengaman mutlak: klien yang sengaja memalsukan header itu tetap bisa mencoba, tetapi tetap butuh token Google yang valid, dan kuota, ban, serta maintenance tetap berlaku. Pengaman yang benar-benar mengikat request ke aplikasi asli adalah Firebase App Check (butuh reCAPTCHA site key dari Firebase Console); belum dipasang.
+Header itu bisa dipalsukan, jadi lapisan berikutnya adalah proof-of-work (v102).
+
+## Proof-of-work, tanpa setup (v102, menggantikan App Check)
+
+Tidak ada reCAPTCHA, secret, KV, atau layanan Google tambahan. `fetch` di `index.html` mencari nonce di Web Worker sehingga `SHA-256("bx1|<ts>|<METHOD>|<path>|<nonce>")` diawali minimal `POW_BITS` bit nol (default 16, rata-rata 65 ribu hash, puluhan sampai ratusan ms), lalu mengirimnya di header `X-BX-Pow: <ts>.<nonce>` ke setiap `/api/*`. `requireUser` (`functions/_lib/auth.js`) menghitung ulang satu hash, memeriksa jam (toleransi 120 detik), dan menolak pasangan yang sama dipakai dua kali (best effort per isolate). Tanpa header atau hash kurang: `403 pow_required` / `pow_stale` / `pow_failed` / `pow_replay`.
+
+Kesulitan diatur di server saja: ubah `POW_BITS` di `functions/_lib/auth.js` (tiap +1 bit = 2x kerja). Respons 403 membawa `bits` dan `now`, jadi klien menyesuaikan kesulitan dan selisih jam sendiri lalu mengulang sekali.
+
+Batas yang jujur: PoW tidak membuktikan permintaan datang dari situs ini (tidak ada secret yang bisa dibuktikan), hanya membuat tiap request membayar kerja CPU. Penyerang yang mau tetap bisa menghitungnya di luar browser; yang dicegah adalah tembakan massal murah. Pagar sebenarnya tetap login Google, kuota, ban, dan cek VIP. Matikan sementara dengan `POW_ENFORCE = false`.
+
+Bila dulu sempat mengaktifkan App Check di Firebase Console (Enforce untuk Realtime Database / Authentication), matikan: klien kini tidak mengirim token App Check dan Realtime Database akan menolaknya. Aplikasi web App Check dan site key reCAPTCHA lama boleh dihapus.

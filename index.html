@@ -4588,24 +4588,139 @@ window.BAXDEV_FIREBASE = {
 };
 </script>
 <script>
-// Login Google wajib: kirim ID token Firebase ke semua panggilan /api/*
+// Login Google + proof-of-work (tanpa setup): kirim ID token Firebase dan header X-BX-Pow ke semua panggilan /api/*
 window.BX = { user: null, ready: false, getToken: async function(){ return null; } };
 (function(){
   var nativeFetch = window.fetch.bind(window);
-  window.fetch = async function(input, init){
-    try{
-      var url = typeof input === "string" ? input : (input && input.url) || "";
-      if (url.indexOf("/api/") === 0 && window.BX.user) {
-        var token = await window.BX.getToken();
-        if (token) {
-          init = Object.assign({}, init || {});
-          var h = new Headers(init.headers || (typeof input !== "string" && input.headers) || {});
-          h.set("authorization", "Bearer " + token);
-          init.headers = h;
+
+  // Pencari nonce. Dipakai sebagai Web Worker (utama) atau dipanggil langsung di main thread (cadangan).
+  function makeSolver(){
+    var K = new Uint32Array([
+      0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,
+      0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,
+      0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,
+      0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,
+      0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,
+      0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,
+      0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,
+      0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2]);
+    var W = new Uint32Array(64);
+    // SHA-256 atas buf[0..len); balikkan word pertama hash (cukup untuk sampai 32 bit nol).
+    function h0of(buf, len){
+      var nb = ((len + 9 + 63) >> 6), total = nb << 6, i, j;
+      var m = new Uint8Array(total);
+      for (i = 0; i < len; i++) m[i] = buf[i];
+      m[len] = 0x80;
+      var bitLen = len * 8;
+      m[total-4] = (bitLen >>> 24) & 255; m[total-3] = (bitLen >>> 16) & 255; m[total-2] = (bitLen >>> 8) & 255; m[total-1] = bitLen & 255;
+      var a0=0x6a09e667,b0=0xbb67ae85,c0=0x3c6ef372,d0=0xa54ff53a,e0=0x510e527f,f0=0x9b05688c,g0=0x1f83d9ab,h0=0x5be0cd19;
+      for (var blk = 0; blk < nb; blk++){
+        var o = blk << 6;
+        for (i = 0; i < 16; i++) W[i] = (m[o+4*i] << 24) | (m[o+4*i+1] << 16) | (m[o+4*i+2] << 8) | m[o+4*i+3];
+        for (i = 16; i < 64; i++){
+          var x = W[i-15], y = W[i-2];
+          var s0 = ((x>>>7)|(x<<25)) ^ ((x>>>18)|(x<<14)) ^ (x>>>3);
+          var s1 = ((y>>>17)|(y<<15)) ^ ((y>>>19)|(y<<13)) ^ (y>>>10);
+          W[i] = (W[i-16] + s0 + W[i-7] + s1) | 0;
         }
+        var a=a0,b=b0,c=c0,d=d0,e=e0,f=f0,g=g0,h=h0;
+        for (j = 0; j < 64; j++){
+          var S1 = ((e>>>6)|(e<<26)) ^ ((e>>>11)|(e<<21)) ^ ((e>>>25)|(e<<7));
+          var ch = (e & f) ^ (~e & g);
+          var t1 = (h + S1 + ch + K[j] + W[j]) | 0;
+          var S0 = ((a>>>2)|(a<<30)) ^ ((a>>>13)|(a<<19)) ^ ((a>>>22)|(a<<10));
+          var mj = (a & b) ^ (a & c) ^ (b & c);
+          var t2 = (S0 + mj) | 0;
+          h = g; g = f; f = e; e = (d + t1) | 0; d = c; c = b; b = a; a = (t1 + t2) | 0;
+        }
+        a0=(a0+a)|0; b0=(b0+b)|0; c0=(c0+c)|0; d0=(d0+d)|0; e0=(e0+e)|0; f0=(f0+f)|0; g0=(g0+g)|0; h0=(h0+h)|0;
       }
-    }catch(e){}
-    return nativeFetch(input, init);
+      return a0 >>> 0;
+    }
+    // prefix = "bx1|<ts>|<METHOD>|<path>|<rnd>"; nonce = rnd + counter(base36). Balikkan counter, atau null.
+    return function solve(prefix, bits){
+      if (bits <= 0) return "0";
+      if (bits > 32) bits = 32;
+      var shift = 32 - bits, max = Math.pow(2, bits + 8);
+      var pre = new TextEncoder().encode(prefix), buf = new Uint8Array(pre.length + 16);
+      buf.set(pre);
+      for (var c = 0; c < max; c++){
+        var sfx = c.toString(36), n = pre.length;
+        for (var k = 0; k < sfx.length; k++) buf[n++] = sfx.charCodeAt(k);
+        if ((h0of(buf, n) >>> shift) === 0) return sfx;
+      }
+      return null;
+    };
+  }
+
+  var pow = { bits: 16, skew: 0, worker: null, workerFailed: false, seq: 0, pending: {}, local: null };
+  function getWorker(){
+    if (pow.worker || pow.workerFailed) return pow.worker;
+    try{
+      var src = "var solve=(" + makeSolver.toString() + ")();onmessage=function(e){var d=e.data;postMessage({id:d.id,sfx:solve(d.prefix,d.bits)});};";
+      var w = new Worker(URL.createObjectURL(new Blob([src], { type: "text/javascript" })));
+      w.onmessage = function(e){ var p = pow.pending[e.data.id]; if (p){ delete pow.pending[e.data.id]; p(e.data.sfx); } };
+      w.onerror = function(){ pow.workerFailed = true; pow.worker = null; var ps = pow.pending; pow.pending = {}; for (var k in ps) ps[k](undefined); };
+      pow.worker = w;
+    }catch(e){ pow.workerFailed = true; pow.worker = null; }
+    return pow.worker;
+  }
+  function solvePrefix(prefix, bits){
+    return new Promise(function(resolve){
+      var w = getWorker();
+      if (w){ var id = ++pow.seq; pow.pending[id] = function(sfx){ if (sfx === undefined) resolve(solveLocal(prefix, bits)); else resolve(sfx); }; w.postMessage({ id: id, prefix: prefix, bits: bits }); }
+      else resolve(solveLocal(prefix, bits));
+    });
+  }
+  function solveLocal(prefix, bits){ pow.local = pow.local || makeSolver(); return pow.local(prefix, bits); }
+
+  function rnd6(){
+    var a = new Uint8Array(6), s = "";
+    (window.crypto || window.msCrypto).getRandomValues(a);
+    for (var i = 0; i < a.length; i++) s += (a[i] % 36).toString(36);
+    return s;
+  }
+  async function powHeader(method, path){
+    var ts = Math.floor((Date.now() + pow.skew) / 1000), r = rnd6();
+    var sfx = await solvePrefix("bx1|" + ts + "|" + method + "|" + path + "|" + r, pow.bits);
+    return sfx == null ? null : ts + "." + r + sfx;
+  }
+
+  function isReplayable(input, init){
+    if (typeof input !== "string") return false;
+    var b = init && init.body;
+    return !(b && typeof b === "object" && typeof b.getReader === "function");
+  }
+
+  window.fetch = async function(input, init){
+    var url = "";
+    try{ url = typeof input === "string" ? input : (input && input.url) || ""; }catch(e){}
+    if (url.indexOf("/api/") !== 0) return nativeFetch(input, init);
+    var method = ((init && init.method) || (typeof input !== "string" && input && input.method) || "GET").toUpperCase();
+    var path = url;
+    try{ path = new URL(url, location.origin).pathname; }catch(e){}
+    var res;
+    for (var attempt = 0; attempt < 2; attempt++){
+      var init2 = init;
+      try{
+        var token = window.BX.user ? await window.BX.getToken() : null;
+        var pw = await powHeader(method, path);
+        init2 = Object.assign({}, init || {});
+        var h = new Headers(init2.headers || (typeof input !== "string" && input.headers) || {});
+        if (token) h.set("authorization", "Bearer " + token);
+        if (pw) h.set("x-bx-pow", pw);
+        init2.headers = h;
+      }catch(e){ init2 = init; }
+      res = await nativeFetch(input, init2);
+      if (res.status !== 403 || attempt === 1 || !isReplayable(input, init)) break;
+      // Server minta kesulitan/jam berbeda: sesuaikan lalu coba sekali lagi.
+      var info = null;
+      try{ info = await res.clone().json(); }catch(e){}
+      if (!info || typeof info.code !== "string" || info.code.indexOf("pow_") !== 0) break;
+      if (typeof info.bits === "number" && info.bits >= 1) pow.bits = Math.min(info.bits, 32);
+      if (typeof info.now === "number") pow.skew = info.now * 1000 - Date.now();
+    }
+    return res;
   };
 })();
 </script>
