@@ -329,6 +329,73 @@
           ".validate": false
         }
       }
+    },
+    "scripts": {
+      ".read": "auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')",
+      ".write": "auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')",
+      "$slug": {
+        ".validate": "$slug.matches(/^[a-z0-9][a-z0-9_-]{1,39}$/) && newData.hasChildren(['name', 'code', 'enabled', 'updatedAt'])",
+        "name": {
+          ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 80"
+        },
+        "code": {
+          ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 400000"
+        },
+        "enabled": {
+          ".validate": "newData.isBoolean()"
+        },
+        "kickMsg": {
+          ".validate": "newData.isString() && newData.val().length <= 120"
+        },
+        "universes": {
+          "$universeId": {
+            ".validate": "$universeId.matches(/^[0-9]{1,20}$/) && newData.hasChildren(['at'])",
+            "label": {
+              ".validate": "newData.isString() && newData.val().length <= 60"
+            },
+            "at": {
+              ".validate": "newData.isNumber()"
+            },
+            "$other": {
+              ".validate": false
+            }
+          }
+        },
+        "createdAt": {
+          ".validate": "newData.isNumber()"
+        },
+        "updatedAt": {
+          ".validate": "newData.isNumber()"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    },
+    "pubmeta": {
+      ".write": "auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')",
+      "$slug": {
+        ".read": true,
+        ".validate": "$slug.matches(/^[a-z0-9][a-z0-9_-]{1,39}$/) && newData.hasChildren(['updatedAt'])",
+        "kickMsg": {
+          ".validate": "newData.isString() && newData.val().length <= 120"
+        },
+        "updatedAt": {
+          ".validate": "newData.isNumber()"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    },
+    "pub": {
+      ".write": "auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')",
+      "$slug": {
+        "$universeId": {
+          ".read": true,
+          ".validate": "$slug.matches(/^[a-z0-9][a-z0-9_-]{1,39}$/) && $universeId.matches(/^[0-9]{1,20}$/) && newData.isString() && newData.val().length >= 1 && newData.val().length <= 400000"
+        }
+      }
     }
   }
 }

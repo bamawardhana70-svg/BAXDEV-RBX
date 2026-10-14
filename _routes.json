@@ -1,5 +1,25 @@
 {
   "version": 1,
-  "include": ["/api/*"],
-  "exclude": []
+  "include": ["/*"],
+  "exclude": [
+    "/",
+    "/index.html",
+    "/owner",
+    "/owner.html",
+    "/admin",
+    "/admin.html",
+    "/*.js",
+    "/*.css",
+    "/*.png",
+    "/*.jpg",
+    "/*.jpeg",
+    "/*.webp",
+    "/*.ico",
+    "/*.svg",
+    "/*.json",
+    "/*.webmanifest",
+    "/*.txt",
+    "/_headers",
+    "/_redirects"
+  ]
 }

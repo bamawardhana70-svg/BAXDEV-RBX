@@ -18,6 +18,9 @@ _redirects                       /admin dan /admin.html diarahkan ke /owner
 logo.png                         Logo untuk owner.html
 functions/api/roblox-permission.js  Beri akses audio ke map (Universe)
 qris.jpg                         Gambar QRIS bawaan (dipakai kalau owner belum upload foto QRIS)
+functions/[[slug]].js             Link script lisensi di akar domain: /<nama-link>?u=<Universe ID>
+functions/api/script/[slug].js   Alamat cadangan script lisensi: /api/script/<nama-link>
+functions/_lib/license.js         Baca script dari Firebase (kredensial admin), cek Universe ID, sajikan Lua atau Lua kick
 functions/_lib/auth.js            Verifikasi token login Google (dipakai semua endpoint /api/*; Project ID ditulis di file ini)
 functions/api/
   roblox-upload.js               Upload audio ke Roblox Open Cloud
@@ -132,6 +135,45 @@ Setiap hari **00.00 – 05.00 WIB** situs menampilkan pop-up maintenance otomati
 
 ### Tes koneksi & scope API key
 API key Roblox cukup memakai scope **Assets (Read + Write)**. Tombol Cek Koneksi (dan otomatis setelah Simpan) membaca scope key lewat introspeksi Roblox, lalu cadangannya mengetes endpoint Assets. Kalau scope Assets tidak ada, muncul peringatan yang menyebut scope yang dibutuhkan. Kalau key punya scope tambahan, tes tetap lolos dengan catatan agar cukup Assets saja. User ID / Group ID dicek lewat API publik Roblox.
+
+## Lisensi script Lua (owner)
+
+Di `/owner` ada kartu **Lisensi script**: paste script Lua, beri **nama link**, lalu daftarkan **Universe ID** map yang boleh memakainya.
+Game mengambil script lewat HTTP:
+
+```
+https://<nama-project>.pages.dev/musicserver                      (cadangan: /api/script/musicserver)
+```
+
+Universe ID **tidak ada di link**: loader mengirimnya lewat header HTTP `X-Baxdev-Universe` (isinya `game.GameId`). Query `?u=<Universe ID>` lama masih diterima supaya loader versi lama tetap jalan. Kalau Roblox menyertakan header `Roblox-Id` (Place ID asal request), server juga mencocokkan universe place itu dengan yang diklaim loader dan menolak kalau beda; kalau header itu tidak ada atau Roblox API tidak terjangkau, pengecekan ini dilewati.
+
+- Universe ID ada di daftar dan script aktif: server membalas isi script Lua.
+- Universe tidak terdaftar, tidak mengirim header Universe, atau script dinonaktifkan: server membalas Lua yang **meng-kick semua pemain** (yang ada dan yang masuk). Pesan kick bisa diatur per script.
+- Nama link tidak ada: diteruskan ke 404 biasa. Database tidak terjangkau: HTTP 502 (loader hanya `warn`, tidak meng-kick siapa pun).
+- Tiap script punya link sendiri. Tambah/cabut Universe ID di script yang sudah tersimpan berlaku langsung.
+- Kartu menampilkan **loader** siap pakai. Tempel sebagai `Script` di `ServerScriptService` map pembeli. Loader memakai `game.GameId` (Universe ID).
+
+### Tanpa secret: cara kerja data
+Tidak ada environment variable atau secret baru di Cloudflare. Data di Firebase Realtime Database:
+
+| Node | Isi | Akses |
+|---|---|---|
+| `scripts/<nama-link>` | data master (nama, kode, status, daftar Universe) | owner saja |
+| `pubmeta/<nama-link>` | penanda script lisensi + pesan kick | baca publik per path, tulis owner |
+| `pub/<nama-link>/<Universe ID>` | salinan kode Lua | baca publik per path persis (tidak bisa di-list), tulis owner |
+
+Salinan di `pub/` hanya ada kalau script aktif dan Universe itu terdaftar. Karena tiap Universe punya salinan sendiri, script besar dengan banyak map memakai ruang Firebase lebih banyak (kode maks. 400.000 karakter per salinan). Setelah mengubah kode, klik **Simpan script** supaya semua salinan diperbarui.
+
+### Setup sekali
+1. Publish ulang `database.rules.json` (menambah node `scripts`, `pubmeta`, `pub`).
+2. Deploy ulang.
+3. Di map pembeli: Game Settings → Security → **Allow HTTP Requests** aktif, dan `ServerScriptService.LoadStringEnabled` dicentang.
+
+### Batasan
+- Universe ID bukan rahasia. Orang yang tahu nama link dan salah satu Universe ID terdaftar bisa membaca `pub/<nama-link>/<Universe ID>` langsung dari Firebase atau lewat link itu (bukan lewat Roblox) dan membaca isi script. Lisensi ini mencegah pemakaian di map lain lewat loader, bukan menyembunyikan source dari pembeli.
+- Jangan taruh rahasia (webhook, API key) di script yang dijual.
+- Slug yang dipakai situs (`api`, `owner`, `admin`, `index`, dll.) ditolak. Hanya satu segmen path huruf kecil/angka/`-`/`_` (2-40 karakter) yang diperiksa ke database; path lain tetap dilayani file statis.
+- `_routes.json` menjalankan Functions untuk semua path kecuali halaman dan aset statis yang didaftarkan di `exclude`. Kalau kamu menambah file statis dengan ekstensi baru, tambahkan ke `exclude` supaya tidak memakan kuota Functions.
 
 ## PWA
 `manifest.webmanifest` + `sw.js` (didaftarkan di akhir `index.html`). Situs bisa di-install ke layar utama (Chrome/Edge: ikon install di address bar; Android: menu ⋮ → Install app; iOS Safari: Bagikan → Add to Home Screen). Service worker memakai *network-first* untuk halaman (jadi update dan maintenance selalu terbaru) dan tidak pernah meng-cache `/api/*`, Firebase, maupun `/owner`. Kalau mengubah aset statis, naikkan `CACHE` di `sw.js`.

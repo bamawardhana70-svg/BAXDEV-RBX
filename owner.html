@@ -271,6 +271,51 @@ html[data-theme="green"] .btn.danger{background:rgba(255,90,90,.08)}
       <div class="msg" id="upMsg" role="status"></div>
     </div>
 
+    <div class="card" id="lcCard">
+      <div class="toolbar" style="margin-bottom:10px">
+        <label style="margin:0">Lisensi script <span class="badge off" id="lcCount">0</span></label>
+        <button class="btn small" id="lcNew" type="button">+ Script baru</button>
+      </div>
+      <div id="lcList" class="scrollbox"></div>
+
+      <div id="lcEditor" class="hide" style="margin-top:14px;padding-top:14px;border-top:1px solid var(--line)">
+        <div class="row two">
+          <div><label for="lcName">Nama script</label><input id="lcName" maxlength="80" placeholder="Contoh: Music Server"></div>
+          <div><label for="lcSlug">Nama link</label><input id="lcSlug" maxlength="40" autocapitalize="off" autocomplete="off" spellcheck="false" placeholder="musicserver"></div>
+        </div>
+        <div class="note" id="lcLink" style="margin:6px 0 12px"></div>
+
+        <label for="lcCode">Script Lua <span id="lcSize" style="text-transform:none;letter-spacing:0"></span></label>
+        <textarea id="lcCode" class="codebox" style="min-height:220px;white-space:pre;overflow:auto" spellcheck="false" placeholder="Paste script Lua di sini"></textarea>
+
+        <div class="row two" style="margin-top:12px">
+          <div><label for="lcOn">Status</label>
+            <select id="lcOn"><option value="1">Aktif</option><option value="0">Nonaktif (semua map di-kick)</option></select></div>
+          <div><label for="lcKick">Pesan saat di-kick</label><input id="lcKick" maxlength="120" placeholder="Game ini belum terdaftar untuk memakai script ini."></div>
+        </div>
+
+        <label style="margin:16px 0 6px">Map yang boleh memakai (Universe ID) <span class="badge off" id="lcUniCount">0</span></label>
+        <div class="row two">
+          <div><input id="lcUniId" inputmode="numeric" autocomplete="off" placeholder="Universe ID, contoh: 123456789"></div>
+          <div style="display:flex;gap:8px"><input id="lcUniLabel" maxlength="60" placeholder="Label (opsional): nama map / pembeli"><button class="btn primary" id="lcUniAdd" type="button" style="white-space:nowrap">Tambah</button></div>
+        </div>
+        <div id="lcUniList" class="scrollbox" style="margin-top:10px"></div>
+
+        <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn primary" id="lcSave" type="button">Simpan script</button>
+          <button class="btn" id="lcCancel" type="button">Tutup</button>
+          <button class="btn" id="lcCopyLink" type="button">Salin link</button>
+        </div>
+
+        <label for="lcLoader" style="margin:16px 0 6px">Loader untuk dipasang di map (Script di ServerScriptService)</label>
+        <textarea id="lcLoader" class="codebox" style="min-height:190px;white-space:pre;overflow:auto" readonly spellcheck="false"></textarea>
+        <div style="margin-top:10px"><button class="btn" id="lcCopyLoader" type="button">Salin loader</button></div>
+      </div>
+
+      <div class="msg" id="lcMsg" role="status"></div>
+      <p class="note" style="margin-top:10px">Script disimpan di Firebase dan disajikan lewat <code>/&lt;nama link&gt;</code> (cadangan: <code>/api/script/&lt;nama link&gt;</code>); Universe ID dikirim loader lewat header, jadi tidak tampil di link. Tidak butuh secret di Cloudflare: tiap Universe ID terdaftar mendapat salinan kode di <code>pub/</code>, jadi file besar × banyak map memakai ruang Firebase lebih banyak. Universe yang tidak ada di daftar, atau script yang dinonaktifkan, menerima Lua yang meng-kick semua pemain. Perubahan kode butuh <b>Simpan script</b> agar semua salinan ikut diperbarui. Map memakai loader di atas: butuh HTTP Requests aktif dan <code>ServerScriptService.LoadStringEnabled</code> dicentang.</p>
+    </div>
+
     <div class="card">
       <label style="margin-bottom:10px">Ganti password owner</label>
       <div class="row">
@@ -324,7 +369,7 @@ if (!configured) {
   $("loginBtn").disabled = true;
 }
 
-let auth, db, vipMap = {}, orderMap = {}, codeMap = {}, redeemMap = {}, uploadMap = {}, userMap = {}, banMap = {}, unsubs = [];
+let auth, db, vipMap = {}, orderMap = {}, codeMap = {}, redeemMap = {}, uploadMap = {}, userMap = {}, banMap = {}, scriptMap = {}, unsubs = [];
 if (configured) {
   const app = initializeApp(cfg);
   auth = getAuth(app);
@@ -651,8 +696,179 @@ async function removeCode(code){
   catch(e){ fail($("codeMsg"),e); }
 }
 
+/* ── Lisensi script ── */
+const LC_SLUG_RE = /^[a-z0-9][a-z0-9_-]{1,39}$/;
+const LC_RESERVED = new Set(["api","owner","admin","index","logo","favicon","manifest","sw","theme","firebase-config","qris","apple-touch-icon","robots","sitemap","assets","static","functions","yt-backend","yt-worker"]);
+const LC_MAX_CODE = 400000;
+let lcEditing = null;   // null = editor tertutup, "" = script baru, selain itu slug script tersimpan yang sedang diedit
+let lcUni = {};         // universe di editor: { id: { label?, at } }
+
+const lcLinkOf = (slug) => location.origin + "/" + (slug || "nama-link");
+function lcLoaderOf(slug){
+  return [
+    "-- baxdev license loader  |  taruh sebagai Script di ServerScriptService",
+    "-- Wajib: Game Settings > Security > Allow HTTP Requests = ON, dan ServerScriptService.LoadStringEnabled = true",
+    'local HttpService = game:GetService("HttpService")',
+    'local URL = "' + lcLinkOf(slug) + '"',
+    'local HEADERS = { ["X-Baxdev-Universe"] = tostring(game.GameId) }',
+    "",
+    "local source",
+    "for attempt = 1, 3 do",
+    "\tlocal ok, result = pcall(function()",
+    "\t\treturn HttpService:GetAsync(URL, true, HEADERS)",
+    "\tend)",
+    '\tif ok and type(result) == "string" and #result > 0 then',
+    "\t\tsource = result",
+    "\t\tbreak",
+    "\tend",
+    "\ttask.wait(2 * attempt)",
+    "end",
+    "",
+    "if not source then",
+    '\twarn("[baxdev] gagal mengambil script lisensi")',
+    "\treturn",
+    "end",
+    "",
+    "local fn, err = loadstring(source)",
+    "if not fn then",
+    '\twarn("[baxdev] script tidak valid: " .. tostring(err))',
+    "\treturn",
+    "end",
+    "fn()",
+    ""
+  ].join("\n");
+}
+function lcCopy(text, okMsg){
+  const done = () => say($("lcMsg"), okMsg, "ok");
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(done, () => say($("lcMsg"), "Gagal menyalin. Salin manual dari kotak teks.", "err"));
+    return;
+  }
+  const t = document.createElement("textarea");
+  t.value = text; t.style.position = "fixed"; t.style.opacity = "0";
+  document.body.appendChild(t); t.select();
+  try { document.execCommand("copy"); done(); } catch (e) { say($("lcMsg"), "Gagal menyalin. Salin manual dari kotak teks.", "err"); }
+  document.body.removeChild(t);
+}
+function lcRefreshPreview(){
+  const slug = $("lcSlug").value.trim().toLowerCase();
+  $("lcLink").innerHTML = "Link: <code>" + esc(lcLinkOf(slug)) + "</code> (Universe ID dikirim loader lewat header, tidak ada di link)";
+  $("lcLoader").value = lcLoaderOf(slug);
+  const n = $("lcCode").value.length;
+  $("lcSize").textContent = "· " + n.toLocaleString("id-ID") + " / " + LC_MAX_CODE.toLocaleString("id-ID") + " karakter";
+}
+function renderUniList(){
+  const ids = Object.keys(lcUni).sort((a,b)=>(lcUni[b].at||0)-(lcUni[a].at||0));
+  $("lcUniCount").textContent = ids.length;
+  $("lcUniList").innerHTML = ids.length ? ids.map(id=>
+    '<div class="item"><div><div class="id mono">'+esc(id)+'</div>'+
+    '<div class="meta">'+(lcUni[id].label?esc(lcUni[id].label)+' · ':'')+'ditambah '+esc(fmtTime(lcUni[id].at||Date.now()))+'</div></div>'+
+    '<div class="actions"><button class="btn danger" type="button" data-lc-unidel="'+esc(id)+'">Hapus</button></div></div>').join("")
+    : '<div class="empty">Belum ada map. Tanpa map terdaftar, semua pemain di-kick.</div>';
+}
+function renderScripts(){
+  const slugs = Object.keys(scriptMap).filter(k=>scriptMap[k]&&typeof scriptMap[k]==="object").sort();
+  $("lcCount").textContent = slugs.length;
+  $("lcList").innerHTML = slugs.length ? slugs.map(k=>{
+    const r = scriptMap[k], n = r.universes ? Object.keys(r.universes).length : 0;
+    return '<div class="item"><div><div class="id">'+esc(r.name||k)+' <span class="badge '+(r.enabled?'ok':'off')+'">'+(r.enabled?'Aktif':'Nonaktif')+'</span></div>'+
+      '<div class="meta">/'+esc(k)+' · '+n+' map · '+esc((r.code||"").length.toLocaleString("id-ID"))+' karakter · '+esc(fmtTime(r.updatedAt||0))+'</div></div>'+
+      '<div class="actions"><button class="btn small" type="button" data-lc-edit="'+esc(k)+'">Edit</button>'+
+      '<button class="btn danger" type="button" data-lc-del="'+esc(k)+'">Hapus</button></div></div>';
+  }).join("") : '<div class="empty">Belum ada script. Klik "+ Script baru".</div>';
+  // Editor script tersimpan: ikuti perubahan daftar map dari database (hapus/tambah map berlaku langsung)
+  if (lcEditing && scriptMap[lcEditing]) { lcUni = Object.assign({}, scriptMap[lcEditing].universes || {}); renderUniList(); }
+}
+function openEditor(slug){
+  lcEditing = slug;
+  const r = slug ? scriptMap[slug] : null;
+  if (slug && !r) { lcEditing = null; return; }
+  $("lcName").value = r ? (r.name||"") : "";
+  $("lcSlug").value = slug || "";
+  $("lcSlug").disabled = !!slug;   // nama link tidak diubah setelah dibuat (link yang sudah dipasang di map akan putus)
+  $("lcCode").value = r ? (r.code||"") : "";
+  $("lcOn").value = !r || r.enabled ? "1" : "0";
+  $("lcKick").value = r ? (r.kickMsg||"") : "";
+  lcUni = Object.assign({}, r && r.universes || {});
+  $("lcUniId").value = ""; $("lcUniLabel").value = "";
+  $("lcEditor").classList.remove("hide");
+  say($("lcMsg"), "");
+  renderUniList(); lcRefreshPreview();
+  $("lcEditor").scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+function closeEditor(){ lcEditing = null; $("lcEditor").classList.add("hide"); }
+
+async function saveScript(){
+  const slug = $("lcSlug").value.trim().toLowerCase();
+  const name = $("lcName").value.trim();
+  const code = $("lcCode").value;
+  const msg = $("lcMsg");
+  if (!name) return say(msg, "Isi nama script.", "err");
+  if (!LC_SLUG_RE.test(slug)) return say(msg, "Nama link: 2-40 karakter, huruf kecil, angka, - atau _, diawali huruf/angka.", "err");
+  if (LC_RESERVED.has(slug)) return say(msg, "Nama link \u201c"+slug+"\u201d dipakai situs. Pilih nama lain.", "err");
+  if (lcEditing === "" && scriptMap[slug]) return say(msg, "Nama link itu sudah dipakai script lain.", "err");
+  if (!code.trim()) return say(msg, "Script Lua masih kosong.", "err");
+  if (code.length > LC_MAX_CODE) return say(msg, "Script terlalu besar (maks. "+LC_MAX_CODE.toLocaleString("id-ID")+" karakter).", "err");
+  const now = Date.now(), prev = scriptMap[slug] || {};
+  const obj = { name: name, code: code, enabled: $("lcOn").value === "1", createdAt: prev.createdAt || now, updatedAt: now };
+  const kick = $("lcKick").value.trim().slice(0,120);
+  if (kick) obj.kickMsg = kick;
+  if (Object.keys(lcUni).length) obj.universes = lcUni;
+  const btn = $("lcSave"); btn.disabled = true;
+  try{
+    const w = {};
+    w["scripts/"+slug] = obj;
+    const meta = { updatedAt: now };
+    if (kick) meta.kickMsg = kick;
+    w["pubmeta/"+slug] = meta;
+    Object.keys(prev.universes || {}).forEach(id => { if (!lcUni[id]) w["pub/"+slug+"/"+id] = null; });
+    Object.keys(lcUni).forEach(id => { w["pub/"+slug+"/"+id] = obj.enabled ? code : null; });   // salinan hanya ada kalau aktif
+    await update(ref(db), w);
+    lcEditing = slug; $("lcSlug").disabled = true;
+    say(msg, "Tersimpan. Link: "+lcLinkOf(slug)+(obj.enabled ? "" : " (nonaktif: semua map di-kick)"), "ok");
+  }catch(e){ fail(msg,e); }
+  finally{ btn.disabled = false; }
+}
+async function deleteScript(slug){
+  if (!scriptMap[slug] || !confirm("Hapus script \u201c"+(scriptMap[slug].name||slug)+"\u201d? Map yang masih memakainya akan gagal mengambil script.")) return;
+  try{
+    await update(ref(db), {["scripts/"+slug]:null,["pubmeta/"+slug]:null,["pub/"+slug]:null});
+    if (lcEditing === slug) closeEditor();
+    say($("lcMsg"), "Script "+slug+" dihapus.", "ok");
+  }catch(e){ fail($("lcMsg"),e); }
+}
+async function addUniverse(){
+  const id = $("lcUniId").value.trim().replace(/\s+/g,"");
+  const label = $("lcUniLabel").value.trim().slice(0,60);
+  const msg = $("lcMsg");
+  if (!/^[0-9]{1,20}$/.test(id)) return say(msg, "Universe ID harus angka saja.", "err");
+  if (lcUni[id]) return say(msg, "Universe "+id+" sudah ada di daftar.", "err");
+  const rec = { at: Date.now() };
+  if (label) rec.label = label;
+  if (lcEditing) {   // script sudah tersimpan: berlaku langsung
+    try{
+      const m = scriptMap[lcEditing] || {};
+      await update(ref(db),{["scripts/"+lcEditing+"/universes/"+id]:rec,["scripts/"+lcEditing+"/updatedAt"]:Date.now(),["pub/"+lcEditing+"/"+id]:(m.enabled&&m.code)?m.code:null});
+      say(msg, "Universe "+id+" ditambahkan dan langsung aktif.", "ok");
+    }catch(e){ return fail(msg,e); }
+  } else {
+    lcUni[id] = rec; renderUniList();
+    say(msg, "Universe ditambahkan ke daftar. Klik Simpan script untuk menerapkan.", "ok");
+  }
+  $("lcUniId").value = ""; $("lcUniLabel").value = "";
+}
+async function removeUniverse(id){
+  if (!lcUni[id]) return;
+  if (lcEditing) {
+    try{
+      await update(ref(db),{["scripts/"+lcEditing+"/universes/"+id]:null,["scripts/"+lcEditing+"/updatedAt"]:Date.now(),["pub/"+lcEditing+"/"+id]:null});
+      say($("lcMsg"), "Universe "+id+" dicabut. Map itu akan di-kick saat server berikutnya mengambil script.", "ok");
+    }catch(e){ fail($("lcMsg"),e); }
+  } else { delete lcUni[id]; renderUniList(); }
+}
+
 /* ── Auth ── */
-function stopListening(){ unsubs.forEach(f=>f()); unsubs=[]; vipMap={}; orderMap={}; codeMap={}; redeemMap={}; uploadMap={}; userMap={}; banMap={}; }
+function stopListening(){ unsubs.forEach(f=>f()); unsubs=[]; vipMap={}; orderMap={}; codeMap={}; redeemMap={}; uploadMap={}; userMap={}; banMap={}; scriptMap={}; lcEditing=null; }
 function listen(){
   stopListening();
   const onErr = (e)=>say($("orderMsg"),"Gagal membaca data: "+(e&&e.message||e),"err");
@@ -666,6 +882,7 @@ function listen(){
   unsubs.push(onValue(query(ref(db,"uploads"),limitToLast(200)),s=>{uploadMap=s.val()||{};renderUploads();renderUsers()},onErr));
   unsubs.push(onValue(ref(db,"users"),s=>{userMap=s.val()||{};renderUsers()},onErr));
   unsubs.push(onValue(ref(db,"bans"),s=>{banMap=s.val()||{};renderUsers()},onErr));
+  unsubs.push(onValue(ref(db,"scripts"),s=>{scriptMap=s.val()||{};renderScripts()},err=>say($("lcMsg"),"Gagal membaca scripts: "+(err&&err.message||err)+" (publish ulang database.rules.json)","err")));
 }
 function showLogin(){
   stopListening();
@@ -842,6 +1059,20 @@ $("users").addEventListener("click",e=>{
   if(b.dataset.ban)banUser(b.dataset.ban); else if(b.dataset.unban)unbanUser(b.dataset.unban);
 });
 $("list").addEventListener("click",e=>{const b=e.target.closest("button[data-dur]");if(b){$("dUid").value=b.dataset.dur;$("dUid").scrollIntoView({behavior:"smooth",block:"center"});$("dUid").focus()}});
+$("lcNew").addEventListener("click",()=>openEditor(""));
+$("lcCancel").addEventListener("click",closeEditor);
+$("lcSave").addEventListener("click",saveScript);
+$("lcUniAdd").addEventListener("click",addUniverse);
+$("lcUniId").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();addUniverse()}});
+$("lcCopyLink").addEventListener("click",()=>{const sl=$("lcSlug").value.trim().toLowerCase();if(!LC_SLUG_RE.test(sl))return say($("lcMsg"),"Isi nama link dulu.","err");lcCopy(lcLinkOf(sl),"Link disalin.")});
+$("lcCopyLoader").addEventListener("click",()=>{const sl=$("lcSlug").value.trim().toLowerCase();if(!LC_SLUG_RE.test(sl))return say($("lcMsg"),"Isi nama link dulu.","err");lcCopy(lcLoaderOf(sl),"Loader disalin. Tempel sebagai Script di ServerScriptService.")});
+["lcSlug","lcCode"].forEach(id=>$(id).addEventListener("input",lcRefreshPreview));
+$("lcSlug").addEventListener("input",()=>{const el=$("lcSlug"),v=el.value.toLowerCase().replace(/[^a-z0-9_-]/g,"");if(v!==el.value)el.value=v;lcRefreshPreview()});
+$("lcList").addEventListener("click",e=>{
+  const ed=e.target.closest("button[data-lc-edit]");if(ed)return openEditor(ed.dataset.lcEdit);
+  const dl=e.target.closest("button[data-lc-del]");if(dl)deleteScript(dl.dataset.lcDel);
+});
+$("lcUniList").addEventListener("click",e=>{const b=e.target.closest("button[data-lc-unidel]");if(b)removeUniverse(b.dataset.lcUnidel)});
 $("loginBtn").addEventListener("click",login);
 $("pw").addEventListener("keydown",e=>{if(e.key==="Enter")login()});
 $("resetBtn").addEventListener("click",()=>{if(configured)resetPw()});
