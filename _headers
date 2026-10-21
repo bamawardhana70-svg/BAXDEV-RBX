@@ -15,6 +15,23 @@
   X-Robots-Tag: noindex, nofollow
   Cache-Control: no-store
 
+/license
+  X-Robots-Tag: noindex, nofollow
+  Cache-Control: no-store
+
+/license.html
+  X-Robots-Tag: noindex, nofollow
+  Cache-Control: no-store
+
+/license.js
+  Cache-Control: no-cache
+
+/license-lua.js
+  Cache-Control: no-cache
+
+/license.css
+  Cache-Control: no-cache
+
 /firebase-config.js
   Cache-Control: no-cache
 

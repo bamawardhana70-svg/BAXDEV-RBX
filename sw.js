@@ -1,5 +1,5 @@
 // Service worker baxdev: shell offline ringan. API, Firebase, dan Roblox TIDAK pernah di-cache.
-const CACHE = "baxdev-shell-v6";
+const CACHE = "baxdev-shell-v7";
 const SHELL = ["/", "/favicon-192.png", "/logo.png", "/manifest.webmanifest"];
 
 self.addEventListener("install", (e) => {
@@ -16,7 +16,7 @@ self.addEventListener("fetch", (e) => {
   const req = e.request;
   const url = new URL(req.url);
   if (req.method !== "GET" || url.origin !== location.origin) return;       // Firebase / CDN / Roblox: langsung ke jaringan
-  if (url.pathname.startsWith("/api/") || url.pathname.startsWith("/owner")) return;
+  if (url.pathname.startsWith("/api/") || url.pathname.startsWith("/owner") || url.pathname.startsWith("/license")) return;
   // Halaman: jaringan dulu (supaya update & maintenance selalu terbaru), cache kalau offline
   if (req.mode === "navigate") {
     e.respondWith(

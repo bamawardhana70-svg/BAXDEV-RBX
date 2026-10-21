@@ -176,6 +176,21 @@ Salinan di `pub/` hanya ada kalau script aktif dan Universe itu terdaftar. Karen
 - Slug yang dipakai situs (`api`, `owner`, `admin`, `index`, dll.) ditolak. Hanya satu segmen path huruf kecil/angka/`-`/`_` (2-40 karakter) yang diperiksa ke database; path lain tetap dilayani file statis.
 - `_routes.json` menjalankan Functions untuk semua path kecuali halaman dan aset statis yang didaftarkan di `exclude`. Kalau kamu menambah file statis dengan ekstensi baru, tambahkan ke `exclude` supaya tidak memakan kuota Functions.
 
+## Menu License (ModuleScript + require, tanpa loadstring)
+
+Halaman owner di `https://<nama-project>.pages.dev/license` (tema Obsidian Black, login Firebase sama dengan `/owner`; ada kartu link di /owner).
+
+- **Buat / aktifkan / nonaktifkan / perpanjang / hapus** lisensi. Key berformat `BXL-XXXX-XXXX-XXXX-XXXX` (80 bit acak). Masa berlaku: 7-365 hari, tanggal kustom, atau permanen. Perpanjangan dihitung dari masa berlaku sekarang (kalau belum lewat).
+- Setelah lisensi dibuat, halaman detail terbuka: tutorial pemasangan, dua kode siap salin (**Copy Code**), tombol **Test License**, tab Error & solusi, Riwayat, dan Kelola (ubah Universe/Place ID tanpa memasang ulang kode).
+- Kode yang dihasilkan: `ModuleScript BaxdevLicense` (mengirim `game.GameId` + `game.PlaceId` ke server) dan `Script BaxdevLoader` (memanggil modul, lalu `require()` ModuleScript produk atau Asset ID). **LoadStringEnabled tidak perlu aktif.** Yang wajib: Allow HTTP Requests.
+- **ModuleScript `BaxdevLicense` di-obfuscate** (`obfuscateLua` di `license-lua.js`): komentar dan indentasi dibuang, nama variabel lokal diacak (seed dari key, jadi hasil selalu sama), semua string termasuk key dan URL dienkode XOR dan didekode lewat `bit32` saat jalan. Tombol di blok kode bisa beralih ke versi terbaca untuk dukungan; Script `BaxdevLoader` sengaja tetap terbaca karena pemilik map mengubah `KICK_ON_DENIED`. Ini penyamaran, bukan enkripsi.
+- Verifikasi di `functions/api/license/verify.js` (logika di `functions/_lib/licverify.js`): cek key, status, kedaluwarsa, lalu Place ID dipetakan ke Universe ID lewat API Roblox dan dibandingkan dengan klaim modul. Header `Roblox-Id` (diisi Roblox) harus sama dengan Place ID modul. Universe harus ada di daftar lisensi; kalau Place ID dibatasi, Place harus ada di daftar. Respons memuat `nonce` yang dicek modul. Respons tidak pernah memuat key, catatan pembeli, atau kredensial.
+- Error jaringan / database / lookup Roblox bertanda `retryable`: modul mencoba 3 kali dan loader tidak meng-kick pemain untuk error itu. `KICK_ON_DENIED` di loader (default `false`) bisa diaktifkan untuk lisensi yang ditolak.
+- Data: `licenses/<id>` (master, owner saja), `licpub/<key>` (baca publik per path, tanpa data pembeli), `liclog/<key>` (riwayat, server menambah lewat REST publik; rules memvalidasi bentuk dan hanya untuk key yang ada), `licstat/<key>` (verifikasi terakhir). **Publish ulang `database.rules.json`** lalu deploy.
+- Sistem lisensi lama (loadstring, `/<nama-link>`) tetap berjalan untuk loader yang sudah terpasang; kartunya diberi label "lama" di /owner.
+- Batasan: pengecekan berjalan di server game, jadi pembeli yang mengedit loader bisa melewatinya. Lisensi menghalangi pemakaian lewat modul asli di map lain dan memberi kontrol cabut/perpanjang + riwayat; bukan penyembunyi source produk. Endpoint verify tidak punya rate limit sendiri (tanpa KV); riwayat per key dibatasi tampilan 100 terbaru.
+- Slug `license` dan `licenses` dicadangkan (tidak bisa jadi nama link lisensi lama).
+
 ## PWA
 `manifest.webmanifest` + `sw.js` (didaftarkan di akhir `index.html`). Situs bisa di-install ke layar utama (Chrome/Edge: ikon install di address bar; Android: menu ⋮ → Install app; iOS Safari: Bagikan → Add to Home Screen). Service worker memakai *network-first* untuk halaman (jadi update dan maintenance selalu terbaru) dan tidak pernah meng-cache `/api/*`, Firebase, maupun `/owner`. Kalau mengubah aset statis, naikkan `CACHE` di `sw.js`.
 

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#040405">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>baxdev — License</title>
+<link rel="stylesheet" href="license.css">
+<script src="firebase-config.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><img src="logo.png" alt="baxdev"><span class="crumb">License</span></div>
+    <div class="right">
+      <span class="who" id="who"></span>
+      <a class="btn sm" href="/owner" id="ownerLink">Owner Panel</a>
+      <button class="btn sm hide" id="logoutBtn" type="button">Keluar</button>
+    </div>
+  </header>
+
+  <section id="loginView" class="hide">
+    <h1>Masuk</h1>
+    <p class="lead">Menu License hanya untuk owner. Login dengan akun yang sama seperti di Owner Panel.</p>
+    <div class="card" style="max-width:420px">
+      <div class="field"><label for="email">Email</label><input id="email" type="email" autocomplete="username" placeholder="baxdev@owner.id"></div>
+      <div class="field"><label for="pw">Password</label><input id="pw" type="password" autocomplete="current-password" placeholder="Password"></div>
+      <button class="btn primary" id="loginBtn" type="button">Masuk</button>
+      <div class="msg" id="loginMsg" role="status"></div>
+    </div>
+  </section>
+
+  <main id="app" class="hide" aria-live="polite"></main>
+  <div id="loading" class="empty">Memuat…</div>
+</div>
+<div id="modalRoot"></div>
+<script type="module" src="license.js"></script>
+</body>
+</html>

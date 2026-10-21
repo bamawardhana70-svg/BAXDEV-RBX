@@ -14,7 +14,7 @@ const DEFAULT_KICK = "Game ini belum terdaftar untuk memakai script ini.";
 
 // Path yang dipakai situs sendiri: tidak boleh dijadikan slug lisensi.
 export const RESERVED_SLUGS = new Set([
-  "api", "owner", "admin", "index", "logo", "favicon", "manifest", "sw", "theme", "firebase-config",
+  "api", "owner", "admin", "license", "licenses", "index", "logo", "favicon", "manifest", "sw", "theme", "firebase-config",
   "qris", "apple-touch-icon", "robots", "sitemap", "assets", "static", "functions", "yt-backend", "yt-worker"
 ]);
 

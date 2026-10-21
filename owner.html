@@ -285,9 +285,17 @@ html[data-theme="green"] .btn.danger{background:rgba(255,90,90,.08)}
       <div class="msg" id="upMsg" role="status"></div>
     </div>
 
+    <div class="card" id="licenseMenuCard">
+      <div class="toolbar" style="margin-bottom:6px">
+        <label style="margin:0">License</label>
+        <a class="btn primary small" href="/license" style="text-decoration:none">Buka menu License →</a>
+      </div>
+      <div class="note">Buat, aktifkan, nonaktifkan, perpanjang, dan hapus lisensi. Verifikasi Universe ID + Place ID memakai ModuleScript dan <code>require()</code> (tanpa loadstring), lengkap dengan tutorial pemasangan, tombol Test License, dan riwayat verifikasi.</div>
+    </div>
+
     <div class="card" id="lcCard">
       <div class="toolbar" style="margin-bottom:10px">
-        <label style="margin:0">Lisensi script <span class="badge off" id="lcCount">0</span></label>
+        <label style="margin:0">Lisensi script lama (loadstring) <span class="badge off" id="lcCount">0</span></label>
         <button class="btn small" id="lcNew" type="button">+ Script baru</button>
       </div>
       <div id="lcList" class="scrollbox"></div>
@@ -743,7 +751,7 @@ async function removeCode(code){
 
 /* ── Lisensi script ── */
 const LC_SLUG_RE = /^[a-z0-9][a-z0-9_-]{1,39}$/;
-const LC_RESERVED = new Set(["api","owner","admin","index","logo","favicon","manifest","sw","theme","firebase-config","qris","apple-touch-icon","robots","sitemap","assets","static","functions","yt-backend","yt-worker"]);
+const LC_RESERVED = new Set(["api","owner","admin","license","licenses","index","logo","favicon","manifest","sw","theme","firebase-config","qris","apple-touch-icon","robots","sitemap","assets","static","functions","yt-backend","yt-worker"]);
 const LC_MAX_CODE = 400000;
 let lcEditing = null;   // null = editor tertutup, "" = script baru, selain itu slug script tersimpan yang sedang diedit
 let lcUni = {};         // universe di editor: { id: { label?, at } }

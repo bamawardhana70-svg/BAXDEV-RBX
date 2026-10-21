@@ -402,6 +402,149 @@
           ".validate": "$slug.matches(/^[a-z0-9][a-z0-9_-]{1,39}$/) && $universeId.matches(/^[0-9]{1,20}$/) && newData.isString() && newData.val().length >= 1 && newData.val().length <= 400000"
         }
       }
+    },
+    "licenses": {
+      ".read": "auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')",
+      ".write": "auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')",
+      "$id": {
+        ".validate": "$id.matches(/^[A-Za-z0-9]{8,24}$/) && newData.hasChildren(['key', 'name', 'enabled', 'expiresAt', 'createdAt', 'updatedAt'])",
+        "key": {
+          ".validate": "newData.isString() && newData.val().matches(/^BXL-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/)"
+        },
+        "name": {
+          ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 80"
+        },
+        "buyer": {
+          ".validate": "newData.isString() && newData.val().length <= 80"
+        },
+        "note": {
+          ".validate": "newData.isString() && newData.val().length <= 200"
+        },
+        "module": {
+          ".validate": "newData.isString() && newData.val().matches(/^[A-Za-z0-9_ .-]{1,60}$/)"
+        },
+        "assetId": {
+          ".validate": "newData.isString() && newData.val().matches(/^[1-9][0-9]{0,19}$/)"
+        },
+        "enabled": {
+          ".validate": "newData.isBoolean()"
+        },
+        "expiresAt": {
+          ".validate": "newData.isNumber() && newData.val() >= 0"
+        },
+        "universes": {
+          "$u": {
+            ".validate": "$u.matches(/^[1-9][0-9]{0,19}$/) && newData.val() === true"
+          }
+        },
+        "places": {
+          "$p": {
+            ".validate": "$p.matches(/^[1-9][0-9]{0,19}$/) && newData.val() === true"
+          }
+        },
+        "createdAt": {
+          ".validate": "newData.isNumber()"
+        },
+        "updatedAt": {
+          ".validate": "newData.isNumber()"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    },
+    "licpub": {
+      ".write": "auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')",
+      "$key": {
+        ".read": true,
+        ".validate": "$key.matches(/^BXL-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/) && newData.hasChildren(['enabled', 'expiresAt', 'updatedAt'])",
+        "name": {
+          ".validate": "newData.isString() && newData.val().length <= 80"
+        },
+        "enabled": {
+          ".validate": "newData.isBoolean()"
+        },
+        "expiresAt": {
+          ".validate": "newData.isNumber() && newData.val() >= 0"
+        },
+        "universes": {
+          "$u": {
+            ".validate": "$u.matches(/^[1-9][0-9]{0,19}$/) && newData.val() === true"
+          }
+        },
+        "places": {
+          "$p": {
+            ".validate": "$p.matches(/^[1-9][0-9]{0,19}$/) && newData.val() === true"
+          }
+        },
+        "updatedAt": {
+          ".validate": "newData.isNumber()"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    },
+    "licstat": {
+      ".read": "auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')",
+      ".write": "auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')",
+      "$key": {
+        ".write": "root.child('licpub').child($key).exists()",
+        ".validate": "$key.matches(/^BXL-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/) && newData.hasChildren(['at', 'ok', 'code'])",
+        "at": {
+          ".validate": "newData.isNumber() && newData.val() <= now + 60000 && newData.val() >= now - 600000"
+        },
+        "ok": {
+          ".validate": "newData.isBoolean()"
+        },
+        "code": {
+          ".validate": "newData.isString() && newData.val().length <= 32"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    },
+    "liclog": {
+      ".read": "auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')",
+      ".write": "auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')",
+      "$key": {
+        ".validate": "$key.matches(/^BXL-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/)",
+        "$logId": {
+          ".write": "!data.exists() && newData.exists() && root.child('licpub').child($key).exists()",
+          ".validate": "newData.hasChildren(['at', 'ok', 'code', 'src'])",
+          "at": {
+            ".validate": "newData.isNumber() && newData.val() <= now + 60000 && newData.val() >= now - 600000"
+          },
+          "ok": {
+            ".validate": "newData.isBoolean()"
+          },
+          "code": {
+            ".validate": "newData.isString() && newData.val().length <= 32"
+          },
+          "universe": {
+            ".validate": "newData.isString() && newData.val().matches(/^[0-9]{0,20}$/)"
+          },
+          "place": {
+            ".validate": "newData.isString() && newData.val().matches(/^[0-9]{0,20}$/)"
+          },
+          "src": {
+            ".validate": "newData.isString() && (newData.val() === 'roblox' || newData.val() === 'claimed' || newData.val() === 'panel')"
+          },
+          "detail": {
+            ".validate": "newData.isString() && newData.val().length <= 120"
+          },
+          "cc": {
+            ".validate": "newData.isString() && newData.val().length <= 2"
+          },
+          "studio": {
+            ".validate": "newData.isBoolean()"
+          },
+          "$other": {
+            ".validate": false
+          }
+        }
+      }
     }
   }
 }

@@ -1,6 +1,8 @@
 {
   "version": 1,
-  "include": ["/*"],
+  "include": [
+    "/*"
+  ],
   "exclude": [
     "/",
     "/index.html",
@@ -8,6 +10,8 @@
     "/owner.html",
     "/admin",
     "/admin.html",
+    "/license.html",
+    "/license",
     "/*.js",
     "/*.css",
     "/*.png",
