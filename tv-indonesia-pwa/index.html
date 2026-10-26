@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#10131a">
+  <meta name="description" content="PWA pemutar TV live dari playlist yang Anda miliki atau berhak akses.">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icons/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css">
+  <title>TV Nusantara — Live TV</title>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="./" aria-label="TV Nusantara beranda"><span class="brand-mark">▶</span><span>TV <b>Nusantara</b><small>LIVE PLAYER</small></span></a>
+    <div class="top-actions">
+      <button id="installBtn" class="button subtle hidden">Pasang App</button>
+      <button id="sourceBtn" class="button primary">Sumber Channel</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="main-column">
+      <div class="eyebrow"><span class="live-dot"></span> LIVE STREAMING <span class="muted">/ INDONESIA</span></div>
+      <div class="player-wrap">
+        <video id="video" controls playsinline autoplay></video>
+        <div id="playerPlaceholder" class="player-placeholder">
+          <div class="play-symbol">▶</div>
+          <h2>Pilih channel untuk mulai menonton</h2>
+          <p>Tambahkan playlist yang legal dan bisa Anda akses.</p>
+        </div>
+        <div id="playerStatus" class="player-status" role="status">Siap memutar</div>
+      </div>
+      <div class="now-playing">
+        <div class="channel-avatar" id="currentLogo">TV</div>
+        <div class="now-meta"><div class="muted tiny">SEDANG DIPUTAR</div><h1 id="currentTitle">Belum ada channel</h1><p id="currentGroup">Pilih channel dari daftar</p></div>
+        <button id="favCurrent" class="icon-button" title="Favoritkan channel" aria-label="Favoritkan channel">☆</button>
+      </div>
+      <div class="notice"><strong>Info sumber:</strong> aplikasi ini hanya pemutar. Aplikasi tidak meng-host siaran dan tidak menjamin hak siar, ketersediaan, atau kualitas setiap URL playlist. Gunakan stream resmi atau yang memang Anda punya izin untuk akses.</div>
+      <section class="epg-panel">
+        <div class="section-heading"><div><h2>Jadwal acara</h2><p>EPG XMLTV, jika disediakan oleh sumber playlist</p></div><span class="pill">EPG</span></div>
+        <div id="epgContent" class="epg-content">Belum ada data jadwal. Masukkan URL XMLTV yang sah melalui Sumber Channel.</div>
+      </section>
+    </section>
+
+    <aside class="sidebar">
+      <div class="section-heading"><div><h2>Channel</h2><p id="channelCount">Belum dimuat</p></div><button id="refreshBtn" class="icon-button" title="Muat ulang playlist" aria-label="Muat ulang playlist">↻</button></div>
+      <label class="search-box"><span>⌕</span><input id="searchInput" type="search" placeholder="Cari channel..." autocomplete="off"></label>
+      <div id="filters" class="filters">
+        <button class="filter active" data-filter="Semua">Semua</button>
+        <button class="filter" data-filter="Favorit">★ Favorit</button>
+        <button class="filter" data-filter="Berita">Berita</button>
+        <button class="filter" data-filter="Nasional">Nasional</button>
+        <button class="filter" data-filter="Daerah">Daerah</button>
+        <button class="filter" data-filter="Lainnya">Lainnya</button>
+      </div>
+      <div id="channelList" class="channel-list">
+        <div class="empty-state"><div>▤</div><b>Playlist belum dimuat</b><p>Tekan “Sumber Channel” untuk memasukkan URL playlist M3U atau file lokal.</p></div>
+      </div>
+      <div class="sidebar-footer">TV Nusantara <span>•</span> Pemutar PWA</div>
+    </aside>
+  </main>
+
+  <dialog id="sourceDialog">
+    <form method="dialog" id="sourceForm" class="dialog-card">
+      <div class="dialog-heading"><div><div class="eyebrow">PENGATURAN</div><h2>Sumber channel</h2></div><button class="icon-button" value="cancel" aria-label="Tutup">✕</button></div>
+      <p class="muted">Gunakan URL playlist M3U/M3U8 yang legal atau unggah file playlist dari perangkat. URL eksternal bisa gagal dimuat jika server tidak mengizinkan CORS.</p>
+      <label class="field-label" for="playlistUrl">URL playlist M3U</label>
+      <input id="playlistUrl" type="url" placeholder="https://contoh.com/playlist.m3u">
+      <div class="row-actions"><button type="button" id="loadUrlBtn" class="button primary">Muat URL</button><label class="button subtle upload-label">Pilih file<input id="playlistFile" type="file" accept=".m3u,.m3u8,.txt" hidden></label></div>
+      <label class="field-label" for="epgUrl">URL EPG XMLTV (opsional)</label>
+      <input id="epgUrl" type="url" placeholder="https://contoh.com/epg.xml atau .xml.gz">
+      <button type="button" id="loadEpgBtn" class="button subtle full">Muat jadwal EPG</button>
+      <div class="source-note"><b>Playlist komunitas (opsional)</b><p>Repositori komunitas tidak memastikan izin siar tiap tautan. Periksa hak akses sebelum digunakan.</p><button type="button" id="communityBtn" class="text-button">Coba playlist Indonesia komunitas</button></div>
+      <div id="sourceMessage" class="form-message" role="status"></div>
+      <div class="dialog-bottom"><button class="button subtle" value="cancel">Selesai</button></div>
+    </form>
+  </dialog>
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.17/dist/hls.min.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>

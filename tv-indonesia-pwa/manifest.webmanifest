@@ -1,0 +1,24 @@
+{
+  "id": "./",
+  "name": "TV Nusantara — Live TV",
+  "short_name": "TV Nusantara",
+  "description": "Pemutar live TV PWA dari playlist yang Anda miliki atau berhak akses.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0b0e13",
+  "theme_color": "#10131a",
+  "icons": [
+    {
+      "src": "./icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": [
+    "entertainment",
+    "video"
+  ]
+}
