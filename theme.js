@@ -1,7 +1,7 @@
 /* baxdev — tema warna kustom (khusus VIP). Dipakai index.html dan owner.html. */
 (function () {
   var page = (document.currentScript && document.currentScript.getAttribute('data-page')) || 'index';
-  var DEFAULT = '#a855f7';
+  var DEFAULT = '#727272';
   function isHex(c) { return typeof c === 'string' && /^#[0-9a-fA-F]{6}$/.test(c); }
   function hex2hsl(hex) {
     var r = parseInt(hex.substr(1, 2), 16) / 255, g = parseInt(hex.substr(3, 2), 16) / 255, b = parseInt(hex.substr(5, 2), 16) / 255;
@@ -87,7 +87,7 @@ html[data-theme="custom"] input:focus,html[data-theme="custom"] select:focus{bor
 html[data-theme="custom"] .btn{background:rgba(@t@,.09)}
 html[data-theme="custom"] .btn:hover{background:rgba(@t@,.17)}
 html[data-theme="custom"] .btn.primary{background:@chrome@;color:@onacc@;border-color:transparent}
-html[data-theme="custom"] .btn.danger{background:rgba(255,90,90,.08)}
+html[data-theme="custom"] .btn.danger{background:rgba(125,125,125,.08)}
 `
   };
   function css(hex) {

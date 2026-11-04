@@ -1,0 +1,513 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "vip": {
+      ".read": "auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')",
+      "$userId": {
+        ".read": true,
+        ".write": "(auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')) || (auth != null && newData.child('code').isString() && root.child('codes').child(newData.child('code').val()).child('hours').isNumber() && root.child('codes').child(newData.child('code').val()).child('uses').val() < root.child('codes').child(newData.child('code').val()).child('maxUses').val() && !root.child('redeems').child(newData.child('code').val()).child(auth.uid).exists() && newData.parent().parent().child('codes').child(newData.child('code').val()).child('uses').val() === root.child('codes').child(newData.child('code').val()).child('uses').val() + 1 && newData.parent().parent().child('redeems').child(newData.child('code').val()).child(auth.uid).child('roblox').val() === $userId && !(data.exists() && data.child('expiresAt').val() === 0) && newData.child('expiresAt').val() > 0 && newData.child('expiresAt').val() <= (data.exists() && data.child('expiresAt').val() > now ? data.child('expiresAt').val() : now) + root.child('codes').child(newData.child('code').val()).child('hours').val() * 3600000 + 300000 && ((root.child('codes').child(newData.child('code').val()).child('tier').val() !== 'plus' && newData.child('plusUntil').val() === data.child('plusUntil').val()) || (root.child('codes').child(newData.child('code').val()).child('tier').val() === 'plus' && newData.child('plusUntil').isNumber() && newData.child('plusUntil').val() > 0 && !(data.child('plusUntil').isNumber() && data.child('plusUntil').val() === 0) && newData.child('plusUntil').val() <= (data.child('plusUntil').isNumber() && data.child('plusUntil').val() > now ? data.child('plusUntil').val() : now) + root.child('codes').child(newData.child('code').val()).child('hours').val() * 3600000 + 300000)))",
+        ".validate": "$userId.matches(/^[0-9]{1,20}$/) && newData.hasChildren(['addedAt', 'expiresAt'])",
+        "addedAt": {
+          ".validate": "newData.isNumber()"
+        },
+        "expiresAt": {
+          ".validate": "newData.isNumber()"
+        },
+        "plusUntil": {
+          ".validate": "newData.isNumber() && newData.val() >= 0"
+        },
+        "note": {
+          ".validate": "newData.isString() && newData.val().length <= 80"
+        },
+        "$other": {
+          ".validate": false
+        },
+        "code": {
+          ".validate": "newData.isString() && newData.val().matches(/^[A-Z0-9-]{4,24}$/)"
+        }
+      }
+    },
+    "orders": {
+      ".read": "auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')",
+      "$code": {
+        ".write": "(auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')) || (auth != null && !data.exists() && newData.exists() && newData.child('status').val() === 'pending' && newData.child('googleUid').val() === auth.uid)",
+        ".validate": "$code.matches(/^BX-[A-Z0-9]{4}$/) && newData.hasChildren(['code', 'userId', 'amount', 'days', 'status', 'createdAt', 'googleUid'])",
+        "code": {
+          ".validate": "newData.val() === $code"
+        },
+        "userId": {
+          ".validate": "newData.isString() && newData.val().matches(/^[0-9]{1,20}$/)"
+        },
+        "amount": {
+          ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() < 10000000"
+        },
+        "days": {
+          ".validate": "newData.isNumber() && (newData.val() === 7 || newData.val() === 15 || newData.val() === 30)"
+        },
+        "tier": {
+          ".validate": "newData.isString() && (newData.val() === 'vip' || newData.val() === 'plus')"
+        },
+        "status": {
+          ".validate": "newData.isString() && (newData.val() === 'pending' || newData.val() === 'approved' || newData.val() === 'rejected')"
+        },
+        "createdAt": {
+          ".validate": "newData.isNumber()"
+        },
+        "paidAt": {
+          ".validate": "newData.isNumber()"
+        },
+        "handledAt": {
+          ".validate": "newData.isNumber()"
+        },
+        "$other": {
+          ".validate": false
+        },
+        "googleUid": {
+          ".validate": "newData.isString() && newData.val().length <= 128"
+        },
+        "googleEmail": {
+          ".validate": "newData.isString() && newData.val().length <= 254"
+        },
+        "promo": {
+          ".validate": "newData.isString() && newData.val().matches(/^[A-Z0-9]{6}$/) && root.child('promoCodes').child(newData.val()).exists() && root.child('promoCodes').child(newData.val()).child('uid').val() !== newData.parent().child('googleUid').val()"
+        }
+      }
+    },
+    "codes": {
+      ".read": "auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')",
+      "$code": {
+        ".read": "auth != null",
+        ".write": "(auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')) || (auth != null && data.exists() && newData.child('uses').val() === data.child('uses').val() + 1 && newData.child('hours').val() === data.child('hours').val() && newData.child('maxUses').val() === data.child('maxUses').val() && newData.child('createdAt').val() === data.child('createdAt').val() && !root.child('redeems').child($code).child(auth.uid).exists() && newData.parent().parent().child('redeems').child($code).child(auth.uid).exists())",
+        ".validate": "$code.matches(/^[A-Z0-9-]{4,24}$/) && newData.hasChildren(['code', 'hours', 'maxUses', 'uses', 'createdAt'])",
+        "code": {
+          ".validate": "newData.val() === $code"
+        },
+        "hours": {
+          ".validate": "newData.isNumber() && newData.val() >= 0.0166 && newData.val() <= 8760"
+        },
+        "tier": {
+          ".validate": "newData.isString() && (newData.val() === 'vip' || newData.val() === 'plus')"
+        },
+        "maxUses": {
+          ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 100000"
+        },
+        "uses": {
+          ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= newData.parent().child('maxUses').val()"
+        },
+        "createdAt": {
+          ".validate": "newData.isNumber()"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    },
+    "maintenance": {
+      ".read": true,
+      ".write": "auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')",
+      ".validate": "newData.hasChildren(['enabled', 'message', 'updatedAt'])",
+      "enabled": {
+        ".validate": "newData.isBoolean()"
+      },
+      "message": {
+        ".validate": "newData.isString() && newData.val().length <= 500"
+      },
+      "updatedAt": {
+        ".validate": "newData.isNumber()"
+      },
+      "$other": {
+        ".validate": false
+      }
+    },
+    "isAdmin": {
+      ".read": "auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')"
+    },
+    "redeems": {
+      ".read": "auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')",
+      ".write": "auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')",
+      "$code": {
+        "$uid": {
+          ".read": "auth != null && auth.uid === $uid",
+          ".write": "auth != null && auth.uid === $uid && !data.exists() && newData.exists() && root.child('codes').child($code).exists()",
+          ".validate": "newData.hasChildren(['roblox', 'at'])",
+          "roblox": {
+            ".validate": "newData.isString() && newData.val().matches(/^[0-9]{1,20}$/)"
+          },
+          "at": {
+            ".validate": "newData.isNumber()"
+          },
+          "$other": {
+            ".validate": false
+          }
+        }
+      }
+    },
+    "uploads": {
+      ".read": "auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')",
+      "$id": {
+        ".write": "(auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')) || (auth != null && !data.exists() && newData.exists() && newData.child('googleUid').val() === auth.uid)",
+        ".validate": "newData.hasChildren(['googleUid', 'robloxId', 'name', 'status', 'at'])",
+        "googleUid": {
+          ".validate": "newData.isString() && newData.val().length <= 128"
+        },
+        "googleEmail": {
+          ".validate": "newData.isString() && newData.val().length <= 254"
+        },
+        "robloxId": {
+          ".validate": "newData.isString() && newData.val().matches(/^[0-9]{1,20}$/)"
+        },
+        "name": {
+          ".validate": "newData.isString() && newData.val().length <= 100"
+        },
+        "filename": {
+          ".validate": "newData.isString() && newData.val().length <= 160"
+        },
+        "size": {
+          ".validate": "newData.isNumber()"
+        },
+        "assetId": {
+          ".validate": "newData.isString() && newData.val().length <= 30"
+        },
+        "status": {
+          ".validate": "newData.isString() && (newData.val() === 'done' || newData.val() === 'fail')"
+        },
+        "speed": {
+          ".validate": "newData.isNumber()"
+        },
+        "error": {
+          ".validate": "newData.isString() && newData.val().length <= 160"
+        },
+        "at": {
+          ".validate": "newData.isNumber()"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    },
+    "library": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid"
+      }
+    },
+    "users": {
+      ".read": "auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')",
+      "$uid": {
+        ".write": "(auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')) || (auth != null && auth.uid === $uid && newData.exists())",
+        ".read": "auth != null && auth.uid === $uid",
+        ".validate": "newData.hasChildren(['email', 'lastSeen'])",
+        "email": {
+          ".validate": "newData.isString() && newData.val().length <= 254"
+        },
+        "name": {
+          ".validate": "newData.isString() && newData.val().length <= 100"
+        },
+        "robloxId": {
+          ".validate": "newData.isString() && (newData.val() === '' || newData.val().matches(/^[0-9]{1,20}$/))"
+        },
+        "firstSeen": {
+          ".validate": "newData.isNumber()"
+        },
+        "lastSeen": {
+          ".validate": "newData.isNumber()"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    },
+    "bans": {
+      ".read": "auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')",
+      ".write": "auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')",
+      "$uid": {
+        ".read": true,
+        ".validate": "newData.hasChildren(['at'])",
+        "at": {
+          ".validate": "newData.isNumber()"
+        },
+        "reason": {
+          ".validate": "newData.isString() && newData.val().length <= 120"
+        },
+        "email": {
+          ".validate": "newData.isString() && newData.val().length <= 254"
+        },
+        "robloxId": {
+          ".validate": "newData.isString() && newData.val().length <= 20"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    },
+    "config": {
+      ".read": true,
+      "payment": {
+        ".write": "auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')",
+        ".validate": "newData.hasChildren(['vip15', 'vip30', 'plus15', 'plus30', 'updatedAt'])",
+        "vip15": {
+          ".validate": "newData.isNumber() && newData.val() >= 1000 && newData.val() <= 9900000"
+        },
+        "vip30": {
+          ".validate": "newData.isNumber() && newData.val() >= 1000 && newData.val() <= 9900000"
+        },
+        "plus15": {
+          ".validate": "newData.isNumber() && newData.val() >= 1000 && newData.val() <= 9900000"
+        },
+        "plus30": {
+          ".validate": "newData.isNumber() && newData.val() >= 1000 && newData.val() <= 9900000"
+        },
+        "qris": {
+          ".validate": "newData.isString() && newData.val().matches(/^data:image\\/(jpeg|png|webp);base64,/) && newData.val().length <= 700000"
+        },
+        "updatedAt": {
+          ".validate": "newData.isNumber()"
+        },
+        "$other": {
+          ".validate": false
+        }
+      },
+      "info": {
+        ".write": "auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')",
+        ".validate": "newData.hasChildren(['text', 'updatedAt'])",
+        "text": {
+          ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 500"
+        },
+        "updatedAt": {
+          ".validate": "newData.isNumber()"
+        },
+        "$other": {
+          ".validate": false
+        }
+      },
+      "promo": {
+        ".write": "auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')",
+        ".validate": "newData.hasChildren(['rate', 'enabled', 'updatedAt'])",
+        "rate": {
+          ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 100"
+        },
+        "enabled": {
+          ".validate": "newData.isBoolean()"
+        },
+        "updatedAt": {
+          ".validate": "newData.isNumber()"
+        },
+        "bonusDays": {
+          ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 30"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    },
+    "feed": {
+      ".read": true,
+      ".indexOn": [
+        "at"
+      ],
+      "$id": {
+        ".write": "(auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')) || (auth != null && !data.exists() && newData.exists())",
+        ".validate": "newData.hasChildren(['name', 'at'])",
+        "name": {
+          ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 100"
+        },
+        "at": {
+          ".validate": "newData.isNumber() && newData.val() <= now + 60000 && newData.val() >= now - 600000"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    },
+    "quota": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "(auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')) || (auth != null && auth.uid === $uid && newData.exists() && ((data.exists() && data.child('day').val() === newData.child('day').val() && newData.child('count').val() === data.child('count').val() + 1) || ((!data.exists() || data.child('day').val() < newData.child('day').val()) && newData.child('count').val() === 1)))",
+        ".validate": "newData.hasChildren(['day', 'count'])",
+        "day": {
+          ".validate": "newData.isNumber() && newData.val() * 86400000 <= now + 25200000 && (newData.val() + 1) * 86400000 > now + 25200000"
+        },
+        "count": {
+          ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 1000"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    },
+    "vipq": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "(auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')) || (auth != null && auth.uid === $uid && newData.exists() && ((data.exists() && data.child('period').val() === newData.child('period').val() && newData.child('count').val() === data.child('count').val() + 1) || ((!data.exists() || data.child('period').val() < newData.child('period').val()) && newData.child('count').val() === 1)))",
+        ".validate": "newData.hasChildren(['period', 'count'])",
+        "period": {
+          ".validate": "newData.isNumber() && newData.val() * 21600000 <= now && (newData.val() + 1) * 21600000 > now"
+        },
+        "count": {
+          ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 100"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    },
+    "promoters": {
+      ".read": "auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')",
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "(auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')) || (auth != null && auth.uid === $uid && newData.exists() && (data.exists() ? data.child('code').val() === newData.child('code').val() : newData.parent().parent().child('promoCodes').child(newData.child('code').val()).child('uid').val() === auth.uid))",
+        ".validate": "newData.hasChildren(['code', 'wa', 'ewallet', 'createdAt', 'updatedAt']) && (newData.child('ewallet').val() === 'qris' ? newData.parent().parent().child('promoterQris').child($uid).exists() : newData.child('ewalletNo').exists())",
+        "code": {
+          ".validate": "newData.isString() && newData.val().matches(/^[A-Z0-9]{6}$/)"
+        },
+        "wa": {
+          ".validate": "newData.isString() && newData.val().matches(/^628[0-9]{7,12}$/)"
+        },
+        "ewallet": {
+          ".validate": "newData.isString() && (newData.val() === 'dana' || newData.val() === 'gopay' || newData.val() === 'ovo' || newData.val() === 'shopeepay' || newData.val() === 'linkaja' || newData.val() === 'qris')"
+        },
+        "ewalletNo": {
+          ".validate": "newData.isString() && newData.val().matches(/^[0-9]{8,16}$/)"
+        },
+        "email": {
+          ".validate": "newData.isString() && newData.val().length <= 254"
+        },
+        "name": {
+          ".validate": "newData.isString() && newData.val().length <= 100"
+        },
+        "createdAt": {
+          ".validate": "newData.isNumber()"
+        },
+        "updatedAt": {
+          ".validate": "newData.isNumber()"
+        },
+        "ewalletName": {
+          ".validate": "newData.isString() && newData.val().length >= 3 && newData.val().length <= 60"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    },
+    "promoCodes": {
+      "$code": {
+        ".read": true,
+        ".write": "(auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')) || (auth != null && !data.exists() && newData.child('uid').val() === auth.uid && newData.parent().parent().child('promoters').child(auth.uid).child('code').val() === $code)",
+        ".validate": "$code.matches(/^[A-Z0-9]{6}$/) && newData.hasChildren(['uid', 'createdAt'])",
+        "uid": {
+          ".validate": "newData.isString() && newData.val().length <= 128"
+        },
+        "createdAt": {
+          ".validate": "newData.isNumber()"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    },
+    "commissions": {
+      ".read": "auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')",
+      ".write": "auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')",
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        "$order": {
+          ".validate": "$order.matches(/^BX-[A-Z0-9]{4}$/) && newData.hasChildren(['promo', 'amount', 'orderAmount', 'rate', 'status', 'at'])",
+          "promo": {
+            ".validate": "newData.isString() && newData.val().matches(/^[A-Z0-9]{6}$/)"
+          },
+          "amount": {
+            ".validate": "newData.isNumber() && newData.val() >= 0"
+          },
+          "orderAmount": {
+            ".validate": "newData.isNumber() && newData.val() > 0"
+          },
+          "rate": {
+            ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 100"
+          },
+          "tier": {
+            ".validate": "newData.isString() && (newData.val() === 'vip' || newData.val() === 'plus')"
+          },
+          "days": {
+            ".validate": "newData.isNumber()"
+          },
+          "status": {
+            ".validate": "newData.isString() && (newData.val() === 'unpaid' || newData.val() === 'paid')"
+          },
+          "at": {
+            ".validate": "newData.isNumber()"
+          },
+          "paidAt": {
+            ".validate": "newData.isNumber()"
+          },
+          "$other": {
+            ".validate": false
+          }
+        }
+      }
+    },
+    "payouts": {
+      ".read": "auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')",
+      ".write": "auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')",
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        "$id": {
+          ".validate": "$id.matches(/^P[a-z0-9]{6,14}$/) && newData.hasChildren(['amount', 'at'])",
+          "amount": {
+            ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() < 100000000"
+          },
+          "at": {
+            ".validate": "newData.isNumber()"
+          },
+          "$other": {
+            ".validate": false
+          }
+        }
+      }
+    },
+    "promoterQris": {
+      ".read": "auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')",
+      ".write": "auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')",
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid",
+        ".validate": "newData.isString() && newData.val().matches(/^data:image\\/(jpeg|png|webp);base64,/) && newData.val().length <= 400000"
+      }
+    },
+    "withdrawals": {
+      ".read": "auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')",
+      ".write": "auth != null && (auth.token.email === 'baxdev@owner.id' || auth.token.email === 'bamawardhana70@gmail.com')",
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        "$id": {
+          ".write": "auth != null && auth.uid === $uid && !data.exists() && newData.child('status').val() === 'pending'",
+          ".validate": "$id.matches(/^W[a-z0-9]{6,14}$/) && newData.hasChildren(['amount', 'at', 'status'])",
+          "amount": {
+            ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() < 100000000"
+          },
+          "at": {
+            ".validate": "newData.isNumber() && (data.exists() ? newData.val() === data.val() : newData.val() === now)"
+          },
+          "status": {
+            ".validate": "newData.isString() && (newData.val() === 'pending' || newData.val() === 'paid' || newData.val() === 'rejected')"
+          },
+          "doneAt": {
+            ".validate": "newData.isNumber()"
+          },
+          "ewallet": {
+            ".validate": "newData.isString() && newData.val().length <= 20"
+          },
+          "ewalletNo": {
+            ".validate": "newData.isString() && newData.val().length <= 20"
+          },
+          "ewalletName": {
+            ".validate": "newData.isString() && newData.val().length <= 60"
+          },
+          "$other": {
+            ".validate": false
+          }
+        }
+      }
+    }
+  }
+}
