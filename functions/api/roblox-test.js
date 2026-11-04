@@ -80,6 +80,16 @@ function scopeSet(scopes) {
   return { set, names };
 }
 
+// IP keluar server ini (yang dilihat Roblox). Hanya untuk diagnosa pesan error; gagal = diam.
+async function egressIp() {
+  try {
+    const r = await fetch("https://api64.ipify.org", { signal: AbortSignal.timeout(2500) });
+    if (!r.ok) return "";
+    const t = (await r.text()).trim();
+    return /^[0-9a-f:.]{3,45}$/i.test(t) ? t : "";
+  } catch { return ""; }
+}
+
 async function checkApiKey(apiKey) {
   // (a) Introspeksi: baca scope langsung dari key (endpoint resmi Roblox).
   let info = null;
@@ -140,9 +150,10 @@ async function checkApiKey(apiKey) {
   if (res.status === 401) {
     // Pesan khusus kalau Roblox menolak karena alamat IP server (bukan karena key salah).
     const ipRejected = /ip address|ip addr|may not be used from/i.test(introStatus);
-    const ipFix = "Di Creator Hub → Credentials → key kamu → Keamanan → Accepted IP Addresses, isi DUA baris: " +
-      "0.0.0.0/0 (semua IPv4) dan ::/0 (semua IPv6), lalu Simpan. " +
-      "Cukup 0.0.0.0/0 saja tidak cukup, karena server website ini bisa memanggil Roblox lewat IPv6.";
+    const ip = await egressIp();
+    const ipFix = "Di Creator Hub → Credentials → key kamu → Keamanan: kalau toggle Restrict IP addresses mati dan masih ditolak, " +
+      "nyalakan toggle itu lalu isi DUA baris 0.0.0.0/0 (IPv4) dan ::/0 (IPv6), Simpan. Kalau tetap gagal, buat key baru." +
+      (ip ? ` IP server website saat ini: ${ip}${ip.includes(":") ? " (IPv6)" : " (IPv4)"}.` : "");
     return bad("invalid_key", ipRejected
       ? "API key ditolak Roblox karena alamat IP server belum diizinkan (HTTP 401). " + ipFix +
         ` [Diagnosa: introspeksi ${introStatus}]`
