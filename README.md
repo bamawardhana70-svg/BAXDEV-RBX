@@ -37,11 +37,9 @@ _tools/                          Sumber HTML kedua tool (modul JS, BUKAN file st
 
 Harus **Pages**, bukan Workers.
 
-**Cara 1 — Dashboard (paling gampang)**
-1. dash.cloudflare.com → Workers & Pages → Create → Pages → **Upload assets**.
-2. Kasih nama project, lalu drag-drop **isi** folder ini (bukan file zip-nya).
-   Pastikan `index.html` dan folder `functions/` ada di level paling atas.
-3. Deploy. Buka `https://<nama-project>.pages.dev`.
+**Cara 1 — Dashboard (HANYA file statis)**
+Upload drag-drop di dashboard TIDAK meng-compile folder `functions/`, sehingga `/api/*` membalas HTTP 405.
+Pakai Cara 2 (CLI) atau Cara 3 (Git) supaya API jalan.
 
 **Cara 2 — CLI**
 ```bash

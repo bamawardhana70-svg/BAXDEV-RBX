@@ -9847,12 +9847,18 @@ html[data-style="clay"] .page-title{text-shadow:2px 3px 6px rgba(0,0,0,.45)}
                         })
                     });
                     const data = await res.json().catch( () => ({}));
+                    if (res.status === 405 || res.status === 404 || (!res.ok && !data.message)) {
+                        // Server /api tidak menjawab sebagai Function (bukan salah API key).
+                        // API key sudah tersimpan; tes koneksi dilewati.
+                        toast('Tersimpan, tapi server /api belum aktif (HTTP ' + res.status + '). Deploy ulang lewat wrangler: npx wrangler pages deploy .', 'error');
+                        return;
+                    }
                     if (!res.ok || data.ok === false) {
                         const msg = data.message || ('HTTP ' + res.status);
-                        if (data.code === 'missing_scope') {
+                        if (data.code === 'missing_scope' || data.code === 'ip_restricted' || data.code === 'invalid_key') {
                             // Scope API key salah: tampilkan peringatan yang jelas
                             alert(msg);
-                            toast('Scope API key tidak sesuai — butuh Assets (Read + Write)', 'error');
+                            toast(data.code === 'missing_scope' ? 'Scope API key tidak sesuai — butuh Assets (Read + Write)' : 'API key WAJIB memakai IP 0.0.0.0/0 (Creator Hub → Security)', 'error');
                             return;
                         }
                         throw new Error(msg);

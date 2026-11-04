@@ -128,6 +128,21 @@ async function checkApiKey(apiKey) {
         ` Buat API key baru di creator.roblox.com → Credentials, tambahkan API System "Assets" dengan izin Read dan Write.`
       );
     }
+    // IP WAJIB 0.0.0.0/0: server Cloudflare punya IP keluar yang berganti-ganti, jadi key
+    // yang dibatasi ke IP tertentu pasti gagal saat upload. Dicek kalau Roblox mengirim daftar CIDR-nya.
+    const cidrs = [];
+    for (const k of Object.keys(info)) {
+      if (/cidr|allowed.?ip|ip.?address/i.test(k) && Array.isArray(info[k])) {
+        for (const c of info[k]) cidrs.push(String(c && c.cidr ? c.cidr : c).trim());
+      }
+    }
+    if (cidrs.length && !cidrs.includes("0.0.0.0/0")) {
+      return bad(
+        "ip_restricted",
+        "⚠️ API key WAJIB memakai IP 0.0.0.0/0. Key kamu dibatasi ke: " + cidrs.join(", ") + ". " +
+        "Di Creator Hub → Credentials → key kamu → Security → Accepted IP Addresses, isi 0.0.0.0/0 (dan ::/0), lalu Simpan."
+      );
+    }
     const others = names.filter((n) => !n.startsWith("asset"));
     return {
       ok: true,
@@ -151,7 +166,7 @@ async function checkApiKey(apiKey) {
     // Pesan khusus kalau Roblox menolak karena alamat IP server (bukan karena key salah).
     const ipRejected = /ip address|ip addr|may not be used from/i.test(introStatus);
     const ip = await egressIp();
-    const ipFix = "Di Creator Hub → Credentials → key kamu → Keamanan: kalau toggle Restrict IP addresses mati dan masih ditolak, " +
+    const ipFix = "WAJIB isi IP 0.0.0.0/0. Di Creator Hub → Credentials → key kamu → Keamanan: kalau toggle Restrict IP addresses mati dan masih ditolak, " +
       "nyalakan toggle itu lalu isi DUA baris 0.0.0.0/0 (IPv4) dan ::/0 (IPv6), Simpan. Kalau tetap gagal, buat key baru." +
       (ip ? ` IP server website saat ini: ${ip}${ip.includes(":") ? " (IPv6)" : " (IPv4)"}.` : "");
     return bad("invalid_key", ipRejected
