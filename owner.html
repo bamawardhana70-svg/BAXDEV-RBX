@@ -1,0 +1,1345 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>baxdev — Owner Panel</title>
+<script>(function(){var n='mono';try{n=localStorage.getItem('baxdev_theme')||'mono'}catch(e){}if(n!=='blue'&&n!=='green'&&n!=='custom')n='mono';document.documentElement.setAttribute('data-theme',n)})();</script>
+<script src="theme.js" data-page="owner"></script>
+<style>
+:root{--bg:#050505;--bg2:#0d0d0e;--glass:rgba(255,255,255,.055);--line:rgba(255,255,255,.10);--text:#f0f0f0;--text2:#a4a6ab;--danger:#ff5a5a;--ok:#44ff88;--warn:#ffaa44}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%}
+body{background:radial-gradient(1200px 600px at 70% -10%,#2b2b2e 0,transparent 60%),var(--bg);color:var(--text);font:15px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
+.wrap{max-width:720px;margin:0 auto;padding:22px 18px 60px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:22px}
+header img{height:44px;width:auto;filter:brightness(0) invert(1)}
+.tag{font-size:11px;letter-spacing:.18em;color:var(--text2);text-transform:uppercase}
+h1{font-size:26px;letter-spacing:-.02em;margin:4px 0 2px}
+.sub{color:var(--text2);font-size:13px;margin-bottom:20px}
+.card{background:var(--glass);border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:16px;backdrop-filter:blur(14px)}
+label{display:block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--text2);margin:0 0 6px}
+input{width:100%;background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:12px;color:var(--text);padding:12px 14px;font:inherit;outline:none}
+input:focus{border-color:rgba(190,222,226,.55)}
+.row{display:grid;grid-template-columns:1fr;gap:12px}
+@media(min-width:560px){.row.two{grid-template-columns:1fr 1.4fr}}
+.btn{border:1px solid var(--line);background:rgba(255,255,255,.07);color:var(--text);border-radius:12px;padding:11px 18px;font:inherit;font-weight:600;cursor:pointer}
+.btn:hover{background:rgba(255,255,255,.12)}
+.btn.primary{background:linear-gradient(180deg,#ffffff,#dfe0e3 50%,#aeb0b5);color:#060606;border-color:transparent}
+.btn.danger{color:var(--danger);border-color:rgba(255,90,90,.35);background:rgba(255,90,90,.08);padding:8px 14px;font-size:13px}
+.btn:disabled{opacity:.5;cursor:default}
+.stats{display:flex;gap:12px;margin-bottom:16px}
+.stat{flex:1;background:var(--glass);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
+.stat b{display:block;font-size:24px;line-height:1.2}#statLast{font-size:17px;line-height:2}
+.stat span{font-size:12px;color:var(--text2)}
+.msg{font-size:13px;margin-top:10px;min-height:1.2em}
+.msg.err{color:var(--danger)}.msg.ok{color:var(--ok)}
+.item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+.item:first-child{border-top:none}
+.item .id{font-weight:600;word-break:break-all}
+.item .meta{font-size:12px;color:var(--text2)}
+.empty{color:var(--text2);font-size:13px;padding:6px 0}
+.toolbar{display:flex;gap:10px;align-items:center;justify-content:space-between;margin-bottom:12px}
+.toolbar input{max-width:230px;padding:9px 12px}
+.hide{display:none!important}
+.note{font-size:12px;color:var(--text2);line-height:1.7}
+.note code{background:rgba(0,0,0,.3);padding:1px 6px;border-radius:6px}
+select{width:100%;background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:12px;color:var(--text);padding:12px 14px;font:inherit;outline:none}
+select:focus{border-color:rgba(190,222,226,.55)}
+.btn.small{padding:8px 14px;font-size:13px}
+.actions{display:flex;gap:8px;flex-shrink:0}
+.badge{display:inline-block;font-size:11px;padding:1px 8px;border-radius:999px;border:1px solid var(--line);color:var(--text2);margin-left:6px;vertical-align:middle}
+.badge.ok{color:var(--ok);border-color:rgba(68,255,136,.35)}
+.badge.off{color:var(--warn);border-color:rgba(255,170,68,.35)}
+.warn{font-size:12px;color:var(--warn);line-height:1.7;margin-bottom:16px}
+.qris-box{display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap}
+.qris-box img{width:150px;max-width:44vw;height:auto;border-radius:12px;background:#fff;border:1px solid var(--line)}
+.price-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px}
+.qris-side{display:flex;flex-direction:column;gap:8px;align-items:flex-start;flex:1;min-width:150px}
+.row.three{grid-template-columns:1fr}
+@media(min-width:560px){.row.three{grid-template-columns:1fr 1.2fr 1fr}}
+
+.codebox{width:100%;min-height:96px;resize:vertical;background:rgba(0,0,0,.3);border:1px solid var(--line);border-radius:12px;color:var(--text);padding:10px 12px;font:12px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace;outline:none}
+.item .id.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px}
+.linkbtn{background:none;border:none;color:var(--text2);font:inherit;font-size:12px;text-decoration:underline;cursor:pointer;margin-left:12px}
+.scrollbox{max-height:380px;overflow-y:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:14px;padding:0 10px;background:rgba(0,0,0,.18)}
+.item .btns{display:flex;gap:6px;flex-wrap:wrap}
+
+.con{background:#020403;border:1px solid var(--line);border-radius:14px;overflow:hidden;font:12px/1.65 ui-monospace,SFMono-Regular,Menlo,monospace}
+.con-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 12px;border-bottom:1px solid var(--line);color:var(--text2);font-size:11px;letter-spacing:.08em}
+.con-state{display:inline-flex;align-items:center;gap:6px;text-transform:uppercase}
+.con-dot{width:7px;height:7px;border-radius:50%;background:var(--ok)}
+.con[data-s="attack"] .con-dot{background:var(--danger);animation:conBlink .5s steps(2) infinite}
+.con[data-s="attack"]{border-color:rgba(255,90,90,.5)}
+.con[data-s="blocked"] .con-dot{background:var(--warn)}
+.con-body{height:260px;overflow-y:auto;padding:10px 12px;white-space:pre-wrap;word-break:break-all;color:#9fe8b4;-webkit-overflow-scrolling:touch}
+.con-body .ln{display:block}
+.con-body .dim{color:#6f7a73}.con-body .bad{color:var(--danger)}.con-body .wn{color:var(--warn)}.con-body .gd{color:var(--ok)}
+.con-code{margin:0;padding:10px 12px;border-bottom:1px solid var(--line);max-height:150px;overflow:auto;color:#b9c4bd;font:inherit;white-space:pre}
+@keyframes conBlink{50%{opacity:.25}}
+@media(prefers-reduced-motion:reduce){.con[data-s="attack"] .con-dot{animation:none}}
+</style>
+<style id="color-themes">
+/* Tema warna mengikuti pilihan di situs utama (Settings → Lanjutan), disimpan di browser yang sama */
+
+html[data-theme="blue"]{--bg:#040914;--bg2:#0a1322;--glass:rgba(110,170,255,.07);--line:rgba(110,170,255,.20);--text:#f2f7ff;--text2:#a8b9d4}
+html[data-theme="blue"] body{background:radial-gradient(1200px 600px at 70% -10%,#14284a 0,transparent 60%),var(--bg)}
+html[data-theme="blue"] input:focus,html[data-theme="blue"] select:focus{border-color:rgba(110,170,255,.65)}
+html[data-theme="blue"] .btn{background:rgba(110,170,255,.09)}
+html[data-theme="blue"] .btn:hover{background:rgba(110,170,255,.17)}
+html[data-theme="blue"] .btn.primary{background:linear-gradient(180deg,#d3e8ff 0%,#78b6ff 48%,#3b82f6 100%);color:#04122b;border-color:transparent}
+html[data-theme="blue"] .btn.danger{background:rgba(255,90,90,.08)}
+
+html[data-theme="green"]{--bg:#030b07;--bg2:#08140e;--glass:rgba(100,230,160,.07);--line:rgba(100,230,160,.20);--text:#f1fbf5;--text2:#a7c4b2}
+html[data-theme="green"] body{background:radial-gradient(1200px 600px at 70% -10%,#123a25 0,transparent 60%),var(--bg)}
+html[data-theme="green"] input:focus,html[data-theme="green"] select:focus{border-color:rgba(100,230,160,.65)}
+html[data-theme="green"] .btn{background:rgba(100,230,160,.09)}
+html[data-theme="green"] .btn:hover{background:rgba(100,230,160,.17)}
+html[data-theme="green"] .btn.primary{background:linear-gradient(180deg,#cffbe0 0%,#6ee7a8 48%,#22c55e 100%);color:#03150b;border-color:transparent}
+html[data-theme="green"] .btn.danger{background:rgba(255,90,90,.08)}
+</style>
+<style id="owner-layout">
+/* Layout owner: sidebar di desktop, tab horizontal di layar kecil. Warna tetap dari tema (var(--...)). */
+body{padding:0}
+.card{border-radius:14px;padding:20px;margin:0;backdrop-filter:none;container-type:inline-size}
+.stat{border-radius:12px}
+.login-wrap{max-width:420px;margin:12vh auto 0;padding:0 18px}
+.login-wrap img{height:40px;width:auto;filter:brightness(0) invert(1);margin-bottom:28px;display:block}
+.shell{display:grid;grid-template-columns:240px minmax(0,1fr);min-height:100vh}
+.side{position:sticky;top:0;height:100vh;overflow-y:auto;display:flex;flex-direction:column;gap:6px;padding:22px 14px;border-right:1px solid var(--line);background:rgba(0,0,0,.28)}
+.side-brand{padding:0 10px 14px}
+.side-brand img{height:32px;width:auto;filter:brightness(0) invert(1);display:block}
+.nav-label{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--text2);padding:14px 10px 6px}
+.nav button{display:flex;align-items:center;gap:8px;width:100%;min-height:40px;padding:8px 10px;border:0;border-radius:10px;background:none;color:var(--text2);font:inherit;font-size:14px;text-align:left;cursor:pointer;transition:background .15s,color .15s}
+.nav button:hover{background:rgba(255,255,255,.06);color:var(--text)}
+.nav button:focus-visible,.btn:focus-visible,.linkbtn:focus-visible{outline:2px solid rgba(190,222,226,.7);outline-offset:2px}
+.nav button[aria-current="page"]{background:rgba(255,255,255,.10);color:var(--text)}
+.nav .cnt{margin-left:auto;min-width:20px;padding:0 6px;border-radius:999px;border:1px solid rgba(255,170,68,.4);color:var(--warn);font-size:11px;line-height:18px;text-align:center}
+.side-foot{margin-top:auto;padding:14px 10px 0;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:10px}
+.side-foot .who{font-size:12px;color:var(--text2);word-break:break-all}
+.main{padding:30px 40px 72px;min-width:0;max-width:1320px;width:100%}
+.view{display:none}
+.view.on{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:start}
+.view-head{grid-column:1/-1;margin-bottom:6px}
+.view-head h1{font-size:24px;margin:0 0 2px}
+.view-head p{color:var(--text2);font-size:13px;margin:0}
+.span{grid-column:1/-1}
+.stats{grid-column:1/-1;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:0}
+.stat b{font-size:22px}
+.view .scrollbox{max-height:420px}
+.promo-prev{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
+.promo-prev th{font-weight:500;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--text2);text-align:left;padding:6px 0;border-bottom:1px solid var(--line)}
+.promo-prev td{padding:9px 0;border-bottom:1px solid var(--line)}
+.promo-prev tr:last-child td{border-bottom:0}
+.promo-prev .r{text-align:right;font-variant-numeric:tabular-nums}
+.item a{color:var(--text);text-decoration:underline;text-underline-offset:2px}
+.row.three,.row.two{grid-template-columns:1fr}
+@container (min-width:480px){.row.three{grid-template-columns:1fr 1.2fr 1fr}.row.two{grid-template-columns:1fr 1.4fr}}
+@media(max-width:1100px){.view.on{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:899px){
+  .shell{display:block}
+  .side{position:sticky;top:0;z-index:5;height:auto;flex-direction:row;align-items:center;gap:8px;padding:10px 12px;border-right:0;border-bottom:1px solid var(--line);background:var(--bg);overflow:visible}
+  .side-brand{padding:0}.side-brand img{height:26px}
+  .nav{display:flex;gap:4px;overflow-x:auto;flex:1;min-width:0;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .nav::-webkit-scrollbar{display:none}
+  .nav-label{display:none}
+  .nav button{width:auto;white-space:nowrap;padding:8px 12px}
+  .side-foot{margin:0;padding:0;border:0;flex-direction:row;align-items:center}
+  .side-foot .who{display:none}
+  .main{padding:20px 14px 56px}
+}
+@media(prefers-reduced-motion:reduce){.nav button{transition:none}}
+</style>
+</head>
+<body>
+  <!-- LOGIN -->
+  <main class="login-wrap" id="loginView">
+    <img src="logo.png" alt="baxdev">
+    <div class="tag">Owner Panel</div>
+    <h1>Masuk</h1>
+    <p class="sub">Login pakai akun Firebase Authentication milik owner.</p>
+    <div class="card">
+      <label for="email">Email</label>
+      <input id="email" type="email" autocomplete="username" placeholder="baxdev@owner.id">
+      <label for="pw" style="margin-top:12px">Password</label>
+      <input id="pw" type="password" autocomplete="current-password" placeholder="Password">
+      <div style="margin-top:14px;display:flex;align-items:center">
+        <button class="btn primary" id="loginBtn" type="button">Masuk</button>
+        <button class="linkbtn" id="resetBtn" type="button">Lupa password?</button>
+      </div>
+      <div class="msg" id="loginMsg" role="status"></div>
+    </div>
+  </main>
+
+  <!-- PANEL -->
+  <div class="shell hide" id="panelView">
+    <aside class="side">
+      <div class="side-brand"><img src="logo.png" alt="baxdev"></div>
+      <nav class="nav" id="nav" aria-label="Menu owner">
+      <div class="nav-label">Utama</div>
+      <button type="button" data-view="overview">Ringkasan<span class="cnt hide" id="navOrders"></span></button>
+      <button type="button" data-view="vip">VIP &amp; Kode</button>
+      <button type="button" data-view="users">Pengguna</button>
+      <div class="nav-label">Bisnis</div>
+      <button type="button" data-view="promo">Promotor<span class="cnt hide" id="navPromo"></span></button>
+      <button type="button" data-view="pay">Harga &amp; QRIS</button>
+      <div class="nav-label">Situs</div>
+      <button type="button" data-view="site">Situs</button>
+      <div class="nav-label">Sistem</div>
+      <button type="button" data-view="system">Sistem</button>
+      </nav>
+      <div class="side-foot">
+        <div class="who" id="who"></div>
+        <button class="btn small hide" id="logoutBtn" type="button">Keluar</button>
+      </div>
+    </aside>
+    <main class="main">
+  <section class="view on" data-view="overview">
+    <div class="view-head"><h1>Ringkasan</h1><p>Pesanan yang menunggu dan angka penting hari ini.</p></div>
+    <div class="stats">
+      <div class="stat"><b id="statActive">0</b><span>VIP aktif</span></div>
+      <div class="stat"><b id="statPending">0</b><span>Menunggu verifikasi</span></div>
+      <div class="stat"><b id="statCodes">0</b><span>Kode tersedia</span></div>
+      <div class="stat"><b id="statPromoters">0</b><span>Promotor</span></div>
+      <div class="stat"><b id="statUnpaid">Rp0</b><span>Komisi belum dibayar</span></div>
+    </div>
+    <div class="card span">
+      <label style="margin-bottom:10px">Pesanan menunggu verifikasi</label>
+      <div id="orders"></div>
+      <div class="msg" id="orderMsg" role="status"></div>
+    </div>
+  </section>
+  <section class="view" data-view="vip">
+    <div class="view-head"><h1>VIP &amp; Kode</h1><p>Atur VIP manual, durasi, dan kode akses premium.</p></div>
+    <div class="card">
+      <label style="margin-bottom:10px">Tambah VIP manual</label>
+      <div class="row three">
+        <div><label for="uid">Roblox User ID</label><input id="uid" inputmode="numeric" placeholder="Contoh: 123456789"></div>
+        <div><label for="note">Catatan (opsional)</label><input id="note" maxlength="80" placeholder="Nama / keterangan"></div>
+        <div><label for="days">Masa aktif</label>
+          <select id="days">
+            <option value="7">7 hari</option>
+            <option value="15">15 hari</option>
+            <option value="30">30 hari</option>
+            <option value="0">Permanen</option>
+          </select>
+        </div>
+      </div>
+      <div class="row two" style="margin-top:12px">
+        <div><label for="tier">Paket</label>
+          <select id="tier"><option value="vip">VIP</option><option value="plus">VIP Plus</option></select>
+        </div>
+      </div>
+      <div style="margin-top:14px"><button class="btn primary" id="addBtn" type="button">Tambah</button></div>
+      <div class="msg" id="addMsg" role="status"></div>
+    </div>
+    <div class="card">
+      <label style="margin-bottom:10px">Ubah durasi VIP</label>
+      <div class="row three">
+        <div><label for="dUid">Roblox User ID</label><input id="dUid" inputmode="numeric" placeholder="Contoh: 123456789"></div>
+        <div><label for="dAmt">Jumlah</label><input id="dAmt" type="number" inputmode="numeric" min="1" value="1"></div>
+        <div><label for="dUnit">Satuan</label>
+          <select id="dUnit"><option value="1">Jam</option><option value="24" selected>Hari</option></select></div>
+      </div>
+      <div class="row two" style="margin-top:12px">
+        <div><label for="dTier">Paket yang diubah</label>
+          <select id="dTier"><option value="vip">VIP</option><option value="plus">VIP Plus</option></select>
+        </div>
+      </div>
+      <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn primary" id="dAdd" type="button">+ Tambah durasi</button>
+        <button class="btn danger" id="dSub" type="button">− Kurangi durasi</button>
+      </div>
+      <div class="msg" id="dMsg" role="status"></div>
+      <p class="note" style="margin-top:10px">Tambah: memperpanjang dari sisa masa aktif (atau dari sekarang kalau sudah habis / belum VIP). Kurangi: kalau hasilnya lewat dari sekarang, VIP langsung berakhir. VIP permanen tidak bisa dikurangi, hapus saja lewat daftar VIP.</p>
+    </div>
+    <div class="card span">
+      <label style="margin-bottom:10px">Kode akses premium</label>
+      <div class="row">
+        <div><label for="codeText">Kode (kosongkan untuk kode acak)</label>
+          <input id="codeText" maxlength="24" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Contoh: PROMO7">
+        </div>
+      </div>
+      <div class="row two" style="margin-top:12px">
+        <div><label for="codeTier">Paket kode</label>
+          <select id="codeTier"><option value="vip">VIP</option><option value="plus">VIP Plus</option></select>
+        </div>
+      </div>
+      <div class="row three" style="margin-top:12px">
+        <div><label for="codeDur">Durasi premium</label><input id="codeDur" type="number" inputmode="numeric" min="1" value="24"></div>
+        <div><label for="codeUnit">Satuan</label>
+          <select id="codeUnit">
+            <option value="1">Menit</option>
+            <option value="60" selected>Jam</option>
+            <option value="1440">Hari</option>
+          </select>
+        </div>
+        <div><label for="codeMax">Maks. pemakai</label><input id="codeMax" type="number" inputmode="numeric" min="1" value="1"></div>
+      </div>
+      <div style="margin-top:14px"><button class="btn primary" id="codeBtn" type="button">Buat kode</button></div>
+      <div class="msg" id="codeMsg" role="status"></div>
+      <div id="codeList" style="margin-top:8px"></div>
+      <p class="note" style="margin-top:10px">Tiap akun Google hanya bisa memakai satu kode satu kali. Setelah kuota pemakai habis, kode otomatis tidak bisa dipakai lagi. Kode VIP menambah masa VIP, kode VIP Plus menambah masa VIP Plus, ke Roblox User ID pemakai. Satuan durasi: menit, jam, atau hari.</p>
+    </div>
+    <div class="card span">
+      <div class="toolbar">
+        <label for="search" style="margin:0">Daftar VIP</label>
+        <input id="search" placeholder="Cari ID / catatan">
+      </div>
+      <div id="list"></div>
+    </div>
+  </section>
+  <section class="view" data-view="users">
+    <div class="view-head"><h1>Pengguna</h1><p>Akun yang tercatat dan riwayat upload mereka.</p></div>
+    <div class="card">
+      <div class="toolbar">
+        <label for="usSearch" style="margin:0">Pengguna <span class="badge off" id="usCount">0</span></label>
+        <input id="usSearch" placeholder="Cari nama / email / Roblox ID">
+      </div>
+      <div id="users" class="scrollbox"></div>
+      <div class="msg" id="usMsg" role="status"></div>
+      <p class="note" style="margin-top:10px">Pengguna tercatat saat login Google di situs (dan dari riwayat upload lama). Ban memblokir akun Google itu dari seluruh layanan, termasuk lewat API langsung. Unban kapan saja.</p>
+    </div>
+    <div class="card">
+      <div class="toolbar">
+        <label for="upSearch" style="margin:0">Riwayat upload</label>
+        <input id="upSearch" placeholder="Cari nama / email / ID">
+      </div>
+      <div class="note" id="upSummary" style="margin-bottom:6px"></div>
+      <div id="uploads" class="scrollbox"></div>
+      <div class="msg" id="upMsg" role="status"></div>
+    </div>
+  </section>
+  <section class="view" data-view="promo">
+    <div class="view-head"><h1>Promotor</h1><p>Komisi, data penarikan promotor, dan pembayarannya.</p></div>
+    <div class="card">
+      <div class="toolbar" style="margin-bottom:10px">
+        <label style="margin:0">Komisi promotor <span class="badge off" id="promoBadge">Aktif</span></label>
+      </div>
+      <div class="row two">
+        <div><label for="promoRate">Persentase komisi (%)</label><input id="promoRate" type="number" inputmode="decimal" min="0" max="100" step="0.5" value="20"></div>
+        <div><label for="promoOn">Status program</label>
+          <select id="promoOn"><option value="1">Aktif</option><option value="0">Nonaktif</option></select>
+        </div>
+      </div>
+      <div class="row two" style="margin-top:12px">
+        <div><label for="promoBonus">Bonus hari VIP untuk pembeli (hari)</label><input id="promoBonus" type="number" inputmode="numeric" min="0" max="30" step="1" value="2"></div>
+      </div>
+      <div style="margin-top:14px"><button class="btn primary" id="promoSave" type="button">Simpan komisi</button></div>
+      <div class="msg" id="promoMsg" role="status"></div>
+      <p class="note" style="margin-top:10px">Komisi dihitung dari harga pesanan saat kamu menekan Aktifkan di tab Ringkasan, jadi komisi lama tidak berubah kalau persentase diganti. Pembeli yang memakai kode promotor valid otomatis dapat tambahan hari VIP (bonus) saat kamu menekan Aktifkan; isi 0 untuk mematikan bonus. Program nonaktif: pesanan baru tidak menghasilkan komisi dan tidak ada bonus dan pendaftaran promotor baru ditutup.</p>
+    </div>
+
+    <div class="card">
+      <label style="margin-bottom:6px">Komisi per paket (harga saat ini)</label>
+      <table class="promo-prev"><thead><tr><th>Paket</th><th class="r">Harga</th><th class="r">Komisi</th></tr></thead><tbody id="promoPreview"></tbody></table>
+    </div>
+
+    <div class="card span">
+      <div class="toolbar">
+        <label for="promoSearch" style="margin:0">Promotor <span class="badge off" id="promoCount">0</span></label>
+        <input id="promoSearch" placeholder="Cari kode / email / WA">
+      </div>
+      <div id="promoList" class="scrollbox"></div>
+      <div class="msg" id="promoListMsg" role="status"></div>
+      <p class="note" style="margin-top:10px">Saldo promotor = komisi dari pesanan yang sudah kamu aktifkan. Penarikan promotor masuk di kartu Permintaan penarikan di bawah; ACC setelah kamu kirim uangnya. Promotor yang masih punya saldo belum bisa dihapus.</p>
+    </div>
+
+    <div class="card span">
+      <label style="margin-bottom:10px">Permintaan penarikan <span class="badge off" id="wdCount">0</span></label>
+      <div id="wdList" class="scrollbox"></div>
+      <div class="msg" id="wdMsg" role="status"></div>
+      <p class="note" style="margin-top:10px">Saat promotor menekan Tarik, saldo di web promotor langsung berkurang dan statusnya Proses. Kirim uang ke e-wallet yang tertera, lalu tekan <b>ACC (sudah dikirim)</b>. Kalau belum di-ACC dalam 24 jam, saldo promotor kembali otomatis. <b>Tolak</b> juga mengembalikan saldo.</p>
+    </div>
+
+    <div class="card span">
+      <label style="margin-bottom:10px">Riwayat komisi <span class="badge off" id="commCount">0</span></label>
+      <div id="commList" class="scrollbox"></div>
+      <div class="msg" id="commMsg" role="status"></div>
+    </div>
+  </section>
+  <section class="view" data-view="pay">
+    <div class="view-head"><h1>Harga &amp; QRIS</h1><p>Harga paket dan foto QRIS untuk pembeli.</p></div>
+    <div class="card span">
+      <label style="margin-bottom:10px">Harga VIP &amp; QRIS <span class="badge off" id="payBadge">Bawaan</span></label>
+      <div id="payFields"></div>
+      <div style="margin-top:14px"><button class="btn primary" id="paySave" type="button">Simpan harga &amp; QRIS</button></div>
+      <div class="msg" id="payMsg" role="status"></div>
+      <p class="note" style="margin-top:10px">Hanya ada satu foto QRIS yang dipakai semua paket (VIP dan VIP Plus, 15 dan 30 hari); nominal tiap paket diatur lewat harga di atas. Perubahan langsung berlaku untuk pembeli berikutnya. Pesanan yang sudah dibuat tetap memakai nominal lamanya. Foto otomatis dikecilkan supaya ringan; pakai foto QRIS yang jelas dan tidak terpotong.</p>
+    </div>
+  </section>
+  <section class="view" data-view="site">
+    <div class="view-head"><h1>Situs</h1><p>Pop-up maintenance dan informasi di halaman Home.</p></div>
+    <div class="card">
+      <div class="toolbar" style="margin-bottom:10px">
+        <label style="margin:0">Mode maintenance <span class="badge off" id="mtBadge">Nonaktif</span></label>
+      </div>
+      <label for="mtText">Teks yang tampil di pop-up</label>
+      <textarea id="mtText" class="codebox" maxlength="500" placeholder="Contoh: Kami sedang memperbarui sistem. Coba lagi sekitar 30 menit."></textarea>
+      <div class="note" id="mtCount" style="margin-top:4px">0/500</div>
+      <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn primary" id="mtOn" type="button">Aktifkan maintenance</button>
+        <button class="btn" id="mtOff" type="button">Matikan</button>
+      </div>
+      <div class="msg" id="mtMsg" role="status"></div>
+      <p class="note" style="margin-top:10px">Saat aktif, semua pengunjung melihat pop-up ini dan tidak bisa memakai situs. Halaman /owner tetap bisa dibuka. Kalau kamu login Google sebagai owner di situs utama, ada tombol untuk melewati pop-up. Teks dikosongkan = pakai teks bawaan.</p>
+    </div>
+    <div class="card">
+      <div class="toolbar" style="margin-bottom:10px">
+        <label style="margin:0">Informasi di Home <span class="badge off" id="infoBadge">Kosong</span></label>
+      </div>
+      <label for="infoText">Teks informasi</label>
+      <textarea id="infoText" class="codebox" maxlength="500" placeholder="Contoh: Server Roblox sedang lambat, upload mungkin butuh waktu lebih lama."></textarea>
+      <div class="note" id="infoCount" style="margin-top:4px">0/500</div>
+      <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn primary" id="infoSend" type="button">Kirim informasi</button>
+        <button class="btn" id="infoClear" type="button">Hapus informasi</button>
+      </div>
+      <div class="msg" id="infoMsg" role="status"></div>
+      <p class="note" style="margin-top:10px">Informasi tampil di halaman Home semua pengguna (paling lambat sekitar 30 detik setelah dikirim). Selama ada informasi, jadwal sholat disembunyikan; setelah dihapus, jadwal sholat tampil lagi.</p>
+    </div>
+  </section>
+  <section class="view" data-view="system">
+    <div class="view-head"><h1>Sistem</h1><p>Database dan keamanan akun owner.</p></div>
+    <div class="card">
+      <div class="toolbar" style="margin-bottom:10px">
+        <label style="margin:0">Server console</label>
+      </div>
+      <div class="con" id="conBox" data-s="idle">
+        <div class="con-bar"><span class="con-state"><i class="con-dot"></i><span id="conState">Online</span></span><span>db-prod-01 · ap-southeast-1</span></div>
+        <pre class="con-code" tabindex="0" aria-label="Kode server contoh">// server/db.js
+const pool = createPool({ host: "10.0.3.14", port: 5432, db: "baxdev_prod", ssl: true });
+
+app.post("/api/vip/activate", requireAuth, requireOwner, async (req, res) =&gt; {
+  const { uid, days } = validate(req.body);
+  await pool.query("UPDATE vip SET expires_at = $1 WHERE uid = $2", [addDays(days), uid]);
+  res.json({ ok: true });
+});</pre>
+        <div class="con-body" id="conLog" role="log" aria-live="off"><span class="ln dim">[sistem] koneksi database stabil · 12 tabel · 3 replika</span></div>
+      </div>
+      <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn danger" id="conAttack" type="button">Serang database</button>
+        <button class="btn" id="conClear" type="button">Bersihkan log</button>
+      </div>
+    </div>
+    <div class="card">
+      <label style="margin-bottom:10px">Ganti password owner</label>
+      <div class="row">
+        <div><label for="pwCur">Password sekarang</label><input id="pwCur" type="password" autocomplete="current-password" placeholder="Password sekarang"></div>
+        <div><label for="pwNew">Password baru</label><input id="pwNew" type="password" autocomplete="new-password" placeholder="Minimal 6 karakter"></div>
+        <div><label for="pwNew2">Ulangi password baru</label><input id="pwNew2" type="password" autocomplete="new-password" placeholder="Ulangi password baru"></div>
+      </div>
+      <div style="margin-top:14px"><button class="btn primary" id="pwBtn" type="button">Simpan password</button></div>
+      <div class="msg" id="pwMsg" role="status"></div>
+      <p class="note" style="margin-top:10px">Password tersimpan di Firebase Authentication untuk akun yang sedang login, jadi berlaku di semua perangkat.</p>
+    </div>
+  </section>
+      <p class="note" style="margin-top:20px">Data tersimpan di Firebase Realtime Database, jadi VIP berlaku di semua perangkat dan pesanan dari pengguna muncul otomatis di sini. Pembayaran QRIS statis tidak terverifikasi otomatis: cek dulu mutasi di aplikasi merchant sebelum menekan Aktifkan.</p>
+    </main>
+  </div>
+
+<script>
+window.BAXDEV_FIREBASE = {
+  apiKey: "AIzaSyCvXzZonMjmwK5Vme9Dpt_icE-WvdD8WDM",
+  authDomain: "baxdev-rbx.firebaseapp.com",
+  databaseURL: "https://baxdev-rbx-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "baxdev-rbx",
+  appId: "1:351043270831:web:fb5c719ab25bbe62dc7c5a"
+};
+</script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import { getDatabase, ref, onValue, get, set, update, remove, query, limitToLast, forceLongPolling } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
+
+const $ = (id) => document.getElementById(id);
+const DAY_MS = 86400000;
+const CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // 32 karakter, tanpa I/O/0/1
+const MAX_CODE_HOURS = 8760;
+const MAX_CODE_USES = 100000;
+const REDEEMERS_SHOWN = 5;
+const cfg = window.BAXDEV_FIREBASE || {};
+const configured = cfg.apiKey && cfg.databaseURL && !/ISI_/.test(cfg.apiKey + cfg.databaseURL);
+
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function say(el,text,kind){el.textContent=text||"";el.className="msg"+(kind?" "+kind:"")}
+function fmtDate(ms){return new Date(ms).toLocaleDateString("id-ID",{day:"numeric",month:"short",year:"numeric"})}
+function fmtTime(ms){return new Date(ms).toLocaleString("id-ID",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})}
+function rupiah(n){return "Rp"+Number(n).toLocaleString("id-ID")}
+function isActive(v){return !v.expiresAt||v.expiresAt>Date.now()}
+function plusActive(v){return isActive(v)&&typeof v.plusUntil==="number"&&(v.plusUntil===0||v.plusUntil>Date.now())}
+function withTimeout(p,ms){return new Promise((res,rej)=>{const t=setTimeout(()=>rej(Object.assign(new Error("timeout"),{code:"timeout"})),ms);p.then(v=>{clearTimeout(t);res(v)},e=>{clearTimeout(t);rej(e)})})}
+
+if (!configured) {
+  say($("loginMsg"),"Firebase belum dikonfigurasi. Isi firebase-config.js dulu.","err");
+  $("loginBtn").disabled = true;
+}
+
+let auth, db, vipMap = {}, orderMap = {}, codeMap = {}, redeemMap = {}, uploadMap = {}, userMap = {}, banMap = {}, promoMap = {}, commMap = {}, payoutMap = {}, wdMap = {}, unsubs = [];
+const PROMO_DEFAULT = { rate: 20, enabled: true, bonusDays: 2 };
+let promoCfg = PROMO_DEFAULT;
+const EWALLET_LABEL = { dana: "DANA", gopay: "GoPay", ovo: "OVO", shopeepay: "ShopeePay", linkaja: "LinkAja", qris: "QRIS" };
+if (configured) {
+  const app = initializeApp(cfg);
+  auth = getAuth(app);
+  try{ forceLongPolling(); }catch(e){}
+  db = getDatabase(app);
+}
+
+/* ── Render ── */
+function renderOrders(){
+  const pending = Object.values(orderMap).filter(o=>o&&o.status==="pending").sort((a,b)=>b.createdAt-a.createdAt);
+  $("statPending").textContent = pending.length;
+  const navOrders = $("navOrders");
+  navOrders.textContent = pending.length;
+  navOrders.classList.toggle("hide", !pending.length);
+  if(!pending.length){$("orders").innerHTML='<div class="empty">Belum ada pesanan yang menunggu.</div>';return}
+  $("orders").innerHTML = pending.map(o=>
+    '<div class="item"><div><div class="id">#'+esc(o.userId)+' · '+esc(rupiah(o.amount))+'</div>'+
+    '<div class="meta">'+esc(o.code)+' · '+esc(o.tier==="plus"?"VIP Plus":"VIP")+' '+esc(o.days)+' hari'+(promoBonusDays(o)?' (+'+esc(promoBonusDays(o))+' hari bonus)':'')+(o.promo?' · kode '+esc(o.promo):'')+' · '+esc(fmtTime(o.paidAt||o.createdAt))+(o.googleEmail?' · '+esc(o.googleEmail):'')+'</div></div>'+
+    '<div class="actions"><button class="btn small primary" type="button" data-approve="'+esc(o.code)+'">Aktifkan</button>'+
+    '<button class="btn danger" type="button" data-reject="'+esc(o.code)+'">Tolak</button></div></div>').join("");
+}
+function renderVip(){
+  const q = $("search").value.trim().toLowerCase();
+  const all = Object.entries(vipMap).map(([id,v])=>Object.assign({id},v)).sort((a,b)=>(b.addedAt||0)-(a.addedAt||0));
+  $("statActive").textContent = all.filter(isActive).length;
+  const shown = all.filter(v=>!q||v.id.indexOf(q)>-1||(v.note||"").toLowerCase().indexOf(q)>-1);
+  if(!shown.length){$("list").innerHTML='<div class="empty">'+(all.length?"Tidak ada yang cocok.":"Belum ada VIP.")+"</div>";return}
+  $("list").innerHTML = shown.map(v=>{
+    let st;
+    if(!v.expiresAt) st='<span class="badge ok">Permanen</span>';
+    else if(isActive(v)) st='<span class="badge ok">Sampai '+esc(fmtDate(v.expiresAt))+'</span>';
+    else st='<span class="badge off">Kedaluwarsa</span>';
+    if(plusActive(v)) st+=v.plusUntil===0?'<span class="badge ok">Plus permanen</span>':'<span class="badge ok">Plus sampai '+esc(fmtDate(v.plusUntil))+'</span>';
+    return '<div class="item"><div><div class="id">#'+esc(v.id)+st+'</div>'+
+      '<div class="meta">'+esc(v.note||"Tanpa catatan")+(v.addedAt?" · "+esc(fmtDate(v.addedAt)):"")+'</div></div>'+
+      '<div class="btns"><button class="btn small" type="button" data-dur="'+esc(v.id)+'">Durasi</button><button class="btn danger" type="button" data-remove="'+esc(v.id)+'">Hapus</button></div></div>';
+  }).join("");
+}
+
+function fmtSize(b){b=Number(b)||0;return b>=1048576?(b/1048576).toFixed(1)+" MB":Math.max(1,Math.round(b/1024))+" KB"}
+function renderUploads(){
+  const q=$("upSearch").value.trim().toLowerCase();
+  const all=Object.entries(uploadMap).map(([k,v])=>Object.assign({key:k},v)).filter(v=>v&&v.at).sort((a,b)=>b.at-a.at);
+  const people=new Set(all.map(v=>v.googleUid)).size;
+  $("upSummary").textContent=all.length?all.length+" upload dari "+people+" orang (200 terbaru)":"";
+  const shown=all.filter(v=>!q||[v.name,v.filename,v.googleEmail,v.robloxId,v.assetId].some(x=>String(x==null?"":x).toLowerCase().indexOf(q)>-1));
+  if(!shown.length){$("uploads").innerHTML='<div class="empty">'+(all.length?"Tidak ada yang cocok.":"Belum ada riwayat upload.")+"</div>";return}
+  $("uploads").innerHTML=shown.slice(0,100).map(v=>{
+    const done=v.status==="done";
+    const badge=done?'<span class="badge ok">Berhasil</span>':'<span class="badge off">Gagal</span>';
+    const who=(v.googleEmail?esc(v.googleEmail)+" · ":"")+"Roblox #"+esc(v.robloxId);
+    const line2=done&&v.assetId?'<div class="meta mono">rbxassetid://'+esc(v.assetId)+'</div>':(v.error?'<div class="meta">'+esc(v.error)+'</div>':"");
+    return '<div class="item"><div><div class="id">'+esc(v.name)+badge+'</div>'+
+      '<div class="meta">'+who+'</div>'+
+      '<div class="meta">'+esc(v.filename||"")+(v.size?" · "+esc(fmtSize(v.size)):"")+" · "+esc(fmtTime(v.at))+'</div>'+line2+'</div>'+
+      '<div class="actions">'+(done&&v.assetId?'<button class="btn small" type="button" data-upcopy="'+esc(v.assetId)+'">Salin ID</button>':'')+
+      '<button class="btn danger" type="button" data-updel="'+esc(v.key)+'">Hapus</button></div></div>';
+  }).join("");
+}
+async function removeUpload(key){
+  if(!confirm("Hapus catatan upload ini dari riwayat?"))return;
+  try{ await remove(ref(db,"uploads/"+key)); say($("upMsg"),"Catatan dihapus.","ok"); }
+  catch(e){ fail($("upMsg"),e); }
+}
+
+function hoursLabel(h){const m=Math.round(h*60);return m%1440===0?(m/1440)+" hari":m%60===0?(m/60)+" jam":m+" menit"}
+function renderCodes(){
+  const all = Object.values(codeMap).filter(Boolean).sort((a,b)=>b.createdAt-a.createdAt);
+  $("statCodes").textContent = all.filter(c=>c.uses<c.maxUses).length;
+  if(!all.length){$("codeList").innerHTML='<div class="empty">Belum ada kode.</div>';return}
+  $("codeList").innerHTML = all.map(c=>{
+    const full = c.uses>=c.maxUses;
+    const users = Object.values(redeemMap[c.code]||{}).map(x=>"#"+x.roblox);
+    const who = users.length?" · "+users.slice(0,REDEEMERS_SHOWN).join(", ")+(users.length>REDEEMERS_SHOWN?" +"+(users.length-REDEEMERS_SHOWN):""):"";
+    return '<div class="item"><div><div class="id mono">'+esc(c.code)+
+      '<span class="badge '+(full?'off':'ok')+'">'+esc(c.uses)+'/'+esc(c.maxUses)+' dipakai</span>'+
+      '<span class="badge">'+esc(c.tier==="plus"?"VIP Plus":"VIP")+' · '+esc(hoursLabel(c.hours))+'</span></div>'+
+      '<div class="meta">Dibuat '+esc(fmtTime(c.createdAt))+esc(who)+'</div></div>'+
+      '<div class="actions"><button class="btn small" type="button" data-copy="'+esc(c.code)+'">Salin</button>'+
+      '<button class="btn danger" type="button" data-delcode="'+esc(c.code)+'">Hapus</button></div></div>';
+  }).join("");
+}
+
+/* ── Data ── */
+function vipEntry(id, days, note, tier){
+  const cur = vipMap[id] || {}, now = Date.now(), span = days*DAY_MS;
+  const vipPerm = !!vipMap[id] && !cur.expiresAt;
+  const entry = { addedAt: cur.addedAt||now, note: note!=null&&note!==""?note:(cur.note||"") };
+  if(tier==="plus"){
+    entry.plusUntil = (days===0||cur.plusUntil===0) ? 0 : Math.max(now,cur.plusUntil||0)+span;
+    // VIP Plus ikut VIP: masa VIP minimal sama dengan masa Plus
+    entry.expiresAt = (entry.plusUntil===0||vipPerm) ? 0 : Math.max(cur.expiresAt||0,entry.plusUntil);
+  }else{
+    entry.expiresAt = (days===0||vipPerm) ? 0 : Math.max(now,cur.expiresAt||0)+span;
+    if(typeof cur.plusUntil==="number") entry.plusUntil = cur.plusUntil;
+  }
+  return entry;
+}
+function fail(el,e){
+  say(el, e && e.code==="PERMISSION_DENIED" || /permission/i.test(String(e&&e.message)) ? "Ditolak Firebase: akun ini bukan admin." : "Gagal menyimpan: "+(e&&e.message||e), "err");
+}
+async function approve(code){
+  const o = orderMap[code];
+  if(!o||o.status!=="pending"){return}
+  const updates = {};
+  const tier = o.tier==="plus"?"plus":"vip";
+  const bonus = promoBonusDays(o);
+  const totalDays = Number(o.days) + bonus;
+  updates["vip/"+o.userId] = vipEntry(String(o.userId), totalDays, "", tier);
+  updates["orders/"+code+"/status"] = "approved";
+  updates["orders/"+code+"/handledAt"] = Date.now();
+  const comm = commissionFor(o, tier);
+  if(comm) updates["commissions/"+comm.uid+"/"+code] = comm.rec;
+  try{
+    await update(ref(db),updates);
+    say($("orderMsg"),"Roblox #"+o.userId+" sekarang "+(tier==="plus"?"VIP Plus":"VIP")+" "+o.days+" hari"+(bonus?" + bonus "+bonus+" hari (kode promotor "+o.promo+")":"")+"."+(comm?" Komisi "+rupiah(comm.rec.amount)+" untuk promotor "+comm.rec.promo+".":""),"ok");
+  }catch(e){ fail($("orderMsg"),e); }
+}
+async function reject(code){
+  const o = orderMap[code];
+  if(!o||o.status!=="pending"||!confirm("Tolak pesanan "+code+"?"))return;
+  try{ await update(ref(db,"orders/"+code),{status:"rejected",handledAt:Date.now()}); say($("orderMsg"),"Pesanan "+code+" ditolak.","ok"); }
+  catch(e){ fail($("orderMsg"),e); }
+}
+async function add(){
+  const id = $("uid").value.trim();
+  if(!/^\d{1,20}$/.test(id)){say($("addMsg"),"User ID harus berupa angka (maks 20 digit).","err");return}
+  const days = Number($("days").value), tier = $("tier").value==="plus"?"plus":"vip";
+  try{
+    await update(ref(db,"vip"),{[id]:vipEntry(id,days,$("note").value.trim().slice(0,80),tier)});
+    $("uid").value="";$("note").value="";
+    say($("addMsg"),"Roblox #"+id+" sekarang "+(tier==="plus"?"VIP Plus":"VIP")+(days?" "+days+" hari.":" permanen."),"ok");
+  }catch(e){ fail($("addMsg"),e); }
+}
+async function removeVip(id){
+  if(!confirm("Hapus VIP Roblox #"+id+"?"))return;
+  try{ await remove(ref(db,"vip/"+id)); say($("addMsg"),"VIP Roblox #"+id+" dihapus.","ok"); }
+  catch(e){ fail($("addMsg"),e); }
+}
+
+/* ── Promotor & komisi ── */
+// Komisi dihitung di sini (bukan di browser pembeli) dari nominal pesanan dan persentase yang berlaku saat Aktifkan ditekan.
+function commissionFor(order, tier){
+  if(!order.promo || promoCfg.enabled === false) return null;
+  const found = Object.entries(promoMap).find(([uid,p]) => p && p.code === order.promo);
+  if(!found || found[0] === order.googleUid) return null;
+  const rate = Number(promoCfg.rate) || 0;
+  const amount = Math.floor(Number(order.amount) * rate / 100);
+  if(!(amount > 0)) return null;
+  return { uid: found[0], rec: { promo: order.promo, amount, orderAmount: Number(order.amount), rate, tier, days: Number(order.days), status: "unpaid", at: Date.now() } };
+}
+// Bonus hari VIP untuk pembeli yang memakai kode promotor valid (bukan kode milik sendiri, program aktif).
+function promoBonusDays(order){
+  if(!order || !order.promo || promoCfg.enabled === false) return 0;
+  const found = Object.entries(promoMap).find(([uid,p]) => p && p.code === order.promo);
+  if(!found || found[0] === order.googleUid) return 0;
+  const b = Number(promoCfg.bonusDays);
+  return Number.isFinite(b) && b >= 0 ? Math.floor(b) : 2;
+}
+// Saldo = komisi yang belum ditandai lunas (cara lama) dikurangi total pembayaran yang dicatat (payouts, bisa sebagian).
+function promoPayouts(uid){
+  return Object.entries(payoutMap[uid] || {}).filter(([,x]) => x && typeof x.amount === "number").map(([id,x]) => Object.assign({id}, x)).sort((a,b) => (b.at||0) - (a.at||0));
+}
+const WD_HOLD_MS = 24*60*60*1000;
+function wdList(uid){
+  return Object.entries(wdMap[uid] || {}).filter(([,x]) => x && typeof x.amount === "number").map(([id,x]) => Object.assign({id, uid}, x)).sort((a,b) => (b.at||0) - (a.at||0));
+}
+// pending = menunggu ACC (< 24 jam), expired = pending lewat 24 jam (saldo sudah kembali ke promotor), paid, rejected
+function wdState(w){
+  if(w.status === "paid") return "paid";
+  if(w.status === "rejected") return "rejected";
+  return Date.now() < (w.at||0) + WD_HOLD_MS ? "pending" : "expired";
+}
+function promoBalance(uid){
+  const list = Object.values(commMap[uid] || {}).filter(c => c && typeof c.amount === "number");
+  const sum = (arr) => arr.reduce((t,c) => t + c.amount, 0);
+  const unpaid = list.filter(c => c.status !== "paid");
+  const outs = promoPayouts(uid), outSum = sum(outs);
+  const wds = wdList(uid), wPaid = sum(wds.filter(w => wdState(w) === "paid")), wHold = sum(wds.filter(w => wdState(w) === "pending"));
+  // unpaid = saldo yang tampil di web promotor; pending = sedang ditahan menunggu ACC (masih utang owner)
+  return { count: list.length, unpaid: Math.max(0, sum(unpaid) - outSum - wPaid - wHold), pending: wHold, unpaidCount: unpaid.length, paid: sum(list.filter(c => c.status === "paid")) + outSum + wPaid, payoutCount: outs.length };
+}
+function renderPromoAdmin(){
+  const on = promoCfg.enabled !== false, rate = Number(promoCfg.rate) || 0;
+  const badge = $("promoBadge");
+  badge.textContent = (on ? "Aktif" : "Nonaktif") + " · " + rate + "%";
+  badge.className = "badge " + (on ? "ok" : "off");
+  if(document.activeElement !== $("promoRate")) $("promoRate").value = rate;
+  if(document.activeElement !== $("promoOn")) $("promoOn").value = on ? "1" : "0";
+  if(document.activeElement !== $("promoBonus")){ const b = Number(promoCfg.bonusDays); $("promoBonus").value = Number.isFinite(b) && b >= 0 ? Math.floor(b) : 2; }
+  $("promoPreview").innerHTML = PAY_PLANS.map(pl => {
+    const price = (payState && payState[pl.p]) || pl.def;
+    return '<tr><td>'+esc(pl.name)+'</td><td class="r">'+esc(rupiah(price))+'</td><td class="r"><b>'+esc(rupiah(Math.floor(price*rate/100)))+'</b></td></tr>';
+  }).join("");
+
+  const all = Object.entries(promoMap).filter(([,p]) => p && p.code).map(([uid,p]) => Object.assign({uid}, p, {bal: promoBalance(uid)}))
+    .sort((a,b) => b.bal.unpaid - a.bal.unpaid || (b.createdAt||0) - (a.createdAt||0));
+  const totalUnpaid = all.reduce((t,p) => t + p.bal.unpaid + p.bal.pending, 0);
+  $("statPromoters").textContent = all.length;
+  $("statUnpaid").textContent = rupiah(totalUnpaid);
+  $("promoCount").textContent = all.length;
+  const owing = all.filter(p => p.bal.unpaid + p.bal.pending > 0).length;
+  const navPromo = $("navPromo");
+  navPromo.textContent = owing;
+  navPromo.classList.toggle("hide", !owing);
+
+  const q = $("promoSearch").value.trim().toLowerCase();
+  const shown = all.filter(p => !q || [p.code, p.email, p.name, p.wa, p.ewalletNo, p.ewalletName, p.ewallet==='qris'?'qris':''].some(x => String(x||"").toLowerCase().indexOf(q) > -1));
+  $("promoList").innerHTML = shown.length ? shown.map(p => {
+    const b = p.bal, ew = EWALLET_LABEL[p.ewallet] || p.ewallet;
+    return '<div class="item"><div><div class="id">'+esc(p.name || p.email || p.uid)+'<span class="badge">'+esc(p.code)+'</span></div>'+
+      '<div class="meta">'+esc(p.email||"")+'</div>'+
+      '<div class="meta">WA <a href="https://wa.me/'+esc(p.wa)+'" target="_blank" rel="noopener">+'+esc(p.wa)+'</a> · '+(p.ewallet==="qris"?'<b>QRIS</b> (foto diunggah promotor)':esc(ew)+' '+esc(p.ewalletNo)+(p.ewalletName?' a.n. '+esc(p.ewalletName):''))+'</div>'+
+      '<div class="meta">'+b.count+' penjualan · saldo <b>'+esc(rupiah(b.unpaid))+'</b>'+(b.pending?' · diproses <b>'+esc(rupiah(b.pending))+'</b>':'')+' · sudah dibayar '+esc(rupiah(b.paid))+(b.payoutCount?' ('+b.payoutCount+'× pembayaran)':'')+'</div></div>'+
+      '<div class="btns">'+(p.ewallet==="qris"?'<button class="btn small" type="button" data-pqris="'+esc(p.uid)+'">Lihat QRIS</button>':'<button class="btn small" type="button" data-pcopy="'+esc(p.ewalletNo)+'">Salin no.</button>')+
+      '<button class="btn small primary" type="button" data-ppay="'+esc(p.uid)+'"'+(b.unpaid>0?'':' disabled')+'>Catat pembayaran</button>'+(b.payoutCount?'<button class="btn small" type="button" data-pundo="'+esc(p.uid)+'">Batalkan terakhir</button>':'')+
+      '<button class="btn danger" type="button" data-pdel="'+esc(p.uid)+'">Hapus</button></div></div>';
+  }).join("") : '<div class="empty">'+(all.length ? "Tidak ada yang cocok." : "Belum ada promotor yang mendaftar.")+'</div>';
+
+  const wds = [];
+  Object.keys(wdMap).forEach(uid => wdList(uid).forEach(w => wds.push(w)));
+  wds.sort((a,b) => (b.at||0) - (a.at||0));
+  const waiting = wds.filter(w => wdState(w) === "pending").length;
+  $("wdCount").textContent = waiting + " menunggu";
+  $("wdCount").className = "badge " + (waiting ? "ok" : "off");
+  const WD_LABEL = { pending:["Proses","off"], paid:["Berhasil","ok"], rejected:["Ditolak","off"], expired:["Kedaluwarsa · saldo kembali","off"] };
+  $("wdList").innerHTML = wds.length ? wds.slice(0,100).map(w => {
+    const st = wdState(w), pr = promoMap[w.uid] || {}, ew = EWALLET_LABEL[w.ewallet] || w.ewallet || "";
+    const left = Math.max(0, (w.at||0) + WD_HOLD_MS - Date.now()), lh = Math.floor(left/3600000), lm = Math.ceil((left%3600000)/60000);
+    const acts = (st === "pending" || st === "expired")
+      ? (w.ewallet==="qris"?'<button class="btn small" type="button" data-wqris="'+esc(w.uid)+'">Lihat QRIS</button>':'<button class="btn small" type="button" data-wcopy="'+esc(w.ewalletNo||"")+'">Salin no.</button>')+
+        '<button class="btn small primary" type="button" data-wok="'+esc(w.uid)+'" data-wid="'+esc(w.id)+'">'+(st==="pending"?"ACC (sudah dikirim)":"ACC walau kedaluwarsa")+'</button>'+
+        (st==="pending"?'<button class="btn danger" type="button" data-wno="'+esc(w.uid)+'" data-wid="'+esc(w.id)+'">Tolak</button>':"")
+      : "";
+    return '<div class="item"><div><div class="id">'+esc(rupiah(w.amount))+'<span class="badge '+WD_LABEL[st][1]+'">'+WD_LABEL[st][0]+'</span>'+(pr.code?'<span class="badge">'+esc(pr.code)+'</span>':"")+'</div>'+
+      '<div class="meta">'+esc(ew)+' '+esc(w.ewalletNo||"")+(w.ewalletName?' a.n. '+esc(w.ewalletName):"")+' · '+esc(fmtTime(w.at||0))+(st==="pending"?' · otomatis batal '+lh+'j '+lm+'m lagi':"")+'</div></div>'+
+      (acts?'<div class="btns">'+acts+'</div>':"")+'</div>';
+  }).join("") : '<div class="empty">Belum ada permintaan penarikan.</div>';
+
+  const rows = [];
+  Object.entries(commMap).forEach(([uid,orders]) => Object.entries(orders||{}).forEach(([ord,c]) => { if(c && typeof c.amount === "number") rows.push(Object.assign({uid, ord}, c)); }));
+  rows.sort((a,b) => (b.at||0) - (a.at||0));
+  $("commCount").textContent = rows.length;
+  $("commList").innerHTML = rows.length ? rows.slice(0,100).map(c =>
+    '<div class="item"><div><div class="id">'+esc(rupiah(c.amount))+'<span class="badge '+(c.status==="paid"?"ok":"off")+'">'+(c.status==="paid"?"Dibayar":"Belum dibayar")+'</span></div>'+
+    '<div class="meta">Promotor '+esc(c.promo)+' · '+esc(c.tier==="plus"?"VIP Plus":"VIP")+' '+esc(c.days||"")+' hari · '+esc(rupiah(c.orderAmount))+' × '+esc(c.rate)+'% · '+esc(c.ord)+' · '+esc(fmtTime(c.at||0))+'</div></div>'+
+    '<div class="actions"><button class="btn danger" type="button" data-cuid="'+esc(c.uid)+'" data-cord="'+esc(c.ord)+'">Hapus</button></div></div>').join("")
+    : '<div class="empty">Belum ada komisi. Komisi tercatat saat pesanan dengan kode promotor diaktifkan.</div>';
+}
+async function savePromoCfg(){
+  const rate = Number($("promoRate").value);
+  if(!Number.isFinite(rate) || rate < 0 || rate > 100){ say($("promoMsg"),"Persentase harus antara 0 dan 100.","err"); return; }
+  const bonus = Number($("promoBonus").value);
+  if(!Number.isInteger(bonus) || bonus < 0 || bonus > 30){ say($("promoMsg"),"Bonus hari harus bilangan bulat 0 sampai 30.","err"); return; }
+  const btn = $("promoSave"); btn.disabled = true;
+  try{
+    await set(ref(db,"config/promo"),{ rate: Math.round(rate*100)/100, enabled: $("promoOn").value === "1", bonusDays: bonus, updatedAt: Date.now() });
+    say($("promoMsg"),"Tersimpan. Berlaku untuk pesanan yang diaktifkan mulai sekarang.","ok");
+  }catch(e){ fail($("promoMsg"),e); }
+  finally{ btn.disabled = false; }
+}
+async function payPromoter(uid){
+  const p = promoMap[uid], bal = promoBalance(uid);
+  if(!p || bal.unpaid <= 0) return;
+  const dest = p.ewallet==="qris" ? "QRIS (tekan Lihat QRIS untuk scan)" : (EWALLET_LABEL[p.ewallet]||p.ewallet)+" "+p.ewalletNo+(p.ewalletName?" a.n. "+p.ewalletName:"");
+  const raw = prompt("Nominal yang SUDAH kamu kirim ke promotor "+p.code+" (saldo "+rupiah(bal.unpaid)+").\nTujuan: "+dest+"\nKosongkan = bayar semua saldo.", String(bal.unpaid));
+  if(raw === null) return;
+  const digits = String(raw).replace(/\D+/g,"");
+  const amount = digits ? Number(digits) : bal.unpaid;
+  if(!Number.isInteger(amount) || amount < 1 || amount > bal.unpaid){ say($("promoListMsg"),"Nominal harus antara Rp1 dan "+rupiah(bal.unpaid)+".","err"); return; }
+  if(!confirm("Catat pembayaran "+rupiah(amount)+" untuk promotor "+p.code+"?\nSisa saldo jadi "+rupiah(bal.unpaid-amount)+".\nPastikan uangnya sudah dikirim ke "+dest+"."))return;
+  const id = "P"+Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+  try{ await update(ref(db),{["payouts/"+uid+"/"+id]:{ amount, at: Date.now() }}); say($("promoListMsg"),"Pembayaran "+rupiah(amount)+" ke promotor "+p.code+" dicatat. Sisa saldo "+rupiah(bal.unpaid-amount)+".","ok"); }
+  catch(e){ fail($("promoListMsg"),e); }
+}
+async function undoPayout(uid){
+  const p = promoMap[uid], last = promoPayouts(uid)[0];
+  if(!p || !last) return;
+  if(!confirm("Batalkan pembayaran terakhir "+rupiah(last.amount)+" ("+fmtTime(last.at||0)+") untuk promotor "+p.code+"?\nSaldonya bertambah lagi "+rupiah(last.amount)+"."))return;
+  try{ await remove(ref(db,"payouts/"+uid+"/"+last.id)); say($("promoListMsg"),"Pembayaran terakhir promotor "+p.code+" dibatalkan.","ok"); }
+  catch(e){ fail($("promoListMsg"),e); }
+}
+async function showPromoQris(uid, msgEl){
+  const p = promoMap[uid] || {};
+  try{
+    const snap = await get(ref(db,"promoterQris/"+uid));
+    const data = snap.val();
+    if(typeof data !== "string" || !/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+\/=]+$/.test(data)){ say(msgEl,"Promotor "+(p.code||"")+" belum punya foto QRIS yang valid.","err"); return; }
+    const ov = document.createElement("div");
+    ov.style.cssText = "position:fixed;inset:0;z-index:99;background:rgba(0,0,0,.78);display:flex;align-items:center;justify-content:center;padding:16px;overflow:auto";
+    ov.innerHTML = '<div style="background:#fff;color:#111;border-radius:16px;padding:14px;max-width:min(92vw,420px);text-align:center">'+
+      '<div style="font-weight:600;margin-bottom:8px">QRIS promotor '+esc(p.code||"")+'</div>'+
+      '<img id="qrisViewImg" alt="QRIS" style="width:100%;height:auto;border-radius:8px">'+
+      '<div style="display:flex;gap:8px;justify-content:center;margin-top:10px"><a id="qrisViewDl" class="btn small" style="color:#111;border:1px solid #ccc;border-radius:10px;padding:8px 12px;text-decoration:none">Simpan gambar</a>'+
+      '<button type="button" class="btn small primary" data-qclose="1">Tutup</button></div></div>';
+    ov.querySelector("#qrisViewImg").src = data;   // lewat properti DOM, bukan string HTML
+    const dl = ov.querySelector("#qrisViewDl"); dl.href = data; dl.download = "qris-"+String(p.code||"promotor").replace(/[^A-Za-z0-9]/g,"")+".jpg";
+    ov.addEventListener("click",e=>{ if(e.target === ov || e.target.closest("[data-qclose]")) ov.remove(); });
+    document.body.appendChild(ov);
+  }catch(e){ fail(msgEl,e); }
+}
+async function setWithdrawal(uid, id, status){
+  const w = (wdMap[uid]||{})[id], p = promoMap[uid] || {};
+  if(!w) return;
+  const st = wdState(w), label = rupiah(w.amount)+" ke "+(EWALLET_LABEL[w.ewallet]||w.ewallet||"")+(w.ewallet==="qris"?"":" "+(w.ewalletNo||"")+(w.ewalletName?" a.n. "+w.ewalletName:""));
+  const msg = status === "paid"
+    ? (st === "expired" ? "Penarikan ini sudah KEDALUWARSA dan saldo sudah kembali ke promotor.\nACC akan memotong saldo promotor lagi "+rupiah(w.amount)+".\n\n" : "")+"ACC penarikan "+label+"?\nPastikan uangnya SUDAH kamu kirim."
+    : "Tolak penarikan "+label+"?\nSaldo "+rupiah(w.amount)+" langsung kembali ke promotor.";
+  if(!confirm(msg)) return;
+  try{
+    await update(ref(db,"withdrawals/"+uid+"/"+id),{ status, doneAt: Date.now() });
+    say($("wdMsg"), status === "paid" ? "Penarikan promotor "+(p.code||"")+" di-ACC (Berhasil)." : "Penarikan promotor "+(p.code||"")+" ditolak, saldo dikembalikan.","ok");
+  }catch(e){ fail($("wdMsg"),e); }
+}
+async function removePromoter(uid){
+  const p = promoMap[uid];
+  if(!p) return;
+  const bal = promoBalance(uid);
+  if(bal.unpaid + bal.pending > 0){ say($("promoListMsg"),"Promotor "+p.code+" masih punya saldo "+rupiah(bal.unpaid + bal.pending)+". Bayar dulu sebelum dihapus.","err"); return; }
+  if(!confirm("Hapus promotor "+p.code+"? Kodenya tidak berlaku lagi. Riwayat komisi tetap tersimpan."))return;
+  try{ await update(ref(db),{["promoters/"+uid]:null,["promoCodes/"+p.code]:null}); say($("promoListMsg"),"Promotor "+p.code+" dihapus.","ok"); }
+  catch(e){ fail($("promoListMsg"),e); }
+}
+async function removeCommission(uid, ord){
+  const c = (commMap[uid]||{})[ord];
+  if(!c || !confirm("Hapus komisi "+rupiah(c.amount)+" dari pesanan "+ord+"? Saldo promotor ikut berkurang."))return;
+  try{ await remove(ref(db,"commissions/"+uid+"/"+ord)); say($("commMsg"),"Komisi dihapus.","ok"); }
+  catch(e){ fail($("commMsg"),e); }
+}
+
+/* ── Navigasi tampilan ── */
+const VIEWS = ["overview","vip","users","promo","pay","site","system"];
+function showView(v){
+  if(VIEWS.indexOf(v) < 0) v = "overview";
+  document.querySelectorAll(".view").forEach(el => el.classList.toggle("on", el.dataset.view === v));
+  document.querySelectorAll("#nav button").forEach(b => { if(b.dataset.view === v) b.setAttribute("aria-current","page"); else b.removeAttribute("aria-current"); });
+  try{ history.replaceState(null,"","#"+v); }catch(e){}
+  window.scrollTo(0,0);
+}
+
+/* ── Maintenance ── */
+let mtState = { enabled:false, message:"" };
+function renderMaint(){
+  const b = $("mtBadge");
+  b.textContent = mtState.enabled ? "Aktif" : "Nonaktif";
+  b.className = "badge " + (mtState.enabled ? "ok" : "off");
+  const t = $("mtText");
+  if (document.activeElement !== t) t.value = mtState.message || "";
+  $("mtCount").textContent = t.value.length + "/500";
+}
+async function saveMaint(enabled){
+  const msg = $("mtText").value.trim().slice(0,500);
+  const btn = enabled ? $("mtOn") : $("mtOff");
+  btn.disabled = true;
+  try{
+    await set(ref(db,"maintenance"),{ enabled:enabled, message:msg, updatedAt:Date.now() });
+    say($("mtMsg"), enabled ? "Maintenance AKTIF. Pengunjung sekarang melihat pop-up." : "Maintenance dimatikan. Situs kembali normal.", "ok");
+  }catch(e){ fail($("mtMsg"),e); }
+  finally{ btn.disabled = false; }
+}
+
+
+/* ── Informasi di Home ── */
+let infoState = null;   // isi node config/info (null = kosong)
+function renderInfo(){
+  const b = $("infoBadge");
+  const on = !!(infoState && infoState.text);
+  b.textContent = on ? "Tampil" : "Kosong";
+  b.className = "badge " + (on ? "ok" : "off");
+  const t = $("infoText");
+  if (document.activeElement !== t) t.value = on ? infoState.text : "";
+  $("infoCount").textContent = t.value.length + "/500";
+}
+async function sendInfo(){
+  const text = $("infoText").value.trim().slice(0,500);
+  if(!text){ say($("infoMsg"),"Isi teks informasi dulu.","err"); return; }
+  const btn = $("infoSend");
+  btn.disabled = true;
+  try{
+    await set(ref(db,"config/info"),{ text:text, updatedAt:Date.now() });
+    say($("infoMsg"),"Informasi terkirim. Sekarang tampil di Home.","ok");
+  }catch(e){ fail($("infoMsg"),e); }
+  finally{ btn.disabled = false; }
+}
+async function clearInfo(){
+  if(!(infoState && infoState.text)){ say($("infoMsg"),"Belum ada informasi yang tampil.","err"); return; }
+  if(!confirm("Hapus informasi dari Home? Jadwal sholat akan tampil lagi."))return;
+  const btn = $("infoClear");
+  btn.disabled = true;
+  try{
+    await remove(ref(db,"config/info"));
+    $("infoText").value = "";
+    say($("infoMsg"),"Informasi dihapus. Home menampilkan jadwal sholat.","ok");
+  }catch(e){ fail($("infoMsg"),e); }
+  finally{ btn.disabled = false; }
+}
+
+/* ── Harga VIP & QRIS (3 paket harga, 1 foto QRIS untuk semua paket) ── */
+let payState = null;      // isi node config/payment (null = bawaan)
+const PAY_PLANS = [
+  {p:"vip15",  name:"VIP 15 hari",      def:25000},
+  {p:"vip30",  name:"VIP 30 hari",      def:45000},
+  {p:"plus15", name:"VIP Plus 15 hari", def:35000},
+  {p:"plus30", name:"VIP Plus 30 hari", def:65000}
+];
+let qrisDraft = undefined; // undefined = tidak diubah, null = pakai qris.jpg bawaan, string = data URL baru
+function curQris(s){ return s.qris || s.qris30 || s.qris7 || s.qris15 || null; }
+function buildPayFields(){
+  $("payFields").innerHTML =
+    '<div class="price-grid">' + PAY_PLANS.map(pl =>
+      '<div><label for="price'+pl.p+'">'+pl.name+' (Rp)</label><input id="price'+pl.p+'" type="number" inputmode="numeric" min="1000" max="9900000" step="500" value="'+pl.def+'"></div>'
+    ).join("") + '</div>' +
+    '<label style="margin-top:16px">Foto QRIS (dipakai semua paket)</label>' +
+    '<div class="qris-box"><img id="qrisPrev" alt="Pratinjau QRIS" src="qris.jpg">' +
+    '<div class="qris-side"><input id="qrisFile" type="file" accept="image/*" class="hide">' +
+    '<button class="btn small" data-qpick="1" type="button">Ganti foto QRIS</button>' +
+    '<button class="btn small danger" data-qreset="1" type="button">Pakai bawaan</button>' +
+    '<div class="note" id="qrisInfo">Memakai qris.jpg bawaan.</div></div></div>';
+}
+buildPayFields();
+function renderPay(){
+  const s = payState || {};
+  const badge = $("payBadge");
+  badge.textContent = payState ? "Kustom" : "Bawaan";
+  badge.className = "badge " + (payState ? "ok" : "off");
+  PAY_PLANS.forEach(pl => {
+    const inp = $("price"+pl.p);
+    if(document.activeElement !== inp) inp.value = s[pl.p] || pl.def;
+  });
+  if(qrisDraft === undefined){
+    const q = curQris(s);
+    $("qrisPrev").src = q || "qris.jpg";
+    $("qrisInfo").textContent = q ? "Memakai foto QRIS yang kamu upload." : "Memakai qris.jpg bawaan.";
+  }
+}
+function readImage(file){
+  return new Promise((res,rej)=>{
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = ()=>{ URL.revokeObjectURL(url); res(img); };
+    img.onerror = ()=>{ URL.revokeObjectURL(url); rej(new Error("File bukan gambar yang valid.")); };
+    img.src = url;
+  });
+}
+async function compressQris(file){
+  if(!/^image\//.test(file.type)) throw new Error("Pilih file gambar (JPG/PNG).");
+  if(file.size > 15*1048576) throw new Error("Foto terlalu besar (maks 15 MB).");
+  const img = await readImage(file);
+  const maxSide = 900;
+  const k = Math.min(1, maxSide / Math.max(img.naturalWidth, img.naturalHeight));
+  const w = Math.max(1, Math.round(img.naturalWidth * k)), h = Math.max(1, Math.round(img.naturalHeight * k));
+  const c = document.createElement("canvas");
+  c.width = w; c.height = h;
+  const g = c.getContext("2d");
+  g.fillStyle = "#fff"; g.fillRect(0,0,w,h);
+  g.drawImage(img,0,0,w,h);
+  let q = 0.9, out = c.toDataURL("image/jpeg", q);
+  while(out.length > 400000 && q > 0.4){ q -= 0.1; out = c.toDataURL("image/jpeg", q); }
+  if(out.length > 400000) throw new Error("Foto masih terlalu besar setelah dikecilkan. Coba foto yang lebih sederhana.");
+  return out;
+}
+async function pickQris(ev){
+  const f = ev.target.files && ev.target.files[0];
+  ev.target.value = "";
+  if(!f) return;
+  try{
+    const data = await compressQris(f);
+    qrisDraft = data;
+    $("qrisPrev").src = data;
+    $("qrisInfo").textContent = "Foto baru siap (" + Math.round(data.length/1024) + " KB). Tekan Simpan untuk menerapkan.";
+    say($("payMsg"),"");
+  }catch(e){ say($("payMsg"), e.message || "Gagal membaca foto.", "err"); }
+}
+function resetQris(){
+  qrisDraft = null;
+  $("qrisPrev").src = "qris.jpg";
+  $("qrisInfo").textContent = "Akan kembali ke qris.jpg bawaan setelah disimpan.";
+}
+async function savePay(){
+  const ok = (n)=>Number.isFinite(n) && n >= 1000 && n <= 9900000;
+  const cur = payState || {};
+  const data = { updatedAt: Date.now() };
+  for(const pl of PAY_PLANS){
+    const v = Math.round(Number($("price"+pl.p).value));
+    if(!ok(v)){ say($("payMsg"),"Harga "+pl.name+" harus antara Rp1.000 dan Rp9.900.000.","err"); return; }
+    data[pl.p] = v;
+  }
+  // tidak diubah: pertahankan foto yang ada (foto per-paket lama otomatis digabung jadi satu)
+  const img = qrisDraft === null ? null : (typeof qrisDraft === "string" ? qrisDraft : curQris(cur));
+  if(img) data.qris = img;
+  const btn = $("paySave");
+  btn.disabled = true;
+  try{
+    await set(ref(db,"config/payment"), data);
+    qrisDraft = undefined;
+    say($("payMsg"),"Tersimpan. Harga dan QRIS baru langsung dipakai.","ok");
+  }catch(e){ fail($("payMsg"),e); }
+  finally{ btn.disabled = false; }
+}
+
+function makeCode(){
+  const b = new Uint8Array(12);
+  crypto.getRandomValues(b);
+  let out = "BX";
+  for(let i=0;i<b.length;i++){ if(i%4===0) out+="-"; out+=CODE_ALPHABET[b[i]%CODE_ALPHABET.length]; }
+  return out;
+}
+async function createCode(){
+  const typed = $("codeText").value.replace(/\s+/g,"").toUpperCase();
+  const code = typed || makeCode();
+  const minutes = Number($("codeDur").value) * Number($("codeUnit").value);
+  const hours = Math.round(minutes/60*1e6)/1e6, tier = $("codeTier").value==="plus"?"plus":"vip";
+  const maxUses = Number($("codeMax").value);
+  if(!/^[A-Z0-9-]{4,24}$/.test(code)){say($("codeMsg"),"Kode 4–24 karakter: huruf, angka, atau tanda hubung.","err");return}
+  if(codeMap[code]){say($("codeMsg"),"Kode "+code+" sudah ada.","err");return}
+  if(!Number.isInteger(minutes)||minutes<1||minutes>MAX_CODE_HOURS*60){say($("codeMsg"),"Durasi harus 1 menit sampai "+(MAX_CODE_HOURS/24)+" hari (bilangan bulat).","err");return}
+  if(!Number.isInteger(maxUses)||maxUses<1||maxUses>MAX_CODE_USES){say($("codeMsg"),"Maks. pemakai harus 1 sampai "+MAX_CODE_USES+".","err");return}
+  $("codeBtn").disabled = true; say($("codeMsg"),"Membuat kode...");
+  try{
+    await set(ref(db,"codes/"+code),{ code, hours, tier, maxUses, uses: 0, createdAt: Date.now() });
+    $("codeText").value = "";
+    say($("codeMsg"),"Kode "+code+" dibuat ("+(tier==="plus"?"VIP Plus":"VIP")+"): "+hoursLabel(hours)+", maks. "+maxUses+" pemakai.","ok");
+  }catch(e){ fail($("codeMsg"),e); }
+  finally{ $("codeBtn").disabled = false; }
+}
+async function copyText(text, el, okText){
+  try{ await navigator.clipboard.writeText(text); say(el,okText,"ok"); }
+  catch(e){ say(el,"Gagal menyalin otomatis. Blok dan salin manual.","err"); }
+}
+async function removeCode(code){
+  if(!confirm("Hapus kode "+code+"? Riwayat pemakainya ikut dihapus, VIP yang sudah diberikan tidak dicabut."))return;
+  try{ await update(ref(db),{["codes/"+code]:null,["redeems/"+code]:null}); say($("codeMsg"),"Kode "+code+" dihapus.","ok"); }
+  catch(e){ fail($("codeMsg"),e); }
+}
+
+/* ── Auth ── */
+function stopListening(){ unsubs.forEach(f=>f()); unsubs=[]; vipMap={}; orderMap={}; codeMap={}; redeemMap={}; uploadMap={}; userMap={}; banMap={}; promoMap={}; commMap={}; payoutMap={}; wdMap={}; promoCfg=PROMO_DEFAULT; }
+function listen(){
+  stopListening();
+  const onErr = (e)=>say($("orderMsg"),"Gagal membaca data: "+(e&&e.message||e),"err");
+  unsubs.push(onValue(ref(db,"vip"),s=>{vipMap=s.val()||{};renderVip()},onErr));
+  unsubs.push(onValue(ref(db,"maintenance"),s=>{mtState=s.val()||{enabled:false,message:""};renderMaint()},onErr));
+  unsubs.push(onValue(ref(db,"config/info"),s=>{infoState=s.val()||null;renderInfo()},onErr));
+  unsubs.push(onValue(ref(db,"config/payment"),s=>{payState=s.val()||null;renderPay();renderPromoAdmin()},onErr));
+  unsubs.push(onValue(ref(db,"config/promo"),s=>{promoCfg=s.val()||PROMO_DEFAULT;renderPromoAdmin()},onErr));
+  unsubs.push(onValue(ref(db,"promoters"),s=>{promoMap=s.val()||{};renderPromoAdmin()},err=>say($("promoListMsg"),"Gagal membaca promotor: "+(err&&err.message||err)+" (publish ulang database.rules.json)","err")));
+  unsubs.push(onValue(ref(db,"commissions"),s=>{commMap=s.val()||{};renderPromoAdmin()},err=>say($("commMsg"),"Gagal membaca komisi: "+(err&&err.message||err)+" (publish ulang database.rules.json)","err")));
+  unsubs.push(onValue(ref(db,"payouts"),s=>{payoutMap=s.val()||{};renderPromoAdmin()},err=>say($("promoListMsg"),"Gagal membaca pembayaran: "+(err&&err.message||err)+" (publish ulang database.rules.json)","err")));
+  unsubs.push(onValue(ref(db,"withdrawals"),s=>{wdMap=s.val()||{};renderPromoAdmin()},err=>say($("wdMsg"),"Gagal membaca penarikan: "+(err&&err.message||err)+" (publish ulang database.rules.json)","err")));
+  unsubs.push(onValue(ref(db,"orders"),s=>{orderMap=s.val()||{};renderOrders()},onErr));
+  unsubs.push(onValue(ref(db,"codes"),s=>{codeMap=s.val()||{};renderCodes()},onErr));
+  unsubs.push(onValue(ref(db,"redeems"),s=>{redeemMap=s.val()||{};renderCodes()},onErr));
+  unsubs.push(onValue(query(ref(db,"uploads"),limitToLast(200)),s=>{uploadMap=s.val()||{};renderUploads();renderUsers()},onErr));
+  unsubs.push(onValue(ref(db,"users"),s=>{userMap=s.val()||{};renderUsers()},onErr));
+  unsubs.push(onValue(ref(db,"bans"),s=>{banMap=s.val()||{};renderUsers()},onErr));
+}
+function showLogin(){
+  stopListening();
+  $("panelView").classList.add("hide");$("logoutBtn").classList.add("hide");$("loginView").classList.remove("hide");
+}
+let entering=false;
+async function enter(user){
+  if(entering)return;
+  entering=true;
+  try{
+    let isAdmin=false, netErr=false;
+    try{ await withTimeout(get(ref(db,"isAdmin")),20000); isAdmin=true; }   // hanya lolos kalau rules Firebase mengenali akun ini sebagai owner
+    catch(e){
+      const denied = (e&&e.code==="PERMISSION_DENIED") || /permission/i.test(String(e&&e.message));
+      if(!denied) netErr=true;
+    }
+    if(netErr){
+      showLogin();
+      say($("loginMsg"),"Login berhasil, tapi database Firebase tidak merespons. URL yang terbaca: "+cfg.databaseURL+" . Kalau URL ini bukan asia-southeast1, deploy belum terupdate (tekan Ctrl+F5). Kalau sudah benar, cek jaringan/antivirus dan pastikan Realtime Database sudah dibuat.","err");
+      await signOut(auth);
+      return;
+    }
+    if(!isAdmin){
+      showLogin();
+      say($("loginMsg"),"Akun ini bukan owner. Login dengan email owner yang terdaftar di rules Firebase.","err");
+      await signOut(auth);
+      return;
+    }
+    say($("loginMsg"),"");
+    $("who").textContent=user.email||"";
+    $("loginView").classList.add("hide");$("panelView").classList.remove("hide");$("logoutBtn").classList.remove("hide");
+    showView(location.hash.slice(1));
+    listen();
+  }finally{ entering=false; }
+}
+async function login(){
+  const email=$("email").value.trim(), pw=$("pw").value;
+  if(!email||!pw){say($("loginMsg"),"Isi email dan password.","err");return}
+  $("loginBtn").disabled=true;say($("loginMsg"),"Memeriksa...");
+  try{ await withTimeout(signInWithEmailAndPassword(auth,email,pw),15000); }
+  catch(e){
+    const bad=["auth/invalid-credential","auth/wrong-password","auth/user-not-found","auth/invalid-email"];
+    say($("loginMsg"),bad.indexOf(e.code)>-1?"Email atau password salah.":e.code==="auth/too-many-requests"?"Terlalu banyak percobaan. Coba lagi nanti.":e.code==="timeout"||e.code==="auth/network-request-failed"?"Server login tidak merespons. Cek koneksi internet lalu coba lagi.":"Gagal masuk: "+(e.code||e.message),"err");
+  }finally{ $("loginBtn").disabled=false; }
+}
+async function changePw(){
+  const el=$("pwMsg"), user=auth&&auth.currentUser;
+  const cur=$("pwCur").value, n1=$("pwNew").value, n2=$("pwNew2").value;
+  if(!user||!user.email){say(el,"Belum login.","err");return}
+  if(!cur||!n1||!n2){say(el,"Isi semua kolom.","err");return}
+  if(n1.length<6){say(el,"Password baru minimal 6 karakter.","err");return}
+  if(n1!==n2){say(el,"Konfirmasi password tidak sama.","err");return}
+  if(n1===cur){say(el,"Password baru harus beda dari yang sekarang.","err");return}
+  $("pwBtn").disabled=true;say(el,"Menyimpan...");
+  try{
+    await reauthenticateWithCredential(user,EmailAuthProvider.credential(user.email,cur));
+    await updatePassword(user,n1);
+    $("pwCur").value="";$("pwNew").value="";$("pwNew2").value="";
+    say(el,"Password berhasil diganti dan tersimpan.","ok");
+  }catch(e){
+    const c=e&&e.code;
+    say(el,c==="auth/invalid-credential"||c==="auth/wrong-password"?"Password sekarang salah.":c==="auth/weak-password"?"Password baru terlalu lemah.":c==="auth/too-many-requests"?"Terlalu banyak percobaan. Coba lagi nanti.":"Gagal mengganti password: "+(c||(e&&e.message)||e),"err");
+  }finally{ $("pwBtn").disabled=false; }
+}
+async function resetPw(){
+  const email=$("email").value.trim();
+  if(!email){say($("loginMsg"),"Isi email dulu, lalu klik Lupa password.","err");return}
+  try{ await sendPasswordResetEmail(auth,email); say($("loginMsg"),"Link reset password dikirim ke email itu (kalau terdaftar).","ok"); }
+  catch(e){ say($("loginMsg"),"Gagal kirim reset: "+(e.code||e.message),"err"); }
+}
+
+
+/* ── Ubah durasi VIP ── */
+async function changeDuration(sign){
+  const id = $("dUid").value.trim();
+  const amt = Number($("dAmt").value), unit = Number($("dUnit").value), tier = $("dTier").value==="plus"?"plus":"vip";
+  if(!/^\d{1,20}$/.test(id)){say($("dMsg"),"User ID harus berupa angka.","err");return}
+  if(!(amt>0)){say($("dMsg"),"Jumlah harus lebih dari 0.","err");return}
+  const cur = vipMap[id], now = Date.now(), delta = Math.round(amt*unit*3600000);
+  const label = amt+" "+(unit===24?"hari":"jam");
+  const plusNow = cur && typeof cur.plusUntil==="number" ? cur.plusUntil : null;   // null = tanpa Plus, 0 = permanen
+  const rec = {addedAt:(cur&&cur.addedAt)||now, note:(cur&&cur.note)||""};
+  const bad = (t)=>say($("dMsg"),t,"err");
+  let msg;
+  if(tier==="plus"){
+    if(sign>0){
+      if(plusNow===0){bad("Roblox #"+id+" sudah VIP Plus permanen.");return}
+      const next = Math.max(now,plusNow||0)+delta;
+      rec.plusUntil = next;
+      rec.expiresAt = (cur&&!cur.expiresAt) ? 0 : Math.max((cur&&cur.expiresAt)||0,next);
+      msg = "+"+label+" VIP Plus untuk Roblox #"+id+". Sekarang sampai "+fmtTime(next)+".";
+    }else{
+      if(plusNow===null){bad("Roblox #"+id+" belum VIP Plus.");return}
+      if(plusNow===0){bad("VIP Plus permanen tidak bisa dikurangi. Hapus dari daftar VIP.");return}
+      const next = plusNow-delta, ended = next<=now;
+      if(!ended) rec.plusUntil = next;
+      rec.expiresAt = (cur&&cur.expiresAt)||0;
+      msg = "−"+label+" VIP Plus untuk Roblox #"+id+". "+(ended?"VIP Plus langsung berakhir (VIP biasa tidak berubah).":"Sekarang sampai "+fmtTime(next)+".");
+    }
+  }else{
+    if(sign>0){
+      if(cur && !cur.expiresAt){bad("Roblox #"+id+" sudah VIP permanen.");return}
+      const next = Math.max(now,(cur&&cur.expiresAt)||0)+delta;
+      rec.expiresAt = next;
+      if(plusNow!==null) rec.plusUntil = plusNow;
+      msg = "+"+label+" VIP untuk Roblox #"+id+". Sekarang sampai "+fmtTime(next)+".";
+    }else{
+      if(!cur){bad("Roblox #"+id+" belum VIP.");return}
+      if(!cur.expiresAt){bad("VIP permanen tidak bisa dikurangi. Hapus dari daftar VIP.");return}
+      const next = cur.expiresAt-delta, ended = next<=now;
+      rec.expiresAt = ended?now:next;
+      if(plusNow!==null) rec.plusUntil = plusNow===0 ? rec.expiresAt : Math.min(plusNow,rec.expiresAt);   // Plus tidak boleh melewati VIP
+      msg = "−"+label+" VIP untuk Roblox #"+id+". "+(ended?"VIP langsung berakhir.":"Sekarang sampai "+fmtTime(next)+".");
+    }
+  }
+  try{
+    await update(ref(db,"vip"),{[id]:rec});
+    say($("dMsg"),msg,"ok");
+  }catch(e){ fail($("dMsg"),e); }
+}
+
+/* ── Pengguna + ban ── */
+function collectUsers(){
+  const m = {};
+  Object.entries(userMap).forEach(([uid,u])=>{ if(u) m[uid]={uid,email:u.email||"",name:u.name||"",robloxId:u.robloxId||"",lastSeen:u.lastSeen||0}; });
+  // pengguna lama yang belum pernah tercatat tapi ada di riwayat upload
+  Object.values(uploadMap).forEach(o=>{
+    if(!o||!o.googleUid)return;
+    const u = m[o.googleUid]||(m[o.googleUid]={uid:o.googleUid,email:o.googleEmail||"",name:"",robloxId:o.robloxId||"",lastSeen:0});
+    if((o.at||0)>u.lastSeen) u.lastSeen=o.at;
+    if(!u.email&&o.googleEmail)u.email=o.googleEmail;
+    if(!u.robloxId&&o.robloxId)u.robloxId=o.robloxId;
+  });
+  Object.entries(banMap).forEach(([uid,b])=>{ if(b&&!m[uid]) m[uid]={uid,email:b.email||"",name:"",robloxId:b.robloxId||"",lastSeen:0}; });
+  return Object.values(m).sort((a,b)=>(b.lastSeen||0)-(a.lastSeen||0));
+}
+function renderUsers(){
+  if(!$("users"))return;
+  const q = $("usSearch").value.trim().toLowerCase();
+  const all = collectUsers();
+  $("usCount").textContent = all.length;
+  const shown = all.filter(u=>!q||[u.email,u.name,u.robloxId,u.uid].some(x=>String(x||"").toLowerCase().indexOf(q)>-1));
+  if(!shown.length){$("users").innerHTML='<div class="empty">'+(all.length?"Tidak ada yang cocok.":"Belum ada pengguna tercatat.")+"</div>";return}
+  $("users").innerHTML = shown.map(u=>{
+    const banned = !!banMap[u.uid];
+    const vip = u.robloxId && vipMap[u.robloxId] && isActive(vipMap[u.robloxId]);
+    const badges = (banned?'<span class="badge off">Di-ban</span>':'')+(vip?'<span class="badge ok">VIP</span>':'');
+    return '<div class="item"><div><div class="id">'+esc(u.name||u.email||u.uid)+badges+'</div>'+
+      '<div class="meta">'+esc(u.email||"—")+(u.robloxId?' · Roblox #'+esc(u.robloxId):'')+(u.lastSeen?' · '+esc(fmtTime(u.lastSeen)):'')+
+      (banned&&banMap[u.uid].reason?' · Alasan: '+esc(banMap[u.uid].reason):'')+'</div></div>'+
+      '<div class="btns">'+(banned
+        ?'<button class="btn small" type="button" data-unban="'+esc(u.uid)+'">Unban</button>'
+        :'<button class="btn danger" type="button" data-ban="'+esc(u.uid)+'">Ban</button>')+'</div></div>';
+  }).join("");
+}
+async function banUser(uid){
+  const u = collectUsers().find(x=>x.uid===uid)||{};
+  const reason = prompt("Ban "+(u.email||uid)+"?\nAlasan (opsional, maks 120 karakter):","");
+  if(reason===null)return;
+  try{
+    await set(ref(db,"bans/"+uid),{at:Date.now(),reason:reason.trim().slice(0,120),email:u.email||"",robloxId:u.robloxId||""});
+    say($("usMsg"),(u.email||uid)+" di-ban.","ok");
+  }catch(e){ fail($("usMsg"),e); }
+}
+async function unbanUser(uid){
+  try{ await remove(ref(db,"bans/"+uid)); say($("usMsg"),"Ban dicabut.","ok"); }
+  catch(e){ fail($("usMsg"),e); }
+}
+
+$("nav").addEventListener("click",e=>{const b=e.target.closest("button[data-view]");if(b)showView(b.dataset.view)});
+window.addEventListener("hashchange",()=>{if(!$("panelView").classList.contains("hide"))showView(location.hash.slice(1))});
+$("promoSave").addEventListener("click",savePromoCfg);
+$("promoSearch").addEventListener("input",renderPromoAdmin);
+$("promoList").addEventListener("click",e=>{
+  const c=e.target.closest("button[data-pcopy]");if(c){copyText(c.dataset.pcopy,$("promoListMsg"),"Nomor e-wallet disalin.");return}
+  const qr=e.target.closest("button[data-pqris]");if(qr){showPromoQris(qr.dataset.pqris,$("promoListMsg"));return}
+  const p=e.target.closest("button[data-ppay]");if(p){payPromoter(p.dataset.ppay);return}
+  const u=e.target.closest("button[data-pundo]");if(u){undoPayout(u.dataset.pundo);return}
+  const d=e.target.closest("button[data-pdel]");if(d)removePromoter(d.dataset.pdel);
+});
+$("wdList").addEventListener("click",e=>{
+  const c=e.target.closest("button[data-wcopy]");if(c){copyText(c.dataset.wcopy,$("wdMsg"),"Nomor e-wallet disalin.");return}
+  const qr=e.target.closest("button[data-wqris]");if(qr){showPromoQris(qr.dataset.wqris,$("wdMsg"));return}
+  const ok=e.target.closest("button[data-wok]");if(ok){setWithdrawal(ok.dataset.wok,ok.dataset.wid,"paid");return}
+  const no=e.target.closest("button[data-wno]");if(no)setWithdrawal(no.dataset.wno,no.dataset.wid,"rejected");
+});
+setInterval(()=>{ if(!$("panelView").classList.contains("hide")) renderPromoAdmin(); },60000);
+$("commList").addEventListener("click",e=>{const b=e.target.closest("button[data-cuid]");if(b)removeCommission(b.dataset.cuid,b.dataset.cord)});
+$("dAdd").addEventListener("click",()=>changeDuration(1));
+$("dSub").addEventListener("click",()=>changeDuration(-1));
+$("usSearch").addEventListener("input",renderUsers);
+$("users").addEventListener("click",e=>{
+  const b=e.target.closest("button"); if(!b)return;
+  if(b.dataset.ban)banUser(b.dataset.ban); else if(b.dataset.unban)unbanUser(b.dataset.unban);
+});
+$("list").addEventListener("click",e=>{const b=e.target.closest("button[data-dur]");if(b){$("dUid").value=b.dataset.dur;$("dUid").scrollIntoView({behavior:"smooth",block:"center"});$("dUid").focus()}});
+$("loginBtn").addEventListener("click",login);
+$("pw").addEventListener("keydown",e=>{if(e.key==="Enter")login()});
+$("resetBtn").addEventListener("click",()=>{if(configured)resetPw()});
+$("logoutBtn").addEventListener("click",()=>signOut(auth));
+$("pwBtn").addEventListener("click",changePw);
+$("payFields").addEventListener("click",e=>{
+  const b=e.target.closest("button[data-qpick],button[data-qreset]"); if(!b)return;
+  if(b.dataset.qpick) $("qrisFile").click(); else resetQris();
+});
+$("payFields").addEventListener("change",e=>{ if(e.target.id==="qrisFile") pickQris(e); });
+$("paySave").addEventListener("click",savePay);
+$("pwNew2").addEventListener("keydown",e=>{if(e.key==="Enter")changePw()});
+$("addBtn").addEventListener("click",add);
+$("uid").addEventListener("keydown",e=>{if(e.key==="Enter")add()});
+$("search").addEventListener("input",renderVip);
+$("upSearch").addEventListener("input",renderUploads);
+$("uploads").addEventListener("click",e=>{
+  const c=e.target.closest("button[data-upcopy]");if(c){copyText("rbxassetid://"+c.dataset.upcopy,$("upMsg"),"Asset ID disalin.");return}
+  const d=e.target.closest("button[data-updel]");if(d)removeUpload(d.dataset.updel);
+});
+$("orders").addEventListener("click",e=>{
+  const a=e.target.closest("button[data-approve]");if(a){approve(a.dataset.approve);return}
+  const r=e.target.closest("button[data-reject]");if(r)reject(r.dataset.reject);
+});
+$("codeBtn").addEventListener("click",createCode);
+$("infoSend").addEventListener("click",sendInfo);
+$("infoClear").addEventListener("click",clearInfo);
+$("infoText").addEventListener("input",()=>{$("infoCount").textContent=$("infoText").value.length+"/500"});
+$("mtOn").addEventListener("click",()=>saveMaint(true));
+$("mtOff").addEventListener("click",()=>saveMaint(false));
+$("mtText").addEventListener("input",()=>{$("mtCount").textContent=$("mtText").value.length+"/500"});
+$("codeText").addEventListener("keydown",e=>{if(e.key==="Enter")createCode()});
+$("codeList").addEventListener("click",e=>{
+  const c=e.target.closest("button[data-copy]");if(c){copyText(c.dataset.copy,$("codeMsg"),"Kode "+c.dataset.copy+" disalin.");return}
+  const d=e.target.closest("button[data-delcode]");if(d)removeCode(d.dataset.delcode);
+});
+$("list").addEventListener("click",e=>{const b=e.target.closest("button[data-remove]");if(b)removeVip(b.dataset.remove)});
+
+if(configured){
+  onAuthStateChanged(auth,user=>{ if(user)enter(user); else showLogin(); });
+}
+</script>
+<script>
+// Simulasi serangan database. Murni tampilan: tidak ada fetch/XHR/WebSocket di sini.
+(function(){
+  var box=document.getElementById("conBox"),log=document.getElementById("conLog"),
+      st=document.getElementById("conState"),btn=document.getElementById("conAttack"),
+      clr=document.getElementById("conClear");
+  if(!box||!log||!btn)return;
+  var STEP_MS=380,timers=[],running=false;
+  var HOST="10.0.3.14",ATTACKER="185.220.101.47";
+  var STEPS=[
+    ["wn","[ids] koneksi tak dikenal dari "+ATTACKER+" (TOR exit node)"],
+    ["dim","[attacker] nmap -sV -p 5432,6379,27017 "+HOST],
+    ["dim","[attacker] 5432/tcp open postgresql 14.9"],
+    ["dim","[attacker] mencoba login: admin / admin123"],
+    ["bad","[auth] FAILED  user=admin  ip="+ATTACKER],
+    ["dim","[attacker] brute force dimulai (wordlist: 14.344.392 entri)"],
+    ["bad","[auth] FAILED  user=postgres  attempt=211"],
+    ["bad","[auth] FAILED  user=baxdev  attempt=873"],
+    ["wn","[waf] lonjakan request: 2.940 req/s ke /api/*"],
+    ["dim","[attacker] SELECT * FROM users WHERE id=1 OR 1=1;--"],
+    ["bad","[waf] SQL injection terdeteksi, query diblokir"],
+    ["dim","[attacker] mencoba dump tabel: vip, orders, users"],
+    ["bad","[db] permission denied for table vip"],
+    ["wn","[ids] ancaman level KRITIS, mengaktifkan firewall"],
+    ["gd","[firewall] "+ATTACKER+" masuk blacklist (permanen)"],
+    ["gd","[sistem] 0 baris data bocor · semua koneksi penyerang diputus"],
+    ["gd","[sistem] database aman, kembali ke status normal"]
+  ];
+
+  function add(cls,text){
+    var l=document.createElement("span");
+    l.className="ln "+cls;
+    var d=new Date();
+    l.textContent=d.toTimeString().slice(0,8)+" "+text;
+    log.appendChild(l);
+    log.scrollTop=log.scrollHeight;
+  }
+  function setState(s,label){box.dataset.s=s;st.textContent=label}
+
+  function finish(){
+    running=false;btn.disabled=false;
+    setState("blocked","Diblokir");
+    timers.push(setTimeout(function(){if(!running)setState("idle","Online")},4000));
+  }
+  function start(){
+    if(running)return;
+    running=true;btn.disabled=true;
+    timers.forEach(clearTimeout);timers=[];
+    setState("attack","Diserang");
+    add("wn","[sistem] aktivitas mencurigakan terdeteksi pada "+HOST);
+    STEPS.forEach(function(step,i){
+      timers.push(setTimeout(function(){add(step[0],step[1])},(i+1)*STEP_MS));
+    });
+    timers.push(setTimeout(finish,(STEPS.length+1)*STEP_MS));
+  }
+
+  btn.addEventListener("click",start);
+  clr.addEventListener("click",function(){
+    if(running)return;
+    log.innerHTML="";
+    add("dim","[sistem] log dibersihkan");
+  });
+})();
+</script>
+</body>
+</html>
