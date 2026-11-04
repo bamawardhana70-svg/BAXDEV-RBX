@@ -80,32 +80,16 @@ function scopeSet(scopes) {
   return { set, names };
 }
 
-// IP keluar server ini (yang dilihat Roblox). Hanya untuk diagnosa pesan error; gagal = diam.
-async function egressIp() {
-  try {
-    const r = await fetch("https://api64.ipify.org", { signal: AbortSignal.timeout(2500) });
-    if (!r.ok) return "";
-    const t = (await r.text()).trim();
-    return /^[0-9a-f:.]{3,45}$/i.test(t) ? t : "";
-  } catch { return ""; }
-}
-
 async function checkApiKey(apiKey) {
   // (a) Introspeksi: baca scope langsung dari key (endpoint resmi Roblox).
   let info = null;
-  let introStatus = "tidak terjangkau";
   try {
     const r = await fetch("https://apis.roblox.com/api-keys/v1/introspect", {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ apiKey })
     });
-    introStatus = "HTTP " + r.status;
     if (r.ok) info = await r.json().catch(() => null);
-    else {
-      const t = (await r.text().catch(() => "")).replace(/\s+/g, " ").slice(0, 140);
-      if (t) introStatus += " " + t;
-    }
   } catch { /* lanjut ke pengecekan cadangan */ }
 
   if (info && typeof info === "object" && Array.isArray(info.scopes)) {
@@ -128,8 +112,7 @@ async function checkApiKey(apiKey) {
         ` Buat API key baru di creator.roblox.com → Credentials, tambahkan API System "Assets" dengan izin Read dan Write.`
       );
     }
-    // IP WAJIB 0.0.0.0/0: server Cloudflare punya IP keluar yang berganti-ganti, jadi key
-    // yang dibatasi ke IP tertentu pasti gagal saat upload. Dicek kalau Roblox mengirim daftar CIDR-nya.
+    // IP WAJIB 0.0.0.0/0 (dicek kalau Roblox mengirim daftar CIDR key).
     const cidrs = [];
     for (const k of Object.keys(info)) {
       if (/cidr|allowed.?ip|ip.?address/i.test(k) && Array.isArray(info[k])) {
@@ -137,11 +120,7 @@ async function checkApiKey(apiKey) {
       }
     }
     if (cidrs.length && !cidrs.includes("0.0.0.0/0")) {
-      return bad(
-        "ip_restricted",
-        "⚠️ API key WAJIB memakai IP 0.0.0.0/0. Key kamu dibatasi ke: " + cidrs.join(", ") + ". " +
-        "Di Creator Hub → Credentials → key kamu → Security → Accepted IP Addresses, isi 0.0.0.0/0 (dan ::/0), lalu Simpan."
-      );
+      return bad("ip_restricted", "⚠️ API key WAJIB memakai IP 0.0.0.0/0. Key kamu dibatasi ke: " + cidrs.join(", ") + ". Di Creator Hub → Credentials → key kamu → Security → Accepted IP Addresses, isi 0.0.0.0/0 (dan ::/0), lalu Simpan.");
     }
     const others = names.filter((n) => !n.startsWith("asset"));
     return {
@@ -163,22 +142,11 @@ async function checkApiKey(apiKey) {
   }
 
   if (res.status === 401) {
-    // Pesan khusus kalau Roblox menolak karena alamat IP server (bukan karena key salah).
-    const ipRejected = /ip address|ip addr|may not be used from/i.test(introStatus);
-    const ip = await egressIp();
-    const ipFix = "WAJIB isi IP 0.0.0.0/0. Di Creator Hub → Credentials → key kamu → Keamanan: kalau toggle Restrict IP addresses mati dan masih ditolak, " +
-      "nyalakan toggle itu lalu isi DUA baris 0.0.0.0/0 (IPv4) dan ::/0 (IPv6), Simpan. Kalau tetap gagal, buat key baru." +
-      (ip ? ` IP server website saat ini: ${ip}${ip.includes(":") ? " (IPv6)" : " (IPv4)"}.` : "");
-    return bad("invalid_key", ipRejected
-      ? "API key ditolak Roblox karena alamat IP server belum diizinkan (HTTP 401). " + ipFix +
-        ` [Diagnosa: introspeksi ${introStatus}]`
-      : "API key ditolak Roblox (HTTP 401). Yang paling sering: (1) pembatasan IP di key belum lengkap. " + ipFix +
-        " (2) key belum utuh atau sudah dibuat ulang, (3) key kedaluwarsa atau status bukan Active. " +
-        `[Diagnosa: panjang key ${apiKey.length} karakter, introspeksi ${introStatus}, probe Assets HTTP 401]`);
+    return bad("invalid_key", "API key ditolak Roblox (HTTP 401). Cek salinan key (tanpa spasi) dan WAJIB isi Accepted IP Addresses dengan 0.0.0.0/0 (dan ::/0) di Creator Hub → Credentials → key kamu → Security.");
   }
   if (res.status === 403) {
     const txt = await res.text().catch(() => "");
-    const ipHint = /ip|address/i.test(txt) ? " Kemungkinan juga pembatasan IP (Accepted IP Addresses) di API key — isi 0.0.0.0/0 dan ::/0 (dua baris) di Creator Hub." : "";
+    const ipHint = /ip|address/i.test(txt) ? " Kemungkinan juga pembatasan IP (Accepted IP Addresses) di API key — isi 0.0.0.0/0." : "";
     return bad(
       "missing_scope",
       `⚠️ API key ditolak untuk Assets API (HTTP 403). Website ini butuh scope ${REQUIRED_SCOPE_TEXT}. ` +
